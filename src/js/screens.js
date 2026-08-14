@@ -37,6 +37,8 @@ import { initializeWords } from './gameLoop.js';
 import { fallingWords } from './words.js';
 import { updateStats } from './rendering.js';
 import { prepareSession, renderSummary } from './spellingMode.js';
+import { renderDictationSummary, startDictation } from './dictationMode.js';
+import { t } from './pageLocale.js';
 
 function getCtx() {
   if (!dom.canvas) return null;
@@ -99,10 +101,25 @@ export function showCongratulations() {
 
 // ---------- 游戏控制 ----------
 export function startGame() {
-  prepareSession();
+  const session = prepareSession();
+  if (!session) return;
   gameState.startTime = Date.now();
   gameState.gameStarted = true;
+  gameState.gameRunning = true;
+  fallingWords.length = 0;
   document.getElementById('game-start')?.style && (document.getElementById('game-start').style.display = 'none');
+
+  if (session.mode === 'dictation') {
+    if (dom.input) dom.input.disabled = true;
+    startDictation(session.words);
+    return;
+  }
+
+  document.getElementById('game-container')?.classList.remove('dictation-active');
+  const dictationScreen = document.getElementById('dictation-screen');
+  if (dictationScreen) dictationScreen.hidden = true;
+  const title = document.querySelector('.game-title');
+  if (title) title.textContent = t('typingTitle');
   if (dom.input) {
     dom.input.disabled = false;
     dom.input.focus();
@@ -145,6 +162,11 @@ export function startGame() {
 
 export function endGame() {
   gameState.gameRunning = false;
+  if (gameState.practiceMode === 'dictation') {
+    renderDictationSummary();
+    document.getElementById('game-over').style.display = 'flex';
+    return;
+  }
   // 更新最终统计
   document.getElementById('final-score').textContent = gameState.score;
   document.getElementById('final-level').textContent = gameState.level;
@@ -208,6 +230,7 @@ export function endGame() {
 }
 
 export function restartGame(startImmediately = false) {
+  window.speechSynthesis?.cancel?.();
   resetGameState();
   fallingWords.length = 0;
   if (typeof window !== 'undefined') {
@@ -222,6 +245,12 @@ export function restartGame(startImmediately = false) {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
+  document.getElementById('game-container')?.classList.remove('dictation-active');
+  const dictationScreen = document.getElementById('dictation-screen');
+  if (dictationScreen) dictationScreen.hidden = true;
+  document.getElementById('typing-final-stats')?.removeAttribute('hidden');
+  document.getElementById('dictation-final-stats')?.setAttribute('hidden', '');
+  document.getElementById('spelling-summary')?.setAttribute('hidden', '');
   // 直接开始游戏，而不是显示开始界面
   updateStats();
   const startScreen = document.getElementById('game-start');

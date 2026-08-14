@@ -4,7 +4,6 @@ const path = require('path');
 const root = path.resolve(__dirname, '..');
 const baseUrl = 'https://myspellinggame.com';
 const ogImage = `${baseUrl}/images/my-spelling-game-og.png`;
-const today = '2026-06-18';
 
 const alternates = [
   { code: 'en', hreflang: 'en', label: 'English', path: '/' },
@@ -614,6 +613,64 @@ const pages = {
   },
 };
 
+const modeCopy = {
+  es: {
+    choose: 'Elige un modo', dictation: 'Prueba de spelling', recommended: 'Recomendado',
+    dictationDescription: 'Escucha una palabra oculta y escribe cómo se deletrea.', typing: 'Lluvia de palabras',
+    typingDescription: 'Escribe cada palabra antes de que llegue abajo.', start: 'Empezar prueba de spelling',
+    heading: 'Escucha y escribe la palabra', help: 'La palabra permanece oculta hasta que envíes tu respuesta.',
+    replay: 'Repetir palabra', replayLabel: 'Volver a escuchar la palabra actual', answer: 'Escribe lo que escuchas',
+    submit: 'Enviar respuesta', next: 'Siguiente palabra', total: 'Total de palabras', correct: 'Correctas',
+    incorrect: 'Incorrectas', retry: 'Practicar palabras falladas', restart: 'Reiniciar',
+    overview: 'Elige una prueba de spelling con voz o el juego original de lluvia de palabras.',
+    instructions: 'Usa la prueba para escuchar una palabra oculta cada vez, o la lluvia de palabras para escribir palabras que caen.',
+  },
+  'pt-BR': {
+    choose: 'Escolha um modo', dictation: 'Teste de spelling', recommended: 'Recomendado',
+    dictationDescription: 'Ouça uma palavra oculta e digite a grafia.', typing: 'Chuva de palavras',
+    typingDescription: 'Digite cada palavra antes que ela chegue ao fim.', start: 'Começar teste de spelling',
+    heading: 'Ouça e escreva a palavra', help: 'A palavra fica oculta até você enviar a resposta.',
+    replay: 'Repetir palavra', replayLabel: 'Ouvir novamente a palavra atual', answer: 'Digite o que você ouviu',
+    submit: 'Enviar resposta', next: 'Próxima palavra', total: 'Total de palavras', correct: 'Corretas',
+    incorrect: 'Incorretas', retry: 'Praticar palavras erradas', restart: 'Reiniciar',
+    overview: 'Escolha um teste de spelling com voz ou o jogo original de chuva de palavras.',
+    instructions: 'Use o teste para ouvir uma palavra oculta por vez, ou a chuva de palavras para digitar palavras que caem.',
+  },
+  fr: {
+    choose: 'Choisissez un mode', dictation: 'Test d’orthographe', recommended: 'Recommandé',
+    dictationDescription: 'Écoutez un mot caché et saisissez son orthographe.', typing: 'Pluie de mots',
+    typingDescription: 'Saisissez chaque mot avant qu’il atteigne le bas.', start: 'Commencer le test d’orthographe',
+    heading: 'Écoutez et écrivez le mot', help: 'Le mot reste caché jusqu’à la validation de votre réponse.',
+    replay: 'Réécouter le mot', replayLabel: 'Réécouter le mot actuel', answer: 'Écrivez ce que vous entendez',
+    submit: 'Valider', next: 'Mot suivant', total: 'Nombre de mots', correct: 'Corrects',
+    incorrect: 'Incorrects', retry: 'Retravailler les mots manqués', restart: 'Recommencer',
+    overview: 'Choisissez un test d’orthographe vocal ou le jeu original de pluie de mots.',
+    instructions: 'Utilisez le test pour écouter un mot caché à la fois, ou la pluie de mots pour saisir les mots qui tombent.',
+  },
+  id: {
+    choose: 'Pilih mode', dictation: 'Tes spelling', recommended: 'Disarankan',
+    dictationDescription: 'Dengarkan satu kata tersembunyi lalu ketik ejaannya.', typing: 'Hujan kata',
+    typingDescription: 'Ketik setiap kata sebelum mencapai bagian bawah.', start: 'Mulai tes spelling',
+    heading: 'Dengarkan dan eja katanya', help: 'Kata tetap tersembunyi sampai jawaban dikirim.',
+    replay: 'Putar ulang kata', replayLabel: 'Putar ulang kata saat ini', answer: 'Ketik yang Anda dengar',
+    submit: 'Kirim jawaban', next: 'Kata berikutnya', total: 'Jumlah kata', correct: 'Benar',
+    incorrect: 'Salah', retry: 'Latih kata yang salah', restart: 'Mulai ulang',
+    overview: 'Pilih tes spelling dengan suara atau game hujan kata yang asli.',
+    instructions: 'Gunakan tes untuk mendengar satu kata tersembunyi, atau hujan kata untuk mengetik kata yang jatuh.',
+  },
+  zh: {
+    choose: '选择模式', dictation: '听写测试', recommended: '推荐',
+    dictationDescription: '每次听一个隐藏单词，然后输入拼写。', typing: '单词雨',
+    typingDescription: '在单词落到底部前完成输入。', start: '开始听写测试',
+    heading: '听单词并写出拼写', help: '提交答案前，页面不会显示这个单词。',
+    replay: '重新播放', replayLabel: '重新播放当前单词', answer: '输入你听到的单词',
+    submit: '提交答案', next: '下一题', total: '单词总数', correct: '正确',
+    incorrect: '错误', retry: '重新练习错词', restart: '重新开始',
+    overview: '可选择语音听写测试，也可以玩原有的单词雨打字游戏。',
+    instructions: '听写测试每次播放一个隐藏单词；单词雨模式则需要输入正在下落的单词。',
+  },
+};
+
 function escapeAttr(value) {
   return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
@@ -656,7 +713,7 @@ function head(page) {
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style">
-    <link rel="preload" href="/src/js/index.js?v=spelling-mvp5" as="script">
+    <link rel="preload" href="/src/js/index.js?v=spelling-test1" as="script">
     <link rel="preload" href="/src/css/main.css" as="style">
 
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
@@ -735,6 +792,7 @@ function body(page, code) {
   const privacy = page.privacy;
   const info = page.info;
   const nav = page.nav;
+  const mode = modeCopy[code];
   const legalBase = page.path === '/' ? '' : page.path.replace(/\/$/, '');
   return `<body>
     <div class="top-right-nav">
@@ -748,6 +806,7 @@ ${languageMenu(code, nav)}
         <p>${page.hero.p1}</p>
         <p>${page.hero.p2}</p>
         <p>${page.hero.p3}</p>
+        <p>${mode.overview}</p>
     </div>
 
     <div class="main-content-wrapper">
@@ -765,6 +824,23 @@ ${languageMenu(code, nav)}
 
             <canvas id="game-canvas"></canvas>
 
+            <section class="dictation-screen" id="dictation-screen" aria-labelledby="dictation-heading" hidden>
+                <div class="dictation-card">
+                    <p class="dictation-progress" id="dictation-progress"></p>
+                    <h2 id="dictation-heading">${mode.heading}</h2>
+                    <p class="dictation-help">${mode.help}</p>
+                    <button type="button" class="dictation-replay" id="dictation-replay" aria-label="${escapeAttr(mode.replayLabel)}">${mode.replay}</button>
+                    <p class="dictation-speech-status" id="dictation-speech-status" role="status"></p>
+                    <form id="dictation-form">
+                        <label class="visually-hidden" for="dictation-answer">${mode.answer}</label>
+                        <input type="text" id="dictation-answer" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="${escapeAttr(mode.answer)}" aria-describedby="dictation-feedback">
+                        <button type="submit" id="dictation-submit">${mode.submit}</button>
+                    </form>
+                    <p class="dictation-feedback" id="dictation-feedback" role="status" aria-live="polite"></p>
+                    <button type="button" class="dictation-next" id="dictation-next" hidden>${mode.next}</button>
+                </div>
+            </section>
+
             <div class="input-container">
                 <input type="text" id="word-input" placeholder="${escapeAttr(game.placeholder)}" autocomplete="off" spellcheck="false" disabled>
             </div>
@@ -778,12 +854,24 @@ ${languageMenu(code, nav)}
                         <div class="hero-proof-row" aria-label="My Spelling Game benefits">
 ${game.chips.map((chip) => `                            <span>${chip}</span>`).join('\n')}
                         </div>
+                        <fieldset class="mode-selector">
+                            <legend>${mode.choose}</legend>
+                            <label class="mode-card">
+                                <input type="radio" name="practice-mode" value="dictation" checked>
+                                <span><strong>${mode.dictation}</strong><small>${mode.dictationDescription}</small></span>
+                                <span class="recommended-badge">${mode.recommended}</span>
+                            </label>
+                            <label class="mode-card">
+                                <input type="radio" name="practice-mode" value="typing">
+                                <span><strong>${mode.typing}</strong><small>${mode.typingDescription}</small></span>
+                            </label>
+                        </fieldset>
                         <div class="spelling-builder">
                             <label for="custom-word-list">${game.wordsLabel}</label>
                             <textarea id="custom-word-list" rows="7" spellcheck="false" placeholder="because&#10;friend&#10;beautiful&#10;answer"></textarea>
                             <div class="spelling-options">
-                                <label class="read-toggle"><input type="checkbox" id="hear-words-toggle"> ${game.hear}</label>
-                                <label class="read-toggle"><input type="checkbox" id="easy-mode-toggle"> ${game.easy}</label>
+                                <label class="read-toggle typing-option"><input type="checkbox" id="hear-words-toggle"> ${game.hear}</label>
+                                <label class="read-toggle typing-option"><input type="checkbox" id="easy-mode-toggle"> ${game.easy}</label>
                                 <span id="spelling-status">${game.ready}</span>
                             </div>
                             <div class="spelling-actions">
@@ -791,7 +879,7 @@ ${game.chips.map((chip) => `                            <span>${chip}</span>`).j
                                 <button type="button" onclick="copyPracticeLink()">${game.copy}</button>
                             </div>
                         </div>
-                        <button class="start-btn spelling-start-btn" onclick="startGame()">${game.start}</button>
+                        <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">${mode.start}</button>
                     </div>
                 </div>
             </div>
@@ -799,7 +887,7 @@ ${game.chips.map((chip) => `                            <span>${chip}</span>`).j
             <div class="game-over-screen" id="game-over">
                 <div class="game-over-content">
                     <div class="game-over-title" id="game-over-title">${game.complete}</div>
-                    <div class="final-stats">
+                    <div class="final-stats" id="typing-final-stats">
                         <p><span data-i18n="finalScore">${game.finalScore}</span>: <span id="final-score">0</span></p>
                         <p><span data-i18n="levelReached">${game.finalRound}</span>: <span id="final-level">1</span></p>
                         <p><span data-i18n="maxWPM">${game.finalSpeed}</span>: <span id="final-wpm">0</span></p>
@@ -807,14 +895,20 @@ ${game.chips.map((chip) => `                            <span>${chip}</span>`).j
                         <p id="duration-row" style="display:none;"><span data-i18n="duration">Duration</span>: <span id="final-duration">0:00</span></p>
                         <p><span data-i18n="wordsMatched">${game.finalMissed}</span>: <span id="final-missed">0</span></p>
                     </div>
+                    <div class="final-stats" id="dictation-final-stats" hidden>
+                        <p>${mode.total}: <span id="dictation-total">0</span></p>
+                        <p>${mode.correct}: <span id="dictation-correct">0</span></p>
+                        <p>${mode.incorrect}: <span id="dictation-incorrect">0</span></p>
+                        <p>${game.accuracy}: <span id="dictation-accuracy">0%</span></p>
+                    </div>
                     <div class="spelling-summary" id="spelling-summary" hidden>
                         <div id="spelling-result"></div>
                         <div id="missed-word-list"></div>
-                        <button class="restart-btn" id="replay-missed-btn" onclick="replayMissedWords()">${game.replay}</button>
+                        <button class="restart-btn" id="replay-missed-btn" onclick="replayMissedWords()">${mode.retry}</button>
                     </div>
                     <div class="game-over-buttons">
-                        <button class="restart-btn" onclick="restartGame(true)">${game.same}</button>
-                        <button class="share-score-btn" onclick="restartGame()">${game.edit}</button>
+                        <button class="restart-btn" id="restart-same-btn" onclick="restartGame(true)">${mode.restart}</button>
+                        <button class="share-score-btn" id="edit-list-btn" onclick="restartGame()">${game.edit}</button>
                     </div>
                 </div>
             </div>
@@ -872,6 +966,7 @@ ${game.stats.map((stat, index) => {
             <div class="game-instructions">
                 <div class="instructions-content">
                     <h3>${info.listTitle}</h3>
+                    <p>${mode.instructions}</p>
 ${paragraphs(info.list)}
                     <h4>${info.easyTitle}</h4>
                     <p>${info.easyText}</p>
@@ -906,7 +1001,7 @@ ${listItems(info.bullets)}
       window.pageLocale = '${page.pageLocale}';
       window.currentLanguage = '${page.pageLocale}';
     </script>
-    <script type="module" src="/src/js/index.js?v=spelling-mvp5"></script>
+    <script type="module" src="/src/js/index.js?v=spelling-test1"></script>
 
     <footer>
         <p>
@@ -987,63 +1082,10 @@ function renderPage(code, page) {
   return `${head(page)}\n${body(page, code)}`;
 }
 
-function sitemap() {
-  const legalSlugs = ['about', 'contact', 'privacy'];
-  const legalEntries = alternates.flatMap((alt) => legalSlugs.map((slug) => ({
-    loc: alt.path === '/' ? `/${slug}.html` : `${alt.path}${slug}.html`,
-    priority: '0.45',
-    changefreq: 'monthly',
-    alternateSlug: slug,
-  })));
-  const localizedSeoEntries = alternates.flatMap((alt) => localizedSeoSlugs.map((slug) => ({
-    loc: alt.path === '/' ? `/${slug}.html` : `${alt.path}${slug}.html`,
-    priority: slug === 'spelling-list-game' ? '0.85' : '0.8',
-    changefreq: 'monthly',
-    alternateSlug: slug,
-  })));
-
-  const urlEntries = [
-    { loc: '/', priority: '1.0', changefreq: 'weekly', alternateSlug: '' },
-    ...alternates.filter((alt) => alt.path !== '/').map((alt) => ({ loc: alt.path, priority: '0.95', changefreq: 'weekly', alternateSlug: '' })),
-    { loc: '/custom-spelling-words-game.html', priority: '0.9', changefreq: 'monthly' },
-    ...localizedSeoEntries,
-    { loc: '/sight-word-typing-game.html', priority: '0.75', changefreq: 'monthly' },
-    { loc: '/homeschool-spelling-practice.html', priority: '0.75', changefreq: 'monthly' },
-    { loc: '/vocabulary-typing-game.html', priority: '0.75', changefreq: 'monthly' },
-    ...legalEntries,
-  ];
-
-  const alternatePath = (alt, slug) => {
-    if (slug === '') return alt.path;
-    return alt.path === '/' ? `/${slug}.html` : `${alt.path}${slug}.html`;
-  };
-
-  const alternateBlock = (slug) => {
-    if (slug === undefined) return '';
-    const links = alternates.map((alt) => `    <xhtml:link rel="alternate" hreflang="${alt.hreflang}" href="${baseUrl}${alternatePath(alt, slug)}" />`).join('\n');
-    const xDefault = `    <xhtml:link rel="alternate" hreflang="x-default" href="${baseUrl}${alternatePath(alternates[0], slug)}" />`;
-    return `${links}\n${xDefault}`;
-  };
-
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-${urlEntries.map((entry) => `  <url>
-    <loc>${baseUrl}${entry.loc}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>${entry.changefreq}</changefreq>
-    <priority>${entry.priority}</priority>
-${alternateBlock(entry.alternateSlug)}
-  </url>`).join('\n')}
-</urlset>
-`;
-}
-
 for (const [code, page] of Object.entries(pages)) {
   const dir = path.join(root, page.path);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), renderPage(code, page), 'utf8');
 }
 
-fs.writeFileSync(path.join(root, 'sitemap.xml'), sitemap(), 'utf8');
-
-console.log(`Generated ${Object.keys(pages).length} localized pages and sitemap.xml`);
+console.log(`Generated ${Object.keys(pages).length} localized pages`);

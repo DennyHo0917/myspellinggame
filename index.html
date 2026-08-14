@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style">
-    <link rel="preload" href="/src/js/index.js?v=spelling-mvp5" as="script">
+    <link rel="preload" href="/src/js/index.js?v=spelling-test1" as="script">
     <link rel="preload" href="/src/css/main.css" as="style">
 
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
@@ -92,8 +92,8 @@
 
     <div class="seo-content" id="seo-content">
         <h1>Free Spelling Test With Your Own Words</h1>
-        <p><strong>Short answer:</strong> My Spelling Game is a free no-login spelling game that lets teachers, parents, homeschool families, and ESL tutors paste their own word list, play instantly, replay missed words, and share the same practice link.</p>
-        <p>Paste this week's spelling list or any custom word list and play instantly.</p>
+        <p><strong>Short answer:</strong> My Spelling Game is a free no-login spelling test and typing game that lets teachers, parents, homeschool families, and ESL tutors paste their own word list, replay missed words, and share the same practice link.</p>
+        <p>Choose a spoken Spelling Test or the original Typing Rain game.</p>
         <p>Teachers, parents, homeschool families, and ESL tutors can share the same practice link and replay missed words.</p>
         <p>No student login, no lesson builder, no generic word bank.</p>
     </div>
@@ -113,6 +113,23 @@
 
             <canvas id="game-canvas"></canvas>
 
+            <section class="dictation-screen" id="dictation-screen" aria-labelledby="dictation-heading" hidden>
+                <div class="dictation-card">
+                    <p class="dictation-progress" id="dictation-progress">Word 1 of 1</p>
+                    <h2 id="dictation-heading">Listen and spell the word</h2>
+                    <p class="dictation-help">The word stays hidden until you submit your answer.</p>
+                    <button type="button" class="dictation-replay" id="dictation-replay" aria-label="Replay the current word">Replay word</button>
+                    <p class="dictation-speech-status" id="dictation-speech-status" role="status"></p>
+                    <form id="dictation-form">
+                        <label class="visually-hidden" for="dictation-answer">Your spelling</label>
+                        <input type="text" id="dictation-answer" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type what you hear" aria-describedby="dictation-feedback">
+                        <button type="submit" id="dictation-submit">Submit answer</button>
+                    </form>
+                    <p class="dictation-feedback" id="dictation-feedback" role="status" aria-live="polite"></p>
+                    <button type="button" class="dictation-next" id="dictation-next" hidden>Next word</button>
+                </div>
+            </section>
+
             <div class="input-container">
                 <input type="text" id="word-input" placeholder="Type a spelling word..." autocomplete="off" spellcheck="false" disabled>
             </div>
@@ -129,12 +146,24 @@
                             <span>Missed-word replay</span>
                             <span>Share link, no login</span>
                         </div>
+                        <fieldset class="mode-selector">
+                            <legend>Choose a mode</legend>
+                            <label class="mode-card">
+                                <input type="radio" name="practice-mode" value="dictation" checked>
+                                <span><strong>Spelling Test</strong><small>Hear one word at a time and type the spelling.</small></span>
+                                <span class="recommended-badge">Recommended</span>
+                            </label>
+                            <label class="mode-card">
+                                <input type="radio" name="practice-mode" value="typing">
+                                <span><strong>Typing Rain</strong><small>Type each falling word before it reaches the bottom.</small></span>
+                            </label>
+                        </fieldset>
                         <div class="spelling-builder">
                             <label for="custom-word-list">Your spelling words</label>
                             <textarea id="custom-word-list" rows="7" spellcheck="false" placeholder="because&#10;friend&#10;beautiful&#10;answer"></textarea>
                             <div class="spelling-options">
-                                <label class="read-toggle"><input type="checkbox" id="hear-words-toggle"> Hear each word before typing</label>
-                                <label class="read-toggle"><input type="checkbox" id="easy-mode-toggle"> Easy mode</label>
+                                <label class="read-toggle typing-option"><input type="checkbox" id="hear-words-toggle"> Hear each word before typing</label>
+                                <label class="read-toggle typing-option"><input type="checkbox" id="easy-mode-toggle"> Easy mode</label>
                                 <span id="spelling-status">8 words ready</span>
                             </div>
                             <div class="spelling-actions">
@@ -142,7 +171,7 @@
                                 <button type="button" onclick="copyPracticeLink()">Copy practice link</button>
                             </div>
                         </div>
-                        <button class="start-btn spelling-start-btn" onclick="startGame()">Start Practice</button>
+                        <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Start Spelling Test</button>
                     </div>
                 </div>
             </div>
@@ -150,7 +179,7 @@
             <div class="game-over-screen" id="game-over">
                 <div class="game-over-content">
                     <div class="game-over-title" id="game-over-title">Practice Complete</div>
-                    <div class="final-stats">
+                    <div class="final-stats" id="typing-final-stats">
                         <p><span data-i18n="finalScore">Final Score</span>: <span id="final-score">0</span></p>
                         <p><span data-i18n="levelReached">Round Reached</span>: <span id="final-level">1</span></p>
                         <p><span data-i18n="maxWPM">Best Speed</span>: <span id="final-wpm">0</span></p>
@@ -158,14 +187,20 @@
                         <p id="duration-row" style="display:none;"><span data-i18n="duration">Duration</span>: <span id="final-duration">0:00</span></p>
                         <p><span data-i18n="wordsMatched">Words Missed</span>: <span id="final-missed">0</span></p>
                     </div>
+                    <div class="final-stats" id="dictation-final-stats" hidden>
+                        <p>Total words: <span id="dictation-total">0</span></p>
+                        <p>Correct: <span id="dictation-correct">0</span></p>
+                        <p>Incorrect: <span id="dictation-incorrect">0</span></p>
+                        <p>Accuracy: <span id="dictation-accuracy">0%</span></p>
+                    </div>
                     <div class="spelling-summary" id="spelling-summary" hidden>
                         <div id="spelling-result"></div>
                         <div id="missed-word-list"></div>
-                        <button class="restart-btn" id="replay-missed-btn" onclick="replayMissedWords()">Replay Missed Words</button>
+                        <button class="restart-btn" id="replay-missed-btn" onclick="replayMissedWords()">Practice Missed Words</button>
                     </div>
                     <div class="game-over-buttons">
-                        <button class="restart-btn" onclick="restartGame(true)">Play Same Words</button>
-                        <button class="share-score-btn" onclick="restartGame()">Edit Word List</button>
+                        <button class="restart-btn" id="restart-same-btn" onclick="restartGame(true)">Restart</button>
+                        <button class="share-score-btn" id="edit-list-btn" onclick="restartGame()">Edit Word List</button>
                     </div>
                 </div>
             </div>
@@ -245,12 +280,12 @@
                 <div class="instructions-content">
                     <h3>For This Week's List</h3>
                     <p>Paste the spelling words your class or child already has.</p>
-                    <p>Students type each falling word before it reaches the bottom.</p>
-                    <p>Press <kbd>Enter</kbd> or <kbd>Space</kbd> to submit.</p>
+                    <p>Use Spelling Test to hear one hidden word at a time, or Typing Rain to type falling words.</p>
+                    <p>In either mode, press <kbd>Enter</kbd> to submit.</p>
                     <p>Missed words are saved for one-click replay.</p>
                     <p>Copy a practice link to share the same list.</p>
                     <h4>Easy Mode</h4>
-                    <p>Turn on Easy mode before playing to slow down falling words.</p>
+                    <p>Typing Rain keeps the original falling-word controls and offers an optional slower Easy mode.</p>
                 </div>
             </div>
 
@@ -260,14 +295,14 @@
                     <p>Exact weekly words, not a random word bank.</p>
                     <p>Fast start for classroom homework, grade-level lists, tutoring, ESL, and homeschool practice.</p>
                     <p>Replay practice focuses on the words the student missed.</p>
-                    <p>Easy mode slows the round without changing the spelling rules.</p>
+                    <p>Spelling Test and Typing Rain use the same list, sharing, and missed-word review.</p>
                 </div>
             </div>
         </div>
 
         <div class="spelling-seo-copy">
             <h2>Free Spelling Game And Test With Your Own Words</h2>
-            <p>My Spelling Game is a <strong>free custom spelling words game</strong> for parents, teachers, homeschool families, classroom centers, and ESL tutors who already have a weekly word list and need a quick way to make practice feel less repetitive.</p>
+            <p>My Spelling Game is a <strong>free custom spelling test and typing game</strong> for parents, teachers, homeschool families, classroom centers, and ESL tutors who already have a weekly word list and need a quick way to make practice feel less repetitive.</p>
 
             <h3>Why A Custom Spelling List Matters</h3>
             <p>Most spelling games use a fixed word bank. That is fine for generic typing practice, but it does not help when a student needs to practice this week's exact words. My Spelling Game lets you paste your own custom word list, play immediately, and keep the practice focused on the words that will appear on the next quiz or spelling test.</p>
@@ -303,7 +338,7 @@
       window.pageLocale = 'en';
       window.currentLanguage = 'en';
     </script>
-    <script type="module" src="/src/js/index.js?v=spelling-mvp5"></script>
+    <script type="module" src="/src/js/index.js?v=spelling-test1"></script>
 
     <footer>
         <p>

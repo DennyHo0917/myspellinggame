@@ -4,6 +4,7 @@ import './wordDatabase.js';
 import './domRefs.js';
 import './screens.js';
 import './spellingMode.js';
+import './dictationMode.js';
 import './words.js';
 import './input.js';
 import { initBackgroundParticles, resizeCanvas } from './rendering.js';

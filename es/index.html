@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style">
-    <link rel="preload" href="/src/js/index.js?v=spelling-mvp5" as="script">
+    <link rel="preload" href="/src/js/index.js?v=spelling-test1" as="script">
     <link rel="preload" href="/src/css/main.css" as="style">
 
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
@@ -59,9 +59,9 @@
     <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/">
 
     <script src="/src/js/localeRedirect.js"></script>
-
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9244949928133071"
       crossorigin="anonymous"></script>
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VYF1V40KVS"></script>
     <script>
@@ -95,6 +95,7 @@
         <p>Pega la lista de palabras de esta semana y empieza a jugar al instante.</p>
         <p>My Spelling Game guarda las palabras falladas, crea una ronda de repaso y permite compartir la misma práctica con un enlace.</p>
         <p>Sin cuenta, sin preparar lecciones, sin bancos de palabras genéricos.</p>
+        <p>Elige una prueba de spelling con voz o el juego original de lluvia de palabras.</p>
     </div>
 
     <div class="main-content-wrapper">
@@ -112,6 +113,23 @@
 
             <canvas id="game-canvas"></canvas>
 
+            <section class="dictation-screen" id="dictation-screen" aria-labelledby="dictation-heading" hidden>
+                <div class="dictation-card">
+                    <p class="dictation-progress" id="dictation-progress"></p>
+                    <h2 id="dictation-heading">Escucha y escribe la palabra</h2>
+                    <p class="dictation-help">La palabra permanece oculta hasta que envíes tu respuesta.</p>
+                    <button type="button" class="dictation-replay" id="dictation-replay" aria-label="Volver a escuchar la palabra actual">Repetir palabra</button>
+                    <p class="dictation-speech-status" id="dictation-speech-status" role="status"></p>
+                    <form id="dictation-form">
+                        <label class="visually-hidden" for="dictation-answer">Escribe lo que escuchas</label>
+                        <input type="text" id="dictation-answer" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Escribe lo que escuchas" aria-describedby="dictation-feedback">
+                        <button type="submit" id="dictation-submit">Enviar respuesta</button>
+                    </form>
+                    <p class="dictation-feedback" id="dictation-feedback" role="status" aria-live="polite"></p>
+                    <button type="button" class="dictation-next" id="dictation-next" hidden>Siguiente palabra</button>
+                </div>
+            </section>
+
             <div class="input-container">
                 <input type="text" id="word-input" placeholder="Escribe una palabra en inglés..." autocomplete="off" spellcheck="false" disabled>
             </div>
@@ -128,12 +146,24 @@
                             <span>Repite palabras falladas</span>
                             <span>Comparte enlace, sin login</span>
                         </div>
+                        <fieldset class="mode-selector">
+                            <legend>Elige un modo</legend>
+                            <label class="mode-card">
+                                <input type="radio" name="practice-mode" value="dictation" checked>
+                                <span><strong>Prueba de spelling</strong><small>Escucha una palabra oculta y escribe cómo se deletrea.</small></span>
+                                <span class="recommended-badge">Recomendado</span>
+                            </label>
+                            <label class="mode-card">
+                                <input type="radio" name="practice-mode" value="typing">
+                                <span><strong>Lluvia de palabras</strong><small>Escribe cada palabra antes de que llegue abajo.</small></span>
+                            </label>
+                        </fieldset>
                         <div class="spelling-builder">
                             <label for="custom-word-list">Tus palabras en inglés</label>
                             <textarea id="custom-word-list" rows="7" spellcheck="false" placeholder="because&#10;friend&#10;beautiful&#10;answer"></textarea>
                             <div class="spelling-options">
-                                <label class="read-toggle"><input type="checkbox" id="hear-words-toggle"> Escuchar cada palabra antes de escribir</label>
-                                <label class="read-toggle"><input type="checkbox" id="easy-mode-toggle"> Modo fácil</label>
+                                <label class="read-toggle typing-option"><input type="checkbox" id="hear-words-toggle"> Escuchar cada palabra antes de escribir</label>
+                                <label class="read-toggle typing-option"><input type="checkbox" id="easy-mode-toggle"> Modo fácil</label>
                                 <span id="spelling-status">8 palabras listas</span>
                             </div>
                             <div class="spelling-actions">
@@ -141,7 +171,7 @@
                                 <button type="button" onclick="copyPracticeLink()">Copiar enlace de práctica</button>
                             </div>
                         </div>
-                        <button class="start-btn spelling-start-btn" onclick="startGame()">Empezar práctica</button>
+                        <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Empezar prueba de spelling</button>
                     </div>
                 </div>
             </div>
@@ -149,7 +179,7 @@
             <div class="game-over-screen" id="game-over">
                 <div class="game-over-content">
                     <div class="game-over-title" id="game-over-title">Práctica terminada</div>
-                    <div class="final-stats">
+                    <div class="final-stats" id="typing-final-stats">
                         <p><span data-i18n="finalScore">Puntos finales</span>: <span id="final-score">0</span></p>
                         <p><span data-i18n="levelReached">Ronda alcanzada</span>: <span id="final-level">1</span></p>
                         <p><span data-i18n="maxWPM">Mejor velocidad</span>: <span id="final-wpm">0</span></p>
@@ -157,14 +187,20 @@
                         <p id="duration-row" style="display:none;"><span data-i18n="duration">Duration</span>: <span id="final-duration">0:00</span></p>
                         <p><span data-i18n="wordsMatched">Palabras falladas</span>: <span id="final-missed">0</span></p>
                     </div>
+                    <div class="final-stats" id="dictation-final-stats" hidden>
+                        <p>Total de palabras: <span id="dictation-total">0</span></p>
+                        <p>Correctas: <span id="dictation-correct">0</span></p>
+                        <p>Incorrectas: <span id="dictation-incorrect">0</span></p>
+                        <p>Precisión: <span id="dictation-accuracy">0%</span></p>
+                    </div>
                     <div class="spelling-summary" id="spelling-summary" hidden>
                         <div id="spelling-result"></div>
                         <div id="missed-word-list"></div>
-                        <button class="restart-btn" id="replay-missed-btn" onclick="replayMissedWords()">Repetir palabras falladas</button>
+                        <button class="restart-btn" id="replay-missed-btn" onclick="replayMissedWords()">Practicar palabras falladas</button>
                     </div>
                     <div class="game-over-buttons">
-                        <button class="restart-btn" onclick="restartGame(true)">Jugar con las mismas palabras</button>
-                        <button class="share-score-btn" onclick="restartGame()">Editar lista de palabras</button>
+                        <button class="restart-btn" id="restart-same-btn" onclick="restartGame(true)">Reiniciar</button>
+                        <button class="share-score-btn" id="edit-list-btn" onclick="restartGame()">Editar lista de palabras</button>
                     </div>
                 </div>
             </div>
@@ -240,6 +276,7 @@
             <div class="game-instructions">
                 <div class="instructions-content">
                     <h3>Para la lista de esta semana</h3>
+                    <p>Usa la prueba para escuchar una palabra oculta cada vez, o la lluvia de palabras para escribir palabras que caen.</p>
                     <p>Pega las palabras de inglés que ya trae tu clase o tu hijo.</p>
                     <p>El estudiante escribe cada palabra antes de que llegue abajo.</p>
                     <p>Pulsa <kbd>Enter</kbd> o <kbd>Space</kbd> para enviar.</p>
@@ -284,12 +321,12 @@
       window.pageLocale = 'es';
       window.currentLanguage = 'es';
     </script>
-    <script type="module" src="/src/js/index.js?v=spelling-mvp5"></script>
+    <script type="module" src="/src/js/index.js?v=spelling-test1"></script>
 
     <footer>
         <p>
-            <a href="/es/custom-spelling-words-game">Juego personalizado</a> &middot; <a href="/es/spelling-list-game">Lista de spelling</a> &middot; <a href="/es/weekly-spelling-practice">Práctica semanal</a> &middot; <a href="/es/sight-word-typing-game">Palabras frecuentes</a> &middot; <a href="/es/homeschool-spelling-practice">En casa</a> &middot; <a href="/es/vocabulary-typing-game">Vocabulario</a><br>
-            <a href="/es/privacy">Privacidad</a> &middot; <a href="/es/about">Acerca de</a> &middot; <a href="/es/contact">Contacto</a><br>
+            <a href="/custom-spelling-words-game.html">Juego personalizado</a> &middot; <a href="/es/spelling-list-game.html">Lista de spelling</a> &middot; <a href="/es/weekly-spelling-practice.html">Práctica semanal</a> &middot; <a href="/sight-word-typing-game.html">Sight words</a> &middot; <a href="/homeschool-spelling-practice.html">Homeschool</a> &middot; <a href="/vocabulary-typing-game.html">Vocabulario</a><br>
+            <a href="/es/privacy.html">Privacidad</a> &middot; <a href="/es/about.html">Acerca de</a> &middot; <a href="/es/contact.html">Contacto</a><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>

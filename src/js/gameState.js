@@ -31,6 +31,7 @@ function createInitialState() {
     // --- Tournament mode ---
     tournamentDuration: 120, // 秒，默认 2 分钟
     tournamentEndTime: null,
+    practiceMode: 'dictation',
     spellingMode: false,
     customWords: [],
     customWordCursor: 0,
@@ -38,6 +39,8 @@ function createInitialState() {
     hearWords: false,
     spellingRoundComplete: false,
     spellingWordsProcessed: 0,
+    dictationSession: null,
+    dictationSummary: null,
   };
 }
 

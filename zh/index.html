@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style">
-    <link rel="preload" href="/src/js/index.js?v=spelling-mvp5" as="script">
+    <link rel="preload" href="/src/js/index.js?v=spelling-test1" as="script">
     <link rel="preload" href="/src/css/main.css" as="style">
 
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
@@ -59,9 +59,9 @@
     <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/">
 
     <script src="/src/js/localeRedirect.js"></script>
-
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9244949928133071"
       crossorigin="anonymous"></script>
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VYF1V40KVS"></script>
     <script>
@@ -95,6 +95,7 @@
         <p>把这周要背的英语单词粘贴进来，立刻变成一个拼写小游戏。</p>
         <p>My Spelling Game 会记录漏掉的单词，生成重练回合，也可以把同一份练习链接发给孩子或学生。</p>
         <p>不用注册，不用建班级，也不塞一堆无关单词。</p>
+        <p>可选择语音听写测试，也可以玩原有的单词雨打字游戏。</p>
     </div>
 
     <div class="main-content-wrapper">
@@ -112,6 +113,23 @@
 
             <canvas id="game-canvas"></canvas>
 
+            <section class="dictation-screen" id="dictation-screen" aria-labelledby="dictation-heading" hidden>
+                <div class="dictation-card">
+                    <p class="dictation-progress" id="dictation-progress"></p>
+                    <h2 id="dictation-heading">听单词并写出拼写</h2>
+                    <p class="dictation-help">提交答案前，页面不会显示这个单词。</p>
+                    <button type="button" class="dictation-replay" id="dictation-replay" aria-label="重新播放当前单词">重新播放</button>
+                    <p class="dictation-speech-status" id="dictation-speech-status" role="status"></p>
+                    <form id="dictation-form">
+                        <label class="visually-hidden" for="dictation-answer">输入你听到的单词</label>
+                        <input type="text" id="dictation-answer" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="输入你听到的单词" aria-describedby="dictation-feedback">
+                        <button type="submit" id="dictation-submit">提交答案</button>
+                    </form>
+                    <p class="dictation-feedback" id="dictation-feedback" role="status" aria-live="polite"></p>
+                    <button type="button" class="dictation-next" id="dictation-next" hidden>下一题</button>
+                </div>
+            </section>
+
             <div class="input-container">
                 <input type="text" id="word-input" placeholder="输入掉落的英语单词..." autocomplete="off" spellcheck="false" disabled>
             </div>
@@ -128,12 +146,24 @@
                             <span>重练漏掉的词</span>
                             <span>分享链接，无需登录</span>
                         </div>
+                        <fieldset class="mode-selector">
+                            <legend>选择模式</legend>
+                            <label class="mode-card">
+                                <input type="radio" name="practice-mode" value="dictation" checked>
+                                <span><strong>听写测试</strong><small>每次听一个隐藏单词，然后输入拼写。</small></span>
+                                <span class="recommended-badge">推荐</span>
+                            </label>
+                            <label class="mode-card">
+                                <input type="radio" name="practice-mode" value="typing">
+                                <span><strong>单词雨</strong><small>在单词落到底部前完成输入。</small></span>
+                            </label>
+                        </fieldset>
                         <div class="spelling-builder">
                             <label for="custom-word-list">你的英语单词</label>
                             <textarea id="custom-word-list" rows="7" spellcheck="false" placeholder="because&#10;friend&#10;beautiful&#10;answer"></textarea>
                             <div class="spelling-options">
-                                <label class="read-toggle"><input type="checkbox" id="hear-words-toggle"> 输入前朗读每个单词</label>
-                                <label class="read-toggle"><input type="checkbox" id="easy-mode-toggle"> 简单模式</label>
+                                <label class="read-toggle typing-option"><input type="checkbox" id="hear-words-toggle"> 输入前朗读每个单词</label>
+                                <label class="read-toggle typing-option"><input type="checkbox" id="easy-mode-toggle"> 简单模式</label>
                                 <span id="spelling-status">已准备 8 个单词</span>
                             </div>
                             <div class="spelling-actions">
@@ -141,7 +171,7 @@
                                 <button type="button" onclick="copyPracticeLink()">复制练习链接</button>
                             </div>
                         </div>
-                        <button class="start-btn spelling-start-btn" onclick="startGame()">开始练习</button>
+                        <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">开始听写测试</button>
                     </div>
                 </div>
             </div>
@@ -149,7 +179,7 @@
             <div class="game-over-screen" id="game-over">
                 <div class="game-over-content">
                     <div class="game-over-title" id="game-over-title">练习完成</div>
-                    <div class="final-stats">
+                    <div class="final-stats" id="typing-final-stats">
                         <p><span data-i18n="finalScore">最终得分</span>: <span id="final-score">0</span></p>
                         <p><span data-i18n="levelReached">回合</span>: <span id="final-level">1</span></p>
                         <p><span data-i18n="maxWPM">最高速度</span>: <span id="final-wpm">0</span></p>
@@ -157,14 +187,20 @@
                         <p id="duration-row" style="display:none;"><span data-i18n="duration">Duration</span>: <span id="final-duration">0:00</span></p>
                         <p><span data-i18n="wordsMatched">漏掉的单词</span>: <span id="final-missed">0</span></p>
                     </div>
+                    <div class="final-stats" id="dictation-final-stats" hidden>
+                        <p>单词总数: <span id="dictation-total">0</span></p>
+                        <p>正确: <span id="dictation-correct">0</span></p>
+                        <p>错误: <span id="dictation-incorrect">0</span></p>
+                        <p>准确率: <span id="dictation-accuracy">0%</span></p>
+                    </div>
                     <div class="spelling-summary" id="spelling-summary" hidden>
                         <div id="spelling-result"></div>
                         <div id="missed-word-list"></div>
-                        <button class="restart-btn" id="replay-missed-btn" onclick="replayMissedWords()">重练漏掉的单词</button>
+                        <button class="restart-btn" id="replay-missed-btn" onclick="replayMissedWords()">重新练习错词</button>
                     </div>
                     <div class="game-over-buttons">
-                        <button class="restart-btn" onclick="restartGame(true)">用当前单词再来一局</button>
-                        <button class="share-score-btn" onclick="restartGame()">重新设置单词表</button>
+                        <button class="restart-btn" id="restart-same-btn" onclick="restartGame(true)">重新开始</button>
+                        <button class="share-score-btn" id="edit-list-btn" onclick="restartGame()">重新设置单词表</button>
                     </div>
                 </div>
             </div>
@@ -240,6 +276,7 @@
             <div class="game-instructions">
                 <div class="instructions-content">
                     <h3>适合这周的英语单词表</h3>
+                    <p>听写测试每次播放一个隐藏单词；单词雨模式则需要输入正在下落的单词。</p>
                     <p>粘贴老师、教材或家长已经准备好的英语单词。</p>
                     <p>孩子需要在单词掉到底部前把它拼出来。</p>
                     <p>按 <kbd>Enter</kbd> 或 <kbd>Space</kbd> 提交。</p>
@@ -284,12 +321,12 @@
       window.pageLocale = 'zh';
       window.currentLanguage = 'zh';
     </script>
-    <script type="module" src="/src/js/index.js?v=spelling-mvp5"></script>
+    <script type="module" src="/src/js/index.js?v=spelling-test1"></script>
 
     <footer>
         <p>
-            <a href="/zh/custom-spelling-words-game">自定义单词游戏</a> &middot; <a href="/zh/spelling-list-game">单词表练习</a> &middot; <a href="/zh/weekly-spelling-practice">每周拼写练习</a> &middot; <a href="/zh/sight-word-typing-game">高频词练习</a> &middot; <a href="/zh/homeschool-spelling-practice">家庭学习</a> &middot; <a href="/zh/vocabulary-typing-game">词汇练习</a><br>
-            <a href="/zh/privacy">隐私</a> &middot; <a href="/zh/about">关于</a> &middot; <a href="/zh/contact">联系</a><br>
+            <a href="/custom-spelling-words-game.html">自定义单词游戏</a> &middot; <a href="/zh/spelling-list-game.html">单词表练习</a> &middot; <a href="/zh/weekly-spelling-practice.html">每周拼写练习</a> &middot; <a href="/sight-word-typing-game.html">Sight words</a> &middot; <a href="/homeschool-spelling-practice.html">Homeschool</a> &middot; <a href="/vocabulary-typing-game.html">词汇练习</a><br>
+            <a href="/zh/privacy.html">隐私</a> &middot; <a href="/zh/about.html">关于</a> &middot; <a href="/zh/contact.html">联系</a><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>

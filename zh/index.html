@@ -17,27 +17,26 @@
     <link rel="dns-prefetch" href="//www.googletagmanager.com">
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
 
-    <title>用自己的单词表练英语拼写 | 免费 Spelling Game</title>
-    <meta name="description" content="粘贴本周英语单词表，马上开始免费的拼写打字小游戏，也适合英语听写和默写练习。自动记录漏掉的单词，可一键重练，也能分享练习链接，无需注册。">
-    <meta name="keywords" content="英语拼写练习,spelling game,英语单词拼写游戏,自定义单词表游戏,自定义英语单词表,英语听写练习,英语默写练习,英语单词练习小游戏,小学生英语拼写,背单词打字游戏,自定义单词表背单词,无需注册英语练习">
+    <title>用自己的单词做免费英语听写 — 无需登录</title>
+    <meta name="description" content="粘贴自己的英语单词表，听隐藏单词并输入答案，立即查看批改结果，还能单独重练错词，全程无需账号。">
     <meta name="author" content="My Spelling Game">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-9244949928133071">
 
-    <meta property="og:title" content="用自己的单词表练英语拼写">
-    <meta property="og:description" content="粘贴本周单词表，马上开练；漏掉的单词自动进入下一轮，无需注册。">
+    <meta property="og:title" content="用自己的单词做英语听写测试">
+    <meta property="og:description" content="听隐藏单词、即时查看批改结果并重练错词，无需登录。">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://myspellinggame.com/zh/">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="用自己的单词表练英语拼写 preview">
+    <meta property="og:image:alt" content="用自己的单词做英语听写测试 preview">
     <meta property="og:site_name" content="My Spelling Game">
     <meta property="og:locale" content="zh_CN">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="用自己的单词表练英语拼写">
-    <meta name="twitter:description" content="粘贴本周单词表，马上开练；漏掉的单词自动进入下一轮，无需注册。">
+    <meta name="twitter:title" content="用自己的单词做英语听写测试">
+    <meta name="twitter:description" content="听隐藏单词、即时查看批改结果并重练错词，无需登录。">
     <meta name="twitter:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
 
     <meta name="theme-color" content="#2f6f73">
@@ -68,8 +67,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
 
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
@@ -91,10 +94,16 @@
     </div>
 
     <div class="seo-content" id="seo-content">
-        <h1>用自己的单词表练英语拼写</h1>
-        <p>把这周要背的英语单词粘贴进来，立刻变成一个拼写小游戏。</p>
-        <p>My Spelling Game 会记录漏掉的单词，生成重练回合，也可以把同一份练习链接发给孩子或学生。</p>
-        <p>不用注册，不用建班级，也不塞一堆无关单词。</p>
+        <h1>用自己的单词做免费英语听写</h1>
+        <p>粘贴单词表，听到单词后再输入答案，作答前不会显示拼写。</p>
+        <p>系统会立即批改，并把错词单独整理出来继续练习。</p>
+        <p>无需注册或登录。</p>
+        <ol class="practice-flow" aria-label="练习步骤">
+            <li>粘贴单词</li>
+            <li>听隐藏单词</li>
+            <li>输入答案</li>
+            <li>重练错词</li>
+        </ol>
         <p>可选择语音听写测试，也可以玩原有的单词雨打字游戏。</p>
     </div>
 
@@ -136,15 +145,15 @@
 
             <div class="game-start-screen" id="game-start">
                 <div class="start-screen-content">
-                    <div class="start-title">先粘贴你的英语单词表</div>
+                    <div class="start-title">用自己的单词表开始练习</div>
                     <div class="spelling-start">
-                        <div class="spelling-subtitle">用自己的单词表练英语拼写</div>
-                        <p class="spelling-intro">粘贴本周单词表，马上开始。漏掉的单词会进入重练回合，分享链接也不需要账号。</p>
+                        <div class="spelling-subtitle">可选听写测试或单词雨打字游戏，无需登录</div>
+                        <p class="spelling-intro">推荐使用听写测试，也可以选择 Typing Rain；粘贴单词后即可开始。</p>
                         <div class="hero-proof-row" aria-label="My Spelling Game benefits">
-                            <span>免费可玩</span>
-                            <span>使用自己的单词</span>
-                            <span>重练漏掉的词</span>
-                            <span>分享链接，无需登录</span>
+                            <span>即时批改</span>
+                            <span>作答前隐藏单词</span>
+                            <span>错词重练</span>
+                            <span>分享无需登录</span>
                         </div>
                         <fieldset class="mode-selector">
                             <legend>选择模式</legend>
@@ -214,13 +223,13 @@
 
                         <h4>本地保存</h4>
                     <p>你的单词表和练习偏好会保存在当前浏览器里。</p>
-                    <p>单词表不会上传到我们的服务器。</p>
+                    <p>新分享链接把单词表放在 URL 片段中，由浏览器处理，不会发送到服务器。</p>
                     <p>你可以在浏览器设置里清除，也可以用这里的清除按钮。</p>
 
                         <h4>访问分析</h4>
-                    <p>我们使用 Google Analytics 了解页面和游戏的使用情况。</p>
-                    <p>这些数据用于改进练习体验。</p>
-                    <p>游戏本身不需要你提供个人身份信息。</p>
+                    <p>Google Analytics 只接收清理后的页面地址，不包含查询参数或 URL 片段。</p>
+                    <p>统计事件只包含模式、单词数量和成绩等汇总信息。</p>
+                    <p>完整单词表和你输入的答案不会发送给 Analytics。</p>
 
                         <h4>广告</h4>
                     <p>网站使用 Google AdSense 展示广告。</p>
@@ -278,8 +287,8 @@
                     <h3>适合这周的英语单词表</h3>
                     <p>听写测试每次播放一个隐藏单词；单词雨模式则需要输入正在下落的单词。</p>
                     <p>粘贴老师、教材或家长已经准备好的英语单词。</p>
-                    <p>孩子需要在单词掉到底部前把它拼出来。</p>
-                    <p>按 <kbd>Enter</kbd> 或 <kbd>Space</kbd> 提交。</p>
+                    <p>听写测试会播放隐藏单词；Typing Rain 则需要输入正在下落的单词。</p>
+                    <p>按 <kbd>Enter</kbd> 提交；Typing Rain 也可以使用 <kbd>Space</kbd>。</p>
                     <p>漏掉的单词会自动保存，方便一键重练。</p>
                     <p>复制练习链接，就能让别人使用同一份单词表。</p>
                     <h4>简单模式</h4>
@@ -299,16 +308,16 @@
         </div>
 
         <div class="spelling-seo-copy">
-            <h2>用自己的单词表练英语拼写</h2>
-            <p>My Spelling Game 是一个<strong>免费的英语拼写练习小游戏</strong>，适合家长、老师和英语学习者把现有单词表快速变成可玩的练习，也可以当作轻量英语听写和默写练习。</p>
+            <h2>同一份单词表，两种练习方式</h2>
+            <p><strong>听写测试</strong>会朗读隐藏单词并立即批改；<strong>Typing Rain</strong>保留原有的掉落单词打字玩法。</p>
 
-            <h3>为什么不是随机词库</h3>
-            <p>很多英语小游戏会给一堆固定单词，但孩子真正要面对的往往是本周老师布置的那一份。这个工具解决的就是这件小事：粘贴真实单词表，马上练，漏掉的再练。</p>
+            <h3>只练现在真正需要的单词</h3>
+            <p>粘贴本周词表后，两种模式都会只使用这些单词，并把答错或漏掉的词整理出来重练。</p>
             <ul>
                 <li><strong>使用真实单词表：</strong> 可以来自作业、教材、老师 handout 或自学计划。</li>
-                <li><strong>自动记录漏词：</strong> 掉到底部的单词会进入下一轮。</li>
+                <li><strong>自动记录错词：</strong> 答错或漏掉的单词会进入下一轮。</li>
                 <li><strong>分享同一份练习：</strong> 复制链接即可，不需要注册账号。</li>
-                <li><strong>可选朗读：</strong> 用浏览器语音做接近英语听写的练习。</li>
+                <li><strong>真正的听写流程：</strong> 提交答案前不会显示单词拼写。</li>
             </ul>
 
             <h3>适合每周反复使用</h3>
@@ -325,8 +334,8 @@
 
     <footer>
         <p>
-            <a href="/custom-spelling-words-game.html">自定义单词游戏</a> &middot; <a href="/zh/spelling-list-game.html">单词表练习</a> &middot; <a href="/zh/weekly-spelling-practice.html">每周拼写练习</a> &middot; <a href="/sight-word-typing-game.html">Sight words</a> &middot; <a href="/homeschool-spelling-practice.html">Homeschool</a> &middot; <a href="/vocabulary-typing-game.html">词汇练习</a><br>
-            <a href="/zh/privacy.html">隐私</a> &middot; <a href="/zh/about.html">关于</a> &middot; <a href="/zh/contact.html">联系</a><br>
+            <a href="/zh/custom-spelling-words-game">自定义单词游戏</a> &middot; <a href="/zh/spelling-list-game">单词表练习</a> &middot; <a href="/zh/weekly-spelling-practice">每周拼写练习</a> &middot; <a href="/zh/sight-word-typing-game">Sight words</a> &middot; <a href="/zh/homeschool-spelling-practice">Homeschool</a> &middot; <a href="/zh/vocabulary-typing-game">词汇练习</a><br>
+            <a href="/zh/privacy">隐私</a> &middot; <a href="/zh/about">关于</a> &middot; <a href="/zh/contact">联系</a><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>
@@ -336,7 +345,7 @@
   "@context": "https://schema.org",
   "@type": "VideoGame",
   "name": "My Spelling Game",
-  "description": "粘贴英语单词表，玩免费的拼写打字小游戏，支持英语听写、漏词重练和练习链接分享。",
+  "description": "粘贴自己的英语单词，选择隐藏单词听写测试或 Typing Rain，并在结束后重练错词。",
   "url": "https://myspellinggame.com/zh/",
   "author": {
     "@type": "Organization",

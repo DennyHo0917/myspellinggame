@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weekly Spelling Practice With Your List | My Spelling Game</title>
-    <meta name="description" content="Paste this week's custom spelling list for weekly spelling practice. Run a quick spelling test, replay missed words, and share a no-login practice link.">
+    <meta name="description" content="Paste this week's spelling words, hear each hidden word, type the answer, and retry missed words in a no-login weekly practice test.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://myspellinggame.com/weekly-spelling-practice">
     <link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice">
@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -64,9 +68,12 @@
     <main class="seo-landing content-page">
         <section class="seo-hero">
             <h1>Weekly Spelling Practice With Your Own Words</h1>
-            <p>My Spelling Game is made for the repeated weekly routine: paste the custom word list, practice the words, see what was missed, then replay those words.</p>
-            <p><strong>Short answer:</strong> Use My Spelling Game for weekly spelling practice when you want students to practice this week's exact words without accounts, setup, or a fixed word bank.</p>
-            <a class="seo-cta" href="/">Practice This Week's Words</a>
+            <p>Paste this week's list and start the recommended audio spelling test immediately. Each word stays hidden until the answer is submitted.</p>
+            <form class="landing-launcher" action="/" data-mode="dictation" data-invalid="Enter at least one spelling word.">
+                <label for="weekly-words-en">This week's spelling words</label>
+                <textarea id="weekly-words-en" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
+                <button type="submit">Practice This Week's Words</button>
+            </form>
         </section>
 
         <section class="seo-panel">
@@ -126,7 +133,7 @@
   "url": "https://myspellinggame.com/weekly-spelling-practice",
   "inLanguage": "en",
   "datePublished": "2026-06-19",
-  "dateModified": "2026-06-22",
+  "dateModified": "2026-08-14",
   "isAccessibleForFree": true,
   "publisher": {
     "@type": "Organization",
@@ -205,5 +212,6 @@
   }]
 }
     </script>
+    <script type="module" src="/src/js/landingLauncher.mjs"></script>
 </body>
 </html>

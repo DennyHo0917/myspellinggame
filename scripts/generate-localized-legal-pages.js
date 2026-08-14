@@ -15,9 +15,9 @@ const alternates = [
 ];
 
 const sharedSeoLinks = [
-  { href: '/custom-spelling-words-game.html', key: 'custom' },
-  { href: '/spelling-list-game.html', key: 'list' },
-  { href: '/weekly-spelling-practice.html', key: 'weekly' },
+  { href: '/custom-spelling-words-game', key: 'custom' },
+  { href: '/spelling-list-game', key: 'list' },
+  { href: '/weekly-spelling-practice', key: 'weekly' },
 ];
 
 const locale = {
@@ -34,9 +34,9 @@ const locale = {
       h1: 'About My Spelling Game',
       intro: 'A small, no-login spelling practice tool for the weekly word lists students already have.',
       panels: [
-        ['Mission', 'My Spelling Game turns any weekly spelling list into a falling-word typing game. It is built for parents, teachers, homeschool families, and ESL tutors who need quick practice without student accounts, class setup, or a generic word bank.'],
+        ['Mission', 'My Spelling Game turns any weekly word list into an audio spelling test or a falling-word typing game. It is built for quick practice without student accounts, class setup, or a generic word bank.'],
         ['Why It Exists', 'Most spelling games start with their own vocabulary. That does not help when a child needs to practice this week’s exact words. This site keeps the workflow simple: paste the list, play the round, replay the missed words, and share the same practice link.'],
-        ['What It Does', '<ul><li>Uses your own spelling words.</li><li>Creates instant falling-word practice.</li><li>Saves missed words for a focused replay round.</li><li>Shares practice links without requiring an account.</li><li>Offers Easy mode for slower, lower-pressure practice.</li></ul>'],
+        ['What It Does', '<ul><li>Uses your own spelling words.</li><li>Offers a hidden-word audio test and Typing Rain.</li><li>Saves missed words for a focused replay round.</li><li>Shares practice links without requiring an account.</li></ul>'],
         ['About the Developer', 'My Spelling Game is maintained by an indie developer. The product goal is intentionally narrow: make repeated weekly spelling practice faster to set up and easier to repeat.'],
       ],
     },
@@ -59,11 +59,11 @@ const locale = {
       intro: 'How My Spelling Game handles local data, analytics, cookies, and advertising disclosures.',
       panels: [
         ['Overview', 'My Spelling Game respects your privacy. The tool is designed to work without student accounts, class setup, or personal profiles.'],
-        ['Local Storage', 'Your spelling list and optional hear-words preference are stored locally in your browser using localStorage. This data is used to keep the practice list available on your device and does not leave your browser through our own server.'],
-        ['Analytics', 'We use Google Analytics to understand how visitors use the site and improve the practice experience. We do not collect personally identifiable student information through My Spelling Game.'],
+        ['Local Storage and Share Links', 'Your spelling list and preferences are stored in this browser. New share links put the list in the URL fragment, which is processed by the browser and is not sent to our server.'],
+        ['Analytics', 'Google Analytics receives a cleaned page address without query parameters or URL fragments, plus aggregate events such as mode, word count, and result. We do not send word lists or typed answers.'],
         ['Advertising', 'The site uses Google AdSense. Ad personalization and related cookies follow Google policies. Authorized seller declaration is published at <a href="/ads.txt">/ads.txt</a>.'],
         ['Your Choices', 'You can clear saved spelling lists in your browser settings, block cookies, use ad blockers, or disable analytics through browser tools and privacy extensions.'],
-        ['Contact', 'If you have questions about this policy, please contact us through the <a href="/contact.html">contact page</a>.'],
+        ['Contact', 'If you have questions about this policy, please contact us through the <a href="/contact">contact page</a>.'],
       ],
     },
   },
@@ -80,7 +80,7 @@ const locale = {
       h1: 'Acerca de My Spelling Game',
       intro: 'Una herramienta pequeña, sin cuenta, para practicar las listas de palabras que los estudiantes ya tienen.',
       panels: [
-        ['Misión', 'My Spelling Game convierte cualquier lista semanal de spelling en un juego de palabras que caen. Está pensado para familias, profesores y tutores que necesitan práctica rápida sin cuentas de estudiantes ni bancos de palabras genéricos.'],
+        ['Misión', 'My Spelling Game convierte cualquier lista semanal en una prueba de spelling por audio o un juego de palabras que caen. Está pensado para practicar rápido, sin cuentas de estudiantes ni bancos de palabras genéricos.'],
         ['Por qué existe', 'Muchos juegos empiezan con su propio vocabulario. Eso no ayuda cuando el niño necesita practicar las palabras exactas de esta semana. Aquí el flujo es simple: pegar la lista, jugar, repetir lo fallado y compartir el mismo enlace.'],
         ['Qué hace', '<ul><li>Usa tus propias palabras de inglés.</li><li>Crea práctica instantánea con palabras que caen.</li><li>Guarda las palabras falladas para una ronda de repaso.</li><li>Comparte enlaces sin crear cuenta.</li><li>Incluye modo fácil para practicar con menos presión.</li></ul>'],
         ['Quién lo mantiene', 'My Spelling Game lo mantiene un desarrollador independiente. El objetivo es estrecho a propósito: hacer que la práctica semanal sea más rápida de preparar y más fácil de repetir.'],
@@ -105,11 +105,11 @@ const locale = {
       intro: 'Cómo My Spelling Game gestiona datos locales, analítica, cookies y publicidad.',
       panels: [
         ['Resumen', 'My Spelling Game respeta tu privacidad. La herramienta está diseñada para funcionar sin cuentas de estudiante, clases virtuales ni perfiles personales.'],
-        ['Almacenamiento local', 'Tu lista de palabras y preferencias se guardan localmente en tu navegador mediante localStorage. Esto mantiene la práctica disponible en tu dispositivo y no envía la lista a nuestro propio servidor.'],
-        ['Analítica', 'Usamos Google Analytics para entender cómo se usa el sitio y mejorar la experiencia. No recogemos información personal identificable de estudiantes mediante My Spelling Game.'],
+        ['Almacenamiento local y enlaces', 'Tu lista y tus preferencias se guardan en este navegador. Los enlaces nuevos colocan la lista en el fragmento de la URL, que el navegador procesa sin enviarlo a nuestro servidor.'],
+        ['Analítica', 'Google Analytics recibe la dirección limpia de la página, sin parámetros ni fragmentos, y datos agregados como el modo, la cantidad de palabras y el resultado. No enviamos listas ni respuestas.'],
         ['Publicidad', 'El sitio usa Google AdSense. La personalización de anuncios y cookies relacionadas sigue las políticas de Google. La declaración de vendedor autorizado está en <a href="/ads.txt">/ads.txt</a>.'],
         ['Tus opciones', 'Puedes borrar listas guardadas desde el navegador, bloquear cookies, usar bloqueadores de anuncios o desactivar analítica con herramientas de privacidad.'],
-        ['Contacto', 'Si tienes preguntas sobre esta política, escríbenos desde la <a href="/es/contact.html">página de contacto</a>.'],
+        ['Contacto', 'Si tienes preguntas sobre esta política, escríbenos desde la <a href="/es/contact">página de contacto</a>.'],
       ],
     },
   },
@@ -126,7 +126,7 @@ const locale = {
       h1: 'Sobre o My Spelling Game',
       intro: 'Uma ferramenta pequena, sem login, para praticar as listas de palavras que os alunos já têm.',
       panels: [
-        ['Missão', 'My Spelling Game transforma qualquer lista semanal de palavras em inglês em um jogo de digitação com palavras caindo. É feito para pais, professores e tutores que precisam de prática rápida sem contas de aluno ou banco genérico de palavras.'],
+        ['Missão', 'My Spelling Game transforma qualquer lista semanal em um teste de spelling por áudio ou um jogo de digitação com palavras caindo. A prática começa rápido, sem contas de aluno ou banco genérico de palavras.'],
         ['Por que existe', 'Muitos jogos começam com seu próprio vocabulário. Isso não ajuda quando a criança precisa treinar as palavras exatas da semana. Aqui o fluxo é simples: colar a lista, jogar, revisar os erros e compartilhar o mesmo link.'],
         ['O que faz', '<ul><li>Usa suas próprias palavras de inglês.</li><li>Cria prática instantânea com palavras caindo.</li><li>Salva palavras erradas para revisão focada.</li><li>Compartilha links sem exigir conta.</li><li>Oferece modo fácil para uma prática mais lenta.</li></ul>'],
         ['Quem mantém', 'My Spelling Game é mantido por um desenvolvedor independente. O objetivo é propositalmente estreito: deixar a prática semanal mais rápida de preparar e mais fácil de repetir.'],
@@ -151,11 +151,11 @@ const locale = {
       intro: 'Como My Spelling Game lida com dados locais, analytics, cookies e anúncios.',
       panels: [
         ['Visão geral', 'My Spelling Game respeita sua privacidade. A ferramenta foi criada para funcionar sem contas de aluno, turma online ou perfis pessoais.'],
-        ['Armazenamento local', 'Sua lista de palavras e preferências ficam salvas localmente no navegador usando localStorage. Isso mantém a lista disponível no seu dispositivo e não envia a lista ao nosso servidor.'],
-        ['Analytics', 'Usamos Google Analytics para entender o uso do site e melhorar a experiência. Não coletamos informações pessoais identificáveis de alunos pelo My Spelling Game.'],
+        ['Armazenamento local e links', 'Sua lista e preferências ficam neste navegador. Os links novos colocam a lista no fragmento da URL, processado pelo navegador sem ser enviado ao nosso servidor.'],
+        ['Analytics', 'O Google Analytics recebe o endereço limpo da página, sem parâmetros ou fragmentos, e dados agregados como modo, quantidade de palavras e resultado. Não enviamos listas nem respostas.'],
         ['Anúncios', 'O site usa Google AdSense. Personalização de anúncios e cookies seguem as políticas do Google. A declaração de vendedor autorizado fica em <a href="/ads.txt">/ads.txt</a>.'],
         ['Suas opções', 'Você pode apagar listas salvas nas configurações do navegador, bloquear cookies, usar bloqueadores de anúncio ou desativar analytics com ferramentas de privacidade.'],
-        ['Contato', 'Se tiver dúvidas sobre esta política, fale conosco pela <a href="/pt-br/contact.html">página de contato</a>.'],
+        ['Contato', 'Se tiver dúvidas sobre esta política, fale conosco pela <a href="/pt-br/contact">página de contato</a>.'],
       ],
     },
   },
@@ -172,7 +172,7 @@ const locale = {
       h1: 'À propos de My Spelling Game',
       intro: 'Un petit outil sans compte pour travailler les listes de mots que les élèves ont déjà.',
       panels: [
-        ['Mission', 'My Spelling Game transforme n’importe quelle liste de mots anglais en jeu de mots qui tombent. Il est conçu pour les parents, enseignants et tuteurs qui veulent une pratique rapide sans comptes élèves ni listes génériques.'],
+        ['Mission', 'My Spelling Game transforme n’importe quelle liste de mots anglais en test audio ou en jeu de frappe avec des mots qui tombent. La pratique démarre vite, sans comptes élèves ni listes génériques.'],
         ['Pourquoi ce site existe', 'Beaucoup de jeux imposent leur propre vocabulaire. C’est peu utile quand l’enfant doit apprendre les mots exacts de la semaine. Ici, le parcours reste simple : coller la liste, jouer, refaire les mots manqués, partager le lien.'],
         ['Ce que fait l’outil', '<ul><li>Utilise vos propres mots anglais.</li><li>Crée une pratique immédiate.</li><li>Garde les mots manqués pour une partie ciblée.</li><li>Partage des liens sans compte.</li><li>Propose un mode facile plus lent.</li></ul>'],
         ['Développement', 'My Spelling Game est maintenu par un développeur indépendant. Le but est volontairement précis : rendre la pratique hebdomadaire plus rapide à lancer et plus facile à répéter.'],
@@ -197,11 +197,11 @@ const locale = {
       intro: 'Comment My Spelling Game gère les données locales, analytics, cookies et annonces.',
       panels: [
         ['Vue d’ensemble', 'My Spelling Game respecte votre vie privée. L’outil est conçu pour fonctionner sans comptes élèves, espace classe ni profils personnels.'],
-        ['Stockage local', 'Votre liste de mots et vos préférences sont enregistrées localement dans le navigateur avec localStorage. Cela garde la liste disponible sur votre appareil et ne l’envoie pas à notre serveur.'],
-        ['Analytics', 'Nous utilisons Google Analytics pour comprendre l’usage du site et améliorer la pratique. Nous ne collectons pas d’informations personnelles identifiables d’élèves via My Spelling Game.'],
+        ['Stockage local et liens', 'Votre liste et vos préférences restent dans ce navigateur. Les nouveaux liens placent la liste dans le fragment de l’URL, traité par le navigateur sans être envoyé à notre serveur.'],
+        ['Mesure d’audience', 'Google Analytics reçoit une adresse de page nettoyée, sans paramètres ni fragment, ainsi que des données agrégées comme le mode, le nombre de mots et le résultat. Les listes et réponses ne sont pas envoyées.'],
         ['Publicité', 'Le site utilise Google AdSense. La personnalisation des annonces et les cookies associés suivent les règles de Google. La déclaration de vendeur autorisé se trouve sur <a href="/ads.txt">/ads.txt</a>.'],
         ['Vos choix', 'Vous pouvez effacer les listes enregistrées dans le navigateur, bloquer les cookies, utiliser un bloqueur de publicité ou désactiver l’analyse avec des outils de confidentialité.'],
-        ['Contact', 'Pour toute question sur cette politique, utilisez la <a href="/fr/contact.html">page de contact</a>.'],
+        ['Contact', 'Pour toute question sur cette politique, utilisez la <a href="/fr/contact">page de contact</a>.'],
       ],
     },
   },
@@ -218,7 +218,7 @@ const locale = {
       h1: 'Tentang My Spelling Game',
       intro: 'Alat kecil tanpa login untuk melatih daftar kata yang sudah dimiliki siswa.',
       panels: [
-        ['Misi', 'My Spelling Game mengubah daftar kata bahasa Inggris mingguan menjadi game mengetik kata yang jatuh. Alat ini dibuat untuk orang tua, guru, homeschool, dan tutor yang butuh latihan cepat tanpa akun siswa atau bank kata acak.'],
+        ['Misi', 'My Spelling Game mengubah daftar kata mingguan menjadi tes spelling dengan audio atau game mengetik kata yang jatuh. Latihan bisa langsung dimulai tanpa akun siswa atau bank kata acak.'],
         ['Kenapa dibuat', 'Banyak game memakai kosakata bawaan. Itu kurang membantu ketika anak harus melatih kata minggu ini. Di sini alurnya sederhana: tempel daftar, main, ulangi kata yang salah, lalu bagikan link yang sama.'],
         ['Fungsi utama', '<ul><li>Memakai daftar kata sendiri.</li><li>Membuat latihan kata jatuh secara instan.</li><li>Menyimpan kata yang salah untuk ronde ulang.</li><li>Membagikan link tanpa akun.</li><li>Menyediakan mode mudah agar latihan lebih pelan.</li></ul>'],
         ['Pengembang', 'My Spelling Game dikelola oleh developer independen. Tujuannya sengaja sempit: membuat latihan spelling mingguan lebih cepat disiapkan dan mudah diulang.'],
@@ -243,11 +243,11 @@ const locale = {
       intro: 'Cara My Spelling Game menangani data lokal, analytics, cookies, dan iklan.',
       panels: [
         ['Ringkasan', 'My Spelling Game menghormati privasi. Alat ini dibuat agar bisa berjalan tanpa akun siswa, kelas online, atau profil pribadi.'],
-        ['Penyimpanan lokal', 'Daftar kata dan pilihan latihan disimpan di browser menggunakan localStorage. Data ini menjaga daftar tetap tersedia di perangkatmu dan tidak dikirim ke server kami.'],
-        ['Analytics', 'Kami menggunakan Google Analytics untuk memahami penggunaan situs dan memperbaiki pengalaman latihan. Kami tidak mengumpulkan informasi siswa yang dapat dikenali melalui My Spelling Game.'],
+        ['Penyimpanan lokal dan link', 'Daftar kata dan pilihan latihan disimpan di browser ini. Link baru menaruh daftar di fragmen URL yang diproses browser tanpa dikirim ke server kami.'],
+        ['Analytics', 'Google Analytics menerima alamat halaman yang sudah dibersihkan tanpa parameter atau fragmen, serta data gabungan seperti mode, jumlah kata, dan hasil. Daftar kata dan jawaban tidak dikirim.'],
         ['Iklan', 'Situs ini menggunakan Google AdSense. Personalisasi iklan dan cookie terkait mengikuti kebijakan Google. Pernyataan penjual resmi tersedia di <a href="/ads.txt">/ads.txt</a>.'],
         ['Pilihanmu', 'Kamu dapat menghapus daftar tersimpan lewat pengaturan browser, memblokir cookies, memakai ad blocker, atau menonaktifkan analytics dengan alat privasi.'],
-        ['Kontak', 'Jika ada pertanyaan tentang kebijakan ini, hubungi kami lewat <a href="/id/contact.html">halaman kontak</a>.'],
+        ['Kontak', 'Jika ada pertanyaan tentang kebijakan ini, hubungi kami lewat <a href="/id/contact">halaman kontak</a>.'],
       ],
     },
   },
@@ -264,7 +264,7 @@ const locale = {
       h1: '关于 My Spelling Game',
       intro: '一个小而专注的英语拼写练习工具，用来处理学生每周已经拿到的单词表。',
       panels: [
-        ['使命', 'My Spelling Game 把任意一份英语单词表变成掉落单词打字游戏。它适合家长、老师、homeschool 家庭和英语辅导场景，不需要学生账号、班级设置或随机词库。'],
+        ['使命', 'My Spelling Game 把任意英语单词表变成隐藏单词听写测试或掉落单词打字游戏，无需学生账号、班级设置或随机词库。'],
         ['为什么做它', '很多拼写游戏先给你一套固定词汇，但孩子真正要练的往往是这周老师布置的那一份。这个网站只保留最短流程：粘贴单词、开始练习、重练漏词、分享同一份链接。'],
         ['它能做什么', '<ul><li>使用你自己的英语单词。</li><li>立即生成掉落单词练习。</li><li>自动保存漏掉的词，方便集中重练。</li><li>无需注册即可分享练习链接。</li><li>提供简单模式，让刚开始练的孩子压力更小。</li></ul>'],
         ['开发者', 'My Spelling Game 由独立开发者维护。产品目标刻意保持很窄：让每周反复发生的英语拼写练习更快开始、更容易重复。'],
@@ -289,11 +289,11 @@ const locale = {
       intro: 'My Spelling Game 如何处理本地数据、访问分析、Cookie 和广告相关信息。',
       panels: [
         ['概览', 'My Spelling Game 尊重你的隐私。这个工具设计上不需要学生账号、班级系统或个人资料。'],
-        ['本地存储', '你的英语单词表和朗读偏好会通过 localStorage 保存在当前浏览器中。这只是为了让练习列表保留在你的设备上，不会通过我们自己的服务器上传。'],
-        ['访问分析', '我们使用 Google Analytics 了解访问者如何使用网站，并改进练习体验。My Spelling Game 不收集可识别学生身份的个人信息。'],
+        ['本地存储和分享链接', '单词表和练习偏好保存在当前浏览器。新分享链接会把单词表放在 URL 片段中，由浏览器处理，不会发送到我们的服务器。'],
+        ['访问分析', 'Google Analytics 只接收不含查询参数和 URL 片段的页面地址，以及模式、单词数量、成绩等汇总信息。完整单词表和输入答案不会被发送。'],
         ['广告', '网站使用 Google AdSense。广告个性化和相关 Cookie 遵循 Google 的政策。授权销售方声明发布在 <a href="/ads.txt">/ads.txt</a>。'],
         ['你的选择', '你可以在浏览器设置中清除保存的单词表，屏蔽 Cookie，使用广告拦截器，或通过隐私插件禁用访问分析。'],
-        ['联系', '如果你对本政策有疑问，请通过 <a href="/zh/contact.html">联系页面</a> 告诉我们。'],
+        ['联系', '如果你对本政策有疑问，请通过 <a href="/zh/contact">联系页面</a> 告诉我们。'],
       ],
     },
   },
@@ -304,20 +304,20 @@ function escapeAttr(value) {
 }
 
 function pagePath(loc, slug) {
-  return `${loc.dir}/${slug}.html`.replace('//', '/');
+  return `${loc.dir}/${slug}`.replace('//', '/');
 }
 
 function alternateLinks(slug) {
   return [
-    ...alternates.map((alt) => `    <link rel="alternate" hreflang="${alt.hreflang}" href="${baseUrl}${alt.dir}/${slug}.html">`.replace('//', '/').replace('https:/', 'https://')),
-    `    <link rel="alternate" hreflang="x-default" href="${baseUrl}/${slug}.html">`,
+    ...alternates.map((alt) => `    <link rel="alternate" hreflang="${alt.hreflang}" href="${baseUrl}${alt.dir}/${slug}">`.replace('//', '/').replace('https:/', 'https://')),
+    `    <link rel="alternate" hreflang="x-default" href="${baseUrl}/${slug}">`,
   ].join('\n');
 }
 
 function languageMenu(currentCode, slug, labels) {
   const links = alternates.map((alt) => {
     const current = alt.code === currentCode ? ' aria-current="page"' : '';
-    const href = `${alt.dir}/${slug}.html`.replace('//', '/');
+    const href = `${alt.dir}/${slug}`.replace('//', '/');
     return `                <a class="lang-option" href="${href}" hreflang="${alt.hreflang}"${current}>${alt.label}</a>`;
   }).join('\n');
 
@@ -391,8 +391,12 @@ ${alternateLinks(slug)}
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -443,9 +447,9 @@ ${slug === 'privacy' ? `    <script>
 for (const [code, loc] of Object.entries(locale)) {
   if (code !== 'en') fs.mkdirSync(path.join(root, loc.dir), { recursive: true });
   const targetDir = path.join(root, loc.dir);
-  fs.writeFileSync(path.join(targetDir, 'about.html'), render(loc, code, 'about', loc.about, 'AboutPage'), 'utf8');
-  fs.writeFileSync(path.join(targetDir, 'contact.html'), render(loc, code, 'contact', loc.contact, 'ContactPage'), 'utf8');
-  fs.writeFileSync(path.join(targetDir, 'privacy.html'), render(loc, code, 'privacy', loc.privacy, 'WebPage'), 'utf8');
+fs.writeFileSync(path.join(targetDir, 'about.html'), render(loc, code, 'about', loc.about, 'AboutPage'), 'utf8');
+fs.writeFileSync(path.join(targetDir, 'contact.html'), render(loc, code, 'contact', loc.contact, 'ContactPage'), 'utf8');
+fs.writeFileSync(path.join(targetDir, 'privacy.html'), render(loc, code, 'privacy', loc.privacy, 'WebPage'), 'utf8');
 }
 
 console.log('Generated localized about/contact/privacy pages');

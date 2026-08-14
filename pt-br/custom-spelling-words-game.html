@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo de spelling com suas palavras | My Spelling Game</title>
-    <meta name="description" content="Cole sua própria lista de spelling e transforme em jogo rápido. Bom para escola, casa, homeschool, ESL e revisão sem conta.">
+    <title>Jogo de Digitação com Suas Palavras | My Spelling Game</title>
+    <meta name="description" content="Cole suas palavras e comece o Typing Rain na hora. Digite cada palavra que cai, revise os erros e jogue sem criar conta.">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-9244949928133071">
     <link rel="canonical" href="https://myspellinggame.com/pt-br/custom-spelling-words-game">
@@ -20,17 +20,17 @@
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="/images/icon-32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-    <meta property="og:title" content="Jogo de spelling com suas palavras | My Spelling Game">
-    <meta property="og:description" content="Crie uma prática de spelling com sua lista e compartilhe um link sem conta.">
+    <meta property="og:title" content="Jogo de Digitação com Suas Palavras | My Spelling Game">
+    <meta property="og:description" content="Cole suas palavras e comece um Typing Rain sem login.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://myspellinggame.com/pt-br/custom-spelling-words-game">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="My Spelling Game Jogo de spelling com suas próprias palavras preview">
+    <meta property="og:image:alt" content="My Spelling Game Typing Rain com suas próprias palavras preview">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Jogo de spelling com suas palavras | My Spelling Game">
-    <meta name="twitter:description" content="Crie uma prática de spelling com sua lista e compartilhe um link sem conta.">
+    <meta name="twitter:title" content="Jogo de Digitação com Suas Palavras | My Spelling Game">
+    <meta name="twitter:description" content="Cole suas palavras e comece um Typing Rain sem login.">
     <meta name="twitter:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <script src="/src/js/localeRedirect.js"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9244949928133071"
@@ -41,8 +41,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -62,9 +66,13 @@
     </div>
     <main class="seo-landing content-page">
         <section class="seo-hero">
-            <h1>Jogo de spelling com suas próprias palavras</h1>
-            <p>Cole a lista que você já tem, da escola, da aula ou do reforço, e pratique exatamente essas palavras.</p>
-            <a class="seo-cta" href="/pt-br/">Começar prática</a>
+            <h1>Typing Rain com suas próprias palavras</h1>
+            <p>Cole qualquer lista e jogue o modo de digitação com exatamente essas palavras caindo na tela.</p>
+            <form class="landing-launcher" action="/pt-br/" data-mode="typing" data-invalid="Digite pelo menos uma palavra.">
+                <label for="custom-words-pt-BR">Palavras para o Typing Rain</label>
+                <textarea id="custom-words-pt-BR" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
+                <button type="submit">Começar Typing Rain</button>
+            </form>
         </section>
 
         <aside class="ad-slot" aria-label="Advertisement">
@@ -115,8 +123,8 @@
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  "name": "Jogo de spelling com suas próprias palavras",
-  "description": "Cole sua própria lista de spelling e transforme em jogo rápido. Bom para escola, casa, homeschool, ESL e revisão sem conta.",
+  "name": "Typing Rain com suas próprias palavras",
+  "description": "Cole suas palavras e comece o Typing Rain na hora. Digite cada palavra que cai, revise os erros e jogue sem criar conta.",
   "url": "https://myspellinggame.com/pt-br/custom-spelling-words-game",
   "inLanguage": "pt-BR",
   "isPartOf": {
@@ -173,11 +181,12 @@
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "Jogo de spelling com suas próprias palavras",
+      "name": "Typing Rain com suas próprias palavras",
       "item": "https://myspellinggame.com/pt-br/custom-spelling-words-game"
     }
   ]
 }
     </script>
+    <script type="module" src="/src/js/landingLauncher.mjs"></script>
 </body>
 </html>

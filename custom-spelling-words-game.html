@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Spelling Game With Your Own Words | My Spelling Game</title>
-    <meta name="description" content="Paste a custom word list to make a spelling game with your own words. Great for teachers, homeschool, ESL, weekly tests, missed-word replay, and no login.">
+    <title>Custom Typing Game With Your Own Words | My Spelling Game</title>
+    <meta name="description" content="Paste your own spelling words and start Typing Rain immediately. Type each falling word, review misses, and play without an account.">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-9244949928133071">
     <link rel="canonical" href="https://myspellinggame.com/custom-spelling-words-game">
@@ -19,8 +19,8 @@
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="/images/icon-32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-    <meta property="og:title" content="Custom Spelling Game With Your Own Words | My Spelling Game">
-    <meta property="og:description" content="Paste a custom spelling list and share a no-login practice link with missed-word replay.">
+    <meta property="og:title" content="Custom Typing Game With Your Own Words | My Spelling Game">
+    <meta property="og:description" content="Paste your own words and start a no-login Typing Rain game.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://myspellinggame.com/custom-spelling-words-game">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
@@ -28,8 +28,8 @@
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="My Spelling Game custom spelling words game preview">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Custom Spelling Game With Your Own Words | My Spelling Game">
-    <meta name="twitter:description" content="Paste a custom spelling list and share a no-login practice link with missed-word replay.">
+    <meta name="twitter:title" content="Custom Typing Game With Your Own Words | My Spelling Game">
+    <meta name="twitter:description" content="Paste your own words and start a no-login Typing Rain game.">
     <meta name="twitter:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <script src="/src/js/localeRedirect.js"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9244949928133071"
@@ -40,8 +40,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="src/css/main.css">
 </head>
 <body>
@@ -61,10 +65,13 @@
     </div>
     <main class="seo-landing">
         <section class="seo-hero">
-            <h1>Custom Spelling Words Game With Your Own List</h1>
-            <p>My Spelling Game lets you paste any custom spelling list and turn it into a short falling-word typing game or spelling test with your own words. It is built for the exact words a student needs this week, not a generic word bank.</p>
-            <p><strong>Short answer:</strong> Use this page when you need a free custom spelling words game with no student login, missed-word replay, and a shareable practice link.</p>
-            <a class="seo-cta" href="/">Paste My Spelling List</a>
+            <h1>Typing Rain With Your Own Spelling Words</h1>
+            <p>Paste any word list and launch the falling-word typing game with exactly those words.</p>
+            <form class="landing-launcher" action="/" data-mode="typing" data-invalid="Enter at least one word.">
+                <label for="custom-words-en">Words for Typing Rain</label>
+                <textarea id="custom-words-en" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
+                <button type="submit">Start Typing Rain</button>
+            </form>
         </section>
 
         <aside class="ad-slot" aria-label="Advertisement">
@@ -80,7 +87,7 @@
             <h2>How My Spelling Game Works</h2>
             <ul>
                 <li>Paste the custom spelling list from homework, a quiz sheet, a classroom unit, or a curriculum list.</li>
-                <li>Run a quick spelling test or falling-word typing round using only those words.</li>
+                <li>Start a falling-word Typing Rain round using only those words.</li>
                 <li>Replay missed words so practice focuses on what still needs work.</li>
                 <li>Copy a shareable practice link and share the same list with no student login.</li>
             </ul>
@@ -132,8 +139,8 @@
     {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      "name": "Custom Spelling Words Game With Your Own List",
-      "description": "Make a custom spelling words game from your own weekly word list with no login and missed-word replay.",
+      "name": "Typing Rain With Your Own Spelling Words",
+      "description": "Paste your own word list and start a no-login falling-word typing game.",
       "url": "https://myspellinggame.com/custom-spelling-words-game",
       "inLanguage": "en",
       "datePublished": "2026-06-19",
@@ -223,5 +230,6 @@
       }]
     }
     </script>
+    <script type="module" src="/src/js/landingLauncher.mjs"></script>
 </body>
 </html>

@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -74,13 +78,13 @@
         </section>
 
         <section class="seo-panel">
-            <h2>Penyimpanan lokal</h2>
-            <p>Daftar kata dan pilihan latihan disimpan di browser menggunakan localStorage. Data ini menjaga daftar tetap tersedia di perangkatmu dan tidak dikirim ke server kami.</p>
+            <h2>Penyimpanan lokal dan link</h2>
+            <p>Daftar kata dan pilihan latihan disimpan di browser ini. Link baru menaruh daftar di fragmen URL yang diproses browser tanpa dikirim ke server kami.</p>
         </section>
 
         <section class="seo-panel">
             <h2>Analytics</h2>
-            <p>Kami menggunakan Google Analytics untuk memahami penggunaan situs dan memperbaiki pengalaman latihan. Kami tidak mengumpulkan informasi siswa yang dapat dikenali melalui My Spelling Game.</p>
+            <p>Google Analytics menerima alamat halaman yang sudah dibersihkan tanpa parameter atau fragmen, serta data gabungan seperti mode, jumlah kata, dan hasil. Daftar kata dan jawaban tidak dikirim.</p>
         </section>
 
         <section class="seo-panel">

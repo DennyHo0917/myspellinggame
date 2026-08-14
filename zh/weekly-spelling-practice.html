@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>每周英语拼写练习 | My Spelling Game</title>
-    <meta name="description" content="练习本周英语单词表。粘贴单词，玩一轮拼写打字小游戏，自动重练漏掉的词，并分享无需登录的练习链接。">
+    <meta name="description" content="粘贴本周英语单词，听隐藏单词后输入答案，立即查看批改结果，并单独重练错词，无需账号。">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://myspellinggame.com/zh/weekly-spelling-practice">
     <link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice">
@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -64,8 +68,14 @@
     <main class="seo-landing content-page">
         <section class="seo-hero">
             <h1>每周英语拼写练习</h1>
-            <p>My Spelling Game 解决的是每周都会重复的小麻烦：拿到新单词表，练一遍，找出漏掉的词，再练一遍。</p>
-            <a class="seo-cta" href="/zh">练习本周单词</a>
+            <p>粘贴本周单词表，直接开始推荐的听写测试；提交答案前，页面不会显示单词拼写。</p>
+            <form class="landing-launcher" action="/zh/" data-mode="dictation" data-invalid="请至少输入一个英语单词。">
+                <label for="weekly-words-zh">本周英语单词</label>
+                <textarea id="weekly-words-zh" name="words" required spellcheck="false" placeholder="because
+friend
+beautiful"></textarea>
+                <button type="submit">练习本周单词</button>
+            </form>
         </section>
 
         <section class="seo-panel">
@@ -118,6 +128,7 @@
   }
 }
     </script>
+    <script type="module" src="/src/js/landingLauncher.mjs"></script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",

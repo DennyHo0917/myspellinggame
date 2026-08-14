@@ -2,6 +2,8 @@ import { gameState } from './gameState.js';
 import { t } from './pageLocale.js';
 import { configuredWords, parseWords, SAMPLE_WORDS, takeCustomWord } from './spellingCore.mjs';
 import { speakWord as speak } from './speech.js';
+import { entryPage, pageLocale, trackEvent } from './analytics.mjs';
+import { buildShareHash, readShareState } from './shareState.mjs';
 
 const STORAGE_KEY = 'mySpellingGameSpellingWords';
 const HEAR_KEY = 'mySpellingGameHearWords';
@@ -24,22 +26,16 @@ function currentWords() {
 }
 
 export function track(name, params = {}) {
-  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-    window.gtag('event', name, params);
-  }
+  trackEvent(name, params);
 }
 
 function loadWordsFromUrl() {
-  const raw = new URLSearchParams(window.location.search).get('words');
+  const raw = readShareState(window.location).words;
   return raw ? parseWords(raw) : [];
 }
 
 function selectedModeFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const mode = params.get('mode');
-  if (mode === 'dictation' || mode === 'typing') return mode;
-  // Old shared links only contained words and opened the falling-word game.
-  return params.has('words') ? 'typing' : 'dictation';
+  return readShareState(window.location).mode;
 }
 
 function selectedMode() {
@@ -81,6 +77,7 @@ export function initSpellingMode() {
   status(t('wordsReady', { count: currentWords().length }));
   input.addEventListener('input', () => status(t('wordsReady', { count: currentWords().length })));
   syncModeUI();
+  if (readShareState(window.location).autoStart) queueMicrotask(() => window.startGame?.());
 }
 
 export function loadSampleWords() {
@@ -104,6 +101,8 @@ export function prepareSession() {
   gameState.spellingWordsProcessed = 0;
   gameState.maxMisses = 5;
   gameState.level = 1;
+  gameState.replayRound = window.pendingReplayRound === true;
+  window.pendingReplayRound = false;
   window.currentMode = gameState.mode;
 
   const hearToggle = document.getElementById('hear-words-toggle');
@@ -115,7 +114,14 @@ export function prepareSession() {
   localStorage.removeItem(LEGACY_READ_KEY);
   localStorage.setItem(EASY_KEY, gameState.easyMode ? '1' : '0');
   status(t('wordsInRound', { count: words.length }));
-  track('word_list_created', { word_count: words.length, mode: practiceMode, easy_mode: gameState.easyMode });
+  const shareState = readShareState(window.location);
+  track('word_list_created', {
+    word_count: words.length,
+    mode: practiceMode,
+    locale: pageLocale(),
+    shared_link: shareState.sharedLink,
+    entry_page: shareState.entryPage || entryPage(),
+  });
   return { words, mode: practiceMode };
 }
 
@@ -175,7 +181,17 @@ export function renderSummary() {
   const replay = document.getElementById('replay-missed-btn');
   if (replay) replay.hidden = missed.length === 0;
   box.hidden = false;
-  track('game_completed', { word_count: gameState.customWords.length, missed_count: missed.length, mode: 'typing' });
+  const total = gameState.customWords.length;
+  const correct = Math.max(0, total - missed.length);
+  track('game_completed', {
+    mode: 'typing',
+    word_count: total,
+    correct_count: correct,
+    missed_count: missed.length,
+    accuracy: total ? Math.round((correct / total) * 100) : 0,
+    duration_seconds: Math.max(0, Math.round((Date.now() - gameState.startTime) / 1000)),
+    replay_round: gameState.replayRound,
+  });
 }
 
 export function replayMissedWords() {
@@ -187,15 +203,15 @@ export function replayMissedWords() {
   const input = textarea();
   if (!input || !missed.length) return;
   input.value = missed.join('\n');
-  track('missed_words_replayed', { word_count: missed.length });
+  track('missed_words_replayed', { word_count: missed.length, mode: 'typing', locale: pageLocale() });
+  window.pendingReplayRound = true;
   window.restartGame?.(true);
 }
 
 export async function copyPracticeLink() {
   const words = currentWords();
   const url = new URL(window.location.origin + window.location.pathname);
-  url.searchParams.set('words', words.join(','));
-  url.searchParams.set('mode', selectedMode());
+  url.hash = buildShareHash(words, selectedMode()).slice(1);
   try {
     await navigator.clipboard.writeText(url.toString());
     status(t('linkCopied'));
@@ -203,7 +219,7 @@ export async function copyPracticeLink() {
     window.prompt(t('copyPrompt'), url.toString());
     status(t('linkReady'));
   }
-  track('practice_link_copied', { word_count: words.length, mode: selectedMode() });
+  track('practice_link_copied', { word_count: words.length, mode: selectedMode(), locale: pageLocale() });
 }
 
 if (typeof window !== 'undefined') {

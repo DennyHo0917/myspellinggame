@@ -41,6 +41,7 @@ function createInitialState() {
     spellingWordsProcessed: 0,
     dictationSession: null,
     dictationSummary: null,
+    replayRound: false,
   };
 }
 

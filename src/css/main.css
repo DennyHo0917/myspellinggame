@@ -142,6 +142,31 @@ a {
   line-height: 1.36;
 }
 
+.practice-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 12px 0 0;
+  list-style: none;
+}
+
+.practice-flow li {
+  padding: 7px 10px;
+  border: 1px solid rgba(47, 111, 115, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.practice-flow li:not(:last-child)::after {
+  margin-left: 8px;
+  color: var(--primary);
+  content: '→';
+}
+
 .main-content-wrapper {
   display: grid;
   grid-template-columns: 1fr;
@@ -1074,6 +1099,50 @@ footer a {
   color: #ffffff;
   font-weight: 800;
   text-decoration: none;
+}
+
+.landing-launcher {
+  display: grid;
+  gap: 10px;
+  max-width: 680px;
+  padding: 20px;
+  margin: 20px auto 0;
+  border: 1px solid rgba(47, 111, 115, 0.2);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.9);
+  text-align: left;
+}
+
+.landing-launcher label {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.landing-launcher textarea {
+  width: 100%;
+  min-height: 112px;
+  padding: 12px;
+  border: 1px solid rgba(47, 111, 115, 0.35);
+  border-radius: 10px;
+  font: inherit;
+  resize: vertical;
+}
+
+.landing-launcher button {
+  min-height: 46px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.landing-launcher textarea:focus-visible,
+.landing-launcher button:focus-visible {
+  outline: 3px solid #00a8b5;
+  outline-offset: 2px;
 }
 
 .seo-link-grid {

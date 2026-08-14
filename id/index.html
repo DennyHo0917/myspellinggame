@@ -17,27 +17,26 @@
     <link rel="dns-prefetch" href="//www.googletagmanager.com">
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
 
-    <title>Game Spelling Bahasa Inggris | My Spelling Game</title>
-    <meta name="description" content="Tempel daftar kata bahasa Inggris dan mainkan game spelling gratis untuk latihan mengeja. Ulangi kata yang salah dan bagikan link tanpa akun.">
-    <meta name="keywords" content="game spelling bahasa Inggris,permainan spelling bahasa Inggris,permainan mengeja bahasa Inggris,latihan mengeja bahasa Inggris,belajar spelling bahasa Inggris,game kosakata bahasa Inggris,daftar kata bahasa Inggris,buat daftar kata sendiri,game dengan kata sendiri,latihan spelling anak,spelling bee online gratis">
+    <title>Tes Spelling Gratis dengan Kata Sendiri — Tanpa Login</title>
+    <meta name="description" content="Tempel daftar sendiri, dengarkan kata yang disembunyikan, ketik jawaban, lalu lihat hasilnya. Ulangi kata yang salah tanpa akun.">
     <meta name="author" content="My Spelling Game">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-9244949928133071">
 
-    <meta property="og:title" content="Game spelling bahasa Inggris dengan daftar kata sendiri">
-    <meta property="og:description" content="Tempel daftar kata, langsung main, lalu ulangi kata yang belum tepat. Tanpa akun.">
+    <meta property="og:title" content="Tes spelling dengan daftar kata sendiri">
+    <meta property="og:description" content="Dengarkan kata tersembunyi, lihat hasilnya, lalu ulangi yang salah. Tanpa login.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://myspellinggame.com/id/">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Game spelling bahasa Inggris dengan daftar kata sendiri preview">
+    <meta property="og:image:alt" content="Tes spelling dengan daftar kata sendiri preview">
     <meta property="og:site_name" content="My Spelling Game">
     <meta property="og:locale" content="id_ID">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Game spelling bahasa Inggris dengan daftar kata sendiri">
-    <meta name="twitter:description" content="Tempel daftar kata, langsung main, lalu ulangi kata yang belum tepat. Tanpa akun.">
+    <meta name="twitter:title" content="Tes spelling dengan daftar kata sendiri">
+    <meta name="twitter:description" content="Dengarkan kata tersembunyi, lihat hasilnya, lalu ulangi yang salah. Tanpa login.">
     <meta name="twitter:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
 
     <meta name="theme-color" content="#2f6f73">
@@ -68,8 +67,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
 
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
@@ -91,10 +94,16 @@
     </div>
 
     <div class="seo-content" id="seo-content">
-        <h1>Game spelling bahasa Inggris gratis dengan daftar kata sendiri</h1>
-        <p>Tempel daftar kata minggu ini dan langsung mulai bermain.</p>
-        <p>My Spelling Game menyimpan kata yang terlewat, membuat ronde ulang, dan membagikan latihan yang sama lewat link.</p>
-        <p>Tanpa akun, tanpa membuat kelas, tanpa bank kata acak.</p>
+        <h1>Tes spelling gratis dengan daftar kata sendiri</h1>
+        <p>Tempel daftar kata lalu dengarkan setiap kata tanpa melihatnya di layar.</p>
+        <p>Ketik jawaban, lihat hasilnya saat itu juga, dan ulangi hanya kata yang salah.</p>
+        <p>Tidak perlu membuat akun.</p>
+        <ol class="practice-flow" aria-label="Langkah latihan">
+            <li>Tempel kata</li>
+            <li>Dengarkan kata tersembunyi</li>
+            <li>Ketik jawaban</li>
+            <li>Ulangi kata yang salah</li>
+        </ol>
         <p>Pilih tes spelling dengan suara atau game hujan kata yang asli.</p>
     </div>
 
@@ -136,15 +145,15 @@
 
             <div class="game-start-screen" id="game-start">
                 <div class="start-screen-content">
-                    <div class="start-title">Mulai dengan daftar spelling-mu</div>
+                    <div class="start-title">Latihan dengan daftar kata sendiri</div>
                     <div class="spelling-start">
-                        <div class="spelling-subtitle">Game spelling bahasa Inggris gratis dengan daftar kata sendiri</div>
-                        <p class="spelling-intro">Tempel daftar kata mingguan dan langsung main. Kata yang salah masuk ronde ulang, dan link latihan bisa dipakai tanpa akun.</p>
+                        <div class="spelling-subtitle">Tes spelling atau game mengetik, tanpa login</div>
+                        <p class="spelling-intro">Pilih tes audio yang direkomendasikan atau Typing Rain, tempel kata, lalu mulai.</p>
                         <div class="hero-proof-row" aria-label="My Spelling Game benefits">
-                            <span>Gratis dimainkan</span>
-                            <span>Pakai kata sendiri</span>
-                            <span>Ulangi kata yang salah</span>
-                            <span>Bagikan link, tanpa login</span>
+                            <span>Hasil langsung</span>
+                            <span>Kata disembunyikan</span>
+                            <span>Ulangi yang salah</span>
+                            <span>Link tanpa login</span>
                         </div>
                         <fieldset class="mode-selector">
                             <legend>Pilih mode</legend>
@@ -214,13 +223,13 @@
 
                         <h4>Penyimpanan lokal</h4>
                     <p>Daftar kata dan pilihan latihan disimpan di browser ini.</p>
-                    <p>Daftar kata tidak dikirim ke server kami.</p>
+                    <p>Link baru menyimpan daftar di fragmen URL yang diproses browser tanpa dikirim ke server.</p>
                     <p>Kamu bisa menghapus data ini lewat browser atau panel ini.</p>
 
                         <h4>Analytics</h4>
-                    <p>Kami memakai Google Analytics untuk memahami cara orang memakai game.</p>
-                    <p>Data ini membantu kami memperbaiki pengalaman latihan.</p>
-                    <p>Game tidak membutuhkan data pribadi untuk berjalan.</p>
+                    <p>Google Analytics menerima alamat halaman yang sudah dibersihkan, tanpa parameter atau fragmen.</p>
+                    <p>Kami hanya mengirim statistik gabungan seperti mode, jumlah kata, dan hasil.</p>
+                    <p>Daftar kata dan jawaban yang diketik tidak pernah dikirim.</p>
 
                         <h4>Iklan</h4>
                     <p>Situs menggunakan Google AdSense untuk menampilkan iklan.</p>
@@ -278,8 +287,8 @@
                     <h3>Untuk daftar kata minggu ini</h3>
                     <p>Gunakan tes untuk mendengar satu kata tersembunyi, atau hujan kata untuk mengetik kata yang jatuh.</p>
                     <p>Tempel kata bahasa Inggris yang sudah diberikan guru atau kelas.</p>
-                    <p>Siswa mengetik setiap kata sebelum jatuh ke bawah.</p>
-                    <p>Tekan <kbd>Enter</kbd> atau <kbd>Space</kbd> untuk mengirim.</p>
+                    <p>Pilih tes audio untuk mendengar kata tersembunyi, atau Typing Rain untuk mengetik kata yang jatuh.</p>
+                    <p>Tekan <kbd>Enter</kbd> untuk mengirim; Typing Rain juga menerima <kbd>Space</kbd>.</p>
                     <p>Kata yang terlewat disimpan untuk latihan ulang sekali klik.</p>
                     <p>Salin link untuk membagikan daftar yang sama.</p>
                     <h4>Mode mudah</h4>
@@ -299,16 +308,16 @@
         </div>
 
         <div class="spelling-seo-copy">
-            <h2>Game spelling bahasa Inggris dengan daftar kata sendiri</h2>
-            <p>My Spelling Game adalah <strong>game spelling bahasa Inggris gratis</strong> untuk orang tua, guru, tutor, dan siswa yang sudah punya daftar kata dan ingin latihan mengeja dengan cepat.</p>
+            <h2>Dua cara berlatih dengan daftar sendiri</h2>
+            <p><strong>Spelling Test</strong> membacakan kata tersembunyi dan memeriksa jawaban. <strong>Typing Rain</strong> mempertahankan game kata jatuh yang asli.</p>
 
-            <h3>Kenapa perlu memakai daftar sendiri</h3>
-            <p>Banyak game bahasa Inggris memakai daftar kata bawaan. Itu kurang pas kalau tugas atau kuis memakai kata tertentu. Di sini kamu tinggal menempel daftar asli, bermain, lalu mengulang kata yang belum tepat.</p>
+            <h3>Daftar yang tepat membuat latihan lebih berguna</h3>
+            <p>Menempel daftar minggu ini membuat latihan tetap fokus. Kedua mode menyimpan kesalahan untuk ronde ulang.</p>
             <ul>
                 <li><strong>Pakai daftar nyata:</strong> Tempel kata dari PR, lembar guru, atau materi homeschool.</li>
-                <li><strong>Latihan ulang:</strong> Kata yang jatuh ke bawah masuk ronde berikutnya.</li>
+                <li><strong>Latihan ulang:</strong> Jawaban salah dan kata yang terlewat masuk ronde berikutnya.</li>
                 <li><strong>Bagikan link:</strong> Kirim latihan yang sama tanpa akun atau kelas online.</li>
-                <li><strong>Dengarkan kata:</strong> Pakai suara browser untuk latihan seperti dikte.</li>
+                <li><strong>Tes audio:</strong> Kata tetap tersembunyi sampai jawaban dikirim.</li>
             </ul>
 
             <h3>Cocok untuk latihan mingguan</h3>
@@ -325,8 +334,8 @@
 
     <footer>
         <p>
-            <a href="/custom-spelling-words-game.html">Game kata sendiri</a> &middot; <a href="/id/spelling-list-game.html">Daftar spelling</a> &middot; <a href="/id/weekly-spelling-practice.html">Latihan mingguan</a> &middot; <a href="/sight-word-typing-game.html">Sight words</a> &middot; <a href="/homeschool-spelling-practice.html">Homeschool</a> &middot; <a href="/vocabulary-typing-game.html">Kosakata</a><br>
-            <a href="/id/privacy.html">Privasi</a> &middot; <a href="/id/about.html">Tentang</a> &middot; <a href="/id/contact.html">Kontak</a><br>
+            <a href="/id/custom-spelling-words-game">Game kata sendiri</a> &middot; <a href="/id/spelling-list-game">Daftar spelling</a> &middot; <a href="/id/weekly-spelling-practice">Latihan mingguan</a> &middot; <a href="/id/sight-word-typing-game">Sight words</a> &middot; <a href="/id/homeschool-spelling-practice">Homeschool</a> &middot; <a href="/id/vocabulary-typing-game">Kosakata</a><br>
+            <a href="/id/privacy">Privasi</a> &middot; <a href="/id/about">Tentang</a> &middot; <a href="/id/contact">Kontak</a><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>
@@ -336,7 +345,7 @@
   "@context": "https://schema.org",
   "@type": "VideoGame",
   "name": "My Spelling Game",
-  "description": "Tempel daftar kata dan mainkan game spelling bahasa Inggris gratis untuk latihan mengeja, dengan ronde ulang dan link yang bisa dibagikan.",
+  "description": "Tempel kata sendiri untuk tes spelling dengan audio atau Typing Rain, lengkap dengan hasil dan latihan ulang.",
   "url": "https://myspellinggame.com/id/",
   "author": {
     "@type": "Organization",

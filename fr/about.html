@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -70,7 +74,7 @@
 
         <section class="seo-panel">
             <h2>Mission</h2>
-            <p>My Spelling Game transforme n’importe quelle liste de mots anglais en jeu de mots qui tombent. Il est conçu pour les parents, enseignants et tuteurs qui veulent une pratique rapide sans comptes élèves ni listes génériques.</p>
+            <p>My Spelling Game transforme n’importe quelle liste de mots anglais en test audio ou en jeu de frappe avec des mots qui tombent. La pratique démarre vite, sans comptes élèves ni listes génériques.</p>
         </section>
 
         <section class="seo-panel">

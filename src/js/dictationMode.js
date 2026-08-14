@@ -11,6 +11,7 @@ import {
 } from './spellingCore.mjs';
 import { speechSupported, speakWord } from './speech.js';
 import { track } from './spellingMode.js';
+import { pageLocale } from './analytics.mjs';
 
 let session = null;
 
@@ -126,6 +127,9 @@ export function renderDictationSummary() {
     correct_count: summary.correct,
     missed_count: summary.incorrect,
     mode: 'dictation',
+    accuracy: summary.accuracy,
+    duration_seconds: Math.max(0, Math.round((Date.now() - gameState.startTime) / 1000)),
+    replay_round: gameState.replayRound,
   });
 }
 
@@ -133,8 +137,10 @@ export function retryMissedDictation() {
   if (!session) return;
   const retry = createMissedSession(session);
   if (!retry.words.length) return;
-  track('missed_words_replayed', { word_count: retry.words.length, mode: 'dictation' });
+  track('missed_words_replayed', { word_count: retry.words.length, mode: 'dictation', locale: pageLocale() });
   element('game-over').style.display = 'none';
+  gameState.replayRound = true;
+  gameState.startTime = Date.now();
   startDictation(retry.words);
 }
 

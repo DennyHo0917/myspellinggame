@@ -2,9 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://myspellinggame.com/</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <lastmod>2026-08-14</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/" />
     <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/" />
@@ -12,610 +10,10 @@
     <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/es/</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/pt-br/</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/fr/</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/id/</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/zh/</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/custom-spelling-words-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/custom-spelling-words-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/es/custom-spelling-words-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/custom-spelling-words-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/pt-br/custom-spelling-words-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/custom-spelling-words-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/fr/custom-spelling-words-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/custom-spelling-words-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/id/custom-spelling-words-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/custom-spelling-words-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/zh/custom-spelling-words-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/custom-spelling-words-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/custom-spelling-words-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/spelling-list-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/es/spelling-list-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/pt-br/spelling-list-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/fr/spelling-list-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/id/spelling-list-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/zh/spelling-list-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/weekly-spelling-practice</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/es/weekly-spelling-practice</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/pt-br/weekly-spelling-practice</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/fr/weekly-spelling-practice</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/id/weekly-spelling-practice</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/zh/weekly-spelling-practice</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/homeschool-spelling-practice</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/homeschool-spelling-practice" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/es/homeschool-spelling-practice</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/homeschool-spelling-practice" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/pt-br/homeschool-spelling-practice</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/homeschool-spelling-practice" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/fr/homeschool-spelling-practice</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/homeschool-spelling-practice" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/id/homeschool-spelling-practice</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/homeschool-spelling-practice" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/zh/homeschool-spelling-practice</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/homeschool-spelling-practice" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/homeschool-spelling-practice" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/sight-word-typing-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/sight-word-typing-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/es/sight-word-typing-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/sight-word-typing-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/pt-br/sight-word-typing-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/sight-word-typing-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/fr/sight-word-typing-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/sight-word-typing-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/id/sight-word-typing-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/sight-word-typing-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/zh/sight-word-typing-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/sight-word-typing-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/sight-word-typing-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/vocabulary-typing-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/vocabulary-typing-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/es/vocabulary-typing-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/vocabulary-typing-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/pt-br/vocabulary-typing-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/vocabulary-typing-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/fr/vocabulary-typing-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/vocabulary-typing-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/id/vocabulary-typing-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/vocabulary-typing-game" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/zh/vocabulary-typing-game</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/vocabulary-typing-game" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/vocabulary-typing-game" />
   </url>
   <url>
     <loc>https://myspellinggame.com/about</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/about" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/about" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/about" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/about" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/about" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/about" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/about" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/es/about</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/about" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/about" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/about" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/about" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/about" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/about" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/about" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/pt-br/about</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/about" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/about" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/about" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/about" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/about" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/about" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/about" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/fr/about</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/about" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/about" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/about" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/about" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/about" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/about" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/about" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/id/about</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/about" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/about" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/about" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/about" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/about" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/about" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/about" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/zh/about</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
+    <lastmod>2026-08-14</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/about" />
     <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/about" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/about" />
@@ -626,9 +24,7 @@
   </url>
   <url>
     <loc>https://myspellinggame.com/contact</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
+    <lastmod>2026-08-14</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/contact" />
     <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/contact" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/contact" />
@@ -636,12 +32,43 @@
     <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/contact" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/contact" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/contact" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/custom-spelling-words-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/custom-spelling-words-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/es/</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/es/about</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/about" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/about" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/about" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/about" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/about" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/about" />
   </url>
   <url>
     <loc>https://myspellinggame.com/es/contact</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
+    <lastmod>2026-08-14</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/contact" />
     <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/contact" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/contact" />
@@ -651,75 +78,30 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/contact" />
   </url>
   <url>
-    <loc>https://myspellinggame.com/pt-br/contact</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/contact" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/contact" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/contact" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/contact" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/contact" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/contact" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/contact" />
+    <loc>https://myspellinggame.com/es/custom-spelling-words-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/custom-spelling-words-game" />
   </url>
   <url>
-    <loc>https://myspellinggame.com/fr/contact</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/contact" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/contact" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/contact" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/contact" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/contact" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/contact" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/contact" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/id/contact</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/contact" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/contact" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/contact" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/contact" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/contact" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/contact" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/contact" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/zh/contact</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/contact" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/contact" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/contact" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/contact" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/contact" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/contact" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/contact" />
-  </url>
-  <url>
-    <loc>https://myspellinggame.com/privacy</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/privacy" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/privacy" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/privacy" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/privacy" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/privacy" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/privacy" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/privacy" />
+    <loc>https://myspellinggame.com/es/homeschool-spelling-practice</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/homeschool-spelling-practice" />
   </url>
   <url>
     <loc>https://myspellinggame.com/es/privacy</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
+    <lastmod>2026-08-14</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/privacy" />
     <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/privacy" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/privacy" />
@@ -729,23 +111,107 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/privacy" />
   </url>
   <url>
-    <loc>https://myspellinggame.com/pt-br/privacy</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/privacy" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/privacy" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/privacy" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/privacy" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/privacy" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/privacy" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/privacy" />
+    <loc>https://myspellinggame.com/es/sight-word-typing-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/sight-word-typing-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/es/spelling-list-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/es/vocabulary-typing-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/vocabulary-typing-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/es/weekly-spelling-practice</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/fr/</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/fr/about</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/about" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/about" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/about" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/about" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/about" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/about" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/fr/contact</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/contact" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/contact" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/contact" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/contact" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/contact" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/fr/custom-spelling-words-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/custom-spelling-words-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/fr/homeschool-spelling-practice</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/homeschool-spelling-practice" />
   </url>
   <url>
     <loc>https://myspellinggame.com/fr/privacy</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
+    <lastmod>2026-08-14</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/privacy" />
     <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/privacy" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/privacy" />
@@ -753,12 +219,120 @@
     <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/privacy" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/privacy" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/privacy" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/fr/sight-word-typing-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/sight-word-typing-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/fr/spelling-list-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/fr/vocabulary-typing-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/vocabulary-typing-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/fr/weekly-spelling-practice</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/homeschool-spelling-practice</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/homeschool-spelling-practice" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/id/</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/id/about</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/about" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/about" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/about" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/about" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/about" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/about" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/id/contact</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/contact" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/contact" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/contact" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/contact" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/contact" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/id/custom-spelling-words-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/custom-spelling-words-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/id/homeschool-spelling-practice</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/homeschool-spelling-practice" />
   </url>
   <url>
     <loc>https://myspellinggame.com/id/privacy</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
+    <lastmod>2026-08-14</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/privacy" />
     <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/privacy" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/privacy" />
@@ -768,10 +342,52 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/privacy" />
   </url>
   <url>
-    <loc>https://myspellinggame.com/zh/privacy</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
+    <loc>https://myspellinggame.com/id/sight-word-typing-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/sight-word-typing-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/id/spelling-list-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/id/vocabulary-typing-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/vocabulary-typing-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/id/weekly-spelling-practice</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/privacy</loc>
+    <lastmod>2026-08-14</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/privacy" />
     <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/privacy" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/privacy" />
@@ -779,5 +395,269 @@
     <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/privacy" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/privacy" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/privacy" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/pt-br/</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/pt-br/about</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/about" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/about" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/about" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/about" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/about" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/about" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/pt-br/contact</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/contact" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/contact" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/contact" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/contact" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/contact" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/pt-br/custom-spelling-words-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/custom-spelling-words-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/pt-br/homeschool-spelling-practice</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/homeschool-spelling-practice" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/pt-br/privacy</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/privacy" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/privacy" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/privacy" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/privacy" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/privacy" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/privacy" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/pt-br/sight-word-typing-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/sight-word-typing-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/pt-br/spelling-list-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/pt-br/vocabulary-typing-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/vocabulary-typing-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/pt-br/weekly-spelling-practice</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/sight-word-typing-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/sight-word-typing-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/spelling-list-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/vocabulary-typing-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/vocabulary-typing-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/weekly-spelling-practice</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/zh/</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/zh/about</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/about" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/about" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/about" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/about" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/about" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/about" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/zh/contact</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/contact" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/contact" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/contact" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/contact" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/contact" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/zh/custom-spelling-words-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/custom-spelling-words-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/custom-spelling-words-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/zh/homeschool-spelling-practice</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/homeschool-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/homeschool-spelling-practice" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/zh/privacy</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/privacy" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/privacy" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/privacy" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/privacy" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/privacy" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/privacy" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/zh/sight-word-typing-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/sight-word-typing-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/sight-word-typing-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/zh/spelling-list-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/zh/vocabulary-typing-game</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/vocabulary-typing-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/vocabulary-typing-game" />
+  </url>
+  <url>
+    <loc>https://myspellinggame.com/zh/weekly-spelling-practice</loc>
+    <lastmod>2026-08-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice" />
   </url>
 </urlset>

@@ -17,27 +17,26 @@
     <link rel="dns-prefetch" href="//www.googletagmanager.com">
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
 
-    <title>Jeu d’Orthographe Anglaise | My Spelling Game</title>
-    <meta name="description" content="Collez votre liste de mots et lancez un jeu gratuit d’orthographe anglaise. Révisez les mots manqués et partagez un lien sans compte.">
-    <meta name="keywords" content="jeu d'orthographe anglais,orthographe anglaise,pratiquer l'orthographe anglaise,jeu de spelling anglais,épeler des mots anglais,liste de mots anglais,jeu avec vos propres mots,spelling bee anglais gratuit">
+    <title>Test d’Orthographe Anglaise avec Vos Mots — Sans Compte</title>
+    <meta name="description" content="Collez votre liste, écoutez un mot caché, tapez la réponse et obtenez la correction immédiatement. Reprenez vos erreurs sans compte.">
     <meta name="author" content="My Spelling Game">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-9244949928133071">
 
-    <meta property="og:title" content="Jeu d’orthographe anglaise avec vos propres mots">
-    <meta property="og:description" content="Collez une liste de mots, jouez tout de suite et retravaillez les mots manqués. Sans compte.">
+    <meta property="og:title" content="Test d’orthographe anglaise avec vos propres mots">
+    <meta property="og:description" content="Écoutez des mots cachés, obtenez la correction immédiatement et reprenez vos erreurs. Sans compte.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://myspellinggame.com/fr/">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Jeu d’orthographe anglaise avec vos propres mots preview">
+    <meta property="og:image:alt" content="Test d’orthographe anglaise avec vos propres mots preview">
     <meta property="og:site_name" content="My Spelling Game">
     <meta property="og:locale" content="fr_FR">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Jeu d’orthographe anglaise avec vos propres mots">
-    <meta name="twitter:description" content="Collez une liste de mots, jouez tout de suite et retravaillez les mots manqués. Sans compte.">
+    <meta name="twitter:title" content="Test d’orthographe anglaise avec vos propres mots">
+    <meta name="twitter:description" content="Écoutez des mots cachés, obtenez la correction immédiatement et reprenez vos erreurs. Sans compte.">
     <meta name="twitter:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
 
     <meta name="theme-color" content="#2f6f73">
@@ -68,8 +67,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
 
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
@@ -91,10 +94,16 @@
     </div>
 
     <div class="seo-content" id="seo-content">
-        <h1>Jeu gratuit d’orthographe anglaise avec vos propres mots</h1>
-        <p>Collez la liste de mots de la semaine et commencez à jouer immédiatement.</p>
-        <p>My Spelling Game garde les mots manqués, crée une partie de révision et permet de partager la même liste par lien.</p>
-        <p>Pas de compte, pas de préparation de leçon, pas de liste de mots générique.</p>
+        <h1>Test gratuit d’orthographe anglaise avec vos propres mots</h1>
+        <p>Collez votre liste et écoutez chaque mot sans le voir à l’écran.</p>
+        <p>Tapez la réponse, voyez la correction tout de suite, puis reprenez seulement vos erreurs.</p>
+        <p>Aucun compte n’est nécessaire.</p>
+        <ol class="practice-flow" aria-label="Étapes de la pratique">
+            <li>Collez les mots</li>
+            <li>Écoutez un mot caché</li>
+            <li>Tapez la réponse</li>
+            <li>Reprenez vos erreurs</li>
+        </ol>
         <p>Choisissez un test d’orthographe vocal ou le jeu original de pluie de mots.</p>
     </div>
 
@@ -136,15 +145,15 @@
 
             <div class="game-start-screen" id="game-start">
                 <div class="start-screen-content">
-                    <div class="start-title">Commencez avec votre liste de mots</div>
+                    <div class="start-title">Pratiquez avec votre propre liste</div>
                     <div class="spelling-start">
-                        <div class="spelling-subtitle">Jeu gratuit d’orthographe anglaise avec vos propres mots</div>
-                        <p class="spelling-intro">Collez la liste de la semaine et jouez immédiatement. Les mots manqués deviennent une partie de révision, et le lien fonctionne sans compte.</p>
+                        <div class="spelling-subtitle">Test audio ou jeu de frappe, sans compte</div>
+                        <p class="spelling-intro">Choisissez le test audio recommandé ou Typing Rain, collez vos mots et commencez.</p>
                         <div class="hero-proof-row" aria-label="My Spelling Game benefits">
-                            <span>Gratuit</span>
-                            <span>Vos propres mots</span>
-                            <span>Réviser les mots manqués</span>
-                            <span>Lien partageable, sans compte</span>
+                            <span>Correction immédiate</span>
+                            <span>Mot caché</span>
+                            <span>Reprendre les erreurs</span>
+                            <span>Lien sans compte</span>
                         </div>
                         <fieldset class="mode-selector">
                             <legend>Choisissez un mode</legend>
@@ -214,13 +223,13 @@
 
                         <h4>Stockage local</h4>
                     <p>Votre liste de mots et vos préférences sont enregistrées localement dans ce navigateur.</p>
-                    <p>La liste de mots n’est pas envoyée à nos serveurs.</p>
+                    <p>Les nouveaux liens placent la liste dans le fragment de l’URL, traité par le navigateur sans être envoyé au serveur.</p>
                     <p>Vous pouvez effacer ces données depuis le navigateur ou depuis ce panneau.</p>
 
                         <h4>Mesure d’audience</h4>
-                    <p>Nous utilisons Google Analytics pour comprendre l’usage du jeu.</p>
-                    <p>Ces données nous aident à améliorer la pratique.</p>
-                    <p>Le jeu n’a pas besoin de données personnelles pour fonctionner.</p>
+                    <p>Google Analytics reçoit une adresse de page nettoyée, sans paramètres ni fragment.</p>
+                    <p>Seules des données agrégées sont envoyées, comme le mode, le nombre de mots et le résultat.</p>
+                    <p>La liste de mots et les réponses saisies ne sont jamais envoyées.</p>
 
                         <h4>Publicité</h4>
                     <p>Le site utilise Google AdSense pour afficher des annonces.</p>
@@ -278,8 +287,8 @@
                     <h3>Pour la liste de cette semaine</h3>
                     <p>Utilisez le test pour écouter un mot caché à la fois, ou la pluie de mots pour saisir les mots qui tombent.</p>
                     <p>Collez les mots anglais déjà donnés par le professeur ou le cours.</p>
-                    <p>L’élève tape chaque mot avant qu’il n’arrive en bas.</p>
-                    <p>Appuyez sur <kbd>Enter</kbd> ou <kbd>Space</kbd> pour valider.</p>
+                    <p>Choisissez le test audio pour écouter un mot caché, ou Typing Rain pour taper les mots qui tombent.</p>
+                    <p>Appuyez sur <kbd>Enter</kbd> pour valider ; Typing Rain accepte aussi <kbd>Space</kbd>.</p>
                     <p>Les mots manqués sont gardés pour une révision en un clic.</p>
                     <p>Copiez un lien pour partager la même liste.</p>
                     <h4>Mode facile</h4>
@@ -299,16 +308,16 @@
         </div>
 
         <div class="spelling-seo-copy">
-            <h2>Jeu d’orthographe anglaise avec vos propres mots</h2>
-            <p>My Spelling Game est un <strong>jeu gratuit d’orthographe anglaise</strong> pour les parents, enseignants et tuteurs qui ont déjà une liste de mots et veulent la transformer en pratique rapide de spelling anglais.</p>
+            <h2>Deux façons de travailler votre propre liste</h2>
+            <p><strong>Spelling Test</strong> lit un mot caché et corrige la réponse. <strong>Typing Rain</strong> conserve le jeu original de mots qui tombent.</p>
 
-            <h3>Pourquoi utiliser sa propre liste</h3>
-            <p>Beaucoup de jeux d’anglais proposent des listes toutes faites. C’est moins utile quand le contrôle ou le devoir porte sur des mots précis. Ici, vous collez la vraie liste, jouez tout de suite et reprenez ce qui a posé problème.</p>
+            <h3>Une liste précise rend la pratique plus utile</h3>
+            <p>Coller la liste de la semaine garde la pratique centrée sur les bons mots. Les deux modes enregistrent les erreurs pour les reprendre.</p>
             <ul>
                 <li><strong>Votre vraie liste :</strong> Collez les mots d’un devoir, d’un cours ou d’un support homeschool.</li>
                 <li><strong>Révision ciblée :</strong> Les mots manqués reviennent dans une autre partie.</li>
                 <li><strong>Lien partageable :</strong> Envoyez la même liste sans compte ni espace classe.</li>
-                <li><strong>Écoute du mot :</strong> Utilisez la voix du navigateur pour une pratique proche de la dictée.</li>
+                <li><strong>Test audio :</strong> Le mot reste caché jusqu’à l’envoi de la réponse.</li>
             </ul>
 
             <h3>Adapté à la pratique hebdomadaire</h3>
@@ -325,8 +334,8 @@
 
     <footer>
         <p>
-            <a href="/custom-spelling-words-game.html">Jeu personnalisé</a> &middot; <a href="/fr/spelling-list-game.html">Liste de mots</a> &middot; <a href="/fr/weekly-spelling-practice.html">Pratique hebdomadaire</a> &middot; <a href="/sight-word-typing-game.html">Sight words</a> &middot; <a href="/homeschool-spelling-practice.html">Homeschool</a> &middot; <a href="/vocabulary-typing-game.html">Vocabulaire</a><br>
-            <a href="/fr/privacy.html">Confidentialité</a> &middot; <a href="/fr/about.html">À propos</a> &middot; <a href="/fr/contact.html">Contact</a><br>
+            <a href="/fr/custom-spelling-words-game">Jeu personnalisé</a> &middot; <a href="/fr/spelling-list-game">Liste de mots</a> &middot; <a href="/fr/weekly-spelling-practice">Pratique hebdomadaire</a> &middot; <a href="/fr/sight-word-typing-game">Sight words</a> &middot; <a href="/fr/homeschool-spelling-practice">Homeschool</a> &middot; <a href="/fr/vocabulary-typing-game">Vocabulaire</a><br>
+            <a href="/fr/privacy">Confidentialité</a> &middot; <a href="/fr/about">À propos</a> &middot; <a href="/fr/contact">Contact</a><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>
@@ -336,7 +345,7 @@
   "@context": "https://schema.org",
   "@type": "VideoGame",
   "name": "My Spelling Game",
-  "description": "Collez une liste de mots et jouez à un jeu gratuit d’orthographe anglaise avec révision des mots manqués et lien partageable.",
+  "description": "Collez vos mots pour un test audio ou Typing Rain, avec correction et reprise des erreurs.",
   "url": "https://myspellinggame.com/fr/",
   "author": {
     "@type": "Organization",

@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -70,8 +74,7 @@
 
         <section class="seo-panel">
             <h2>Mission</h2>
-            <p><strong>Short answer:</strong> My Spelling Game is a free browser-based spelling practice tool for custom word lists. It is built for parents, teachers, homeschool families, ESL tutors, and students who need quick practice without student accounts, class setup, or a generic word bank.</p>
-            <p>My Spelling Game turns any weekly spelling list into a falling-word typing game. The goal is narrow on purpose: paste the exact words, play a short round, replay missed words, and share the same practice link when needed.</p>
+            <p>My Spelling Game turns any weekly word list into an audio spelling test or a falling-word typing game. It is built for quick practice without student accounts, class setup, or a generic word bank.</p>
         </section>
 
         <section class="seo-panel">
@@ -81,18 +84,12 @@
 
         <section class="seo-panel">
             <h2>What It Does</h2>
-            <ul><li>Uses your own spelling words.</li><li>Creates instant falling-word practice.</li><li>Saves missed words for a focused replay round.</li><li>Shares practice links without requiring an account.</li><li>Offers Easy mode for slower, lower-pressure practice.</li></ul>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Product Facts</h2>
-            <ul><li>Cost: free to play.</li><li>Login: no student account or class roster required.</li><li>Data: typed word lists and preferences are stored in the browser when saved locally.</li><li>Best use: weekly spelling lists, classroom practice, homeschool lessons, ESL vocabulary, and sight word review.</li></ul>
+            <ul><li>Uses your own spelling words.</li><li>Offers a hidden-word audio test and Typing Rain.</li><li>Saves missed words for a focused replay round.</li><li>Shares practice links without requiring an account.</li></ul>
         </section>
 
         <section class="seo-panel">
             <h2>About the Developer</h2>
             <p>My Spelling Game is maintained by an indie developer. The product goal is intentionally narrow: make repeated weekly spelling practice faster to set up and easier to repeat.</p>
-            <p>Questions, bug reports, and classroom feedback can be sent through the <a href="/contact">contact page</a>.</p>
         </section>
     </main>
 
@@ -111,24 +108,9 @@
       "name": "About | My Spelling Game",
       "url": "https://myspellinggame.com/about",
       "inLanguage": "en",
-      "datePublished": "2026-06-19",
-      "dateModified": "2026-06-22",
-      "publisher": {
-            "@type": "Organization",
-            "name": "My Spelling Game",
-            "url": "https://myspellinggame.com/"
-      },
       "about": {
             "@type": "VideoGame",
-            "name": "My Spelling Game",
-            "url": "https://myspellinggame.com/",
-            "isAccessibleForFree": true,
-            "applicationCategory": "EducationalGame",
-            "audience": [
-                  { "@type": "EducationalAudience", "educationalRole": "teacher" },
-                  { "@type": "EducationalAudience", "educationalRole": "parent" },
-                  { "@type": "EducationalAudience", "educationalRole": "student" }
-            ]
+            "name": "My Spelling Game"
       }
 }
     </script>

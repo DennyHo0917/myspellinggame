@@ -45,10 +45,10 @@ const locale = {
       },
       'weekly-spelling-practice': {
         title: 'Weekly Spelling Practice Game | My Spelling Game',
-        description: 'Make weekly spelling practice less repetitive. Paste this week’s words, play a short typing game, replay missed words, and share a practice link.',
+        description: 'Paste this week’s spelling words, hear each hidden word, type the answer, and retry missed words in a no-login weekly practice test.',
         ogDescription: 'Paste this week’s words and replay only the words that were missed.',
         h1: 'Weekly Spelling Practice Game',
-        intro: 'My Spelling Game is made for the repeated weekly routine: paste the list, practice the words, see what was missed, then replay those words.',
+        intro: 'Paste this week’s list and start the recommended audio spelling test. Each word stays hidden until the answer is submitted.',
         cta: 'Practice This Week’s Words',
         panels: [
           ['Why Weekly Practice Needs A Simple Tool', 'Spelling lists change every week, so fixed word games quickly become irrelevant. A useful spelling practice tool should let you bring the current list and start immediately.'],
@@ -87,10 +87,10 @@ const locale = {
       },
       'weekly-spelling-practice': {
         title: 'Práctica semanal de spelling | My Spelling Game',
-        description: 'Practica la lista de spelling de esta semana. Pega palabras, juega una ronda corta, repite las falladas y comparte un enlace sin cuenta.',
+        description: 'Pega las palabras de esta semana, escucha cada palabra oculta, escribe la respuesta y repite los fallos sin crear una cuenta.',
         ogDescription: 'Pega las palabras de esta semana y repite solo las que fallaron.',
         h1: 'Práctica semanal de spelling',
-        intro: 'My Spelling Game está pensado para la rutina que se repite cada semana: pegar la lista, practicar, ver qué palabras fallan y volver a practicarlas.',
+        intro: 'Pega la lista de esta semana y empieza la prueba de audio recomendada. La palabra no aparece hasta que envías la respuesta.',
         cta: 'Practicar esta semana',
         panels: [
           ['Por qué una práctica semanal necesita algo simple', 'Las listas cambian cada semana. Por eso un juego con palabras fijas deja de servir rápido. Lo importante es empezar con la lista actual sin preparar una lección entera.'],
@@ -129,10 +129,10 @@ const locale = {
       },
       'weekly-spelling-practice': {
         title: 'Prática semanal de spelling em inglês | My Spelling Game',
-        description: 'Pratique a lista de inglês da semana. Cole palavras, jogue uma rodada curta, revise erros e compartilhe um link sem criar conta.',
+        description: 'Cole as palavras da semana, ouça cada palavra escondida, digite a resposta e revise os erros sem criar conta.',
         ogDescription: 'Cole as palavras da semana e revise só o que ficou errado.',
         h1: 'Prática semanal de spelling em inglês',
-        intro: 'My Spelling Game foi feito para a rotina que se repete toda semana: pegar a lista, praticar, ver os erros e praticar de novo.',
+        intro: 'Cole a lista desta semana e comece o teste por áudio recomendado. A palavra só aparece depois que a resposta é enviada.',
         cta: 'Praticar a lista da semana',
         panels: [
           ['Por que a prática semanal precisa ser simples', 'A lista muda toda semana. Um jogo com palavras fixas perde valor rápido. O melhor fluxo é colar a lista atual e começar em poucos segundos.'],
@@ -171,10 +171,10 @@ const locale = {
       },
       'weekly-spelling-practice': {
         title: 'Pratique hebdomadaire d’orthographe anglaise | My Spelling Game',
-        description: 'Pratiquez la liste de mots anglais de la semaine. Collez les mots, jouez une partie courte, révisez les erreurs et partagez un lien.',
+        description: 'Collez les mots anglais de la semaine, écoutez chaque mot caché, tapez la réponse et reprenez vos erreurs sans compte.',
         ogDescription: 'Collez les mots de la semaine et révisez seulement les mots manqués.',
         h1: 'Pratique hebdomadaire d’orthographe anglaise',
-        intro: 'My Spelling Game correspond à la routine qui revient chaque semaine : coller la liste, pratiquer, repérer les mots manqués, puis les refaire.',
+        intro: 'Collez la liste de la semaine et lancez le test audio recommandé. Le mot reste caché jusqu’à l’envoi de la réponse.',
         cta: 'Pratiquer la liste de la semaine',
         panels: [
           ['Pourquoi rester simple', 'Les listes changent chaque semaine. Un jeu avec des mots fixes devient vite moins utile. Ici, on commence avec la liste actuelle sans préparer toute une leçon.'],
@@ -213,10 +213,10 @@ const locale = {
       },
       'weekly-spelling-practice': {
         title: 'Latihan spelling bahasa Inggris mingguan | My Spelling Game',
-        description: 'Latih daftar kata bahasa Inggris minggu ini. Tempel kata, mainkan ronde singkat, ulangi kata yang salah, dan bagikan link tanpa akun.',
+        description: 'Tempel kata bahasa Inggris minggu ini, dengarkan kata tersembunyi, ketik jawaban, lalu ulangi yang salah tanpa akun.',
         ogDescription: 'Tempel kata minggu ini dan ulangi hanya kata yang salah.',
         h1: 'Latihan spelling bahasa Inggris mingguan',
-        intro: 'My Spelling Game dibuat untuk rutinitas yang berulang setiap minggu: tempel daftar kata, latihan, lihat kata yang salah, lalu ulangi.',
+        intro: 'Tempel daftar minggu ini dan mulai tes audio yang direkomendasikan. Kata tetap tersembunyi sampai jawaban dikirim.',
         cta: 'Latih kata minggu ini',
         panels: [
           ['Kenapa harus sederhana', 'Daftar kata berubah setiap minggu. Game dengan bank kata tetap cepat terasa tidak cocok. Di sini kamu cukup memakai daftar terbaru dan langsung mulai.'],
@@ -255,10 +255,10 @@ const locale = {
       },
       'weekly-spelling-practice': {
         title: '每周英语拼写练习 | My Spelling Game',
-        description: '练习本周英语单词表。粘贴单词，玩一轮拼写打字小游戏，自动重练漏掉的词，并分享无需登录的练习链接。',
+        description: '粘贴本周英语单词，听隐藏单词后输入答案，立即查看批改结果，并单独重练错词，无需账号。',
         ogDescription: '粘贴本周英语单词，只重练漏掉的词。',
         h1: '每周英语拼写练习',
-        intro: 'My Spelling Game 解决的是每周都会重复的小麻烦：拿到新单词表，练一遍，找出漏掉的词，再练一遍。',
+        intro: '粘贴本周单词表，直接开始推荐的听写测试；提交答案前，页面不会显示单词拼写。',
         cta: '练习本周单词',
         panels: [
           ['为什么每周练习要足够简单', '英语单词表每周都会换。固定词库的游戏很快就不匹配了。更直接的方式是把这周真实要背的单词贴进来，马上开始。'],
@@ -272,25 +272,34 @@ const locale = {
 
 const pageSlugs = ['spelling-list-game', 'weekly-spelling-practice'];
 
+const launcherCopy = {
+  en: { label: "This week's spelling words", placeholder: 'because\nfriend\nbeautiful', invalid: 'Enter at least one spelling word.' },
+  es: { label: 'Palabras de spelling de esta semana', placeholder: 'because\nfriend\nbeautiful', invalid: 'Escribe al menos una palabra.' },
+  'pt-BR': { label: 'Palavras de spelling desta semana', placeholder: 'because\nfriend\nbeautiful', invalid: 'Digite pelo menos uma palavra.' },
+  fr: { label: 'Mots anglais de cette semaine', placeholder: 'because\nfriend\nbeautiful', invalid: 'Saisissez au moins un mot.' },
+  id: { label: 'Kata spelling minggu ini', placeholder: 'because\nfriend\nbeautiful', invalid: 'Masukkan setidaknya satu kata.' },
+  zh: { label: '本周英语单词', placeholder: 'because\nfriend\nbeautiful', invalid: '请至少输入一个英语单词。' },
+};
+
 function escapeAttr(value) {
   return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 
 function pagePath(loc, slug) {
-  return `${loc.dir}/${slug}.html`.replace('//', '/');
+  return `${loc.dir}/${slug}`.replace('//', '/');
 }
 
 function alternateLinks(slug) {
   return [
-    ...alternates.map((alt) => `    <link rel="alternate" hreflang="${alt.hreflang}" href="${baseUrl}${alt.dir}/${slug}.html">`.replace('//', '/').replace('https:/', 'https://')),
-    `    <link rel="alternate" hreflang="x-default" href="${baseUrl}/${slug}.html">`,
+    ...alternates.map((alt) => `    <link rel="alternate" hreflang="${alt.hreflang}" href="${baseUrl}${alt.dir}/${slug}">`.replace('//', '/').replace('https:/', 'https://')),
+    `    <link rel="alternate" hreflang="x-default" href="${baseUrl}/${slug}">`,
   ].join('\n');
 }
 
 function languageMenu(currentCode, slug, loc) {
   const links = alternates.map((alt) => {
     const current = alt.code === currentCode ? ' aria-current="page"' : '';
-    const href = `${alt.dir}/${slug}.html`.replace('//', '/');
+    const href = `${alt.dir}/${slug}`.replace('//', '/');
     return `                <a class="lang-option" href="${href}" hreflang="${alt.hreflang}"${current}>${alt.label}</a>`;
   }).join('\n');
 
@@ -312,8 +321,12 @@ function googleTag() {
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', '${gaId}');
-    </script>`;
+      gtag('config', '${gaId}', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
+    </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>`;
 }
 
 function panelBody(body) {
@@ -327,13 +340,14 @@ ${body.map((item) => `                <li>${item}</li>`).join('\n')}
 
 function relatedLinks(loc, slug) {
   const otherSlug = slug === 'spelling-list-game' ? 'weekly-spelling-practice' : 'spelling-list-game';
+  const prefix = loc.dir || '';
   const links = [
     { href: `${loc.dir || ''}/`.replace('//', '/'), label: loc.nav.home },
     { href: pagePath(loc, otherSlug), label: loc.pages[otherSlug].h1 },
-    { href: '/custom-spelling-words-game.html', label: loc.related.custom },
-    { href: '/sight-word-typing-game.html', label: loc.related.sight },
-    { href: '/homeschool-spelling-practice.html', label: loc.related.homeschool },
-    { href: '/vocabulary-typing-game.html', label: loc.related.vocabulary },
+    { href: `${prefix}/custom-spelling-words-game`, label: loc.related.custom },
+    { href: `${prefix}/sight-word-typing-game`, label: loc.related.sight },
+    { href: `${prefix}/homeschool-spelling-practice`, label: loc.related.homeschool },
+    { href: `${prefix}/vocabulary-typing-game`, label: loc.related.vocabulary },
   ];
   return links.map((link) => `                <a href="${link.href}">${link.label}</a>`).join('\n');
 }
@@ -350,6 +364,7 @@ function jsonLd(data) {
 
 function render(code, loc, slug) {
   const page = loc.pages[slug];
+  const launcher = launcherCopy[code];
   const canonical = `${baseUrl}${pagePath(loc, slug)}`;
   const relatedTitle = slug === 'spelling-list-game' ? loc.related.weekly : loc.related.list;
   const schema = {
@@ -407,7 +422,11 @@ ${languageMenu(code, slug, loc)}
         <section class="seo-hero">
             <h1>${page.h1}</h1>
             <p>${page.intro}</p>
-            <a class="seo-cta" href="${loc.dir || '/'}">${page.cta}</a>
+${slug === 'weekly-spelling-practice' ? `            <form class="landing-launcher" action="${`${loc.dir || ''}/`.replace('//', '/')}" data-mode="dictation" data-invalid="${escapeAttr(launcher.invalid)}">
+                <label for="weekly-words-${code}">${launcher.label}</label>
+                <textarea id="weekly-words-${code}" name="words" required spellcheck="false" placeholder="${escapeAttr(launcher.placeholder)}"></textarea>
+                <button type="submit">${page.cta}</button>
+            </form>` : `            <a class="seo-cta" href="${loc.dir || '/'}">${page.cta}</a>`}
         </section>
 
 ${page.panels.map(([title, body]) => `        <section class="seo-panel">
@@ -426,18 +445,19 @@ ${footer(loc)}
     <script type="application/ld+json">
 ${jsonLd(schema)}
     </script>
+    <script type="module" src="/src/js/landingLauncher.mjs"></script>
 </body>
 </html>
 `;
 }
 
-for (const alt of alternates) {
+for (const alt of alternates.filter((item) => item.code !== 'en')) {
   const loc = locale[alt.code];
   for (const slug of pageSlugs) {
-    const target = path.join(root, pagePath(loc, slug));
+    const target = path.join(root, `${loc.dir}/${slug}.html`.replace('//', '/'));
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target, render(alt.code, loc, slug), 'utf8');
   }
 }
 
-console.log(`Generated ${pageSlugs.length * alternates.length} localized SEO pages`);
+console.log(`Generated ${pageSlugs.length * (alternates.length - 1)} localized SEO pages`);

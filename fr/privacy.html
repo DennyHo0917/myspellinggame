@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -74,13 +78,13 @@
         </section>
 
         <section class="seo-panel">
-            <h2>Stockage local</h2>
-            <p>Votre liste de mots et vos préférences sont enregistrées localement dans le navigateur avec localStorage. Cela garde la liste disponible sur votre appareil et ne l’envoie pas à notre serveur.</p>
+            <h2>Stockage local et liens</h2>
+            <p>Votre liste et vos préférences restent dans ce navigateur. Les nouveaux liens placent la liste dans le fragment de l’URL, traité par le navigateur sans être envoyé à notre serveur.</p>
         </section>
 
         <section class="seo-panel">
-            <h2>Analytics</h2>
-            <p>Nous utilisons Google Analytics pour comprendre l’usage du site et améliorer la pratique. Nous ne collectons pas d’informations personnelles identifiables d’élèves via My Spelling Game.</p>
+            <h2>Mesure d’audience</h2>
+            <p>Google Analytics reçoit une adresse de page nettoyée, sans paramètres ni fragment, ainsi que des données agrégées comme le mode, le nombre de mots et le résultat. Les listes et réponses ne sont pas envoyées.</p>
         </section>
 
         <section class="seo-panel">

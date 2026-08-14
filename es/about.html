@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -70,7 +74,7 @@
 
         <section class="seo-panel">
             <h2>Misión</h2>
-            <p>My Spelling Game convierte cualquier lista semanal de spelling en un juego de palabras que caen. Está pensado para familias, profesores y tutores que necesitan práctica rápida sin cuentas de estudiantes ni bancos de palabras genéricos.</p>
+            <p>My Spelling Game convierte cualquier lista semanal en una prueba de spelling por audio o un juego de palabras que caen. Está pensado para practicar rápido, sin cuentas de estudiantes ni bancos de palabras genéricos.</p>
         </section>
 
         <section class="seo-panel">

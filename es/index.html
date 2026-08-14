@@ -17,27 +17,26 @@
     <link rel="dns-prefetch" href="//www.googletagmanager.com">
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
 
-    <title>Juego de spelling en inglés | My Spelling Game</title>
-    <meta name="description" content="Pega la lista de vocabulario de esta semana y juega un juego gratis de spelling en inglés. Repite las palabras falladas y comparte un enlace sin crear cuenta.">
-    <meta name="keywords" content="juego de spelling en inglés,juego de deletreo en inglés,juego de ortografía inglesa,practicar spelling en inglés,juego con tus propias palabras,lista de vocabulario en inglés,juego de palabras en inglés para niños,práctica de spelling sin cuenta">
+    <title>Prueba de Spelling Gratis con Tus Palabras — Sin Cuenta</title>
+    <meta name="description" content="Pega tu propia lista, escucha una palabra oculta, escribe la respuesta y recibe corrección al instante. Repite los fallos sin crear una cuenta.">
     <meta name="author" content="My Spelling Game">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-9244949928133071">
 
-    <meta property="og:title" content="Juego de spelling en inglés con tus propias palabras">
-    <meta property="og:description" content="Pega tu lista semanal, juega al instante y vuelve a practicar solo las palabras falladas. Sin cuenta.">
+    <meta property="og:title" content="Prueba de spelling con tus propias palabras">
+    <meta property="og:description" content="Escucha palabras ocultas, recibe corrección al instante y repite los fallos. Sin cuenta.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://myspellinggame.com/es/">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Juego de spelling en inglés con tus propias palabras preview">
+    <meta property="og:image:alt" content="Prueba de spelling con tus propias palabras preview">
     <meta property="og:site_name" content="My Spelling Game">
     <meta property="og:locale" content="es_ES">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Juego de spelling en inglés con tus propias palabras">
-    <meta name="twitter:description" content="Pega tu lista semanal, juega al instante y vuelve a practicar solo las palabras falladas. Sin cuenta.">
+    <meta name="twitter:title" content="Prueba de spelling con tus propias palabras">
+    <meta name="twitter:description" content="Escucha palabras ocultas, recibe corrección al instante y repite los fallos. Sin cuenta.">
     <meta name="twitter:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
 
     <meta name="theme-color" content="#2f6f73">
@@ -68,8 +67,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
 
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
@@ -91,10 +94,16 @@
     </div>
 
     <div class="seo-content" id="seo-content">
-        <h1>Juego gratis de spelling en inglés con tus propias palabras</h1>
-        <p>Pega la lista de palabras de esta semana y empieza a jugar al instante.</p>
-        <p>My Spelling Game guarda las palabras falladas, crea una ronda de repaso y permite compartir la misma práctica con un enlace.</p>
-        <p>Sin cuenta, sin preparar lecciones, sin bancos de palabras genéricos.</p>
+        <h1>Prueba gratis de spelling con tus propias palabras</h1>
+        <p>Pega tu lista y escucha cada palabra sin verla en pantalla.</p>
+        <p>Escribe la respuesta, recibe la corrección al instante y repite solo las palabras falladas.</p>
+        <p>No hace falta crear una cuenta.</p>
+        <ol class="practice-flow" aria-label="Pasos de la práctica">
+            <li>Pega las palabras</li>
+            <li>Escucha una palabra oculta</li>
+            <li>Escribe la respuesta</li>
+            <li>Repite las falladas</li>
+        </ol>
         <p>Elige una prueba de spelling con voz o el juego original de lluvia de palabras.</p>
     </div>
 
@@ -136,15 +145,15 @@
 
             <div class="game-start-screen" id="game-start">
                 <div class="start-screen-content">
-                    <div class="start-title">Empieza con tu lista de spelling</div>
+                    <div class="start-title">Practica con tu propia lista</div>
                     <div class="spelling-start">
-                        <div class="spelling-subtitle">Juego gratis de spelling en inglés con tus propias palabras</div>
-                        <p class="spelling-intro">Pega la lista semanal y juega al instante. Las palabras falladas pasan a una ronda de repaso, y el enlace funciona sin cuenta.</p>
+                        <div class="spelling-subtitle">Prueba de spelling o juego de typing, sin cuenta</div>
+                        <p class="spelling-intro">Elige la prueba de audio recomendada o Typing Rain, pega tus palabras y empieza.</p>
                         <div class="hero-proof-row" aria-label="My Spelling Game benefits">
-                            <span>Gratis para jugar</span>
-                            <span>Usa tus propias palabras</span>
-                            <span>Repite palabras falladas</span>
-                            <span>Comparte enlace, sin login</span>
+                            <span>Corrección inmediata</span>
+                            <span>Palabra oculta</span>
+                            <span>Repite los fallos</span>
+                            <span>Enlace sin login</span>
                         </div>
                         <fieldset class="mode-selector">
                             <legend>Elige un modo</legend>
@@ -214,13 +223,13 @@
 
                         <h4>Almacenamiento local</h4>
                     <p>Tu lista de palabras y tus preferencias se guardan localmente en este navegador.</p>
-                    <p>La lista no se sube a nuestros servidores.</p>
+                    <p>Los enlaces nuevos guardan la lista en el fragmento de la URL, que el navegador procesa sin enviarlo al servidor.</p>
                     <p>Puedes borrar estos datos desde el navegador o desde este panel.</p>
 
                         <h4>Analítica</h4>
-                    <p>Usamos Google Analytics para entender cómo se usa el juego.</p>
-                    <p>Estos datos nos ayudan a mejorar la experiencia de práctica.</p>
-                    <p>No necesitamos datos personales para que el juego funcione.</p>
+                    <p>Google Analytics recibe la dirección limpia de la página, sin parámetros ni fragmentos.</p>
+                    <p>Solo enviamos datos agregados, como el modo, la cantidad de palabras y el resultado.</p>
+                    <p>No enviamos la lista de palabras ni las respuestas escritas.</p>
 
                         <h4>Publicidad</h4>
                     <p>El sitio usa Google AdSense para mostrar anuncios.</p>
@@ -278,8 +287,8 @@
                     <h3>Para la lista de esta semana</h3>
                     <p>Usa la prueba para escuchar una palabra oculta cada vez, o la lluvia de palabras para escribir palabras que caen.</p>
                     <p>Pega las palabras de inglés que ya trae tu clase o tu hijo.</p>
-                    <p>El estudiante escribe cada palabra antes de que llegue abajo.</p>
-                    <p>Pulsa <kbd>Enter</kbd> o <kbd>Space</kbd> para enviar.</p>
+                    <p>Usa la prueba de audio para escuchar una palabra oculta o Typing Rain para escribir palabras que caen.</p>
+                    <p>Pulsa <kbd>Enter</kbd> para enviar; Typing Rain también admite <kbd>Space</kbd>.</p>
                     <p>Las palabras falladas quedan guardadas para repasarlas con un clic.</p>
                     <p>Copia un enlace para compartir la misma lista.</p>
                     <h4>Modo fácil</h4>
@@ -299,16 +308,16 @@
         </div>
 
         <div class="spelling-seo-copy">
-            <h2>Juego de spelling en inglés con tus propias palabras</h2>
-            <p>My Spelling Game es un <strong>juego gratis de spelling en inglés</strong> para familias, profesores y tutores que ya tienen una lista semanal y quieren practicar sin montar una clase online.</p>
+            <h2>Dos formas de practicar tu propia lista</h2>
+            <p><strong>Spelling Test</strong> reproduce una palabra oculta y corrige la respuesta. <strong>Typing Rain</strong> mantiene el juego original de palabras que caen.</p>
 
-            <h3>Por qué importa usar tu propia lista</h3>
-            <p>Muchos juegos de spelling traen palabras genéricas. Eso no ayuda cuando el examen o la tarea usa una lista concreta. Aquí pegas tus palabras, juegas al momento y repites solo lo que salió mal.</p>
+            <h3>Una lista concreta, una práctica más útil</h3>
+            <p>Pegar la lista real mantiene la práctica centrada en las palabras de esta semana. Los dos modos guardan los fallos para repasarlos.</p>
             <ul>
                 <li><strong>Usa tu lista real:</strong> Pega palabras de una hoja del profesor, deberes o material homeschool.</li>
-                <li><strong>Repite lo fallado:</strong> Las palabras que caen al fondo vuelven en otra ronda.</li>
+                <li><strong>Repite lo fallado:</strong> Las respuestas incorrectas y las palabras perdidas vuelven en otra ronda.</li>
                 <li><strong>Comparte la práctica:</strong> Copia un enlace con la misma lista, sin cuenta ni aula virtual.</li>
-                <li><strong>Escucha la palabra:</strong> Usa la voz del navegador para una práctica tipo dictado.</li>
+                <li><strong>Haz una prueba de audio:</strong> La palabra permanece oculta hasta enviar la respuesta.</li>
             </ul>
 
             <h3>Bueno para práctica semanal</h3>
@@ -325,8 +334,8 @@
 
     <footer>
         <p>
-            <a href="/custom-spelling-words-game.html">Juego personalizado</a> &middot; <a href="/es/spelling-list-game.html">Lista de spelling</a> &middot; <a href="/es/weekly-spelling-practice.html">Práctica semanal</a> &middot; <a href="/sight-word-typing-game.html">Sight words</a> &middot; <a href="/homeschool-spelling-practice.html">Homeschool</a> &middot; <a href="/vocabulary-typing-game.html">Vocabulario</a><br>
-            <a href="/es/privacy.html">Privacidad</a> &middot; <a href="/es/about.html">Acerca de</a> &middot; <a href="/es/contact.html">Contacto</a><br>
+            <a href="/es/custom-spelling-words-game">Juego personalizado</a> &middot; <a href="/es/spelling-list-game">Lista de spelling</a> &middot; <a href="/es/weekly-spelling-practice">Práctica semanal</a> &middot; <a href="/es/sight-word-typing-game">Sight words</a> &middot; <a href="/es/homeschool-spelling-practice">Homeschool</a> &middot; <a href="/es/vocabulary-typing-game">Vocabulario</a><br>
+            <a href="/es/privacy">Privacidad</a> &middot; <a href="/es/about">Acerca de</a> &middot; <a href="/es/contact">Contacto</a><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>
@@ -336,7 +345,7 @@
   "@context": "https://schema.org",
   "@type": "VideoGame",
   "name": "My Spelling Game",
-  "description": "Pega una lista de palabras y juega un juego gratis de spelling en inglés con repaso de palabras falladas y enlaces compartibles.",
+  "description": "Pega tus palabras para una prueba de spelling por audio o Typing Rain, con corrección y repaso de fallos.",
   "url": "https://myspellinggame.com/es/",
   "author": {
     "@type": "Organization",

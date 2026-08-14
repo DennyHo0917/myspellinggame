@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -70,7 +74,7 @@
 
         <section class="seo-panel">
             <h2>Misi</h2>
-            <p>My Spelling Game mengubah daftar kata bahasa Inggris mingguan menjadi game mengetik kata yang jatuh. Alat ini dibuat untuk orang tua, guru, homeschool, dan tutor yang butuh latihan cepat tanpa akun siswa atau bank kata acak.</p>
+            <p>My Spelling Game mengubah daftar kata mingguan menjadi tes spelling dengan audio atau game mengetik kata yang jatuh. Latihan bisa langsung dimulai tanpa akun siswa atau bank kata acak.</p>
         </section>
 
         <section class="seo-panel">

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Latihan spelling bahasa Inggris mingguan | My Spelling Game</title>
-    <meta name="description" content="Latih daftar kata bahasa Inggris minggu ini. Tempel kata, mainkan ronde singkat, ulangi kata yang salah, dan bagikan link tanpa akun.">
+    <meta name="description" content="Tempel kata bahasa Inggris minggu ini, dengarkan kata tersembunyi, ketik jawaban, lalu ulangi yang salah tanpa akun.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://myspellinggame.com/id/weekly-spelling-practice">
     <link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice">
@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -64,8 +68,14 @@
     <main class="seo-landing content-page">
         <section class="seo-hero">
             <h1>Latihan spelling bahasa Inggris mingguan</h1>
-            <p>My Spelling Game dibuat untuk rutinitas yang berulang setiap minggu: tempel daftar kata, latihan, lihat kata yang salah, lalu ulangi.</p>
-            <a class="seo-cta" href="/id">Latih kata minggu ini</a>
+            <p>Tempel daftar minggu ini dan mulai tes audio yang direkomendasikan. Kata tetap tersembunyi sampai jawaban dikirim.</p>
+            <form class="landing-launcher" action="/id/" data-mode="dictation" data-invalid="Masukkan setidaknya satu kata.">
+                <label for="weekly-words-id">Kata spelling minggu ini</label>
+                <textarea id="weekly-words-id" name="words" required spellcheck="false" placeholder="because
+friend
+beautiful"></textarea>
+                <button type="submit">Latih kata minggu ini</button>
+            </form>
         </section>
 
         <section class="seo-panel">
@@ -118,6 +128,7 @@
   }
 }
     </script>
+    <script type="module" src="/src/js/landingLauncher.mjs"></script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",

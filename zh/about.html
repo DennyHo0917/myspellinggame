@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -70,7 +74,7 @@
 
         <section class="seo-panel">
             <h2>使命</h2>
-            <p>My Spelling Game 把任意一份英语单词表变成掉落单词打字游戏。它适合家长、老师、homeschool 家庭和英语辅导场景，不需要学生账号、班级设置或随机词库。</p>
+            <p>My Spelling Game 把任意英语单词表变成隐藏单词听写测试或掉落单词打字游戏，无需学生账号、班级设置或随机词库。</p>
         </section>
 
         <section class="seo-panel">

@@ -17,15 +17,14 @@
     <link rel="dns-prefetch" href="//www.googletagmanager.com">
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
 
-    <title>Free Spelling Test With Your Own Words | My Spelling Game</title>
-    <meta name="description" content="Paste a custom word list for a free spelling test with your own words. Replay missed words and share a no-login practice link for class or home.">
-    <meta name="keywords" content="free spelling test with your own words,spelling game with your own words,custom spelling words game,custom word list game,custom spelling list game,make your own spelling game,spelling list game,teacher spelling list game,classroom spelling game,grade spelling words game,ESL spelling practice,weekly spelling list game,sight word typing game,homeschool spelling practice,no login spelling practice,shareable spelling practice link,missed word replay">
+    <title>Free Spelling Test With Your Own Words — No Login</title>
+    <meta name="description" content="Paste your own words, hear each hidden word, type the answer, and get instant grading. Retry missed words with no account or login.">
     <meta name="author" content="My Spelling Game">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-9244949928133071">
 
-    <meta property="og:title" content="Free Spelling Test With Your Own Words | My Spelling Game">
-    <meta property="og:description" content="Paste a custom spelling list, play instantly, then replay missed words. No student login.">
+    <meta property="og:title" content="Free Spelling Test With Your Own Words — No Login">
+    <meta property="og:description" content="Paste your own words, hear each hidden word, get instant grading, and retry missed words without an account.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://myspellinggame.com/">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
@@ -36,8 +35,8 @@
     <meta property="og:locale" content="en_US">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Free Spelling Test With Your Own Words | My Spelling Game">
-    <meta name="twitter:description" content="Paste a custom spelling list, play instantly, then replay missed words. No student login.">
+    <meta name="twitter:title" content="Free Spelling Test With Your Own Words — No Login">
+    <meta name="twitter:description" content="Paste your own words, hear each hidden word, get instant grading, and retry missed words without an account.">
     <meta name="twitter:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
 
     <meta name="theme-color" content="#2f6f73">
@@ -68,8 +67,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
 
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
@@ -92,10 +95,14 @@
 
     <div class="seo-content" id="seo-content">
         <h1>Free Spelling Test With Your Own Words</h1>
-        <p><strong>Short answer:</strong> My Spelling Game is a free no-login spelling test and typing game that lets teachers, parents, homeschool families, and ESL tutors paste their own word list, replay missed words, and share the same practice link.</p>
-        <p>Choose a spoken Spelling Test or the original Typing Rain game.</p>
-        <p>Teachers, parents, homeschool families, and ESL tutors can share the same practice link and replay missed words.</p>
-        <p>No student login, no lesson builder, no generic word bank.</p>
+        <p>Paste your list, hear one hidden word at a time, type the answer, and get instant grading.</p>
+        <p>Retry missed words or switch to the original Typing Rain game. No account required.</p>
+        <ol class="practice-flow" aria-label="Practice steps">
+            <li>Paste words</li>
+            <li>Hear a hidden word</li>
+            <li>Type the answer</li>
+            <li>Retry missed words</li>
+        </ol>
     </div>
 
     <div class="main-content-wrapper">
@@ -136,13 +143,13 @@
 
             <div class="game-start-screen" id="game-start">
                 <div class="start-screen-content">
-                    <div class="start-title">Start with your spelling list</div>
+                    <div class="start-title">Practice your own word list</div>
                     <div class="spelling-start">
                         <div class="spelling-subtitle">Free Spelling Test With Your Own Words</div>
-                        <p class="spelling-intro">Paste a custom spelling list for class, homework, homeschool, or ESL practice. Missed words become a replay round, and the practice link works with no account.</p>
+                        <p class="spelling-intro">Choose the recommended audio test or Typing Rain, paste your words, and start.</p>
                         <div class="hero-proof-row" aria-label="My Spelling Game benefits">
-                            <span>Free to play</span>
-                            <span>Custom word list</span>
+                            <span>Instant grading</span>
+                            <span>Hidden words</span>
                             <span>Missed-word replay</span>
                             <span>Share link, no login</span>
                         </div>
@@ -214,13 +221,13 @@
 
                         <h4>Local Storage</h4>
                         <p>Your spelling list and optional hear-words preference are stored locally in your browser using localStorage.</p>
-                        <p>This data never leaves your device and is only accessible to you.</p>
+                        <p>New share links store the word list in the URL fragment, which is processed by your browser and not sent to our server.</p>
                         <p>You can clear this data at any time through your browser settings.</p>
 
                         <h4>Analytics</h4>
-                        <p>We use Google Analytics to understand how players interact with the game.</p>
-                        <p>This helps us improve the practice experience.</p>
-                        <p>No personally identifiable information is collected.</p>
+                        <p>Google Analytics receives a cleaned page address without query parameters or URL fragments.</p>
+                        <p>Events contain aggregate details such as mode, word count, and result.</p>
+                        <p>We do not send your word list or typed answers to Analytics.</p>
                         <p>You can opt out by using browser extensions or privacy settings.</p>
 
                         <h4>Advertising</h4>
@@ -301,32 +308,24 @@
         </div>
 
         <div class="spelling-seo-copy">
-            <h2>Free Spelling Game And Test With Your Own Words</h2>
-            <p>My Spelling Game is a <strong>free custom spelling test and typing game</strong> for parents, teachers, homeschool families, classroom centers, and ESL tutors who already have a weekly word list and need a quick way to make practice feel less repetitive.</p>
+            <h2>Two Ways to Practice Your Own Words</h2>
+            <p><strong>Spelling Test</strong> reads one hidden word at a time and grades the typed answer. <strong>Typing Rain</strong> keeps the original falling-word typing challenge.</p>
 
             <h3>Why A Custom Spelling List Matters</h3>
-            <p>Most spelling games use a fixed word bank. That is fine for generic typing practice, but it does not help when a student needs to practice this week's exact words. My Spelling Game lets you paste your own custom word list, play immediately, and keep the practice focused on the words that will appear on the next quiz or spelling test.</p>
+            <p>A pasted list keeps practice focused on the words needed now. Both modes record misses, support a focused retry round, and work without a student account.</p>
             <ul>
                 <li><strong>Use your own custom word list:</strong> Paste words from a teacher handout, homework sheet, grade-level list, or homeschool curriculum.</li>
-                <li><strong>Run a quick spelling test:</strong> Students type the falling words from the exact list you entered.</li>
-                <li><strong>Use missed-word replay:</strong> Words that fall to the bottom are saved for another round.</li>
-                <li><strong>Share a practice link:</strong> Copy a link that includes the same word list, with no account, student login, or class setup.</li>
-                <li><strong>Hear each word:</strong> Use your browser's built-in speech voice for optional dictation-style practice.</li>
+                <li><strong>Run a real audio test:</strong> The spelling stays hidden until the answer is submitted.</li>
+                <li><strong>Use missed-word replay:</strong> Incorrect or missed words are saved for another round.</li>
+                <li><strong>Share a practice link:</strong> Copy the same list and selected mode without an account.</li>
             </ul>
-
-            <h3>Built For Teachers, Parents, Homeschool, And ESL</h3>
-            <p>This tool is intentionally small. It is for the repeated weekly job: take a short spelling list, make a child practice it, find the missed words, then practice those again. It is free to play, with no student accounts, no lesson builder, and no platform lock-in.</p>
-
-            <h3>My Spelling Game Vs Fixed Word-Bank Games</h3>
-            <p>Fixed spelling games are useful for general practice, but they often use unrelated words. My Spelling Game is better when the goal is to practice a teacher's list, a homeschool curriculum list, an ESL vocabulary list, or the exact words for an upcoming quiz.</p>
 
             <h3>Practice Pages By Use Case</h3>
             <p>Use the <a href="/custom-spelling-words-game">custom spelling words game</a> when you want a paste-and-play page, the <a href="/spelling-list-game">spelling list game</a> for a teacher handout, the <a href="/weekly-spelling-practice">weekly spelling practice page</a> for quiz week, the <a href="/homeschool-spelling-practice">homeschool spelling practice page</a> for curriculum lists, the <a href="/sight-word-typing-game">sight word typing game</a> for early readers, or the <a href="/vocabulary-typing-game">vocabulary typing game</a> for ESL and tutoring.</p>
 
             <h3>Quick FAQ</h3>
-            <p><strong>What is the best free spelling game with your own words?</strong> My Spelling Game is built for that use case: paste your own spelling words, play a quick browser game, replay missed words, and share a no-login practice link.</p>
-            <p><strong>Can I use my own spelling words?</strong> Yes. Paste a weekly spelling list and the game will use those exact words.</p>
-            <p><strong>Can I use this as a spelling test with my own words?</strong> Yes. Paste a custom word list, start a round, and use the results plus missed-word replay for a quick spelling test.</p>
+            <p><strong>Can I use my own spelling words?</strong> Yes. Paste a weekly spelling list and My Spelling Game will use those exact words in either Spelling Test or Typing Rain.</p>
+            <p><strong>Can I use this as a spelling test with my own words?</strong> Yes. The audio test keeps each word hidden until the answer is submitted, then shows the result and saves missed words for retry.</p>
             <p><strong>Can teachers share a custom spelling list with a class?</strong> Yes. Copy the practice link so students can open the same list without an account.</p>
             <p><strong>Can students replay missed words?</strong> Yes. Missed words are saved at the end of the round for focused replay.</p>
             <p><strong>Do students need an account?</strong> No. My Spelling Game works in the browser with no student account, class setup, or login.</p>
@@ -353,12 +352,12 @@
       "@context": "https://schema.org",
       "@type": "VideoGame",
       "name": "My Spelling Game",
-      "description": "Paste a custom word list and play a free falling-word spelling test with missed-word replay and shareable practice links.",
+      "description": "Paste your own words for a hidden-word audio spelling test or the Typing Rain game, with instant results and missed-word retry.",
       "url": "https://myspellinggame.com/",
       "mainEntityOfPage": "https://myspellinggame.com/",
       "inLanguage": "en",
       "datePublished": "2026-06-19",
-      "dateModified": "2026-06-22",
+      "dateModified": "2026-08-14",
       "isAccessibleForFree": true,
       "author": {
         "@type": "Organization",
@@ -395,18 +394,10 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "What is the best free spelling game with your own words?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "My Spelling Game is built for custom word lists: paste your own spelling words, play a quick browser game, replay missed words, and share a no-login practice link."
-          }
-        },
-        {
-          "@type": "Question",
           "name": "Can I use my own spelling words?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. Paste a weekly spelling list and My Spelling Game will use those exact words in the falling-word game."
+            "text": "Yes. Paste a weekly spelling list and My Spelling Game will use those exact words in either Spelling Test or Typing Rain."
           }
         },
         {
@@ -414,7 +405,7 @@
           "name": "Can I use this as a spelling test with my own words?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. Paste a custom word list, start a round, and use the results plus missed-word replay for a quick spelling test with your own words."
+            "text": "Yes. The audio test keeps each word hidden until the answer is submitted, then shows the result and saves missed words for retry."
           }
         },
         {

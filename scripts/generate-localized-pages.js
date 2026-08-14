@@ -15,12 +15,12 @@ const alternates = [
 ];
 
 const sharedLinks = [
-  '/custom-spelling-words-game.html',
-  '/spelling-list-game.html',
-  '/weekly-spelling-practice.html',
-  '/sight-word-typing-game.html',
-  '/homeschool-spelling-practice.html',
-  '/vocabulary-typing-game.html',
+  '/custom-spelling-words-game',
+  '/spelling-list-game',
+  '/weekly-spelling-practice',
+  '/sight-word-typing-game',
+  '/homeschool-spelling-practice',
+  '/vocabulary-typing-game',
 ];
 
 const localizedSeoSlugs = ['spelling-list-game', 'weekly-spelling-practice'];
@@ -31,25 +31,27 @@ const pages = {
     path: '/es/',
     pageLocale: 'es',
     ogLocale: 'es_ES',
-    title: 'Juego de spelling en inglés | My Spelling Game',
-    description: 'Pega la lista de vocabulario de esta semana y juega un juego gratis de spelling en inglés. Repite las palabras falladas y comparte un enlace sin crear cuenta.',
+    title: 'Prueba de Spelling Gratis con Tus Palabras — Sin Cuenta',
+    description: 'Pega tu propia lista, escucha una palabra oculta, escribe la respuesta y recibe corrección al instante. Repite los fallos sin crear una cuenta.',
     keywords: 'juego de spelling en inglés,juego de deletreo en inglés,juego de ortografía inglesa,practicar spelling en inglés,juego con tus propias palabras,lista de vocabulario en inglés,juego de palabras en inglés para niños,práctica de spelling sin cuenta',
-    ogTitle: 'Juego de spelling en inglés con tus propias palabras',
-    ogDescription: 'Pega tu lista semanal, juega al instante y vuelve a practicar solo las palabras falladas. Sin cuenta.',
+    ogTitle: 'Prueba de spelling con tus propias palabras',
+    ogDescription: 'Escucha palabras ocultas, recibe corrección al instante y repite los fallos. Sin cuenta.',
     nav: { language: 'Idioma', privacy: 'Privacidad', sound: 'Sonido' },
     hero: {
-      h1: 'Juego gratis de spelling en inglés con tus propias palabras',
-      p1: 'Pega la lista de palabras de esta semana y empieza a jugar al instante.',
-      p2: 'My Spelling Game guarda las palabras falladas, crea una ronda de repaso y permite compartir la misma práctica con un enlace.',
-      p3: 'Sin cuenta, sin preparar lecciones, sin bancos de palabras genéricos.',
+      h1: 'Prueba gratis de spelling con tus propias palabras',
+      p1: 'Pega tu lista y escucha cada palabra sin verla en pantalla.',
+      p2: 'Escribe la respuesta, recibe la corrección al instante y repite solo las palabras falladas.',
+      p3: 'No hace falta crear una cuenta.',
+      flow: ['Pega las palabras', 'Escucha una palabra oculta', 'Escribe la respuesta', 'Repite las falladas'],
+      flowLabel: 'Pasos de la práctica',
     },
     game: {
       round: 'Ronda de práctica',
       placeholder: 'Escribe una palabra en inglés...',
-      startTitle: 'Empieza con tu lista de spelling',
-      subtitle: 'Juego gratis de spelling en inglés con tus propias palabras',
-      intro: 'Pega la lista semanal y juega al instante. Las palabras falladas pasan a una ronda de repaso, y el enlace funciona sin cuenta.',
-      chips: ['Gratis para jugar', 'Usa tus propias palabras', 'Repite palabras falladas', 'Comparte enlace, sin login'],
+      startTitle: 'Practica con tu propia lista',
+      subtitle: 'Prueba de spelling o juego de typing, sin cuenta',
+      intro: 'Elige la prueba de audio recomendada o Typing Rain, pega tus palabras y empieza.',
+      chips: ['Corrección inmediata', 'Palabra oculta', 'Repite los fallos', 'Enlace sin login'],
       wordsLabel: 'Tus palabras en inglés',
       hear: 'Escuchar cada palabra antes de escribir',
       easy: 'Modo fácil',
@@ -75,14 +77,14 @@ const pages = {
       localTitle: 'Almacenamiento local',
       local: [
         'Tu lista de palabras y tus preferencias se guardan localmente en este navegador.',
-        'La lista no se sube a nuestros servidores.',
+        'Los enlaces nuevos guardan la lista en el fragmento de la URL, que el navegador procesa sin enviarlo al servidor.',
         'Puedes borrar estos datos desde el navegador o desde este panel.',
       ],
       analyticsTitle: 'Analítica',
       analytics: [
-        'Usamos Google Analytics para entender cómo se usa el juego.',
-        'Estos datos nos ayudan a mejorar la experiencia de práctica.',
-        'No necesitamos datos personales para que el juego funcione.',
+        'Google Analytics recibe la dirección limpia de la página, sin parámetros ni fragmentos.',
+        'Solo enviamos datos agregados, como el modo, la cantidad de palabras y el resultado.',
+        'No enviamos la lista de palabras ni las respuestas escritas.',
       ],
       adsTitle: 'Publicidad',
       ads: [
@@ -104,8 +106,8 @@ const pages = {
       listTitle: 'Para la lista de esta semana',
       list: [
         'Pega las palabras de inglés que ya trae tu clase o tu hijo.',
-        'El estudiante escribe cada palabra antes de que llegue abajo.',
-        'Pulsa <kbd>Enter</kbd> o <kbd>Space</kbd> para enviar.',
+        'Usa la prueba de audio para escuchar una palabra oculta o Typing Rain para escribir palabras que caen.',
+        'Pulsa <kbd>Enter</kbd> para enviar; Typing Rain también admite <kbd>Space</kbd>.',
         'Las palabras falladas quedan guardadas para repasarlas con un clic.',
         'Copia un enlace para compartir la misma lista.',
       ],
@@ -118,15 +120,15 @@ const pages = {
         'El repaso se concentra en las palabras que el estudiante falló.',
         'El modo fácil baja la velocidad sin cambiar las reglas de spelling.',
       ],
-      seoTitle: 'Juego de spelling en inglés con tus propias palabras',
-      seoIntro: 'My Spelling Game es un <strong>juego gratis de spelling en inglés</strong> para familias, profesores y tutores que ya tienen una lista semanal y quieren practicar sin montar una clase online.',
-      sectionTitle: 'Por qué importa usar tu propia lista',
-      sectionText: 'Muchos juegos de spelling traen palabras genéricas. Eso no ayuda cuando el examen o la tarea usa una lista concreta. Aquí pegas tus palabras, juegas al momento y repites solo lo que salió mal.',
+      seoTitle: 'Dos formas de practicar tu propia lista',
+      seoIntro: '<strong>Spelling Test</strong> reproduce una palabra oculta y corrige la respuesta. <strong>Typing Rain</strong> mantiene el juego original de palabras que caen.',
+      sectionTitle: 'Una lista concreta, una práctica más útil',
+      sectionText: 'Pegar la lista real mantiene la práctica centrada en las palabras de esta semana. Los dos modos guardan los fallos para repasarlos.',
       bullets: [
         '<strong>Usa tu lista real:</strong> Pega palabras de una hoja del profesor, deberes o material homeschool.',
-        '<strong>Repite lo fallado:</strong> Las palabras que caen al fondo vuelven en otra ronda.',
+        '<strong>Repite lo fallado:</strong> Las respuestas incorrectas y las palabras perdidas vuelven en otra ronda.',
         '<strong>Comparte la práctica:</strong> Copia un enlace con la misma lista, sin cuenta ni aula virtual.',
-        '<strong>Escucha la palabra:</strong> Usa la voz del navegador para una práctica tipo dictado.',
+        '<strong>Haz una prueba de audio:</strong> La palabra permanece oculta hasta enviar la respuesta.',
       ],
       repeatTitle: 'Bueno para práctica semanal',
       repeatText: 'Es una herramienta pequeña para una tarea repetida: tomar una lista corta, practicar, ver qué palabras fallan y repetirlas. Gratis, sin cuentas de estudiante y sin depender de una plataforma escolar.',
@@ -134,7 +136,7 @@ const pages = {
     footerLinks: ['Juego personalizado', 'Lista de spelling', 'Práctica semanal', 'Sight words', 'Homeschool', 'Vocabulario'],
     legalLinks: ['Privacidad', 'Acerca de', 'Contacto'],
     schema: {
-      description: 'Pega una lista de palabras y juega un juego gratis de spelling en inglés con repaso de palabras falladas y enlaces compartibles.',
+      description: 'Pega tus palabras para una prueba de spelling por audio o Typing Rain, con corrección y repaso de fallos.',
       faq: [
         ['¿Puedo usar mis propias palabras?', 'Sí. Pega una lista semanal y My Spelling Game usará exactamente esas palabras en el juego.'],
         ['¿Puedo repetir solo las palabras falladas?', 'Sí. Al final de la ronda, las palabras falladas quedan listas para otra práctica.'],
@@ -148,25 +150,27 @@ const pages = {
     path: '/pt-br/',
     pageLocale: 'pt-BR',
     ogLocale: 'pt_BR',
-    title: 'Jogo de Soletrar em Inglês | My Spelling Game',
-    description: 'Cole sua lista de palavras e jogue um jogo grátis de soletrar em inglês. Revise erros e compartilhe um link sem criar conta.',
+    title: 'Teste de Spelling Grátis com Suas Palavras — Sem Login',
+    description: 'Cole sua lista, ouça uma palavra escondida, digite a resposta e veja a correção na hora. Revise os erros sem criar conta.',
     keywords: 'jogo de soletrar em inglês,soletrar em inglês,jogo de spelling em inglês,jogo de ortografia em inglês,praticar spelling em inglês,lista de palavras em inglês,jogo com suas próprias palavras,atividade de inglês para crianças,spelling bee online grátis',
-    ogTitle: 'Jogo de soletrar em inglês com suas próprias palavras',
-    ogDescription: 'Cole sua lista semanal, jogue na hora e revise só as palavras que errou. Sem conta.',
+    ogTitle: 'Teste de spelling com suas próprias palavras',
+    ogDescription: 'Ouça palavras escondidas, veja a correção na hora e revise os erros. Sem login.',
     nav: { language: 'Idioma', privacy: 'Privacidade', sound: 'Som' },
     hero: {
-      h1: 'Jogo grátis de soletrar em inglês com suas próprias palavras',
-      p1: 'Cole a lista de palavras da semana e comece a jogar na hora.',
-      p2: 'My Spelling Game guarda as palavras erradas, cria uma rodada de revisão e deixa você compartilhar a mesma prática por link.',
-      p3: 'Sem conta, sem montar aula, sem banco de palavras genérico.',
+      h1: 'Teste de spelling grátis com suas próprias palavras',
+      p1: 'Cole sua lista e ouça cada palavra sem vê-la na tela.',
+      p2: 'Digite a resposta, confira a correção na hora e revise somente o que errou.',
+      p3: 'Não precisa criar conta.',
+      flow: ['Cole as palavras', 'Ouça uma palavra escondida', 'Digite a resposta', 'Revise os erros'],
+      flowLabel: 'Etapas da prática',
     },
     game: {
       round: 'Rodada de prática',
       placeholder: 'Digite uma palavra em inglês...',
-      startTitle: 'Comece com sua lista de spelling',
-      subtitle: 'Jogo grátis de soletrar em inglês com suas próprias palavras',
-      intro: 'Cole a lista da semana e jogue na hora. As palavras erradas viram uma rodada de revisão, e o link funciona sem conta.',
-      chips: ['Grátis para jogar', 'Use suas palavras', 'Revise as erradas', 'Compartilhe link, sem login'],
+      startTitle: 'Pratique com sua própria lista',
+      subtitle: 'Teste de spelling ou jogo de digitação, sem login',
+      intro: 'Escolha o teste por áudio recomendado ou Typing Rain, cole as palavras e comece.',
+      chips: ['Correção imediata', 'Palavra escondida', 'Revise os erros', 'Link sem login'],
       wordsLabel: 'Suas palavras em inglês',
       hear: 'Ouvir cada palavra antes de digitar',
       easy: 'Modo fácil',
@@ -192,14 +196,14 @@ const pages = {
       localTitle: 'Armazenamento local',
       local: [
         'Sua lista de palavras e preferências ficam salvas neste navegador.',
-        'A lista não é enviada para nossos servidores.',
+        'Os links novos guardam a lista no fragmento da URL, processado pelo navegador sem ser enviado ao servidor.',
         'Você pode apagar esses dados pelo navegador ou por este painel.',
       ],
       analyticsTitle: 'Analytics',
       analytics: [
-        'Usamos Google Analytics para entender como o jogo é usado.',
-        'Esses dados ajudam a melhorar a experiência de prática.',
-        'O jogo não precisa de dados pessoais para funcionar.',
+        'O Google Analytics recebe o endereço limpo da página, sem parâmetros ou fragmentos.',
+        'Enviamos apenas dados agregados, como modo, quantidade de palavras e resultado.',
+        'A lista de palavras e as respostas digitadas não são enviadas.',
       ],
       adsTitle: 'Anúncios',
       ads: [
@@ -221,8 +225,8 @@ const pages = {
       listTitle: 'Para a lista desta semana',
       list: [
         'Cole as palavras de inglês que a turma ou a criança já recebeu.',
-        'O aluno digita cada palavra antes que ela chegue ao fim da tela.',
-        'Use <kbd>Enter</kbd> ou <kbd>Space</kbd> para enviar.',
+        'Use o teste por áudio para ouvir uma palavra escondida ou o Typing Rain para digitar palavras que caem.',
+        'Use <kbd>Enter</kbd> para enviar; o Typing Rain também aceita <kbd>Space</kbd>.',
         'As palavras erradas ficam salvas para revisão em um clique.',
         'Copie um link para compartilhar a mesma lista.',
       ],
@@ -235,15 +239,15 @@ const pages = {
         'A revisão foca nas palavras que o aluno errou.',
         'O modo fácil reduz a velocidade sem mudar a regra de soletrar.',
       ],
-      seoTitle: 'Jogo de soletrar em inglês com suas próprias palavras',
-      seoIntro: 'My Spelling Game é um <strong>jogo grátis de soletrar em inglês</strong> para pais, professores e tutores que já têm uma lista de palavras e querem transformar isso em prática rápida de spelling.',
-      sectionTitle: 'Por que usar sua própria lista',
-      sectionText: 'Muitos jogos de inglês usam bancos de palavras prontos. Isso não resolve quando a prova, a lição ou a aula usa palavras específicas. Aqui você cola a lista real, joga imediatamente e revisa o que ficou difícil.',
+      seoTitle: 'Duas formas de praticar sua própria lista',
+      seoIntro: '<strong>Spelling Test</strong> toca uma palavra escondida e corrige a resposta. <strong>Typing Rain</strong> mantém o jogo original de palavras caindo.',
+      sectionTitle: 'Uma lista real deixa a prática mais útil',
+      sectionText: 'Colar a lista da semana mantém o foco nas palavras certas. Os dois modos guardam os erros para uma rodada de revisão.',
       bullets: [
         '<strong>Use sua lista real:</strong> Cole palavras da tarefa, da escola ou do material homeschool.',
-        '<strong>Revise os erros:</strong> Palavras que caem no fim da tela entram em outra rodada.',
+        '<strong>Revise os erros:</strong> Respostas erradas e palavras perdidas entram em outra rodada.',
         '<strong>Compartilhe a prática:</strong> Copie um link com a mesma lista, sem conta nem turma online.',
-        '<strong>Ouça cada palavra:</strong> Use a voz do navegador para uma prática parecida com ditado.',
+        '<strong>Faça um teste por áudio:</strong> A palavra fica escondida até a resposta ser enviada.',
       ],
       repeatTitle: 'Feito para prática semanal',
       repeatText: 'É uma ferramenta pequena para uma rotina que se repete: pegar uma lista curta, praticar, descobrir os erros e praticar de novo. Grátis, sem login de aluno e sem depender de plataforma escolar.',
@@ -251,7 +255,7 @@ const pages = {
     footerLinks: ['Jogo personalizado', 'Lista de soletrar', 'Prática semanal', 'Sight words', 'Homeschool', 'Vocabulário'],
     legalLinks: ['Privacidade', 'Sobre', 'Contato'],
     schema: {
-      description: 'Cole uma lista de palavras e jogue um jogo grátis de soletrar em inglês com revisão de erros e links compartilháveis.',
+      description: 'Cole suas palavras para um teste de spelling por áudio ou Typing Rain, com correção e revisão de erros.',
       faq: [
         ['Posso usar minhas próprias palavras?', 'Sim. Cole uma lista semanal e o jogo usa exatamente essas palavras.'],
         ['Dá para revisar só as palavras erradas?', 'Sim. No fim da rodada, as palavras erradas ficam prontas para outra prática.'],
@@ -265,25 +269,27 @@ const pages = {
     path: '/fr/',
     pageLocale: 'fr',
     ogLocale: 'fr_FR',
-    title: 'Jeu d’Orthographe Anglaise | My Spelling Game',
-    description: 'Collez votre liste de mots et lancez un jeu gratuit d’orthographe anglaise. Révisez les mots manqués et partagez un lien sans compte.',
+    title: 'Test d’Orthographe Anglaise avec Vos Mots — Sans Compte',
+    description: 'Collez votre liste, écoutez un mot caché, tapez la réponse et obtenez la correction immédiatement. Reprenez vos erreurs sans compte.',
     keywords: 'jeu d\'orthographe anglais,orthographe anglaise,pratiquer l\'orthographe anglaise,jeu de spelling anglais,épeler des mots anglais,liste de mots anglais,jeu avec vos propres mots,spelling bee anglais gratuit',
-    ogTitle: 'Jeu d’orthographe anglaise avec vos propres mots',
-    ogDescription: 'Collez une liste de mots, jouez tout de suite et retravaillez les mots manqués. Sans compte.',
+    ogTitle: 'Test d’orthographe anglaise avec vos propres mots',
+    ogDescription: 'Écoutez des mots cachés, obtenez la correction immédiatement et reprenez vos erreurs. Sans compte.',
     nav: { language: 'Langue', privacy: 'Confidentialité', sound: 'Son' },
     hero: {
-      h1: 'Jeu gratuit d’orthographe anglaise avec vos propres mots',
-      p1: 'Collez la liste de mots de la semaine et commencez à jouer immédiatement.',
-      p2: 'My Spelling Game garde les mots manqués, crée une partie de révision et permet de partager la même liste par lien.',
-      p3: 'Pas de compte, pas de préparation de leçon, pas de liste de mots générique.',
+      h1: 'Test gratuit d’orthographe anglaise avec vos propres mots',
+      p1: 'Collez votre liste et écoutez chaque mot sans le voir à l’écran.',
+      p2: 'Tapez la réponse, voyez la correction tout de suite, puis reprenez seulement vos erreurs.',
+      p3: 'Aucun compte n’est nécessaire.',
+      flow: ['Collez les mots', 'Écoutez un mot caché', 'Tapez la réponse', 'Reprenez vos erreurs'],
+      flowLabel: 'Étapes de la pratique',
     },
     game: {
       round: 'Partie de pratique',
       placeholder: 'Tapez un mot anglais...',
-      startTitle: 'Commencez avec votre liste de mots',
-      subtitle: 'Jeu gratuit d’orthographe anglaise avec vos propres mots',
-      intro: 'Collez la liste de la semaine et jouez immédiatement. Les mots manqués deviennent une partie de révision, et le lien fonctionne sans compte.',
-      chips: ['Gratuit', 'Vos propres mots', 'Réviser les mots manqués', 'Lien partageable, sans compte'],
+      startTitle: 'Pratiquez avec votre propre liste',
+      subtitle: 'Test audio ou jeu de frappe, sans compte',
+      intro: 'Choisissez le test audio recommandé ou Typing Rain, collez vos mots et commencez.',
+      chips: ['Correction immédiate', 'Mot caché', 'Reprendre les erreurs', 'Lien sans compte'],
       wordsLabel: 'Vos mots anglais',
       hear: 'Écouter chaque mot avant de taper',
       easy: 'Mode facile',
@@ -309,14 +315,14 @@ const pages = {
       localTitle: 'Stockage local',
       local: [
         'Votre liste de mots et vos préférences sont enregistrées localement dans ce navigateur.',
-        'La liste de mots n’est pas envoyée à nos serveurs.',
+        'Les nouveaux liens placent la liste dans le fragment de l’URL, traité par le navigateur sans être envoyé au serveur.',
         'Vous pouvez effacer ces données depuis le navigateur ou depuis ce panneau.',
       ],
       analyticsTitle: 'Mesure d’audience',
       analytics: [
-        'Nous utilisons Google Analytics pour comprendre l’usage du jeu.',
-        'Ces données nous aident à améliorer la pratique.',
-        'Le jeu n’a pas besoin de données personnelles pour fonctionner.',
+        'Google Analytics reçoit une adresse de page nettoyée, sans paramètres ni fragment.',
+        'Seules des données agrégées sont envoyées, comme le mode, le nombre de mots et le résultat.',
+        'La liste de mots et les réponses saisies ne sont jamais envoyées.',
       ],
       adsTitle: 'Publicité',
       ads: [
@@ -338,8 +344,8 @@ const pages = {
       listTitle: 'Pour la liste de cette semaine',
       list: [
         'Collez les mots anglais déjà donnés par le professeur ou le cours.',
-        'L’élève tape chaque mot avant qu’il n’arrive en bas.',
-        'Appuyez sur <kbd>Enter</kbd> ou <kbd>Space</kbd> pour valider.',
+        'Choisissez le test audio pour écouter un mot caché, ou Typing Rain pour taper les mots qui tombent.',
+        'Appuyez sur <kbd>Enter</kbd> pour valider ; Typing Rain accepte aussi <kbd>Space</kbd>.',
         'Les mots manqués sont gardés pour une révision en un clic.',
         'Copiez un lien pour partager la même liste.',
       ],
@@ -352,15 +358,15 @@ const pages = {
         'La révision se concentre sur les mots réellement manqués.',
         'Le mode facile ralentit la partie sans changer la règle.',
       ],
-      seoTitle: 'Jeu d’orthographe anglaise avec vos propres mots',
-      seoIntro: 'My Spelling Game est un <strong>jeu gratuit d’orthographe anglaise</strong> pour les parents, enseignants et tuteurs qui ont déjà une liste de mots et veulent la transformer en pratique rapide de spelling anglais.',
-      sectionTitle: 'Pourquoi utiliser sa propre liste',
-      sectionText: 'Beaucoup de jeux d’anglais proposent des listes toutes faites. C’est moins utile quand le contrôle ou le devoir porte sur des mots précis. Ici, vous collez la vraie liste, jouez tout de suite et reprenez ce qui a posé problème.',
+      seoTitle: 'Deux façons de travailler votre propre liste',
+      seoIntro: '<strong>Spelling Test</strong> lit un mot caché et corrige la réponse. <strong>Typing Rain</strong> conserve le jeu original de mots qui tombent.',
+      sectionTitle: 'Une liste précise rend la pratique plus utile',
+      sectionText: 'Coller la liste de la semaine garde la pratique centrée sur les bons mots. Les deux modes enregistrent les erreurs pour les reprendre.',
       bullets: [
         '<strong>Votre vraie liste :</strong> Collez les mots d’un devoir, d’un cours ou d’un support homeschool.',
         '<strong>Révision ciblée :</strong> Les mots manqués reviennent dans une autre partie.',
         '<strong>Lien partageable :</strong> Envoyez la même liste sans compte ni espace classe.',
-        '<strong>Écoute du mot :</strong> Utilisez la voix du navigateur pour une pratique proche de la dictée.',
+        '<strong>Test audio :</strong> Le mot reste caché jusqu’à l’envoi de la réponse.',
       ],
       repeatTitle: 'Adapté à la pratique hebdomadaire',
       repeatText: 'L’outil reste volontairement simple : prendre une liste courte, faire pratiquer l’enfant, repérer les mots manqués, puis les refaire. Gratuit, sans compte élève et sans dépendre d’une plateforme scolaire.',
@@ -368,7 +374,7 @@ const pages = {
     footerLinks: ['Jeu personnalisé', 'Liste de mots', 'Pratique hebdomadaire', 'Sight words', 'Homeschool', 'Vocabulaire'],
     legalLinks: ['Confidentialité', 'À propos', 'Contact'],
     schema: {
-      description: 'Collez une liste de mots et jouez à un jeu gratuit d’orthographe anglaise avec révision des mots manqués et lien partageable.',
+      description: 'Collez vos mots pour un test audio ou Typing Rain, avec correction et reprise des erreurs.',
       faq: [
         ['Puis-je utiliser mes propres mots ?', 'Oui. Collez une liste de la semaine et le jeu utilise exactement ces mots.'],
         ['Peut-on rejouer seulement les mots manqués ?', 'Oui. Les mots manqués restent disponibles pour une nouvelle partie.'],
@@ -382,25 +388,27 @@ const pages = {
     path: '/id/',
     pageLocale: 'id',
     ogLocale: 'id_ID',
-    title: 'Game Spelling Bahasa Inggris | My Spelling Game',
-    description: 'Tempel daftar kata bahasa Inggris dan mainkan game spelling gratis untuk latihan mengeja. Ulangi kata yang salah dan bagikan link tanpa akun.',
+    title: 'Tes Spelling Gratis dengan Kata Sendiri — Tanpa Login',
+    description: 'Tempel daftar sendiri, dengarkan kata yang disembunyikan, ketik jawaban, lalu lihat hasilnya. Ulangi kata yang salah tanpa akun.',
     keywords: 'game spelling bahasa Inggris,permainan spelling bahasa Inggris,permainan mengeja bahasa Inggris,latihan mengeja bahasa Inggris,belajar spelling bahasa Inggris,game kosakata bahasa Inggris,daftar kata bahasa Inggris,buat daftar kata sendiri,game dengan kata sendiri,latihan spelling anak,spelling bee online gratis',
-    ogTitle: 'Game spelling bahasa Inggris dengan daftar kata sendiri',
-    ogDescription: 'Tempel daftar kata, langsung main, lalu ulangi kata yang belum tepat. Tanpa akun.',
+    ogTitle: 'Tes spelling dengan daftar kata sendiri',
+    ogDescription: 'Dengarkan kata tersembunyi, lihat hasilnya, lalu ulangi yang salah. Tanpa login.',
     nav: { language: 'Bahasa', privacy: 'Privasi', sound: 'Suara' },
     hero: {
-      h1: 'Game spelling bahasa Inggris gratis dengan daftar kata sendiri',
-      p1: 'Tempel daftar kata minggu ini dan langsung mulai bermain.',
-      p2: 'My Spelling Game menyimpan kata yang terlewat, membuat ronde ulang, dan membagikan latihan yang sama lewat link.',
-      p3: 'Tanpa akun, tanpa membuat kelas, tanpa bank kata acak.',
+      h1: 'Tes spelling gratis dengan daftar kata sendiri',
+      p1: 'Tempel daftar kata lalu dengarkan setiap kata tanpa melihatnya di layar.',
+      p2: 'Ketik jawaban, lihat hasilnya saat itu juga, dan ulangi hanya kata yang salah.',
+      p3: 'Tidak perlu membuat akun.',
+      flow: ['Tempel kata', 'Dengarkan kata tersembunyi', 'Ketik jawaban', 'Ulangi kata yang salah'],
+      flowLabel: 'Langkah latihan',
     },
     game: {
       round: 'Ronde latihan',
       placeholder: 'Ketik kata bahasa Inggris...',
-      startTitle: 'Mulai dengan daftar spelling-mu',
-      subtitle: 'Game spelling bahasa Inggris gratis dengan daftar kata sendiri',
-      intro: 'Tempel daftar kata mingguan dan langsung main. Kata yang salah masuk ronde ulang, dan link latihan bisa dipakai tanpa akun.',
-      chips: ['Gratis dimainkan', 'Pakai kata sendiri', 'Ulangi kata yang salah', 'Bagikan link, tanpa login'],
+      startTitle: 'Latihan dengan daftar kata sendiri',
+      subtitle: 'Tes spelling atau game mengetik, tanpa login',
+      intro: 'Pilih tes audio yang direkomendasikan atau Typing Rain, tempel kata, lalu mulai.',
+      chips: ['Hasil langsung', 'Kata disembunyikan', 'Ulangi yang salah', 'Link tanpa login'],
       wordsLabel: 'Daftar kata bahasa Inggris',
       hear: 'Dengarkan kata sebelum mengetik',
       easy: 'Mode mudah',
@@ -426,14 +434,14 @@ const pages = {
       localTitle: 'Penyimpanan lokal',
       local: [
         'Daftar kata dan pilihan latihan disimpan di browser ini.',
-        'Daftar kata tidak dikirim ke server kami.',
+        'Link baru menyimpan daftar di fragmen URL yang diproses browser tanpa dikirim ke server.',
         'Kamu bisa menghapus data ini lewat browser atau panel ini.',
       ],
       analyticsTitle: 'Analytics',
       analytics: [
-        'Kami memakai Google Analytics untuk memahami cara orang memakai game.',
-        'Data ini membantu kami memperbaiki pengalaman latihan.',
-        'Game tidak membutuhkan data pribadi untuk berjalan.',
+        'Google Analytics menerima alamat halaman yang sudah dibersihkan, tanpa parameter atau fragmen.',
+        'Kami hanya mengirim statistik gabungan seperti mode, jumlah kata, dan hasil.',
+        'Daftar kata dan jawaban yang diketik tidak pernah dikirim.',
       ],
       adsTitle: 'Iklan',
       ads: [
@@ -455,8 +463,8 @@ const pages = {
       listTitle: 'Untuk daftar kata minggu ini',
       list: [
         'Tempel kata bahasa Inggris yang sudah diberikan guru atau kelas.',
-        'Siswa mengetik setiap kata sebelum jatuh ke bawah.',
-        'Tekan <kbd>Enter</kbd> atau <kbd>Space</kbd> untuk mengirim.',
+        'Pilih tes audio untuk mendengar kata tersembunyi, atau Typing Rain untuk mengetik kata yang jatuh.',
+        'Tekan <kbd>Enter</kbd> untuk mengirim; Typing Rain juga menerima <kbd>Space</kbd>.',
         'Kata yang terlewat disimpan untuk latihan ulang sekali klik.',
         'Salin link untuk membagikan daftar yang sama.',
       ],
@@ -469,15 +477,15 @@ const pages = {
         'Ronde ulang fokus pada kata yang benar-benar salah.',
         'Mode mudah memperlambat permainan tanpa mengubah aturan spelling.',
       ],
-      seoTitle: 'Game spelling bahasa Inggris dengan daftar kata sendiri',
-      seoIntro: 'My Spelling Game adalah <strong>game spelling bahasa Inggris gratis</strong> untuk orang tua, guru, tutor, dan siswa yang sudah punya daftar kata dan ingin latihan mengeja dengan cepat.',
-      sectionTitle: 'Kenapa perlu memakai daftar sendiri',
-      sectionText: 'Banyak game bahasa Inggris memakai daftar kata bawaan. Itu kurang pas kalau tugas atau kuis memakai kata tertentu. Di sini kamu tinggal menempel daftar asli, bermain, lalu mengulang kata yang belum tepat.',
+      seoTitle: 'Dua cara berlatih dengan daftar sendiri',
+      seoIntro: '<strong>Spelling Test</strong> membacakan kata tersembunyi dan memeriksa jawaban. <strong>Typing Rain</strong> mempertahankan game kata jatuh yang asli.',
+      sectionTitle: 'Daftar yang tepat membuat latihan lebih berguna',
+      sectionText: 'Menempel daftar minggu ini membuat latihan tetap fokus. Kedua mode menyimpan kesalahan untuk ronde ulang.',
       bullets: [
         '<strong>Pakai daftar nyata:</strong> Tempel kata dari PR, lembar guru, atau materi homeschool.',
-        '<strong>Latihan ulang:</strong> Kata yang jatuh ke bawah masuk ronde berikutnya.',
+        '<strong>Latihan ulang:</strong> Jawaban salah dan kata yang terlewat masuk ronde berikutnya.',
         '<strong>Bagikan link:</strong> Kirim latihan yang sama tanpa akun atau kelas online.',
-        '<strong>Dengarkan kata:</strong> Pakai suara browser untuk latihan seperti dikte.',
+        '<strong>Tes audio:</strong> Kata tetap tersembunyi sampai jawaban dikirim.',
       ],
       repeatTitle: 'Cocok untuk latihan mingguan',
       repeatText: 'Alat ini sengaja sederhana: ambil daftar pendek, latihan, lihat kata yang terlewat, lalu ulangi. Gratis, tanpa akun siswa, dan tidak bergantung pada platform sekolah.',
@@ -485,7 +493,7 @@ const pages = {
     footerLinks: ['Game kata sendiri', 'Daftar spelling', 'Latihan mingguan', 'Sight words', 'Homeschool', 'Kosakata'],
     legalLinks: ['Privasi', 'Tentang', 'Kontak'],
     schema: {
-      description: 'Tempel daftar kata dan mainkan game spelling bahasa Inggris gratis untuk latihan mengeja, dengan ronde ulang dan link yang bisa dibagikan.',
+      description: 'Tempel kata sendiri untuk tes spelling dengan audio atau Typing Rain, lengkap dengan hasil dan latihan ulang.',
       faq: [
         ['Bisa memakai daftar kata sendiri?', 'Bisa. Tempel daftar kata mingguan dan game akan memakai kata itu.'],
         ['Bisa mengulang kata yang salah saja?', 'Bisa. Kata yang terlewat akan tersedia untuk ronde ulang.'],
@@ -499,25 +507,27 @@ const pages = {
     path: '/zh/',
     pageLocale: 'zh',
     ogLocale: 'zh_CN',
-    title: '用自己的单词表练英语拼写 | 免费 Spelling Game',
-    description: '粘贴本周英语单词表，马上开始免费的拼写打字小游戏，也适合英语听写和默写练习。自动记录漏掉的单词，可一键重练，也能分享练习链接，无需注册。',
+    title: '用自己的单词做免费英语听写 — 无需登录',
+    description: '粘贴自己的英语单词表，听隐藏单词并输入答案，立即查看批改结果，还能单独重练错词，全程无需账号。',
     keywords: '英语拼写练习,spelling game,英语单词拼写游戏,自定义单词表游戏,自定义英语单词表,英语听写练习,英语默写练习,英语单词练习小游戏,小学生英语拼写,背单词打字游戏,自定义单词表背单词,无需注册英语练习',
-    ogTitle: '用自己的单词表练英语拼写',
-    ogDescription: '粘贴本周单词表，马上开练；漏掉的单词自动进入下一轮，无需注册。',
+    ogTitle: '用自己的单词做英语听写测试',
+    ogDescription: '听隐藏单词、即时查看批改结果并重练错词，无需登录。',
     nav: { language: '语言', privacy: '隐私', sound: '声音' },
     hero: {
-      h1: '用自己的单词表练英语拼写',
-      p1: '把这周要背的英语单词粘贴进来，立刻变成一个拼写小游戏。',
-      p2: 'My Spelling Game 会记录漏掉的单词，生成重练回合，也可以把同一份练习链接发给孩子或学生。',
-      p3: '不用注册，不用建班级，也不塞一堆无关单词。',
+      h1: '用自己的单词做免费英语听写',
+      p1: '粘贴单词表，听到单词后再输入答案，作答前不会显示拼写。',
+      p2: '系统会立即批改，并把错词单独整理出来继续练习。',
+      p3: '无需注册或登录。',
+      flow: ['粘贴单词', '听隐藏单词', '输入答案', '重练错词'],
+      flowLabel: '练习步骤',
     },
     game: {
       round: '练习回合',
       placeholder: '输入掉落的英语单词...',
-      startTitle: '先粘贴你的英语单词表',
-      subtitle: '用自己的单词表练英语拼写',
-      intro: '粘贴本周单词表，马上开始。漏掉的单词会进入重练回合，分享链接也不需要账号。',
-      chips: ['免费可玩', '使用自己的单词', '重练漏掉的词', '分享链接，无需登录'],
+      startTitle: '用自己的单词表开始练习',
+      subtitle: '可选听写测试或单词雨打字游戏，无需登录',
+      intro: '推荐使用听写测试，也可以选择 Typing Rain；粘贴单词后即可开始。',
+      chips: ['即时批改', '作答前隐藏单词', '错词重练', '分享无需登录'],
       wordsLabel: '你的英语单词',
       hear: '输入前朗读每个单词',
       easy: '简单模式',
@@ -543,14 +553,14 @@ const pages = {
       localTitle: '本地保存',
       local: [
         '你的单词表和练习偏好会保存在当前浏览器里。',
-        '单词表不会上传到我们的服务器。',
+        '新分享链接把单词表放在 URL 片段中，由浏览器处理，不会发送到服务器。',
         '你可以在浏览器设置里清除，也可以用这里的清除按钮。',
       ],
       analyticsTitle: '访问分析',
       analytics: [
-        '我们使用 Google Analytics 了解页面和游戏的使用情况。',
-        '这些数据用于改进练习体验。',
-        '游戏本身不需要你提供个人身份信息。',
+        'Google Analytics 只接收清理后的页面地址，不包含查询参数或 URL 片段。',
+        '统计事件只包含模式、单词数量和成绩等汇总信息。',
+        '完整单词表和你输入的答案不会发送给 Analytics。',
       ],
       adsTitle: '广告',
       ads: [
@@ -572,8 +582,8 @@ const pages = {
       listTitle: '适合这周的英语单词表',
       list: [
         '粘贴老师、教材或家长已经准备好的英语单词。',
-        '孩子需要在单词掉到底部前把它拼出来。',
-        '按 <kbd>Enter</kbd> 或 <kbd>Space</kbd> 提交。',
+        '听写测试会播放隐藏单词；Typing Rain 则需要输入正在下落的单词。',
+        '按 <kbd>Enter</kbd> 提交；Typing Rain 也可以使用 <kbd>Space</kbd>。',
         '漏掉的单词会自动保存，方便一键重练。',
         '复制练习链接，就能让别人使用同一份单词表。',
       ],
@@ -586,15 +596,15 @@ const pages = {
         '重练只围绕漏掉的词，不浪费时间。',
         '简单模式只降低速度，不改变拼写规则。',
       ],
-      seoTitle: '用自己的单词表练英语拼写',
-      seoIntro: 'My Spelling Game 是一个<strong>免费的英语拼写练习小游戏</strong>，适合家长、老师和英语学习者把现有单词表快速变成可玩的练习，也可以当作轻量英语听写和默写练习。',
-      sectionTitle: '为什么不是随机词库',
-      sectionText: '很多英语小游戏会给一堆固定单词，但孩子真正要面对的往往是本周老师布置的那一份。这个工具解决的就是这件小事：粘贴真实单词表，马上练，漏掉的再练。',
+      seoTitle: '同一份单词表，两种练习方式',
+      seoIntro: '<strong>听写测试</strong>会朗读隐藏单词并立即批改；<strong>Typing Rain</strong>保留原有的掉落单词打字玩法。',
+      sectionTitle: '只练现在真正需要的单词',
+      sectionText: '粘贴本周词表后，两种模式都会只使用这些单词，并把答错或漏掉的词整理出来重练。',
       bullets: [
         '<strong>使用真实单词表：</strong> 可以来自作业、教材、老师 handout 或自学计划。',
-        '<strong>自动记录漏词：</strong> 掉到底部的单词会进入下一轮。',
+        '<strong>自动记录错词：</strong> 答错或漏掉的单词会进入下一轮。',
         '<strong>分享同一份练习：</strong> 复制链接即可，不需要注册账号。',
-        '<strong>可选朗读：</strong> 用浏览器语音做接近英语听写的练习。',
+        '<strong>真正的听写流程：</strong> 提交答案前不会显示单词拼写。',
       ],
       repeatTitle: '适合每周反复使用',
       repeatText: '这个工具故意做得很小：每周拿到一份单词，练一遍，找到漏掉的词，再练一遍。免费、无需学生账号，也不绑定任何学习平台。',
@@ -602,7 +612,7 @@ const pages = {
     footerLinks: ['自定义单词游戏', '单词表练习', '每周拼写练习', 'Sight words', 'Homeschool', '词汇练习'],
     legalLinks: ['隐私', '关于', '联系'],
     schema: {
-      description: '粘贴英语单词表，玩免费的拼写打字小游戏，支持英语听写、漏词重练和练习链接分享。',
+      description: '粘贴自己的英语单词，选择隐藏单词听写测试或 Typing Rain，并在结束后重练错词。',
       faq: [
         ['可以用自己的英语单词吗？', '可以。粘贴本周单词表后，游戏会使用这些单词进行练习。'],
         ['能只重练漏掉的单词吗？', '可以。每轮结束后，漏掉的单词会自动整理出来。'],
@@ -722,7 +732,6 @@ function head(page) {
 
     <title>${page.title}</title>
     <meta name="description" content="${escapeAttr(page.description)}">
-    <meta name="keywords" content="${escapeAttr(page.keywords)}">
     <meta name="author" content="My Spelling Game">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-9244949928133071">
@@ -765,8 +774,12 @@ ${alternateLinks(page.path)}
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
 
     <link rel="stylesheet" href="/src/css/main.css">
 </head>`;
@@ -781,10 +794,10 @@ function listItems(items) {
 }
 
 function localizedSharedHref(page, href) {
-  const slug = href.replace(/^\//, '').replace(/\.html$/, '');
+  const slug = href.replace(/^\//, '');
   if (!localizedSeoSlugs.includes(slug)) return href;
   const base = page.path === '/' ? '' : page.path.replace(/\/$/, '');
-  return `${base}/${slug}.html`;
+  return `${base}/${slug}`;
 }
 
 function body(page, code) {
@@ -806,6 +819,9 @@ ${languageMenu(code, nav)}
         <p>${page.hero.p1}</p>
         <p>${page.hero.p2}</p>
         <p>${page.hero.p3}</p>
+        <ol class="practice-flow" aria-label="${escapeAttr(page.hero.flowLabel)}">
+${page.hero.flow.map((step) => `            <li>${step}</li>`).join('\n')}
+        </ol>
         <p>${mode.overview}</p>
     </div>
 
@@ -1006,7 +1022,7 @@ ${listItems(info.bullets)}
     <footer>
         <p>
             ${sharedLinks.map((href, index) => `<a href="${localizedSharedHref(page, href)}">${page.footerLinks[index]}</a>`).join(' &middot; ')}<br>
-            <a href="${legalBase}/privacy.html">${page.legalLinks[0]}</a> &middot; <a href="${legalBase}/about.html">${page.legalLinks[1]}</a> &middot; <a href="${legalBase}/contact.html">${page.legalLinks[2]}</a><br>
+            <a href="${legalBase}/privacy">${page.legalLinks[0]}</a> &middot; <a href="${legalBase}/about">${page.legalLinks[1]}</a> &middot; <a href="${legalBase}/contact">${page.legalLinks[2]}</a><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prática semanal de spelling em inglês | My Spelling Game</title>
-    <meta name="description" content="Pratique a lista de inglês da semana. Cole palavras, jogue uma rodada curta, revise erros e compartilhe um link sem criar conta.">
+    <meta name="description" content="Cole as palavras da semana, ouça cada palavra escondida, digite a resposta e revise os erros sem criar conta.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://myspellinggame.com/pt-br/weekly-spelling-practice">
     <link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice">
@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -64,8 +68,14 @@
     <main class="seo-landing content-page">
         <section class="seo-hero">
             <h1>Prática semanal de spelling em inglês</h1>
-            <p>My Spelling Game foi feito para a rotina que se repete toda semana: pegar a lista, praticar, ver os erros e praticar de novo.</p>
-            <a class="seo-cta" href="/pt-br">Praticar a lista da semana</a>
+            <p>Cole a lista desta semana e comece o teste por áudio recomendado. A palavra só aparece depois que a resposta é enviada.</p>
+            <form class="landing-launcher" action="/pt-br/" data-mode="dictation" data-invalid="Digite pelo menos uma palavra.">
+                <label for="weekly-words-pt-BR">Palavras de spelling desta semana</label>
+                <textarea id="weekly-words-pt-BR" name="words" required spellcheck="false" placeholder="because
+friend
+beautiful"></textarea>
+                <button type="submit">Praticar a lista da semana</button>
+            </form>
         </section>
 
         <section class="seo-panel">
@@ -118,6 +128,7 @@
   }
 }
     </script>
+    <script type="module" src="/src/js/landingLauncher.mjs"></script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",

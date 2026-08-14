@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -74,13 +78,13 @@
         </section>
 
         <section class="seo-panel">
-            <h2>本地存储</h2>
-            <p>你的英语单词表和朗读偏好会通过 localStorage 保存在当前浏览器中。这只是为了让练习列表保留在你的设备上，不会通过我们自己的服务器上传。</p>
+            <h2>本地存储和分享链接</h2>
+            <p>单词表和练习偏好保存在当前浏览器。新分享链接会把单词表放在 URL 片段中，由浏览器处理，不会发送到我们的服务器。</p>
         </section>
 
         <section class="seo-panel">
             <h2>访问分析</h2>
-            <p>我们使用 Google Analytics 了解访问者如何使用网站，并改进练习体验。My Spelling Game 不收集可识别学生身份的个人信息。</p>
+            <p>Google Analytics 只接收不含查询参数和 URL 片段的页面地址，以及模式、单词数量、成绩等汇总信息。完整单词表和输入答案不会被发送。</p>
         </section>
 
         <section class="seo-panel">

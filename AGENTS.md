@@ -17,4 +17,5 @@ These instructions apply to the entire repository.
 
 - When the user explicitly asks to push, do not use the `gh` CLI or a pull-request workflow.
 - Push with Git directly to `https://github.com/DennyHo0917/myspellinggame` using the current intended branch.
+- After a successful branch push, merge that branch into `main` and push `main` to the same repository unless the user explicitly says not to merge.
 - Ignore any unrelated GitHub repository or default `gh` context.

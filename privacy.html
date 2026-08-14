@@ -6,14 +6,14 @@
     <title>Privacy Policy | My Spelling Game</title>
     <meta name="description" content="Privacy Policy for My Spelling Game: local storage, analytics, cookies, advertising disclosures, and your choices.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://myspellinggame.com/privacy.html">
-    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/privacy.html">
-    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/privacy.html">
-    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/privacy.html">
-    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/privacy.html">
-    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/privacy.html">
-    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/privacy.html">
-    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/privacy.html">
+    <link rel="canonical" href="https://myspellinggame.com/privacy">
+    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/privacy">
+    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/privacy">
+    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/privacy">
+    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/privacy">
+    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/privacy">
+    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/privacy">
+    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/privacy">
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -24,7 +24,7 @@
     <meta property="og:title" content="Privacy Policy | My Spelling Game">
     <meta property="og:description" content="Privacy Policy for My Spelling Game: local storage, analytics, cookies, advertising disclosures, and your choices.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://myspellinggame.com/privacy.html">
+    <meta property="og:url" content="https://myspellinggame.com/privacy">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -51,12 +55,12 @@
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="Language">Language</summary>
             <div class="lang-menu">
-                <a class="lang-option" href="/privacy.html" hreflang="en" aria-current="page">English</a>
-                <a class="lang-option" href="/es/privacy.html" hreflang="es">Español</a>
-                <a class="lang-option" href="/pt-br/privacy.html" hreflang="pt-BR">Português</a>
-                <a class="lang-option" href="/fr/privacy.html" hreflang="fr">Français</a>
-                <a class="lang-option" href="/id/privacy.html" hreflang="id">Bahasa Indonesia</a>
-                <a class="lang-option" href="/zh/privacy.html" hreflang="zh-CN">中文</a>
+                <a class="lang-option" href="/privacy" hreflang="en" aria-current="page">English</a>
+                <a class="lang-option" href="/es/privacy" hreflang="es">Español</a>
+                <a class="lang-option" href="/pt-br/privacy" hreflang="pt-BR">Português</a>
+                <a class="lang-option" href="/fr/privacy" hreflang="fr">Français</a>
+                <a class="lang-option" href="/id/privacy" hreflang="id">Bahasa Indonesia</a>
+                <a class="lang-option" href="/zh/privacy" hreflang="zh-CN">中文</a>
             </div>
         </details>
         <button class="lang-btn" onclick="window.location.href='/'" id="back-home" title="Home">Home</button>
@@ -74,13 +78,13 @@
         </section>
 
         <section class="seo-panel">
-            <h2>Local Storage</h2>
-            <p>Your spelling list and optional hear-words preference are stored locally in your browser using localStorage. This data is used to keep the practice list available on your device and does not leave your browser through our own server.</p>
+            <h2>Local Storage and Share Links</h2>
+            <p>Your spelling list and preferences are stored in this browser. New share links put the list in the URL fragment, which is processed by the browser and is not sent to our server.</p>
         </section>
 
         <section class="seo-panel">
             <h2>Analytics</h2>
-            <p>We use Google Analytics to understand how visitors use the site and improve the practice experience. We do not collect personally identifiable student information through My Spelling Game.</p>
+            <p>Google Analytics receives a cleaned page address without query parameters or URL fragments, plus aggregate events such as mode, word count, and result. We do not send word lists or typed answers.</p>
         </section>
 
         <section class="seo-panel">
@@ -95,15 +99,15 @@
 
         <section class="seo-panel">
             <h2>Contact</h2>
-            <p>If you have questions about this policy, please contact us through the <a href="/contact.html">contact page</a>.</p>
+            <p>If you have questions about this policy, please contact us through the <a href="/contact">contact page</a>.</p>
             <p class="privacy-update">Last updated: <span id="privacy-date"></span></p>
         </section>
     </main>
 
     <footer>
         <p>
-            <a href="/custom-spelling-words-game.html">Custom Spelling Game</a> &middot; <a href="/spelling-list-game.html">Spelling List Game</a> &middot; <a href="/weekly-spelling-practice.html">Weekly Practice</a><br>
-            <a href="/privacy.html">Privacy</a> &middot; <a href="/about.html">About</a> &middot; <a href="/contact.html">Contact</a><br>
+            <a href="/custom-spelling-words-game">Custom Spelling Game</a> &middot; <a href="/spelling-list-game">Spelling List Game</a> &middot; <a href="/weekly-spelling-practice">Weekly Practice</a><br>
+            <a href="/privacy">Privacy</a> &middot; <a href="/about">About</a> &middot; <a href="/contact">Contact</a><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>
@@ -122,7 +126,7 @@
       "@context": "https://schema.org",
       "@type": "WebPage",
       "name": "Privacy Policy | My Spelling Game",
-      "url": "https://myspellinggame.com/privacy.html",
+      "url": "https://myspellinggame.com/privacy",
       "inLanguage": "en",
       "about": {
             "@type": "VideoGame",

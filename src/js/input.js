@@ -1,4 +1,4 @@
-// Typing Rain 输入与连击逻辑模块
+// My Spelling Game 输入与连击逻辑模块
 
 import { dom } from './domRefs.js';
 import { gameState } from './gameState.js';

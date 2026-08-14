@@ -1,4 +1,4 @@
-// Typing Rain 词汇与掉落单词逻辑模块
+// My Spelling Game 词汇与掉落单词逻辑模块
 
 import { gameState } from './gameState.js';
 import { wordDatabase } from './wordDatabase.js';
@@ -126,8 +126,8 @@ export class FallingWord {
 
   getRandomWord() {
     let word;
-    const customWord = getCustomWord();
-    if (customWord) return customWord;
+    // A custom queue ending is the end of that queue, not permission to use built-in words.
+    if (gameState.spellingMode) return getCustomWord();
     
     // 锦标赛模式：固定比例混合难度
     if (gameState.mode === 'tournament') {
@@ -249,6 +249,7 @@ if (typeof window !== 'undefined') {
 
 export function spawnWord() {
   if (gameState.gameCompleted) return;
+  if (gameState.spellingMode && gameState.customWordCursor >= gameState.customWords.length) return;
 
   const minWords = 3;
   const maxWords = 5;

@@ -1,19 +1,16 @@
 import { gameState } from './gameState.js';
 import { t } from './pageLocale.js';
+import { configuredWords, parseWords, SAMPLE_WORDS, takeCustomWord } from './spellingCore.mjs';
+import { speakWord as speak } from './speech.js';
+import { entryPage, pageLocale, trackEvent } from './analytics.mjs';
+import { buildShareHash, readShareState } from './shareState.mjs';
 
-const SAMPLE_WORDS = ['because', 'friend', 'beautiful', 'answer', 'enough', 'favorite', 'library', 'through'];
-const STORAGE_KEY = 'typingRainSpellingWords';
-const HEAR_KEY = 'typingRainHearWords';
-const LEGACY_READ_KEY = 'typingRainReadWords';
-const EASY_KEY = 'typingRainEasyMode';
+const STORAGE_KEY = 'mySpellingGameSpellingWords';
+const HEAR_KEY = 'mySpellingGameHearWords';
+const LEGACY_READ_KEY = 'mySpellingGameReadWords';
+const EASY_KEY = 'mySpellingGameEasyMode';
 
-export function parseWords(text) {
-  return [...new Set((text || '')
-    .toLowerCase()
-    .split(/[^a-z'-]+/)
-    .map((word) => word.trim())
-    .filter((word) => word.length > 1 && word.length <= 24))].slice(0, 80);
-}
+export { parseWords };
 
 function textarea() {
   return document.getElementById('custom-word-list');
@@ -25,19 +22,33 @@ function status(text) {
 }
 
 function currentWords() {
-  const words = parseWords(textarea()?.value || '');
-  return words.length ? words : SAMPLE_WORDS;
+  return configuredWords(textarea()?.value || '');
 }
 
-function track(name, params = {}) {
-  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-    window.gtag('event', name, params);
-  }
+export function track(name, params = {}) {
+  trackEvent(name, params);
 }
 
 function loadWordsFromUrl() {
-  const raw = new URLSearchParams(window.location.search).get('words');
+  const raw = readShareState(window.location).words;
   return raw ? parseWords(raw) : [];
+}
+
+function selectedModeFromUrl() {
+  return readShareState(window.location).mode;
+}
+
+function selectedMode() {
+  return document.querySelector('input[name="practice-mode"]:checked')?.value || 'dictation';
+}
+
+function syncModeUI() {
+  const mode = selectedMode();
+  document.querySelectorAll('.typing-option').forEach((element) => {
+    element.hidden = mode !== 'typing';
+  });
+  const button = document.getElementById('start-practice-btn');
+  if (button) button.textContent = t(mode === 'dictation' ? 'startDictation' : 'startTyping');
 }
 
 export function initSpellingMode() {
@@ -47,6 +58,13 @@ export function initSpellingMode() {
   const fromUrl = loadWordsFromUrl();
   const saved = parseWords(localStorage.getItem(STORAGE_KEY) || '');
   input.value = (fromUrl.length ? fromUrl : saved.length ? saved : SAMPLE_WORDS).join('\n');
+
+  const mode = selectedModeFromUrl();
+  const modeInput = document.querySelector(`input[name="practice-mode"][value="${mode}"]`);
+  if (modeInput) modeInput.checked = true;
+  document.querySelectorAll('input[name="practice-mode"]').forEach((radio) => {
+    radio.addEventListener('change', syncModeUI);
+  });
 
   const hearToggle = document.getElementById('hear-words-toggle');
   if (hearToggle) {
@@ -58,6 +76,8 @@ export function initSpellingMode() {
 
   status(t('wordsReady', { count: currentWords().length }));
   input.addEventListener('input', () => status(t('wordsReady', { count: currentWords().length })));
+  syncModeUI();
+  if (readShareState(window.location).autoStart) queueMicrotask(() => window.startGame?.());
 }
 
 export function loadSampleWords() {
@@ -68,10 +88,12 @@ export function loadSampleWords() {
 }
 
 export function prepareSession() {
-  if (!textarea()) return;
+  if (!textarea()) return null;
   const words = currentWords();
+  const practiceMode = selectedMode();
   gameState.spellingMode = true;
-  gameState.mode = 'spelling';
+  gameState.practiceMode = practiceMode;
+  gameState.mode = practiceMode === 'dictation' ? 'dictation' : 'spelling';
   gameState.customWords = words;
   gameState.customWordCursor = 0;
   gameState.missedWordList = [];
@@ -79,7 +101,9 @@ export function prepareSession() {
   gameState.spellingWordsProcessed = 0;
   gameState.maxMisses = 5;
   gameState.level = 1;
-  window.currentMode = 'spelling';
+  gameState.replayRound = window.pendingReplayRound === true;
+  window.pendingReplayRound = false;
+  window.currentMode = gameState.mode;
 
   const hearToggle = document.getElementById('hear-words-toggle');
   gameState.hearWords = !!hearToggle?.checked;
@@ -90,15 +114,22 @@ export function prepareSession() {
   localStorage.removeItem(LEGACY_READ_KEY);
   localStorage.setItem(EASY_KEY, gameState.easyMode ? '1' : '0');
   status(t('wordsInRound', { count: words.length }));
-  track('word_list_created', { word_count: words.length, easy_mode: gameState.easyMode });
+  const shareState = readShareState(window.location);
+  track('word_list_created', {
+    word_count: words.length,
+    mode: practiceMode,
+    locale: pageLocale(),
+    shared_link: shareState.sharedLink,
+    entry_page: shareState.entryPage || entryPage(),
+  });
+  return { words, mode: practiceMode };
 }
 
 export function getCustomWord() {
   if (!gameState.spellingMode || !gameState.customWords?.length) return null;
-  const index = gameState.customWordCursor || 0;
-  if (index >= gameState.customWords.length) return null;
-  gameState.customWordCursor = index + 1;
-  return gameState.customWords[index];
+  const next = takeCustomWord(gameState.customWords, gameState.customWordCursor || 0);
+  gameState.customWordCursor = next.cursor;
+  return next.word;
 }
 
 export function isRoundComplete(activeWordCount) {
@@ -107,30 +138,30 @@ export function isRoundComplete(activeWordCount) {
 }
 
 export function speakWord(word) {
-  if (!gameState.spellingMode || !gameState.hearWords || !window.speechSynthesis) return;
-  const utterance = new SpeechSynthesisUtterance(word);
-  utterance.lang = 'en-US';
-  utterance.rate = 0.85;
-  window.speechSynthesis.speak(utterance);
+  if (!gameState.spellingMode || !gameState.hearWords) return false;
+  return speak(word);
 }
 
 export function markMissed(word) {
   if (!gameState.spellingMode || !word) return;
   if (!gameState.missedWordList.includes(word)) gameState.missedWordList.push(word);
   gameState.spellingWordsProcessed++;
-  track('word_missed', { word });
+  track('word_missed', { word_length: word.length, mode: 'typing', correct: false });
 }
 
 export function markCorrect(word) {
   if (!gameState.spellingMode || !word) return;
   gameState.missedWordList = gameState.missedWordList.filter((item) => item !== word);
   gameState.spellingWordsProcessed++;
-  track('word_completed', { word });
+  track('word_completed', { word_length: word.length, mode: 'typing', correct: true });
 }
 
 export function renderSummary() {
   const box = document.getElementById('spelling-summary');
-  if (!box || !gameState.spellingMode) return;
+  if (!box || !gameState.spellingMode || gameState.practiceMode === 'dictation') return;
+
+  document.getElementById('typing-final-stats')?.removeAttribute('hidden');
+  document.getElementById('dictation-final-stats')?.setAttribute('hidden', '');
 
   const missed = gameState.missedWordList || [];
   document.getElementById('game-over-title')?.replaceChildren(document.createTextNode(t('summaryTitle')));
@@ -140,7 +171,7 @@ export function renderSummary() {
 
   const list = document.getElementById('missed-word-list');
   list.textContent = '';
-  (missed.length ? missed : gameState.customWords).forEach((word) => {
+  missed.forEach((word) => {
     const chip = document.createElement('span');
     chip.className = 'word-chip';
     chip.textContent = word;
@@ -150,22 +181,37 @@ export function renderSummary() {
   const replay = document.getElementById('replay-missed-btn');
   if (replay) replay.hidden = missed.length === 0;
   box.hidden = false;
-  track('game_completed', { word_count: gameState.customWords.length, missed_count: missed.length });
+  const total = gameState.customWords.length;
+  const correct = Math.max(0, total - missed.length);
+  track('game_completed', {
+    mode: 'typing',
+    word_count: total,
+    correct_count: correct,
+    missed_count: missed.length,
+    accuracy: total ? Math.round((correct / total) * 100) : 0,
+    duration_seconds: Math.max(0, Math.round((Date.now() - gameState.startTime) / 1000)),
+    replay_round: gameState.replayRound,
+  });
 }
 
 export function replayMissedWords() {
+  if (gameState.practiceMode === 'dictation') {
+    window.retryMissedDictation?.();
+    return;
+  }
   const missed = gameState.missedWordList || [];
   const input = textarea();
   if (!input || !missed.length) return;
   input.value = missed.join('\n');
-  track('missed_words_replayed', { word_count: missed.length });
+  track('missed_words_replayed', { word_count: missed.length, mode: 'typing', locale: pageLocale() });
+  window.pendingReplayRound = true;
   window.restartGame?.(true);
 }
 
 export async function copyPracticeLink() {
   const words = currentWords();
   const url = new URL(window.location.origin + window.location.pathname);
-  url.searchParams.set('words', words.join(','));
+  url.hash = buildShareHash(words, selectedMode()).slice(1);
   try {
     await navigator.clipboard.writeText(url.toString());
     status(t('linkCopied'));
@@ -173,7 +219,7 @@ export async function copyPracticeLink() {
     window.prompt(t('copyPrompt'), url.toString());
     status(t('linkReady'));
   }
-  track('practice_link_copied', { word_count: words.length });
+  track('practice_link_copied', { word_count: words.length, mode: selectedMode(), locale: pageLocale() });
 }
 
 if (typeof window !== 'undefined') {

@@ -1,4 +1,4 @@
-// Typing Rain 音频子系统（模块化实现）
+// My Spelling Game 音频子系统（模块化实现）
 
 let audioContext;
 export let soundEnabled = true;

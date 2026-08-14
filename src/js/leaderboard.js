@@ -2,9 +2,9 @@
 
 const getKey = () => {
   if (typeof window !== 'undefined' && window.currentMode === 'tournament') {
-    return 'typingRainTournamentLeaderboard';
+    return 'mySpellingGameTournamentLeaderboard';
   }
-  return 'typingRainLeaderboard';
+  return 'mySpellingGameLeaderboard';
 };
 
 const LEADERBOARD_KEY = getKey();
@@ -120,4 +120,4 @@ if (typeof window !== 'undefined') {
   window.leaderboardBridge = leaderboard;
   window.LEADERBOARD_KEY = getKey();
   window.currentPlayerEntry = currentPlayerEntry;
-} 
+}

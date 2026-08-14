@@ -37,10 +37,10 @@ export function clearLocalData() {
   const confirmMsg = t('clearConfirm');
   const successMsg = t('clearSuccess');
   if (confirm(confirmMsg)) {
-    localStorage.removeItem('typingRainSpellingWords');
-    localStorage.removeItem('typingRainHearWords');
-    localStorage.removeItem('typingRainReadWords');
-    localStorage.removeItem('typingRainEasyMode');
+    localStorage.removeItem('mySpellingGameSpellingWords');
+    localStorage.removeItem('mySpellingGameHearWords');
+    localStorage.removeItem('mySpellingGameReadWords');
+    localStorage.removeItem('mySpellingGameEasyMode');
     alert(successMsg);
     closePrivacyPolicy();
   }

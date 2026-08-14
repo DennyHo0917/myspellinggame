@@ -4,7 +4,6 @@ const path = require('path');
 const root = path.resolve(__dirname, '..');
 const baseUrl = 'https://myspellinggame.com';
 const ogImage = `${baseUrl}/images/my-spelling-game-og.png`;
-const today = '2026-06-19';
 
 const languages = [
   { code: 'en', htmlLang: 'en', hreflang: 'en', label: 'English', dir: '', nav: 'Language', home: 'Home', privacy: 'Privacy', about: 'About', contact: 'Contact' },
@@ -175,11 +174,11 @@ const footerLinks = {
 const pages = {
   en: {
     'custom-spelling-words-game': {
-      title: 'Custom Spelling Game With Your Own Words | My Spelling Game',
-      description: 'Paste a custom word list to make a spelling game with your own words. Great for teachers, homeschool, ESL, weekly tests, missed-word replay, and no login.',
-      ogDescription: 'Paste a custom spelling list and share a no-login practice link with missed-word replay.',
-      h1: 'Custom Spelling Words Game With Your Own List',
-      intro: 'Paste any custom spelling list and turn it into a quick falling-word typing game or spelling test with your own words.',
+      title: 'Custom Typing Game With Your Own Words | My Spelling Game',
+      description: 'Paste your own spelling words and start Typing Rain immediately. Type each falling word, review misses, and play without an account.',
+      ogDescription: 'Paste your own words and start a no-login Typing Rain game.',
+      h1: 'Typing Rain With Your Own Spelling Words',
+      intro: 'Paste any word list and launch the falling-word typing game with exactly those words.',
       panels: [
         ['Paste-And-Play Custom Word Lists', 'Parents, teachers, tutors, homeschool families, and ESL instructors often already have the word list. This page turns that list into practice without a lesson builder or student login.'],
         ['Why It Is Different', 'No premade word bank, no class setup, and no account wall. Paste the exact words, play a short round, then replay missed words.'],
@@ -241,11 +240,11 @@ const pages = {
   },
   es: {
     'custom-spelling-words-game': {
-      title: 'Juego de spelling con tus palabras | My Spelling Game',
-      description: 'Pega una lista propia de spelling y conviértela en un juego rápido. Ideal para clase, casa, homeschool, ESL y repaso sin cuenta.',
-      ogDescription: 'Crea una práctica de spelling con tu propia lista y comparte un enlace sin cuenta.',
-      h1: 'Juego de spelling con tus propias palabras',
-      intro: 'Pega la lista que ya tienes, de clase, deberes o tutoría, y conviértela en una práctica corta con esas mismas palabras.',
+      title: 'Juego de Typing con Tus Propias Palabras | My Spelling Game',
+      description: 'Pega tus palabras y empieza Typing Rain al instante. Escribe cada palabra que cae, repasa los fallos y juega sin crear una cuenta.',
+      ogDescription: 'Pega tus palabras y empieza un juego Typing Rain sin cuenta.',
+      h1: 'Typing Rain con tus propias palabras',
+      intro: 'Pega cualquier lista y juega con esas palabras en el modo de typing con palabras que caen.',
       panels: [
         ['Para listas reales, no bancos genéricos', 'Muchas familias y profesores ya tienen la lista. Lo útil es practicar exactamente esas palabras sin preparar una lección completa.'],
         ['Rápido para clase o casa', 'Pega la lista, juega una ronda y repite las palabras falladas. El enlace compartido funciona sin cuenta de estudiante.'],
@@ -307,11 +306,11 @@ const pages = {
   },
   'pt-BR': {
     'custom-spelling-words-game': {
-      title: 'Jogo de spelling com suas palavras | My Spelling Game',
-      description: 'Cole sua própria lista de spelling e transforme em jogo rápido. Bom para escola, casa, homeschool, ESL e revisão sem conta.',
-      ogDescription: 'Crie uma prática de spelling com sua lista e compartilhe um link sem conta.',
-      h1: 'Jogo de spelling com suas próprias palavras',
-      intro: 'Cole a lista que você já tem, da escola, da aula ou do reforço, e pratique exatamente essas palavras.',
+      title: 'Jogo de Digitação com Suas Palavras | My Spelling Game',
+      description: 'Cole suas palavras e comece o Typing Rain na hora. Digite cada palavra que cai, revise os erros e jogue sem criar conta.',
+      ogDescription: 'Cole suas palavras e comece um Typing Rain sem login.',
+      h1: 'Typing Rain com suas próprias palavras',
+      intro: 'Cole qualquer lista e jogue o modo de digitação com exatamente essas palavras caindo na tela.',
       panels: [
         ['Para listas reais', 'Pais, professores e tutores normalmente já têm a lista. O jogo evita banco genérico e usa só o que foi colado.'],
         ['Sem preparação longa', 'Cole a lista, faça uma rodada curta e revise as palavras erradas. O link compartilhado não exige login de aluno.'],
@@ -373,11 +372,11 @@ const pages = {
   },
   fr: {
     'custom-spelling-words-game': {
-      title: 'Jeu de spelling avec vos mots | My Spelling Game',
-      description: 'Collez votre propre liste de mots anglais et lancez une pratique courte. Idéal pour classe, maison, ESL et révision sans compte.',
-      ogDescription: 'Créez une pratique de spelling avec votre liste et partagez un lien sans compte.',
-      h1: 'Jeu de spelling avec vos propres mots',
-      intro: 'Collez la liste que vous avez déjà, devoirs, cours ou tutorat, et pratiquez uniquement ces mots.',
+      title: 'Jeu de Frappe avec Vos Propres Mots | My Spelling Game',
+      description: 'Collez vos mots et lancez Typing Rain immédiatement. Tapez chaque mot qui tombe, révisez vos erreurs et jouez sans compte.',
+      ogDescription: 'Collez vos mots et lancez un Typing Rain sans compte.',
+      h1: 'Typing Rain avec vos propres mots',
+      intro: 'Collez n’importe quelle liste et lancez le jeu de frappe avec exactement ces mots à l’écran.',
       panels: [
         ['Des mots réels, pas une liste générique', 'La liste existe souvent déjà. Le plus utile est de la transformer en pratique courte sans préparer une leçon entière.'],
         ['Pratique rapide', 'Collez la liste, jouez une partie et refaites les mots manqués. Le lien partagé fonctionne sans compte élève.'],
@@ -439,11 +438,11 @@ const pages = {
   },
   id: {
     'custom-spelling-words-game': {
-      title: 'Game spelling dengan kata sendiri | My Spelling Game',
-      description: 'Tempel daftar kata sendiri dan ubah menjadi game spelling singkat. Cocok untuk kelas, rumah, ESL, tutor, dan latihan tanpa akun.',
-      ogDescription: 'Buat latihan spelling dari daftar kata sendiri dan bagikan link tanpa akun.',
-      h1: 'Game spelling dengan kata sendiri',
-      intro: 'Tempel daftar dari sekolah, kelas, atau tutor, lalu latihan hanya dengan kata-kata itu.',
+      title: 'Game Mengetik dengan Kata Sendiri | My Spelling Game',
+      description: 'Tempel kata sendiri lalu mulai Typing Rain. Ketik setiap kata yang jatuh, ulangi yang salah, dan main tanpa membuat akun.',
+      ogDescription: 'Tempel kata sendiri dan mulai Typing Rain tanpa login.',
+      h1: 'Typing Rain dengan kata sendiri',
+      intro: 'Tempel daftar apa saja lalu mainkan game mengetik dengan kata-kata itu jatuh di layar.',
       panels: [
         ['Untuk daftar yang benar-benar dipakai', 'Orang tua, guru, dan tutor biasanya sudah punya daftar. Game ini mengubah daftar itu menjadi latihan tanpa bank kata acak.'],
         ['Cepat untuk kelas atau rumah', 'Tempel daftar, mainkan ronde pendek, lalu ulangi kata yang salah. Link latihan tidak perlu akun siswa.'],
@@ -505,11 +504,11 @@ const pages = {
   },
   zh: {
     'custom-spelling-words-game': {
-      title: '自定义英语单词拼写游戏 | My Spelling Game',
-      description: '粘贴自己的英语单词表，生成拼写小游戏。适合老师、家长、ESL、家庭学习和测验前复习，无需学生登录。',
-      ogDescription: '用自己的英语单词表创建拼写练习，支持错词重练和无登录分享。',
-      h1: '自定义英语单词拼写游戏',
-      intro: '把老师发的单词、教材词表或自学词汇直接粘贴进来，只练这份真实单词。',
+      title: '用自己的单词玩打字游戏 | My Spelling Game',
+      description: '粘贴自己的英语单词，立即开始 Typing Rain。输入屏幕上掉落的单词，结束后重练漏词，无需账号。',
+      ogDescription: '粘贴自己的单词，直接开始无需登录的 Typing Rain。',
+      h1: '用自己的单词玩 Typing Rain',
+      intro: '粘贴任意英语单词表，让这些单词进入掉落打字游戏。',
       panels: [
         ['不是随机词库', '很多时候单词表已经存在，真正需要的是把它快速变成练习，而不是重新建课程。'],
         ['适合课堂和家庭', '粘贴单词，练一轮，再重练漏掉的词。分享链接不需要学生注册账号。'],
@@ -1074,8 +1073,17 @@ function escapeAttr(value) {
   return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 
+const customLauncher = {
+  en: { label: 'Words for Typing Rain', button: 'Start Typing Rain', invalid: 'Enter at least one word.' },
+  es: { label: 'Palabras para Typing Rain', button: 'Empezar Typing Rain', invalid: 'Escribe al menos una palabra.' },
+  'pt-BR': { label: 'Palavras para o Typing Rain', button: 'Começar Typing Rain', invalid: 'Digite pelo menos uma palavra.' },
+  fr: { label: 'Mots pour Typing Rain', button: 'Lancer Typing Rain', invalid: 'Saisissez au moins un mot.' },
+  id: { label: 'Kata untuk Typing Rain', button: 'Mulai Typing Rain', invalid: 'Masukkan setidaknya satu kata.' },
+  zh: { label: 'Typing Rain 单词表', button: '开始 Typing Rain', invalid: '请至少输入一个英语单词。' },
+};
+
 function pagePath(lang, slug) {
-  return lang.dir ? `/${lang.dir}/${slug}.html` : `/${slug}.html`;
+  return lang.dir ? `/${lang.dir}/${slug}` : `/${slug}`;
 }
 
 function dirPath(lang) {
@@ -1084,7 +1092,7 @@ function dirPath(lang) {
 
 function alternateLinks(slug) {
   const links = languages.map((lang) => `    <link rel="alternate" hreflang="${lang.hreflang}" href="${baseUrl}${pagePath(lang, slug)}">`);
-  links.push(`    <link rel="alternate" hreflang="x-default" href="${baseUrl}/${slug}.html">`);
+  links.push(`    <link rel="alternate" hreflang="x-default" href="${baseUrl}/${slug}">`);
   return links.join('\n');
 }
 
@@ -1133,7 +1141,7 @@ function footerHtml(langCode) {
   return `    <footer>
         <p>
 ${footerSlugs.map((slug) => `            <a href="${pagePath(lang, slug)}">${footerLinks[langCode][slug]}</a>`).join(' &middot;\n')}<br>
-            <a href="${dirPath(lang)}privacy.html">${lang.privacy}</a> &middot; <a href="${dirPath(lang)}about.html">${lang.about}</a> &middot; <a href="${dirPath(lang)}contact.html">${lang.contact}</a><br>
+            <a href="${pagePath(lang, 'privacy')}">${lang.privacy}</a> &middot; <a href="${pagePath(lang, 'about')}">${lang.about}</a> &middot; <a href="${pagePath(lang, 'contact')}">${lang.contact}</a><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>`;
@@ -1185,6 +1193,7 @@ function schemaScripts(lang, slug, page) {
 function renderPage(langCode, slug) {
   const lang = languages.find((item) => item.code === langCode);
   const page = pages[langCode][slug];
+  const launcher = customLauncher[langCode];
   return `<!DOCTYPE html>
 <html lang="${lang.htmlLang}">
 <head>
@@ -1222,8 +1231,12 @@ ${alternateLinks(slug)}
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -1232,7 +1245,11 @@ ${languageMenu(langCode, slug)}
         <section class="seo-hero">
             <h1>${page.h1}</h1>
             <p>${page.intro}</p>
-            <a class="seo-cta" href="${dirPath(lang)}">${labels[langCode].start}</a>
+${slug === 'custom-spelling-words-game' ? `            <form class="landing-launcher" action="${dirPath(lang)}" data-mode="typing" data-invalid="${escapeAttr(launcher.invalid)}">
+                <label for="custom-words-${langCode}">${launcher.label}</label>
+                <textarea id="custom-words-${langCode}" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
+                <button type="submit">${launcher.button}</button>
+            </form>` : `            <a class="seo-cta" href="${dirPath(lang)}">${labels[langCode].start}</a>`}
         </section>
 
         <aside class="ad-slot" aria-label="Advertisement">
@@ -1247,6 +1264,7 @@ ${relatedHtml(langCode, slug)}
     </main>
 ${footerHtml(langCode)}
 ${schemaScripts(lang, slug, page)}
+    <script type="module" src="/src/js/landingLauncher.mjs"></script>
 </body>
 </html>
 `;
@@ -1255,9 +1273,9 @@ ${schemaScripts(lang, slug, page)}
 function updateEnglishLongtail(slug) {
   const file = path.join(root, `${slug}.html`);
   let html = fs.readFileSync(file, 'utf8');
-  const canonical = `    <link rel="canonical" href="${baseUrl}/${slug}.html">\n`;
+  const canonical = `    <link rel="canonical" href="${baseUrl}/${slug}">\n`;
   html = html.replace(
-    new RegExp(`    <link rel="canonical" href="${baseUrl}/${slug}\\.html">\\n(?:    <link rel="alternate"[^\\n]+>\\n)*`),
+    new RegExp(`    <link rel="canonical" href="${baseUrl}/${slug}(?:\\.html)?">\\n(?:    <link rel="alternate"[^\\n]+>\\n)*`),
     canonical + alternateLinks(slug) + '\n',
   );
   if (!html.includes('/src/js/localeRedirect.js')) {
@@ -1265,6 +1283,13 @@ function updateEnglishLongtail(slug) {
   }
   if (!html.includes('class="top-right-nav"')) {
     html = html.replace('<body>\n', `<body>\n${languageMenu('en', slug)}\n`);
+  }
+  html = html.replace(
+    "gtag('config', 'G-VYF1V40KVS');",
+    "gtag('config', 'G-VYF1V40KVS', {\n        page_location: window.location.origin + window.location.pathname,\n        page_path: window.location.pathname\n      });",
+  );
+  if (!html.includes('/src/js/analytics.mjs')) {
+    html = html.replace('    <link rel="stylesheet"', '    <script type="module" src="/src/js/analytics.mjs"></script>\n    <link rel="stylesheet"');
   }
   html = html.replace(/    <footer[\s\S]*?<\/footer>/, footerHtml('en'));
   fs.writeFileSync(file, html, 'utf8');
@@ -1316,44 +1341,45 @@ function localizeLongtailLinks() {
       const fullPath = path.join(root, lang.dir, file);
       let html = fs.readFileSync(fullPath, 'utf8');
       for (const slug of newLongtailSlugs) {
-        html = html.replaceAll(`href="/${slug}.html"`, `href="/${lang.dir}/${slug}.html"`);
+        html = html.replaceAll(`href="/${slug}.html"`, `href="/${lang.dir}/${slug}"`);
+        html = html.replaceAll(`href="/${slug}"`, `href="/${lang.dir}/${slug}"`);
+        html = html.replaceAll(`href="/${lang.dir}/${slug}.html"`, `href="/${lang.dir}/${slug}"`);
       }
       fs.writeFileSync(fullPath, html, 'utf8');
     }
   }
 }
 
-function sitemapAlternateBlock(slug) {
-  const links = languages.map((lang) => `    <xhtml:link rel="alternate" hreflang="${lang.hreflang}" href="${baseUrl}${slug ? pagePath(lang, slug) : dirPath(lang)}" />`);
-  links.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="${baseUrl}${slug ? `/${slug}.html` : '/'}" />`);
-  return links.join('\n');
-}
+function normalizePublicUrls() {
+  const localizedDirs = languages.filter((lang) => lang.dir).map((lang) => `${lang.dir}/`).join('|');
+  const slugs = [...seoSlugs, ...legalSlugs].join('|');
+  const htmlUrl = new RegExp(`/(?:${localizedDirs})?(?:${slugs})\\.html`, 'g');
+  const files = ['sitemap.xml'];
 
-function renderSitemap() {
-  const entries = [];
-  for (const lang of languages) {
-    entries.push({
-      loc: `${baseUrl}${dirPath(lang)}`,
-      priority: lang.code === 'en' ? '1.0' : '0.95',
-      changefreq: 'weekly',
-      slug: '',
-    });
-  }
-  for (const slug of seoSlugs) {
-    for (const lang of languages) {
-      const priority = slug === 'custom-spelling-words-game' ? '0.9'
-        : slug === 'spelling-list-game' ? '0.85'
-        : slug === 'weekly-spelling-practice' ? '0.8'
-        : '0.75';
-      entries.push({ loc: `${baseUrl}${pagePath(lang, slug)}`, priority, changefreq: 'monthly', slug });
+  function walk(dir) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (entry.name.startsWith('.') || entry.name === 'scripts') continue;
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(fullPath);
+      } else if (entry.name.endsWith('.html')) {
+        files.push(path.relative(root, fullPath));
+      }
     }
   }
-  for (const slug of legalSlugs) {
-    for (const lang of languages) {
-      entries.push({ loc: `${baseUrl}${pagePath(lang, slug)}`, priority: '0.45', changefreq: 'monthly', slug });
+
+  walk(root);
+
+  for (const file of files) {
+    const fullPath = path.join(root, file);
+    const original = fs.readFileSync(fullPath, 'utf8');
+    const updated = original
+      .replace(/\/index\.html/g, '/')
+      .replace(htmlUrl, (match) => match.slice(0, -5));
+    if (updated !== original) {
+      fs.writeFileSync(fullPath, updated, 'utf8');
     }
   }
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${entries.map((entry) => `  <url>\n    <loc>${entry.loc}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${entry.changefreq}</changefreq>\n    <priority>${entry.priority}</priority>\n${sitemapAlternateBlock(entry.slug)}\n  </url>`).join('\n')}\n</urlset>\n`;
 }
 
 for (const lang of languages.filter((item) => item.code !== 'en')) {
@@ -1367,14 +1393,10 @@ for (const lang of languages.filter((item) => item.code !== 'en')) {
 }
 
 for (const slug of newLongtailSlugs) {
-  if (longtailContentBoosts.en[slug]) {
-    fs.writeFileSync(path.join(root, `${slug}.html`), renderPage('en', slug), 'utf8');
-  } else {
-    updateEnglishLongtail(slug);
-  }
+  updateEnglishLongtail(slug);
 }
 
 localizeLongtailLinks();
-fs.writeFileSync(path.join(root, 'sitemap.xml'), renderSitemap(), 'utf8');
+normalizePublicUrls();
 
-console.log('Generated localized long-tail pages, updated localized SEO schema, and rebuilt sitemap.xml');
+console.log('Generated localized long-tail pages and updated localized SEO schema');

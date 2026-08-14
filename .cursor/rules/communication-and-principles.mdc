@@ -30,7 +30,7 @@ alwaysApply: false
 
 ## 项目特定应用
 
-### 针对Typing Rain项目的实践
+### 针对My Spelling Game项目的实践
 - **单文件约束**: 在保持单文件架构下应用DRY原则
 - **性能优先**: 最小化修改时考虑Canvas渲染性能
 - **设计一致**: 保持cyberpunk风格设计的一致性

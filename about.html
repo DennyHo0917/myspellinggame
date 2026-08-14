@@ -6,14 +6,14 @@
     <title>About | My Spelling Game</title>
     <meta name="description" content="About My Spelling Game, a no-login custom spelling words game for weekly spelling practice.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://myspellinggame.com/about.html">
-    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/about.html">
-    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/about.html">
-    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/about.html">
-    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/about.html">
-    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/about.html">
-    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/about.html">
-    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/about.html">
+    <link rel="canonical" href="https://myspellinggame.com/about">
+    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/about">
+    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/about">
+    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/about">
+    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/about">
+    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/about">
+    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/about">
+    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/about">
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -24,7 +24,7 @@
     <meta property="og:title" content="About | My Spelling Game">
     <meta property="og:description" content="About My Spelling Game, a no-login custom spelling words game for weekly spelling practice.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://myspellinggame.com/about.html">
+    <meta property="og:url" content="https://myspellinggame.com/about">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -51,12 +55,12 @@
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="Language">Language</summary>
             <div class="lang-menu">
-                <a class="lang-option" href="/about.html" hreflang="en" aria-current="page">English</a>
-                <a class="lang-option" href="/es/about.html" hreflang="es">Español</a>
-                <a class="lang-option" href="/pt-br/about.html" hreflang="pt-BR">Português</a>
-                <a class="lang-option" href="/fr/about.html" hreflang="fr">Français</a>
-                <a class="lang-option" href="/id/about.html" hreflang="id">Bahasa Indonesia</a>
-                <a class="lang-option" href="/zh/about.html" hreflang="zh-CN">中文</a>
+                <a class="lang-option" href="/about" hreflang="en" aria-current="page">English</a>
+                <a class="lang-option" href="/es/about" hreflang="es">Español</a>
+                <a class="lang-option" href="/pt-br/about" hreflang="pt-BR">Português</a>
+                <a class="lang-option" href="/fr/about" hreflang="fr">Français</a>
+                <a class="lang-option" href="/id/about" hreflang="id">Bahasa Indonesia</a>
+                <a class="lang-option" href="/zh/about" hreflang="zh-CN">中文</a>
             </div>
         </details>
         <button class="lang-btn" onclick="window.location.href='/'" id="back-home" title="Home">Home</button>
@@ -70,7 +74,7 @@
 
         <section class="seo-panel">
             <h2>Mission</h2>
-            <p>My Spelling Game turns any weekly spelling list into a falling-word typing game. It is built for parents, teachers, homeschool families, and ESL tutors who need quick practice without student accounts, class setup, or a generic word bank.</p>
+            <p>My Spelling Game turns any weekly word list into an audio spelling test or a falling-word typing game. It is built for quick practice without student accounts, class setup, or a generic word bank.</p>
         </section>
 
         <section class="seo-panel">
@@ -80,7 +84,7 @@
 
         <section class="seo-panel">
             <h2>What It Does</h2>
-            <ul><li>Uses your own spelling words.</li><li>Creates instant falling-word practice.</li><li>Saves missed words for a focused replay round.</li><li>Shares practice links without requiring an account.</li><li>Offers Easy mode for slower, lower-pressure practice.</li></ul>
+            <ul><li>Uses your own spelling words.</li><li>Offers a hidden-word audio test and Typing Rain.</li><li>Saves missed words for a focused replay round.</li><li>Shares practice links without requiring an account.</li></ul>
         </section>
 
         <section class="seo-panel">
@@ -91,8 +95,8 @@
 
     <footer>
         <p>
-            <a href="/custom-spelling-words-game.html">Custom Spelling Game</a> &middot; <a href="/spelling-list-game.html">Spelling List Game</a> &middot; <a href="/weekly-spelling-practice.html">Weekly Practice</a><br>
-            <a href="/privacy.html">Privacy</a> &middot; <a href="/about.html">About</a> &middot; <a href="/contact.html">Contact</a><br>
+            <a href="/custom-spelling-words-game">Custom Spelling Game</a> &middot; <a href="/spelling-list-game">Spelling List Game</a> &middot; <a href="/weekly-spelling-practice">Weekly Practice</a><br>
+            <a href="/privacy">Privacy</a> &middot; <a href="/about">About</a> &middot; <a href="/contact">Contact</a><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>
@@ -102,7 +106,7 @@
       "@context": "https://schema.org",
       "@type": "AboutPage",
       "name": "About | My Spelling Game",
-      "url": "https://myspellinggame.com/about.html",
+      "url": "https://myspellinggame.com/about",
       "inLanguage": "en",
       "about": {
             "@type": "VideoGame",

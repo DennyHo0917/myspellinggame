@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 # Development Guidelines
 
-## Coding Standards for Typing Rain
+## Coding Standards for My Spelling Game
 
 ### JavaScript Best Practices
 - **Use ES6+ features**: arrow functions, const/let, template literals

@@ -7,7 +7,7 @@ if not "%~1"=="" set "PORT=%~1"
 :: 切换到脚本所在目录，确保根目录正确
 cd /d "%~dp0"
 
-echo [Typing Rain] 本地服务器启动中，端口 %PORT%
+echo [My Spelling Game] 本地服务器启动中，端口 %PORT%
 
 echo 尝试使用 Python 内置 http.server...
 python -m http.server %PORT% --bind 127.0.0.1

@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 # Styling System and Design Patterns
 
-## Design System for Typing Rain
+## Design System for My Spelling Game
 
 ### Color Palette
 The [index.html](mdc:index.html) uses a cohesive cyberpunk-inspired color scheme:

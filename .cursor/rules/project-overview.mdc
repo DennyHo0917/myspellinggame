@@ -3,10 +3,10 @@ description:
 globs:
 alwaysApply: false
 ---
-# Typing Rain - Project Overview
+# My Spelling Game - Project Overview
 
 ## Project Description
-Typing Rain is a modern, single-page web-based typing game where users catch falling words to improve their typing speed and accuracy. The game features real-time WPM tracking, multiple difficulty levels, and a sleek cyberpunk-inspired design.
+My Spelling Game is a modern, single-page web-based typing game where users catch falling words to improve their typing speed and accuracy. The game features real-time WPM tracking, multiple difficulty levels, and a sleek cyberpunk-inspired design.
 
 ## Architecture
 This is a **single-file application** built entirely in [index.html](mdc:index.html) using:

@@ -135,7 +135,7 @@ if (typeof window !== 'undefined') {
 if (typeof window !== 'undefined') {
   (function initCookieConsent() {
     try {
-      if (localStorage.getItem('tr_cookie_consent') === '1') return;
+      if (localStorage.getItem('mySpellingGameCookieConsent') === '1') return;
     } catch (e) {}
     const bar = document.createElement('div');
     bar.id = 'cookie-consent-bar';
@@ -166,7 +166,7 @@ if (typeof window !== 'undefined') {
     btn.style.color = '#ffffff';
     btn.style.cursor = 'pointer';
     btn.onclick = () => {
-      try { localStorage.setItem('tr_cookie_consent', '1'); } catch (e) {}
+      try { localStorage.setItem('mySpellingGameCookieConsent', '1'); } catch (e) {}
       bar.remove();
     };
     bar.appendChild(text);

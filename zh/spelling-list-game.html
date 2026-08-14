@@ -6,14 +6,14 @@
     <title>英语单词表拼写游戏 | My Spelling Game</title>
     <meta name="description" content="把英语单词表变成拼写小游戏。粘贴本周单词，开始掉落单词练习，自动重练漏掉的词，并分享无需登录的练习链接。">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://myspellinggame.com/zh/spelling-list-game.html">
-    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game.html">
-    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game.html">
-    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game.html">
-    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game.html">
-    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game.html">
-    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game.html">
-    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game.html">
+    <link rel="canonical" href="https://myspellinggame.com/zh/spelling-list-game">
+    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game">
+    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game">
+    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game">
+    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game">
+    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game">
+    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game">
+    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game">
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -24,7 +24,7 @@
     <meta property="og:title" content="英语单词表拼写游戏 | My Spelling Game">
     <meta property="og:description" content="粘贴英语单词表，马上变成可玩的拼写练习。">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://myspellinggame.com/zh/spelling-list-game.html">
+    <meta property="og:url" content="https://myspellinggame.com/zh/spelling-list-game">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -51,12 +55,12 @@
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="语言">语言</summary>
             <div class="lang-menu">
-                <a class="lang-option" href="/spelling-list-game.html" hreflang="en">English</a>
-                <a class="lang-option" href="/es/spelling-list-game.html" hreflang="es">Español</a>
-                <a class="lang-option" href="/pt-br/spelling-list-game.html" hreflang="pt-BR">Português</a>
-                <a class="lang-option" href="/fr/spelling-list-game.html" hreflang="fr">Français</a>
-                <a class="lang-option" href="/id/spelling-list-game.html" hreflang="id">Bahasa Indonesia</a>
-                <a class="lang-option" href="/zh/spelling-list-game.html" hreflang="zh-CN" aria-current="page">中文</a>
+                <a class="lang-option" href="/spelling-list-game" hreflang="en">English</a>
+                <a class="lang-option" href="/es/spelling-list-game" hreflang="es">Español</a>
+                <a class="lang-option" href="/pt-br/spelling-list-game" hreflang="pt-BR">Português</a>
+                <a class="lang-option" href="/fr/spelling-list-game" hreflang="fr">Français</a>
+                <a class="lang-option" href="/id/spelling-list-game" hreflang="id">Bahasa Indonesia</a>
+                <a class="lang-option" href="/zh/spelling-list-game" hreflang="zh-CN" aria-current="page">中文</a>
             </div>
         </details>
         <button class="lang-btn" onclick="window.location.href='/zh'" id="back-home" title="首页">首页</button>
@@ -86,11 +90,11 @@
             <h2>每周拼写练习</h2>
             <div class="seo-link-grid">
                 <a href="/zh/">首页</a>
-                <a href="/zh/weekly-spelling-practice.html">每周英语拼写练习</a>
-                <a href="/zh/custom-spelling-words-game.html">自定义单词游戏</a>
-                <a href="/zh/sight-word-typing-game.html">Sight words</a>
-                <a href="/zh/homeschool-spelling-practice.html">家庭学习</a>
-                <a href="/zh/vocabulary-typing-game.html">词汇练习</a>
+                <a href="/zh/weekly-spelling-practice">每周英语拼写练习</a>
+                <a href="/zh/custom-spelling-words-game">自定义单词游戏</a>
+                <a href="/zh/sight-word-typing-game">Sight words</a>
+                <a href="/zh/homeschool-spelling-practice">家庭学习</a>
+                <a href="/zh/vocabulary-typing-game">词汇练习</a>
             </div>
         </section>
         <section class="seo-panel">
@@ -101,7 +105,7 @@
         </section>
     </main>
     <footer style="text-align:center; padding:20px;">
-        <a href="/zh" style="color:#00f5ff">首页</a> &middot; <a href="/zh/privacy.html" style="color:#00f5ff">隐私</a> &middot; <a href="/zh/about.html" style="color:#00f5ff">关于</a>
+        <a href="/zh" style="color:#00f5ff">首页</a> &middot; <a href="/zh/privacy" style="color:#00f5ff">隐私</a> &middot; <a href="/zh/about" style="color:#00f5ff">关于</a>
     </footer>
     <script type="application/ld+json">
 {
@@ -109,7 +113,7 @@
   "@type": "WebPage",
   "name": "英语单词表拼写游戏",
   "description": "把英语单词表变成掉落单词拼写游戏。",
-  "url": "https://myspellinggame.com/zh/spelling-list-game.html",
+  "url": "https://myspellinggame.com/zh/spelling-list-game",
   "inLanguage": "zh-CN",
   "isPartOf": {
     "@type": "WebSite",
@@ -118,6 +122,7 @@
   }
 }
     </script>
+    <script type="module" src="/src/js/landingLauncher.mjs"></script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -166,7 +171,7 @@
       "@type": "ListItem",
       "position": 2,
       "name": "英语单词表拼写游戏",
-      "item": "https://myspellinggame.com/zh/spelling-list-game.html"
+      "item": "https://myspellinggame.com/zh/spelling-list-game"
     }
   ]
 }

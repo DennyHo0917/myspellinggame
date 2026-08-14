@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>每周英语拼写练习 | My Spelling Game</title>
-    <meta name="description" content="练习本周英语单词表。粘贴单词，玩一轮拼写打字小游戏，自动重练漏掉的词，并分享无需登录的练习链接。">
+    <meta name="description" content="粘贴本周英语单词，听隐藏单词后输入答案，立即查看批改结果，并单独重练错词，无需账号。">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://myspellinggame.com/zh/weekly-spelling-practice.html">
-    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice.html">
-    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice.html">
-    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice.html">
-    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice.html">
-    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice.html">
-    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice.html">
-    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice.html">
+    <link rel="canonical" href="https://myspellinggame.com/zh/weekly-spelling-practice">
+    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice">
+    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice">
+    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice">
+    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice">
+    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice">
+    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice">
+    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice">
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -24,7 +24,7 @@
     <meta property="og:title" content="每周英语拼写练习 | My Spelling Game">
     <meta property="og:description" content="粘贴本周英语单词，只重练漏掉的词。">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://myspellinggame.com/zh/weekly-spelling-practice.html">
+    <meta property="og:url" content="https://myspellinggame.com/zh/weekly-spelling-practice">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -51,12 +55,12 @@
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="语言">语言</summary>
             <div class="lang-menu">
-                <a class="lang-option" href="/weekly-spelling-practice.html" hreflang="en">English</a>
-                <a class="lang-option" href="/es/weekly-spelling-practice.html" hreflang="es">Español</a>
-                <a class="lang-option" href="/pt-br/weekly-spelling-practice.html" hreflang="pt-BR">Português</a>
-                <a class="lang-option" href="/fr/weekly-spelling-practice.html" hreflang="fr">Français</a>
-                <a class="lang-option" href="/id/weekly-spelling-practice.html" hreflang="id">Bahasa Indonesia</a>
-                <a class="lang-option" href="/zh/weekly-spelling-practice.html" hreflang="zh-CN" aria-current="page">中文</a>
+                <a class="lang-option" href="/weekly-spelling-practice" hreflang="en">English</a>
+                <a class="lang-option" href="/es/weekly-spelling-practice" hreflang="es">Español</a>
+                <a class="lang-option" href="/pt-br/weekly-spelling-practice" hreflang="pt-BR">Português</a>
+                <a class="lang-option" href="/fr/weekly-spelling-practice" hreflang="fr">Français</a>
+                <a class="lang-option" href="/id/weekly-spelling-practice" hreflang="id">Bahasa Indonesia</a>
+                <a class="lang-option" href="/zh/weekly-spelling-practice" hreflang="zh-CN" aria-current="page">中文</a>
             </div>
         </details>
         <button class="lang-btn" onclick="window.location.href='/zh'" id="back-home" title="首页">首页</button>
@@ -64,8 +68,14 @@
     <main class="seo-landing content-page">
         <section class="seo-hero">
             <h1>每周英语拼写练习</h1>
-            <p>My Spelling Game 解决的是每周都会重复的小麻烦：拿到新单词表，练一遍，找出漏掉的词，再练一遍。</p>
-            <a class="seo-cta" href="/zh">练习本周单词</a>
+            <p>粘贴本周单词表，直接开始推荐的听写测试；提交答案前，页面不会显示单词拼写。</p>
+            <form class="landing-launcher" action="/zh/" data-mode="dictation" data-invalid="请至少输入一个英语单词。">
+                <label for="weekly-words-zh">本周英语单词</label>
+                <textarea id="weekly-words-zh" name="words" required spellcheck="false" placeholder="because
+friend
+beautiful"></textarea>
+                <button type="submit">练习本周单词</button>
+            </form>
         </section>
 
         <section class="seo-panel">
@@ -86,11 +96,11 @@
             <h2>单词表拼写游戏</h2>
             <div class="seo-link-grid">
                 <a href="/zh/">首页</a>
-                <a href="/zh/spelling-list-game.html">英语单词表拼写游戏</a>
-                <a href="/zh/custom-spelling-words-game.html">自定义单词游戏</a>
-                <a href="/zh/sight-word-typing-game.html">Sight words</a>
-                <a href="/zh/homeschool-spelling-practice.html">家庭学习</a>
-                <a href="/zh/vocabulary-typing-game.html">词汇练习</a>
+                <a href="/zh/spelling-list-game">英语单词表拼写游戏</a>
+                <a href="/zh/custom-spelling-words-game">自定义单词游戏</a>
+                <a href="/zh/sight-word-typing-game">Sight words</a>
+                <a href="/zh/homeschool-spelling-practice">家庭学习</a>
+                <a href="/zh/vocabulary-typing-game">词汇练习</a>
             </div>
         </section>
         <section class="seo-panel">
@@ -101,7 +111,7 @@
         </section>
     </main>
     <footer style="text-align:center; padding:20px;">
-        <a href="/zh" style="color:#00f5ff">首页</a> &middot; <a href="/zh/privacy.html" style="color:#00f5ff">隐私</a> &middot; <a href="/zh/about.html" style="color:#00f5ff">关于</a>
+        <a href="/zh" style="color:#00f5ff">首页</a> &middot; <a href="/zh/privacy" style="color:#00f5ff">隐私</a> &middot; <a href="/zh/about" style="color:#00f5ff">关于</a>
     </footer>
     <script type="application/ld+json">
 {
@@ -109,7 +119,7 @@
   "@type": "WebPage",
   "name": "每周英语拼写练习",
   "description": "用自己的英语单词表做每周拼写练习。",
-  "url": "https://myspellinggame.com/zh/weekly-spelling-practice.html",
+  "url": "https://myspellinggame.com/zh/weekly-spelling-practice",
   "inLanguage": "zh-CN",
   "isPartOf": {
     "@type": "WebSite",
@@ -118,6 +128,7 @@
   }
 }
     </script>
+    <script type="module" src="/src/js/landingLauncher.mjs"></script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -166,7 +177,7 @@
       "@type": "ListItem",
       "position": 2,
       "name": "每周英语拼写练习",
-      "item": "https://myspellinggame.com/zh/weekly-spelling-practice.html"
+      "item": "https://myspellinggame.com/zh/weekly-spelling-practice"
     }
   ]
 }

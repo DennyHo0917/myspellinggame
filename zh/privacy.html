@@ -6,14 +6,14 @@
     <title>隐私政策 | My Spelling Game</title>
     <meta name="description" content="My Spelling Game 隐私政策：本地存储、访问分析、Cookie、广告披露和你的选择。">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://myspellinggame.com/zh/privacy.html">
-    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/privacy.html">
-    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/privacy.html">
-    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/privacy.html">
-    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/privacy.html">
-    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/privacy.html">
-    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/privacy.html">
-    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/privacy.html">
+    <link rel="canonical" href="https://myspellinggame.com/zh/privacy">
+    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/privacy">
+    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/privacy">
+    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/privacy">
+    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/privacy">
+    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/privacy">
+    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/privacy">
+    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/privacy">
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -24,7 +24,7 @@
     <meta property="og:title" content="隐私政策 | My Spelling Game">
     <meta property="og:description" content="My Spelling Game 隐私政策：本地存储、访问分析、Cookie、广告披露和你的选择。">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://myspellinggame.com/zh/privacy.html">
+    <meta property="og:url" content="https://myspellinggame.com/zh/privacy">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -51,12 +55,12 @@
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="语言">语言</summary>
             <div class="lang-menu">
-                <a class="lang-option" href="/privacy.html" hreflang="en">English</a>
-                <a class="lang-option" href="/es/privacy.html" hreflang="es">Español</a>
-                <a class="lang-option" href="/pt-br/privacy.html" hreflang="pt-BR">Português</a>
-                <a class="lang-option" href="/fr/privacy.html" hreflang="fr">Français</a>
-                <a class="lang-option" href="/id/privacy.html" hreflang="id">Bahasa Indonesia</a>
-                <a class="lang-option" href="/zh/privacy.html" hreflang="zh-CN" aria-current="page">中文</a>
+                <a class="lang-option" href="/privacy" hreflang="en">English</a>
+                <a class="lang-option" href="/es/privacy" hreflang="es">Español</a>
+                <a class="lang-option" href="/pt-br/privacy" hreflang="pt-BR">Português</a>
+                <a class="lang-option" href="/fr/privacy" hreflang="fr">Français</a>
+                <a class="lang-option" href="/id/privacy" hreflang="id">Bahasa Indonesia</a>
+                <a class="lang-option" href="/zh/privacy" hreflang="zh-CN" aria-current="page">中文</a>
             </div>
         </details>
         <button class="lang-btn" onclick="window.location.href='/zh/'" id="back-home" title="首页">首页</button>
@@ -74,13 +78,13 @@
         </section>
 
         <section class="seo-panel">
-            <h2>本地存储</h2>
-            <p>你的英语单词表和朗读偏好会通过 localStorage 保存在当前浏览器中。这只是为了让练习列表保留在你的设备上，不会通过我们自己的服务器上传。</p>
+            <h2>本地存储和分享链接</h2>
+            <p>单词表和练习偏好保存在当前浏览器。新分享链接会把单词表放在 URL 片段中，由浏览器处理，不会发送到我们的服务器。</p>
         </section>
 
         <section class="seo-panel">
             <h2>访问分析</h2>
-            <p>我们使用 Google Analytics 了解访问者如何使用网站，并改进练习体验。My Spelling Game 不收集可识别学生身份的个人信息。</p>
+            <p>Google Analytics 只接收不含查询参数和 URL 片段的页面地址，以及模式、单词数量、成绩等汇总信息。完整单词表和输入答案不会被发送。</p>
         </section>
 
         <section class="seo-panel">
@@ -95,15 +99,15 @@
 
         <section class="seo-panel">
             <h2>联系</h2>
-            <p>如果你对本政策有疑问，请通过 <a href="/zh/contact.html">联系页面</a> 告诉我们。</p>
+            <p>如果你对本政策有疑问，请通过 <a href="/zh/contact">联系页面</a> 告诉我们。</p>
             <p class="privacy-update">最后更新： <span id="privacy-date"></span></p>
         </section>
     </main>
 
     <footer>
         <p>
-            <a href="/zh/custom-spelling-words-game.html">自定义单词游戏</a> &middot; <a href="/zh/spelling-list-game.html">单词表练习</a> &middot; <a href="/zh/weekly-spelling-practice.html">每周拼写练习</a><br>
-            <a href="/zh/privacy.html">隐私</a> &middot; <a href="/zh/about.html">关于</a> &middot; <a href="/zh/contact.html">联系</a><br>
+            <a href="/zh/custom-spelling-words-game">自定义单词游戏</a> &middot; <a href="/zh/spelling-list-game">单词表练习</a> &middot; <a href="/zh/weekly-spelling-practice">每周拼写练习</a><br>
+            <a href="/zh/privacy">隐私</a> &middot; <a href="/zh/about">关于</a> &middot; <a href="/zh/contact">联系</a><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>
@@ -122,7 +126,7 @@
       "@context": "https://schema.org",
       "@type": "WebPage",
       "name": "隐私政策 | My Spelling Game",
-      "url": "https://myspellinggame.com/zh/privacy.html",
+      "url": "https://myspellinggame.com/zh/privacy",
       "inLanguage": "zh-CN",
       "about": {
             "@type": "VideoGame",

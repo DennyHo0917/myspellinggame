@@ -1,4 +1,4 @@
-// Typing Rain 主循环模块
+// My Spelling Game 主循环模块
 
 import { gameState } from './gameState.js';
 import { fallingWords, FallingWord, spawnWord } from './words.js';

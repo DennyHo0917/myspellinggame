@@ -6,14 +6,14 @@
     <title>Jogo com lista de palavras em inglês | My Spelling Game</title>
     <meta name="description" content="Transforme uma lista de palavras em inglês em jogo. Cole a lista da semana, pratique, revise erros e compartilhe um link sem conta.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://myspellinggame.com/pt-br/spelling-list-game.html">
-    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game.html">
-    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game.html">
-    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game.html">
-    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game.html">
-    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game.html">
-    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game.html">
-    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game.html">
+    <link rel="canonical" href="https://myspellinggame.com/pt-br/spelling-list-game">
+    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/spelling-list-game">
+    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/spelling-list-game">
+    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/spelling-list-game">
+    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/spelling-list-game">
+    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/spelling-list-game">
+    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/spelling-list-game">
+    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/spelling-list-game">
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -24,7 +24,7 @@
     <meta property="og:title" content="Jogo com lista de palavras em inglês | My Spelling Game">
     <meta property="og:description" content="Cole uma lista de palavras e jogue um jogo de soletrar em inglês.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://myspellinggame.com/pt-br/spelling-list-game.html">
+    <meta property="og:url" content="https://myspellinggame.com/pt-br/spelling-list-game">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -51,12 +55,12 @@
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="Idioma">Idioma</summary>
             <div class="lang-menu">
-                <a class="lang-option" href="/spelling-list-game.html" hreflang="en">English</a>
-                <a class="lang-option" href="/es/spelling-list-game.html" hreflang="es">Español</a>
-                <a class="lang-option" href="/pt-br/spelling-list-game.html" hreflang="pt-BR" aria-current="page">Português</a>
-                <a class="lang-option" href="/fr/spelling-list-game.html" hreflang="fr">Français</a>
-                <a class="lang-option" href="/id/spelling-list-game.html" hreflang="id">Bahasa Indonesia</a>
-                <a class="lang-option" href="/zh/spelling-list-game.html" hreflang="zh-CN">中文</a>
+                <a class="lang-option" href="/spelling-list-game" hreflang="en">English</a>
+                <a class="lang-option" href="/es/spelling-list-game" hreflang="es">Español</a>
+                <a class="lang-option" href="/pt-br/spelling-list-game" hreflang="pt-BR" aria-current="page">Português</a>
+                <a class="lang-option" href="/fr/spelling-list-game" hreflang="fr">Français</a>
+                <a class="lang-option" href="/id/spelling-list-game" hreflang="id">Bahasa Indonesia</a>
+                <a class="lang-option" href="/zh/spelling-list-game" hreflang="zh-CN">中文</a>
             </div>
         </details>
         <button class="lang-btn" onclick="window.location.href='/pt-br'" id="back-home" title="Início">Início</button>
@@ -86,11 +90,11 @@
             <h2>Prática semanal</h2>
             <div class="seo-link-grid">
                 <a href="/pt-br/">Início</a>
-                <a href="/pt-br/weekly-spelling-practice.html">Prática semanal de spelling em inglês</a>
-                <a href="/pt-br/custom-spelling-words-game.html">Jogo com palavras próprias</a>
-                <a href="/pt-br/sight-word-typing-game.html">Sight words</a>
-                <a href="/pt-br/homeschool-spelling-practice.html">Homeschool</a>
-                <a href="/pt-br/vocabulary-typing-game.html">Vocabulário</a>
+                <a href="/pt-br/weekly-spelling-practice">Prática semanal de spelling em inglês</a>
+                <a href="/pt-br/custom-spelling-words-game">Jogo com palavras próprias</a>
+                <a href="/pt-br/sight-word-typing-game">Sight words</a>
+                <a href="/pt-br/homeschool-spelling-practice">Homeschool</a>
+                <a href="/pt-br/vocabulary-typing-game">Vocabulário</a>
             </div>
         </section>
         <section class="seo-panel">
@@ -101,7 +105,7 @@
         </section>
     </main>
     <footer style="text-align:center; padding:20px;">
-        <a href="/pt-br" style="color:#00f5ff">Início</a> &middot; <a href="/pt-br/privacy.html" style="color:#00f5ff">Privacidade</a> &middot; <a href="/pt-br/about.html" style="color:#00f5ff">Sobre</a>
+        <a href="/pt-br" style="color:#00f5ff">Início</a> &middot; <a href="/pt-br/privacy" style="color:#00f5ff">Privacidade</a> &middot; <a href="/pt-br/about" style="color:#00f5ff">Sobre</a>
     </footer>
     <script type="application/ld+json">
 {
@@ -109,7 +113,7 @@
   "@type": "WebPage",
   "name": "Jogo com lista de palavras em inglês",
   "description": "Transforme uma lista de palavras em inglês em um jogo de soletrar.",
-  "url": "https://myspellinggame.com/pt-br/spelling-list-game.html",
+  "url": "https://myspellinggame.com/pt-br/spelling-list-game",
   "inLanguage": "pt-BR",
   "isPartOf": {
     "@type": "WebSite",
@@ -118,6 +122,7 @@
   }
 }
     </script>
+    <script type="module" src="/src/js/landingLauncher.mjs"></script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -166,7 +171,7 @@
       "@type": "ListItem",
       "position": 2,
       "name": "Jogo com lista de palavras",
-      "item": "https://myspellinggame.com/pt-br/spelling-list-game.html"
+      "item": "https://myspellinggame.com/pt-br/spelling-list-game"
     }
   ]
 }

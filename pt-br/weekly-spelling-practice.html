@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prática semanal de spelling em inglês | My Spelling Game</title>
-    <meta name="description" content="Pratique a lista de inglês da semana. Cole palavras, jogue uma rodada curta, revise erros e compartilhe um link sem criar conta.">
+    <meta name="description" content="Cole as palavras da semana, ouça cada palavra escondida, digite a resposta e revise os erros sem criar conta.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://myspellinggame.com/pt-br/weekly-spelling-practice.html">
-    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice.html">
-    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice.html">
-    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice.html">
-    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice.html">
-    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice.html">
-    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice.html">
-    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice.html">
+    <link rel="canonical" href="https://myspellinggame.com/pt-br/weekly-spelling-practice">
+    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/weekly-spelling-practice">
+    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/weekly-spelling-practice">
+    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/weekly-spelling-practice">
+    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/weekly-spelling-practice">
+    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/weekly-spelling-practice">
+    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/weekly-spelling-practice">
+    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/weekly-spelling-practice">
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -24,7 +24,7 @@
     <meta property="og:title" content="Prática semanal de spelling em inglês | My Spelling Game">
     <meta property="og:description" content="Cole as palavras da semana e revise só o que ficou errado.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://myspellinggame.com/pt-br/weekly-spelling-practice.html">
+    <meta property="og:url" content="https://myspellinggame.com/pt-br/weekly-spelling-practice">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -51,12 +55,12 @@
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="Idioma">Idioma</summary>
             <div class="lang-menu">
-                <a class="lang-option" href="/weekly-spelling-practice.html" hreflang="en">English</a>
-                <a class="lang-option" href="/es/weekly-spelling-practice.html" hreflang="es">Español</a>
-                <a class="lang-option" href="/pt-br/weekly-spelling-practice.html" hreflang="pt-BR" aria-current="page">Português</a>
-                <a class="lang-option" href="/fr/weekly-spelling-practice.html" hreflang="fr">Français</a>
-                <a class="lang-option" href="/id/weekly-spelling-practice.html" hreflang="id">Bahasa Indonesia</a>
-                <a class="lang-option" href="/zh/weekly-spelling-practice.html" hreflang="zh-CN">中文</a>
+                <a class="lang-option" href="/weekly-spelling-practice" hreflang="en">English</a>
+                <a class="lang-option" href="/es/weekly-spelling-practice" hreflang="es">Español</a>
+                <a class="lang-option" href="/pt-br/weekly-spelling-practice" hreflang="pt-BR" aria-current="page">Português</a>
+                <a class="lang-option" href="/fr/weekly-spelling-practice" hreflang="fr">Français</a>
+                <a class="lang-option" href="/id/weekly-spelling-practice" hreflang="id">Bahasa Indonesia</a>
+                <a class="lang-option" href="/zh/weekly-spelling-practice" hreflang="zh-CN">中文</a>
             </div>
         </details>
         <button class="lang-btn" onclick="window.location.href='/pt-br'" id="back-home" title="Início">Início</button>
@@ -64,8 +68,14 @@
     <main class="seo-landing content-page">
         <section class="seo-hero">
             <h1>Prática semanal de spelling em inglês</h1>
-            <p>My Spelling Game foi feito para a rotina que se repete toda semana: pegar a lista, praticar, ver os erros e praticar de novo.</p>
-            <a class="seo-cta" href="/pt-br">Praticar a lista da semana</a>
+            <p>Cole a lista desta semana e comece o teste por áudio recomendado. A palavra só aparece depois que a resposta é enviada.</p>
+            <form class="landing-launcher" action="/pt-br/" data-mode="dictation" data-invalid="Digite pelo menos uma palavra.">
+                <label for="weekly-words-pt-BR">Palavras de spelling desta semana</label>
+                <textarea id="weekly-words-pt-BR" name="words" required spellcheck="false" placeholder="because
+friend
+beautiful"></textarea>
+                <button type="submit">Praticar a lista da semana</button>
+            </form>
         </section>
 
         <section class="seo-panel">
@@ -86,11 +96,11 @@
             <h2>Jogo com lista de palavras</h2>
             <div class="seo-link-grid">
                 <a href="/pt-br/">Início</a>
-                <a href="/pt-br/spelling-list-game.html">Jogo com lista de palavras em inglês</a>
-                <a href="/pt-br/custom-spelling-words-game.html">Jogo com palavras próprias</a>
-                <a href="/pt-br/sight-word-typing-game.html">Sight words</a>
-                <a href="/pt-br/homeschool-spelling-practice.html">Homeschool</a>
-                <a href="/pt-br/vocabulary-typing-game.html">Vocabulário</a>
+                <a href="/pt-br/spelling-list-game">Jogo com lista de palavras em inglês</a>
+                <a href="/pt-br/custom-spelling-words-game">Jogo com palavras próprias</a>
+                <a href="/pt-br/sight-word-typing-game">Sight words</a>
+                <a href="/pt-br/homeschool-spelling-practice">Homeschool</a>
+                <a href="/pt-br/vocabulary-typing-game">Vocabulário</a>
             </div>
         </section>
         <section class="seo-panel">
@@ -101,7 +111,7 @@
         </section>
     </main>
     <footer style="text-align:center; padding:20px;">
-        <a href="/pt-br" style="color:#00f5ff">Início</a> &middot; <a href="/pt-br/privacy.html" style="color:#00f5ff">Privacidade</a> &middot; <a href="/pt-br/about.html" style="color:#00f5ff">Sobre</a>
+        <a href="/pt-br" style="color:#00f5ff">Início</a> &middot; <a href="/pt-br/privacy" style="color:#00f5ff">Privacidade</a> &middot; <a href="/pt-br/about" style="color:#00f5ff">Sobre</a>
     </footer>
     <script type="application/ld+json">
 {
@@ -109,7 +119,7 @@
   "@type": "WebPage",
   "name": "Prática semanal de spelling em inglês",
   "description": "Pratique a lista semanal de inglês com um jogo de palavras próprias.",
-  "url": "https://myspellinggame.com/pt-br/weekly-spelling-practice.html",
+  "url": "https://myspellinggame.com/pt-br/weekly-spelling-practice",
   "inLanguage": "pt-BR",
   "isPartOf": {
     "@type": "WebSite",
@@ -118,6 +128,7 @@
   }
 }
     </script>
+    <script type="module" src="/src/js/landingLauncher.mjs"></script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -166,7 +177,7 @@
       "@type": "ListItem",
       "position": 2,
       "name": "Prática semanal",
-      "item": "https://myspellinggame.com/pt-br/weekly-spelling-practice.html"
+      "item": "https://myspellinggame.com/pt-br/weekly-spelling-practice"
     }
   ]
 }

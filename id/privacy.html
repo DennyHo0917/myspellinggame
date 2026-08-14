@@ -6,14 +6,14 @@
     <title>Kebijakan Privasi | My Spelling Game</title>
     <meta name="description" content="Kebijakan Privasi My Spelling Game: penyimpanan lokal, analytics, cookies, iklan, dan pilihan pengguna.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://myspellinggame.com/id/privacy.html">
-    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/privacy.html">
-    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/privacy.html">
-    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/privacy.html">
-    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/privacy.html">
-    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/privacy.html">
-    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/privacy.html">
-    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/privacy.html">
+    <link rel="canonical" href="https://myspellinggame.com/id/privacy">
+    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/privacy">
+    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/privacy">
+    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/privacy">
+    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/privacy">
+    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/privacy">
+    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/privacy">
+    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/privacy">
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -24,7 +24,7 @@
     <meta property="og:title" content="Kebijakan Privasi | My Spelling Game">
     <meta property="og:description" content="Kebijakan Privasi My Spelling Game: penyimpanan lokal, analytics, cookies, iklan, dan pilihan pengguna.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://myspellinggame.com/id/privacy.html">
+    <meta property="og:url" content="https://myspellinggame.com/id/privacy">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -42,8 +42,12 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS');
+      gtag('config', 'G-VYF1V40KVS', {
+        page_location: window.location.origin + window.location.pathname,
+        page_path: window.location.pathname
+      });
     </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
@@ -51,12 +55,12 @@
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="Bahasa">Bahasa</summary>
             <div class="lang-menu">
-                <a class="lang-option" href="/privacy.html" hreflang="en">English</a>
-                <a class="lang-option" href="/es/privacy.html" hreflang="es">Español</a>
-                <a class="lang-option" href="/pt-br/privacy.html" hreflang="pt-BR">Português</a>
-                <a class="lang-option" href="/fr/privacy.html" hreflang="fr">Français</a>
-                <a class="lang-option" href="/id/privacy.html" hreflang="id" aria-current="page">Bahasa Indonesia</a>
-                <a class="lang-option" href="/zh/privacy.html" hreflang="zh-CN">中文</a>
+                <a class="lang-option" href="/privacy" hreflang="en">English</a>
+                <a class="lang-option" href="/es/privacy" hreflang="es">Español</a>
+                <a class="lang-option" href="/pt-br/privacy" hreflang="pt-BR">Português</a>
+                <a class="lang-option" href="/fr/privacy" hreflang="fr">Français</a>
+                <a class="lang-option" href="/id/privacy" hreflang="id" aria-current="page">Bahasa Indonesia</a>
+                <a class="lang-option" href="/zh/privacy" hreflang="zh-CN">中文</a>
             </div>
         </details>
         <button class="lang-btn" onclick="window.location.href='/id/'" id="back-home" title="Beranda">Beranda</button>
@@ -74,13 +78,13 @@
         </section>
 
         <section class="seo-panel">
-            <h2>Penyimpanan lokal</h2>
-            <p>Daftar kata dan pilihan latihan disimpan di browser menggunakan localStorage. Data ini menjaga daftar tetap tersedia di perangkatmu dan tidak dikirim ke server kami.</p>
+            <h2>Penyimpanan lokal dan link</h2>
+            <p>Daftar kata dan pilihan latihan disimpan di browser ini. Link baru menaruh daftar di fragmen URL yang diproses browser tanpa dikirim ke server kami.</p>
         </section>
 
         <section class="seo-panel">
             <h2>Analytics</h2>
-            <p>Kami menggunakan Google Analytics untuk memahami penggunaan situs dan memperbaiki pengalaman latihan. Kami tidak mengumpulkan informasi siswa yang dapat dikenali melalui My Spelling Game.</p>
+            <p>Google Analytics menerima alamat halaman yang sudah dibersihkan tanpa parameter atau fragmen, serta data gabungan seperti mode, jumlah kata, dan hasil. Daftar kata dan jawaban tidak dikirim.</p>
         </section>
 
         <section class="seo-panel">
@@ -95,15 +99,15 @@
 
         <section class="seo-panel">
             <h2>Kontak</h2>
-            <p>Jika ada pertanyaan tentang kebijakan ini, hubungi kami lewat <a href="/id/contact.html">halaman kontak</a>.</p>
+            <p>Jika ada pertanyaan tentang kebijakan ini, hubungi kami lewat <a href="/id/contact">halaman kontak</a>.</p>
             <p class="privacy-update">Terakhir diperbarui: <span id="privacy-date"></span></p>
         </section>
     </main>
 
     <footer>
         <p>
-            <a href="/id/custom-spelling-words-game.html">Game kata sendiri</a> &middot; <a href="/id/spelling-list-game.html">Daftar spelling</a> &middot; <a href="/id/weekly-spelling-practice.html">Latihan mingguan</a><br>
-            <a href="/id/privacy.html">Privasi</a> &middot; <a href="/id/about.html">Tentang</a> &middot; <a href="/id/contact.html">Kontak</a><br>
+            <a href="/id/custom-spelling-words-game">Game kata sendiri</a> &middot; <a href="/id/spelling-list-game">Daftar spelling</a> &middot; <a href="/id/weekly-spelling-practice">Latihan mingguan</a><br>
+            <a href="/id/privacy">Privasi</a> &middot; <a href="/id/about">Tentang</a> &middot; <a href="/id/contact">Kontak</a><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>
@@ -122,7 +126,7 @@
       "@context": "https://schema.org",
       "@type": "WebPage",
       "name": "Kebijakan Privasi | My Spelling Game",
-      "url": "https://myspellinggame.com/id/privacy.html",
+      "url": "https://myspellinggame.com/id/privacy",
       "inLanguage": "id",
       "about": {
             "@type": "VideoGame",

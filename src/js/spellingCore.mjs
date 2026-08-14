@@ -73,3 +73,23 @@ export function takeCustomWord(words, cursor = 0) {
   if (!Array.isArray(words) || cursor >= words.length) return { word: null, cursor };
   return { word: words[cursor], cursor: cursor + 1 };
 }
+
+export function shouldEndTypingOnMiss(isCustomRound, missedCount, maxMisses) {
+  return !isCustomRound && missedCount >= maxMisses;
+}
+
+export function customTypingRoundComplete(totalWords, processedCount, activeWordCount) {
+  return totalWords > 0 && processedCount >= totalWords && activeWordCount === 0;
+}
+
+export function typingCompletionStats(processedCount, missedWords = []) {
+  const wordCount = Math.max(0, Number(processedCount) || 0);
+  const missedCount = Math.min(wordCount, new Set(missedWords).size);
+  const correctCount = wordCount - missedCount;
+  return {
+    word_count: wordCount,
+    correct_count: correctCount,
+    missed_count: missedCount,
+    accuracy: wordCount ? Math.round((correctCount / wordCount) * 100) : 0,
+  };
+}

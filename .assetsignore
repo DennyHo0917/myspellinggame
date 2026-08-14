@@ -1,0 +1,16 @@
+.git
+.git/**
+.cursor
+.cursor/**
+.wrangler
+.wrangler/**
+test
+test/**
+scripts
+scripts/**
+AGENTS.md
+README.md
+GA4_SETUP.md
+DEPLOYMENT.md
+run_server.bat
+wrangler.json

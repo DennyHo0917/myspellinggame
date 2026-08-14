@@ -7,6 +7,7 @@ import { playMissSound } from './audio.js';
 import { updateStats } from './rendering.js';
 import { dom } from './domRefs.js';
 import { isRoundComplete, markMissed } from './spellingMode.js';
+import { shouldEndTypingOnMiss } from './spellingCore.mjs';
 
 // 背景与粒子数组与旧全局共享
 if (typeof window !== 'undefined') {
@@ -102,7 +103,7 @@ export function gameLoop() {
       gameState.combo = 0;
       createExplosion(word.x, canvas.height - 20, '#ff6b6b');
       playMissSound();
-      if (gameState.missedWords >= gameState.maxMisses) {
+      if (shouldEndTypingOnMiss(gameState.spellingMode, gameState.missedWords, gameState.maxMisses)) {
         if (typeof window.endGame === 'function') window.endGame();
         return;
       }

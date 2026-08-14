@@ -340,9 +340,8 @@ function footer(loc) {
 }
 
 function localizedSeoHref(loc, item) {
-  if (item.key !== 'list' && item.key !== 'weekly') return item.href;
   const slug = item.href.replace(/^\//, '');
-  return `${loc.dir}/${slug}`.replace('//', '/');
+  return pagePath(loc, slug);
 }
 
 function panelBody(body) {

@@ -1,10 +1,22 @@
 const fs = require('fs');
 const path = require('path');
-const { execFileSync } = require('child_process');
 
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'sitemap.xml');
 const publicDirs = ['', 'es', 'pt-br', 'fr', 'id', 'zh'];
+const baseUrl = 'https://myspellinggame.com';
+const baselineLastmod = '2026-06-28';
+const currentContentLastmod = '2026-08-14';
+
+const substantivePaths = new Set(['/homeschool-spelling-practice']);
+for (const dir of publicDirs) {
+  const prefix = dir ? `/${dir}` : '';
+  substantivePaths.add(prefix ? `${prefix}/` : '/');
+  for (const slug of ['about', 'privacy', 'custom-spelling-words-game', 'weekly-spelling-practice']) {
+    substantivePaths.add(`${prefix}/${slug}`);
+  }
+  if (dir) substantivePaths.add(`${prefix}/contact`);
+}
 
 function htmlFiles() {
   return publicDirs.flatMap((dir) => fs.readdirSync(path.join(root, dir), { withFileTypes: true })
@@ -16,18 +28,10 @@ function match(html, expression) {
   return html.match(expression)?.[1] || '';
 }
 
-function lastModified(file) {
-  const relative = path.relative(root, file).replace(/\\/g, '/');
-  try {
-    if (execFileSync('git', ['status', '--porcelain', '--', relative], { cwd: root, encoding: 'utf8' }).trim()) {
-      return new Date().toISOString().slice(0, 10);
-    }
-    const date = execFileSync('git', ['log', '-1', '--format=%cs', '--', relative], { cwd: root, encoding: 'utf8' }).trim();
-    if (date) return date;
-  } catch (_) {
-    // Fall back to the file timestamp outside a Git checkout.
-  }
-  return fs.statSync(file).mtime.toISOString().slice(0, 10);
+function lastModified(canonical, html) {
+  const structuredDate = match(html, /"dateModified"\s*:\s*"(\d{4}-\d{2}-\d{2})"/);
+  if (structuredDate) return structuredDate;
+  return substantivePaths.has(new URL(canonical, baseUrl).pathname) ? currentContentLastmod : baselineLastmod;
 }
 
 function escapeXml(value) {
@@ -40,7 +44,7 @@ const pages = htmlFiles().map((file) => {
   if (!canonical) return null;
   const alternates = [...html.matchAll(/<link\s+rel="alternate"\s+hreflang="([^"]+)"\s+href="([^"]+)"/gi)]
     .map((item) => ({ hreflang: item[1], href: item[2] }));
-  return { canonical, alternates, lastmod: lastModified(file) };
+  return { canonical, alternates, lastmod: lastModified(canonical, html) };
 }).filter(Boolean).sort((a, b) => a.canonical.localeCompare(b.canonical));
 
 const seen = new Set();

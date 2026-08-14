@@ -1,6 +1,13 @@
 import { gameState } from './gameState.js';
 import { t } from './pageLocale.js';
-import { configuredWords, parseWords, SAMPLE_WORDS, takeCustomWord } from './spellingCore.mjs';
+import {
+  configuredWords,
+  customTypingRoundComplete,
+  parseWords,
+  SAMPLE_WORDS,
+  takeCustomWord,
+  typingCompletionStats,
+} from './spellingCore.mjs';
 import { speakWord as speak } from './speech.js';
 import { entryPage, pageLocale, trackEvent } from './analytics.mjs';
 import { buildShareHash, readShareState } from './shareState.mjs';
@@ -99,7 +106,7 @@ export function prepareSession() {
   gameState.missedWordList = [];
   gameState.spellingRoundComplete = false;
   gameState.spellingWordsProcessed = 0;
-  gameState.maxMisses = 5;
+  gameState.maxMisses = practiceMode === 'typing' ? words.length : 5;
   gameState.level = 1;
   gameState.replayRound = window.pendingReplayRound === true;
   window.pendingReplayRound = false;
@@ -134,7 +141,11 @@ export function getCustomWord() {
 
 export function isRoundComplete(activeWordCount) {
   if (!gameState.spellingMode || !gameState.customWords?.length) return false;
-  return gameState.spellingWordsProcessed >= gameState.customWords.length && activeWordCount === 0;
+  return customTypingRoundComplete(
+    gameState.customWords.length,
+    gameState.spellingWordsProcessed,
+    activeWordCount,
+  );
 }
 
 export function speakWord(word) {
@@ -181,14 +192,12 @@ export function renderSummary() {
   const replay = document.getElementById('replay-missed-btn');
   if (replay) replay.hidden = missed.length === 0;
   box.hidden = false;
-  const total = gameState.customWords.length;
-  const correct = Math.max(0, total - missed.length);
+  const stats = typingCompletionStats(gameState.spellingWordsProcessed, missed);
+  document.getElementById('final-accuracy').textContent = `${stats.accuracy}%`;
+  document.getElementById('final-missed').textContent = stats.missed_count;
   track('game_completed', {
     mode: 'typing',
-    word_count: total,
-    correct_count: correct,
-    missed_count: missed.length,
-    accuracy: total ? Math.round((correct / total) * 100) : 0,
+    ...stats,
     duration_seconds: Math.max(0, Math.round((Date.now() - gameState.startTime) / 1000)),
     replay_round: gameState.replayRound,
   });

@@ -34,6 +34,29 @@ test('sitemap contains each extensionless canonical exactly once with complete h
     const found = [...block.matchAll(/hreflang="([^"]+)"/g)].map((match) => match[1]).sort();
     assert.deepEqual(found, [...hreflangs].sort());
   }
+
+  const lastmods = blocks.map((block) => tagContent(block, /<lastmod>([^<]+)<\/lastmod>/));
+  assert.ok(new Set(lastmods).size > 1);
+  const byUrl = new Map(blocks.map((block) => [
+    tagContent(block, /<loc>([^<]+)<\/loc>/),
+    tagContent(block, /<lastmod>([^<]+)<\/lastmod>/),
+  ]));
+  assert.equal(byUrl.get('https://myspellinggame.com/'), '2026-08-14');
+  assert.equal(byUrl.get('https://myspellinggame.com/custom-spelling-words-game'), '2026-08-14');
+  assert.equal(byUrl.get('https://myspellinggame.com/homeschool-spelling-practice'), '2026-08-14');
+  assert.equal(byUrl.get('https://myspellinggame.com/es/about'), '2026-08-14');
+  assert.equal(byUrl.get('https://myspellinggame.com/zh/contact'), '2026-08-14');
+  assert.equal(byUrl.get('https://myspellinggame.com/contact'), '2026-06-28');
+  assert.equal(byUrl.get('https://myspellinggame.com/es/sight-word-typing-game'), '2026-06-28');
+  assert.equal(byUrl.get('https://myspellinggame.com/sight-word-typing-game'), '2026-06-22');
+
+  for (const file of publicHtmlFiles()) {
+    const html = fs.readFileSync(file, 'utf8');
+    const dateModified = tagContent(html, /"dateModified"\s*:\s*"(\d{4}-\d{2}-\d{2})"/);
+    if (!dateModified) continue;
+    const canonical = tagContent(html, /<link rel="canonical" href="([^"]+)">/);
+    assert.equal(byUrl.get(canonical), dateModified);
+  }
 });
 
 test('home, weekly, and custom pages have one H1 and distinct metadata per locale', () => {
@@ -55,5 +78,17 @@ test('all public pages use clean GA configuration and final URL signals', () => 
     assert.match(html, /page_location: window\.location\.origin \+ window\.location\.pathname/);
     assert.match(html, /<script type="module" src="\/src\/js\/analytics\.mjs"><\/script>/);
     assert.doesNotMatch(html, /<(?:a|link)\b[^>]+(?:href)="[^"]+\.html(?:[?#][^"]*)?"/);
+    assert.doesNotMatch(html, /(?:href|action)="[^"]*\?words=/);
+  }
+});
+
+test('localized legal pages keep SEO links inside the active locale', () => {
+  for (const locale of locales.filter(Boolean)) {
+    for (const page of ['about.html', 'contact.html', 'privacy.html']) {
+      const html = fs.readFileSync(path.join(root, locale, page), 'utf8');
+      for (const slug of ['custom-spelling-words-game', 'spelling-list-game', 'weekly-spelling-practice']) {
+        assert.match(html, new RegExp(`href="/${locale}/${slug}"`));
+      }
+    }
   }
 });

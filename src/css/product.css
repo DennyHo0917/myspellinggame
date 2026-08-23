@@ -407,12 +407,22 @@ fieldset {
   gap: 0.75rem;
 }
 .assignment-row {
+  position: relative;
   display: grid;
   gap: 0.7rem;
   grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 1rem;
+}
+.assignment-row > div:first-child {
+  padding-right: 5rem;
+}
+.assignment-row-status {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 .assignment-row h3 {
   margin: 0;
@@ -425,8 +435,40 @@ fieldset {
   flex-wrap: wrap;
   margin-top: 0.4rem;
 }
+.assignment-form-heading,
+.assignment-detail-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.assignment-form-heading h1,
+.assignment-detail-heading h1 {
+  min-width: 0;
+  margin-bottom: 0;
+}
+.assignment-form-heading .button-link {
+  min-height: 36px;
+  flex: 0 0 auto;
+  padding: 0 0.75rem;
+  font-size: 0.86rem;
+  white-space: nowrap;
+}
 .table-wrap {
   overflow-x: auto;
+}
+.table-wrap td {
+  vertical-align: bottom;
+}
+.table-wrap td:last-child {
+  white-space: nowrap;
+}
+.table-wrap td:last-child button {
+  min-height: 34px;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.82rem;
+  line-height: 1.2;
 }
 table {
   width: 100%;
@@ -693,6 +735,134 @@ th {
 
   .auth-card button {
     width: 100%;
+  }
+}
+
+/* Keep the signed-out teacher entry compact while leaving the standalone pricing page unchanged. */
+.teacher-login-main {
+  width: min(1080px, 100%);
+  gap: 1.25rem;
+}
+
+.teacher-login-main .auth-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+  grid-template-rows: auto auto;
+  column-gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: center;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  text-align: left;
+}
+
+.teacher-login-main .auth-card h1 {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0 0 0.45rem;
+  font-size: clamp(1.7rem, 3vw, 2.35rem);
+}
+
+.teacher-login-main .auth-card p {
+  grid-column: 1;
+  grid-row: 2;
+  margin: 0;
+  max-width: 42rem;
+}
+
+.teacher-login-main .auth-card .google-sign-in {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.teacher-login-main .auth-card .status {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  margin: 1rem 0 0;
+}
+
+.teacher-login-main .auth-card .status:empty {
+  display: none;
+}
+
+.teacher-login-main .teacher-pricing {
+  gap: 1rem;
+}
+
+.teacher-login-main .teacher-pricing > .product-card:first-child {
+  padding: 0 0.25rem;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.teacher-login-main .teacher-pricing > .product-card:first-child h1 {
+  margin-bottom: 0.45rem;
+  font-size: clamp(1.45rem, 3vw, 1.9rem);
+}
+
+.teacher-login-main .teacher-pricing > .product-card:first-child p {
+  margin: 0;
+}
+
+.teacher-login-main .teacher-pricing > .product-card:first-child .notice {
+  margin-top: 0.85rem;
+}
+
+.teacher-login-main .pricing-grid {
+  gap: 1rem;
+}
+
+.teacher-login-main .pricing-card {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1rem, 2.5vw, 1.35rem);
+}
+
+.teacher-login-main .pricing-card > .button-link,
+.teacher-login-main .pricing-card > .actions {
+  margin-top: auto;
+}
+
+@media (max-width: 700px) {
+  .teacher-login-shell .product-brand span:last-child {
+    display: inline;
+    font-size: 0.95rem;
+  }
+
+  .teacher-login-main .auth-card {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    row-gap: 0.85rem;
+    text-align: center;
+  }
+
+  .teacher-login-main .auth-card h1,
+  .teacher-login-main .auth-card p,
+  .teacher-login-main .auth-card .google-sign-in,
+  .teacher-login-main .auth-card .status {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .teacher-login-main .auth-card h1 {
+    margin-bottom: 0;
+  }
+
+  .teacher-login-main .auth-card p {
+    justify-self: center;
+  }
+
+  .teacher-login-main .auth-card .google-sign-in {
+    width: min(100%, 280px);
+    justify-self: center;
+  }
+
+  .teacher-login-main .auth-card .status {
+    margin-top: 0;
   }
 }
 

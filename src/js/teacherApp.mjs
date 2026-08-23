@@ -140,7 +140,7 @@ async function renderLogin() {
   }));
   root.innerHTML = "";
   const wrapper = document.createElement("div");
-  wrapper.className = "product-shell";
+  wrapper.className = "product-shell teacher-login-shell";
   wrapper.append(nav({ signedIn: false }));
   const main = document.createElement("main");
   main.className = "product-main teacher-main teacher-login-main has-pricing";
@@ -269,7 +269,7 @@ async function renderDashboard(me) {
       const badges = document.createElement("div");
       badges.className = "assignment-meta";
       const state = document.createElement("span");
-      state.className = `badge ${assignment.status === "closed" ? "closed" : ""}`;
+      state.className = `badge assignment-row-status ${assignment.status === "closed" ? "closed" : ""}`;
       state.textContent =
         assignment.status === "closed"
           ? copy.statusClosed
@@ -284,18 +284,18 @@ async function renderDashboard(me) {
         item.textContent = text;
         badges.append(item);
       }
-      badges.prepend(state);
       body.append(title, badges);
       const link = document.createElement("a");
       link.className = "button-link button-secondary";
       link.href = `/teacher/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`;
       link.textContent = copy.open;
-      row.append(body, link);
+      row.append(body, link, state);
       list.append(row);
     }
     listCard.append(list);
   }
   main.append(listCard);
+  await appendPricing(main);
 }
 
 async function openPortal() {
@@ -316,6 +316,13 @@ async function renderNew() {
   card.className = "product-card";
   const heading = document.createElement("h1");
   heading.textContent = copy.newTitle;
+  const headingRow = document.createElement("div");
+  headingRow.className = "assignment-form-heading";
+  const backLink = document.createElement("a");
+  backLink.className = "button-link button-secondary";
+  backLink.href = `/teacher?lang=${encodeURIComponent(locale)}`;
+  backLink.textContent = copy.backToDashboard;
+  headingRow.append(heading, backLink);
   const form = document.createElement("form");
   form.className = "product-form";
   const defaultDeadline = new Date(Date.now() + 7 * 86_400_000);
@@ -332,7 +339,7 @@ async function renderNew() {
     <div class="field"><label for="assignment-words">${copy.words}</label><textarea id="assignment-words" required spellcheck="false"></textarea><small>${copy.wordsHelp}</small></div>
     <fieldset><legend>${copy.mode}</legend><div class="radio-row"><label><input type="radio" name="mode" value="dictation"> ${copy.dictation}</label><label><input type="radio" name="mode" value="typing"> ${copy.typing}</label></div></fieldset>
     <div class="grid"><div class="field"><label for="assignment-deadline">${copy.deadline}</label><input id="assignment-deadline" type="datetime-local" required></div><div class="field"><label for="assignment-max">${copy.maxAttempts}</label><select id="assignment-max">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<option>${n}</option>`).join("")}</select></div></div>
-    <div class="actions"><button type="submit">${copy.publish}</button><a class="button-link button-secondary" href="/teacher?lang=${encodeURIComponent(locale)}">${copy.cancel}</a></div>`;
+    <div class="actions"><button type="submit">${copy.publish}</button></div>`;
   form.querySelector("#assignment-words").value = draftWords;
   form.querySelector(
     `input[name="mode"][value="${draftMode === "typing" ? "typing" : "dictation"}"]`,
@@ -381,7 +388,7 @@ async function renderNew() {
       button.textContent = copy.publish;
     }
   });
-  card.append(heading, form);
+  card.append(headingRow, form);
   main.append(card);
 }
 
@@ -408,6 +415,9 @@ async function renderDetail(me, id) {
   badge.className = `badge ${data.status === "closed" ? "closed" : ""}`;
   badge.textContent =
     data.status === "closed" ? copy.statusClosed : copy.statusPublished;
+  const headingRow = document.createElement("div");
+  headingRow.className = "assignment-detail-heading";
+  headingRow.append(heading, badge);
   const linkLabel = document.createElement("h2");
   linkLabel.textContent = copy.studentLink;
   const studentUrl = `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`;
@@ -462,7 +472,7 @@ async function renderDetail(me, id) {
     actions.append(exportLink);
   }
   actions.append(remove);
-  card.append(heading, badge, linkLabel, linkPanel, actions);
+  card.append(headingRow, linkLabel, linkPanel, actions);
   main.append(card);
   const summary = document.createElement("section");
   summary.className = "product-card";
@@ -569,7 +579,6 @@ async function renderDetail(me, id) {
     misses.append(list);
   }
   main.append(misses);
-  await appendPricing(main);
 }
 
 async function init() {

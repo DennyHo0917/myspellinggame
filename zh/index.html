@@ -77,7 +77,11 @@
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
-    <div class="top-right-nav">
+    <header class="top-right-nav">
+        <a class="brand-link" href="/zh" aria-label="My Spelling Game home">
+            <img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt="">
+            <span class="brand-name">My Spelling Game</span>
+        </a>
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="语言">语言</summary>
             <div class="lang-menu" id="language-menu">
@@ -89,25 +93,23 @@
                 <a class="lang-option" href="/zh/" hreflang="zh-CN" aria-current="page">中文</a>
             </div>
         </details>
+        <a class="teacher-nav-link" href="/teacher?lang=zh">教师工作台</a>
         <button class="privacy-btn" onclick="showPrivacyPolicyLegacy()" data-i18n-title="privacyPolicyTooltip" title="隐私">隐私</button>
         <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">声音</button>
-    </div>
+    </header>
 
-    <div class="seo-content" id="seo-content">
+    <div class="main-content-wrapper">
+    <section class="seo-content" id="seo-content">
         <h1>用自己的单词做免费英语听写</h1>
-        <p>粘贴单词表，听到单词后再输入答案，作答前不会显示拼写。</p>
-        <p>系统会立即批改，并把错词单独整理出来继续练习。</p>
-        <p>无需注册或登录。</p>
-        <ol class="practice-flow" aria-label="练习步骤">
+        <ul class="practice-flow" aria-label="练习步骤">
+            <li>无需登录</li>
             <li>粘贴单词</li>
             <li>听隐藏单词</li>
             <li>输入答案</li>
             <li>重练错词</li>
-        </ol>
-        <p>可选择语音听写测试，也可以玩原有的单词雨打字游戏。</p>
-    </div>
+        </ul>
+    </section>
 
-    <div class="main-content-wrapper">
         <div id="game-container">
             <div class="background-particles">
                 <canvas id="particles-canvas"></canvas>
@@ -115,8 +117,9 @@
 
             <div class="top-bar">
                 <div class="game-title">练习回合</div>
+                <button type="button" class="return-menu-btn" onclick="returnToMainMenu()">返回单词表</button>
                 <div class="combo-display" id="combo-display">
-                    Streak <span id="combo-count">0</span>
+                    连续正确 <span id="combo-count">0</span>
                 </div>
             </div>
 
@@ -147,13 +150,13 @@
                 <div class="start-screen-content">
                     <div class="start-title">用自己的单词表开始练习</div>
                     <div class="spelling-start">
-                        <div class="spelling-subtitle">可选听写测试或单词雨打字游戏，无需登录</div>
-                        <p class="spelling-intro">推荐使用听写测试，也可以选择 Typing Rain；粘贴单词后即可开始。</p>
-                        <div class="hero-proof-row" aria-label="My Spelling Game benefits">
+                        <div class="spelling-subtitle">可选听写测试或单词雨游戏</div>
+                        <p class="spelling-intro">推荐使用听写测试，也可以选择单词雨；粘贴单词后即可开始。</p>
+                        <div class="hero-proof-row" aria-label="练习优势">
                             <span>即时批改</span>
                             <span>作答前隐藏单词</span>
                             <span>错词重练</span>
-                            <span>分享无需登录</span>
+                            <span>无需创建账号</span>
                         </div>
                         <fieldset class="mode-selector">
                             <legend>选择模式</legend>
@@ -178,7 +181,9 @@
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">示例单词表</button>
                                 <button type="button" onclick="copyPracticeLink()">复制练习链接</button>
-                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">布置作业并查看结果</button>
+                                <div class="assignment-entry-group">
+                                    <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">教师：用这份词表布置作业</button>
+                                </div>
                             </div>
                         </div>
                         <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">开始听写测试</button>
@@ -194,7 +199,7 @@
                         <p><span data-i18n="levelReached">回合</span>: <span id="final-level">1</span></p>
                         <p><span data-i18n="maxWPM">最高速度</span>: <span id="final-wpm">0</span></p>
                         <p><span data-i18n="accuracy">准确率</span>: <span id="final-accuracy">100%</span></p>
-                        <p id="duration-row" style="display:none;"><span data-i18n="duration">Duration</span>: <span id="final-duration">0:00</span></p>
+                        <p id="duration-row" style="display:none;"><span data-i18n="duration">时长</span>: <span id="final-duration">0:00</span></p>
                         <p><span data-i18n="wordsMatched">漏掉的单词</span>: <span id="final-missed">0</span></p>
                     </div>
                     <div class="final-stats" id="dictation-final-stats" hidden>
@@ -278,8 +283,8 @@
         </div>
     </div>
 
-    <aside class="ad-slot ad-slot-after-game" aria-label="Advertisement">
-        <span>Advertisement</span>
+    <aside class="ad-slot ad-slot-after-game" aria-label="广告">
+        <span>广告</span>
     </aside>
 
     <div class="below-game">
@@ -289,8 +294,8 @@
                     <h3>适合这周的英语单词表</h3>
                     <p>听写测试每次播放一个隐藏单词；单词雨模式则需要输入正在下落的单词。</p>
                     <p>粘贴老师、教材或家长已经准备好的英语单词。</p>
-                    <p>听写测试会播放隐藏单词；Typing Rain 则需要输入正在下落的单词。</p>
-                    <p>按 <kbd>Enter</kbd> 提交；Typing Rain 也可以使用 <kbd>Space</kbd>。</p>
+                    <p>听写测试会播放隐藏单词；单词雨则需要输入正在下落的单词。</p>
+                    <p>按 <kbd>Enter</kbd> 提交；单词雨也可以使用 <kbd>Space</kbd>。</p>
                     <p>漏掉的单词会自动保存，方便一键重练。</p>
                     <p>复制练习链接，就能让别人使用同一份单词表。</p>
                     <h4>简单模式</h4>
@@ -302,7 +307,7 @@
                 <div class="practice-proof-copy">
                     <h3>为什么这个方式更有效</h3>
                     <p>练的是本周真实单词，不是随机词库。</p>
-                    <p>适合家庭作业、课后辅导、ESL 和 homeschool 场景。</p>
+                    <p>适合家庭作业、课后辅导、英语学习和家庭教育场景。</p>
                     <p>重练只围绕漏掉的词，不浪费时间。</p>
                     <p>简单模式只降低速度，不改变拼写规则。</p>
                 </div>
@@ -311,12 +316,12 @@
 
         <div class="spelling-seo-copy">
             <h2>同一份单词表，两种练习方式</h2>
-            <p><strong>听写测试</strong>会朗读隐藏单词并立即批改；<strong>Typing Rain</strong>保留原有的掉落单词打字玩法。</p>
+            <p><strong>听写测试</strong>会朗读隐藏单词并立即批改；<strong>单词雨</strong>保留原有的掉落单词打字玩法。</p>
 
             <h3>只练现在真正需要的单词</h3>
             <p>粘贴本周词表后，两种模式都会只使用这些单词，并把答错或漏掉的词整理出来重练。</p>
             <ul>
-                <li><strong>使用真实单词表：</strong> 可以来自作业、教材、老师 handout 或自学计划。</li>
+                <li><strong>使用真实单词表：</strong> 可以来自作业、教材、老师讲义或自学计划。</li>
                 <li><strong>自动记录错词：</strong> 答错或漏掉的单词会进入下一轮。</li>
                 <li><strong>分享同一份练习：</strong> 复制链接即可，不需要注册账号。</li>
                 <li><strong>真正的听写流程：</strong> 提交答案前不会显示单词拼写。</li>
@@ -336,9 +341,8 @@
 
     <footer>
         <p>
-            <a href="/custom-spelling-words-game">自定义单词游戏</a> &middot; <a href="/zh/spelling-list-game">单词表练习</a> &middot; <a href="/zh/weekly-spelling-practice">每周拼写练习</a> &middot; <a href="/sight-word-typing-game">Sight words</a> &middot; <a href="/homeschool-spelling-practice">Homeschool</a> &middot; <a href="/vocabulary-typing-game">词汇练习</a><br>
-            <a href="/zh/privacy">隐私</a> &middot; <a href="/zh/about">关于</a> &middot; <a href="/zh/contact">联系</a><br>
-            &copy; 2026 My Spelling Game All rights reserved.
+            <span class="footer-links"><a href="/zh/sight-word-typing-game">高频词练习</a> &middot; <a href="/zh/homeschool-spelling-practice">家庭学习</a> &middot; <a href="/zh/vocabulary-typing-game">词汇练习</a> &middot; <a href="/zh/faq">常见问题</a> &middot; <a href="/zh/privacy">隐私</a> &middot; <a href="/zh/about">关于</a> &middot; <a href="/zh/contact">联系</a></span><br>
+            &copy; 2026 My Spelling Game 版权所有。
         </p>
     </footer>
 
@@ -347,7 +351,7 @@
   "@context": "https://schema.org",
   "@type": "VideoGame",
   "name": "My Spelling Game",
-  "description": "粘贴自己的英语单词，选择隐藏单词听写测试或 Typing Rain，并在结束后重练错词。",
+  "description": "粘贴自己的英语单词，选择隐藏单词听写测试或单词雨，并在结束后重练错词。",
   "url": "https://myspellinggame.com/zh/",
   "author": {
     "@type": "Organization",

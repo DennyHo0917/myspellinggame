@@ -1,16 +1,20 @@
 // My Spelling Game 主循环模块
 
-import { gameState } from './gameState.js';
-import { fallingWords, FallingWord, spawnWord } from './words.js';
-import { resizeCanvas, initBackgroundParticles, createExplosion } from './rendering.js';
-import { playMissSound } from './audio.js';
-import { updateStats } from './rendering.js';
-import { dom } from './domRefs.js';
-import { isRoundComplete, markMissed } from './spellingMode.js';
-import { shouldEndTypingOnMiss } from './spellingCore.mjs';
+import { gameState } from "./gameState.js";
+import { fallingWords, FallingWord, spawnWord } from "./words.js";
+import {
+  resizeCanvas,
+  initBackgroundParticles,
+  createExplosion,
+} from "./rendering.js";
+import { playMissSound } from "./audio.js";
+import { updateStats } from "./rendering.js";
+import { dom } from "./domRefs.js";
+import { isRoundComplete, markMissed } from "./spellingMode.js";
+import { shouldEndTypingOnMiss } from "./spellingCore.mjs";
 
 // 背景与粒子数组与旧全局共享
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   window.particles = window.particles || [];
   window.backgroundParticles = window.backgroundParticles || [];
 }
@@ -27,16 +31,18 @@ export function initializeWords() {
 }
 
 function ensureCtx() {
-  const canvas = dom.canvas || document.getElementById('game-canvas');
-  return canvas ? canvas.getContext('2d') : null;
+  const canvas = dom.canvas || document.getElementById("game-canvas");
+  return canvas ? canvas.getContext("2d") : null;
 }
 
 export function gameLoop() {
   if (!gameState.gameRunning) return;
 
   const ctx = ensureCtx();
-  const particlesCanvas = document.getElementById('particles-canvas');
-  const particlesCtx = particlesCanvas ? particlesCanvas.getContext('2d') : null;
+  const particlesCanvas = document.getElementById("particles-canvas");
+  const particlesCtx = particlesCanvas
+    ? particlesCanvas.getContext("2d")
+    : null;
   const canvas = dom.canvas;
 
   // 清空画布
@@ -55,8 +61,8 @@ export function gameLoop() {
   }
 
   if (!gameState.levelStarted) {
-    if (gameState.mode === 'level') {
-      if (typeof window.showLevelStart === 'function') window.showLevelStart();
+    if (gameState.mode === "level") {
+      if (typeof window.showLevelStart === "function") window.showLevelStart();
       setTimeout(() => {
         gameState.levelStarted = true;
       }, 2000);
@@ -69,9 +75,16 @@ export function gameLoop() {
   }
 
   if (gameState.gameCompleted) {
-    if (typeof window.showCongratulations === 'function') window.showCongratulations();
+    if (typeof window.showCongratulations === "function")
+      window.showCongratulations();
     setTimeout(() => {
-      if (typeof window.endGame === 'function') window.endGame();
+      if (
+        gameState.gameRunning &&
+        gameState.gameCompleted &&
+        typeof window.endGame === "function"
+      ) {
+        window.endGame();
+      }
     }, 5000);
     return;
   }
@@ -79,10 +92,14 @@ export function gameLoop() {
   // Practice / Tournament 计时结束
   const nowTs = Date.now();
   if (
-    (gameState.mode === 'practice' && gameState.practiceEndTime && nowTs >= gameState.practiceEndTime) ||
-    (gameState.mode === 'tournament' && gameState.tournamentEndTime && nowTs >= gameState.tournamentEndTime)
+    (gameState.mode === "practice" &&
+      gameState.practiceEndTime &&
+      nowTs >= gameState.practiceEndTime) ||
+    (gameState.mode === "tournament" &&
+      gameState.tournamentEndTime &&
+      nowTs >= gameState.tournamentEndTime)
   ) {
-    if (typeof window.endGame === 'function') window.endGame();
+    if (typeof window.endGame === "function") window.endGame();
     return;
   }
 
@@ -96,15 +113,21 @@ export function gameLoop() {
     if (word.y > canvas.height) {
       fallingWords.splice(i, 1);
       markMissed(word.word);
-      if (gameState.mode === 'practice') {
+      if (gameState.mode === "practice") {
         continue;
       }
       gameState.missedWords++;
       gameState.combo = 0;
-      createExplosion(word.x, canvas.height - 20, '#ff6b6b');
+      createExplosion(word.x, canvas.height - 20, "#ff6b6b");
       playMissSound();
-      if (shouldEndTypingOnMiss(gameState.spellingMode, gameState.missedWords, gameState.maxMisses)) {
-        if (typeof window.endGame === 'function') window.endGame();
+      if (
+        shouldEndTypingOnMiss(
+          gameState.spellingMode,
+          gameState.missedWords,
+          gameState.maxMisses,
+        )
+      ) {
+        if (typeof window.endGame === "function") window.endGame();
         return;
       }
     }
@@ -113,7 +136,7 @@ export function gameLoop() {
   // 更新前景粒子
   if (isRoundComplete(fallingWords.length)) {
     gameState.spellingRoundComplete = true;
-    if (typeof window.endGame === 'function') window.endGame();
+    if (typeof window.endGame === "function") window.endGame();
     return;
   }
 
@@ -128,7 +151,7 @@ export function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   window.initializeWords = initializeWords;
   window.gameLoop = gameLoop;
 }

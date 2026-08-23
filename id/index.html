@@ -17,25 +17,25 @@
     <link rel="dns-prefetch" href="//www.googletagmanager.com">
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
 
-    <title>Tes Spelling Gratis dengan Kata Sendiri — Tanpa Login</title>
+    <title>Tes Ejaan Gratis dengan Kata Sendiri — Tanpa Akun</title>
     <meta name="description" content="Tempel daftar sendiri, dengarkan kata yang disembunyikan, ketik jawaban, lalu lihat hasilnya. Ulangi kata yang salah tanpa akun.">
     <meta name="author" content="My Spelling Game">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-9244949928133071">
 
-    <meta property="og:title" content="Tes spelling dengan daftar kata sendiri">
+    <meta property="og:title" content="Tes ejaan dengan daftar kata sendiri">
     <meta property="og:description" content="Dengarkan kata tersembunyi, lihat hasilnya, lalu ulangi yang salah. Tanpa login.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://myspellinggame.com/id/">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Tes spelling dengan daftar kata sendiri preview">
+    <meta property="og:image:alt" content="Tes ejaan dengan daftar kata sendiri preview">
     <meta property="og:site_name" content="My Spelling Game">
     <meta property="og:locale" content="id_ID">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Tes spelling dengan daftar kata sendiri">
+    <meta name="twitter:title" content="Tes ejaan dengan daftar kata sendiri">
     <meta name="twitter:description" content="Dengarkan kata tersembunyi, lihat hasilnya, lalu ulangi yang salah. Tanpa login.">
     <meta name="twitter:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
 
@@ -77,7 +77,11 @@
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
-    <div class="top-right-nav">
+    <header class="top-right-nav">
+        <a class="brand-link" href="/id" aria-label="My Spelling Game home">
+            <img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt="">
+            <span class="brand-name">My Spelling Game</span>
+        </a>
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="Bahasa">Bahasa</summary>
             <div class="lang-menu" id="language-menu">
@@ -89,25 +93,23 @@
                 <a class="lang-option" href="/zh/" hreflang="zh-CN">中文</a>
             </div>
         </details>
+        <a class="teacher-nav-link" href="/teacher?lang=id">Untuk guru</a>
         <button class="privacy-btn" onclick="showPrivacyPolicyLegacy()" data-i18n-title="privacyPolicyTooltip" title="Privasi">Privasi</button>
         <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Suara</button>
-    </div>
+    </header>
 
-    <div class="seo-content" id="seo-content">
-        <h1>Tes spelling gratis dengan daftar kata sendiri</h1>
-        <p>Tempel daftar kata lalu dengarkan setiap kata tanpa melihatnya di layar.</p>
-        <p>Ketik jawaban, lihat hasilnya saat itu juga, dan ulangi hanya kata yang salah.</p>
-        <p>Tidak perlu membuat akun.</p>
-        <ol class="practice-flow" aria-label="Langkah latihan">
+    <div class="main-content-wrapper">
+    <section class="seo-content" id="seo-content">
+        <h1>Tes ejaan gratis dengan daftar kata sendiri</h1>
+        <ul class="practice-flow" aria-label="Langkah latihan">
+            <li>Tanpa login</li>
             <li>Tempel kata</li>
             <li>Dengarkan kata tersembunyi</li>
             <li>Ketik jawaban</li>
             <li>Ulangi kata yang salah</li>
-        </ol>
-        <p>Pilih tes spelling dengan suara atau game hujan kata yang asli.</p>
-    </div>
+        </ul>
+    </section>
 
-    <div class="main-content-wrapper">
         <div id="game-container">
             <div class="background-particles">
                 <canvas id="particles-canvas"></canvas>
@@ -115,8 +117,9 @@
 
             <div class="top-bar">
                 <div class="game-title">Ronde latihan</div>
+                <button type="button" class="return-menu-btn" onclick="returnToMainMenu()">Kembali ke daftar</button>
                 <div class="combo-display" id="combo-display">
-                    Streak <span id="combo-count">0</span>
+                    Rentetan <span id="combo-count">0</span>
                 </div>
             </div>
 
@@ -147,19 +150,19 @@
                 <div class="start-screen-content">
                     <div class="start-title">Latihan dengan daftar kata sendiri</div>
                     <div class="spelling-start">
-                        <div class="spelling-subtitle">Tes spelling atau game mengetik, tanpa login</div>
-                        <p class="spelling-intro">Pilih tes audio yang direkomendasikan atau Typing Rain, tempel kata, lalu mulai.</p>
-                        <div class="hero-proof-row" aria-label="My Spelling Game benefits">
+                        <div class="spelling-subtitle">Tes ejaan atau permainan kata, tanpa akun</div>
+                        <p class="spelling-intro">Pilih tes audio yang direkomendasikan atau hujan kata, tempel kata, lalu mulai.</p>
+                        <div class="hero-proof-row" aria-label="Keunggulan My Spelling Game">
                             <span>Hasil langsung</span>
                             <span>Kata disembunyikan</span>
                             <span>Ulangi yang salah</span>
-                            <span>Link tanpa login</span>
+                            <span>Tanpa membuat akun</span>
                         </div>
                         <fieldset class="mode-selector">
                             <legend>Pilih mode</legend>
                             <label class="mode-card">
                                 <input type="radio" name="practice-mode" value="dictation" checked>
-                                <span><strong>Tes spelling</strong><small>Dengarkan satu kata tersembunyi lalu ketik ejaannya.</small></span>
+                                <span><strong>Tes ejaan</strong><small>Dengarkan satu kata tersembunyi lalu ketik ejaannya.</small></span>
                                 <span class="recommended-badge">Disarankan</span>
                             </label>
                             <label class="mode-card">
@@ -178,10 +181,12 @@
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">Contoh daftar</button>
                                 <button type="button" onclick="copyPracticeLink()">Salin link latihan</button>
-                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Buat tugas dan lihat hasil</button>
+                                <div class="assignment-entry-group">
+                                    <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Untuk guru: buat tugas dari daftar ini</button>
+                                </div>
                             </div>
                         </div>
-                        <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Mulai tes spelling</button>
+                        <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Mulai tes ejaan</button>
                     </div>
                 </div>
             </div>
@@ -194,7 +199,7 @@
                         <p><span data-i18n="levelReached">Ronde</span>: <span id="final-level">1</span></p>
                         <p><span data-i18n="maxWPM">Kecepatan terbaik</span>: <span id="final-wpm">0</span></p>
                         <p><span data-i18n="accuracy">Akurasi</span>: <span id="final-accuracy">100%</span></p>
-                        <p id="duration-row" style="display:none;"><span data-i18n="duration">Duration</span>: <span id="final-duration">0:00</span></p>
+                        <p id="duration-row" style="display:none;"><span data-i18n="duration">Durasi</span>: <span id="final-duration">0:00</span></p>
                         <p><span data-i18n="wordsMatched">Kata terlewat</span>: <span id="final-missed">0</span></p>
                     </div>
                     <div class="final-stats" id="dictation-final-stats" hidden>
@@ -278,8 +283,8 @@
         </div>
     </div>
 
-    <aside class="ad-slot ad-slot-after-game" aria-label="Advertisement">
-        <span>Advertisement</span>
+    <aside class="ad-slot ad-slot-after-game" aria-label="Iklan">
+        <span>Iklan</span>
     </aside>
 
     <div class="below-game">
@@ -289,8 +294,8 @@
                     <h3>Untuk daftar kata minggu ini</h3>
                     <p>Gunakan tes untuk mendengar satu kata tersembunyi, atau hujan kata untuk mengetik kata yang jatuh.</p>
                     <p>Tempel kata bahasa Inggris yang sudah diberikan guru atau kelas.</p>
-                    <p>Pilih tes audio untuk mendengar kata tersembunyi, atau Typing Rain untuk mengetik kata yang jatuh.</p>
-                    <p>Tekan <kbd>Enter</kbd> untuk mengirim; Typing Rain juga menerima <kbd>Space</kbd>.</p>
+                    <p>Pilih tes audio untuk mendengar kata tersembunyi, atau hujan kata untuk mengetik kata yang jatuh.</p>
+                    <p>Tekan <kbd>Enter</kbd> untuk mengirim; hujan kata juga menerima <kbd>Space</kbd>.</p>
                     <p>Kata yang terlewat disimpan untuk latihan ulang sekali klik.</p>
                     <p>Salin link untuk membagikan daftar yang sama.</p>
                     <h4>Mode mudah</h4>
@@ -302,21 +307,21 @@
                 <div class="practice-proof-copy">
                     <h3>Kenapa ini membantu</h3>
                     <p>Latihan memakai kata minggu ini, bukan bank kata acak.</p>
-                    <p>Cocok untuk PR, les, ESL, dan belajar di rumah.</p>
+                    <p>Cocok untuk PR, les, pelajar bahasa Inggris, dan belajar di rumah.</p>
                     <p>Ronde ulang fokus pada kata yang benar-benar salah.</p>
-                    <p>Mode mudah memperlambat permainan tanpa mengubah aturan spelling.</p>
+                    <p>Mode mudah memperlambat permainan tanpa mengubah aturan ejaan.</p>
                 </div>
             </div>
         </div>
 
         <div class="spelling-seo-copy">
             <h2>Dua cara berlatih dengan daftar sendiri</h2>
-            <p><strong>Spelling Test</strong> membacakan kata tersembunyi dan memeriksa jawaban. <strong>Typing Rain</strong> mempertahankan game kata jatuh yang asli.</p>
+            <p><strong>Tes ejaan</strong> membacakan kata tersembunyi dan memeriksa jawaban. <strong>Hujan kata</strong> mempertahankan permainan kata jatuh yang asli.</p>
 
             <h3>Daftar yang tepat membuat latihan lebih berguna</h3>
             <p>Menempel daftar minggu ini membuat latihan tetap fokus. Kedua mode menyimpan kesalahan untuk ronde ulang.</p>
             <ul>
-                <li><strong>Pakai daftar nyata:</strong> Tempel kata dari PR, lembar guru, atau materi homeschool.</li>
+                <li><strong>Pakai daftar nyata:</strong> Tempel kata dari PR, lembar guru, atau materi belajar di rumah.</li>
                 <li><strong>Latihan ulang:</strong> Jawaban salah dan kata yang terlewat masuk ronde berikutnya.</li>
                 <li><strong>Bagikan link:</strong> Kirim latihan yang sama tanpa akun atau kelas online.</li>
                 <li><strong>Tes audio:</strong> Kata tetap tersembunyi sampai jawaban dikirim.</li>
@@ -336,9 +341,8 @@
 
     <footer>
         <p>
-            <a href="/custom-spelling-words-game">Game kata sendiri</a> &middot; <a href="/id/spelling-list-game">Daftar spelling</a> &middot; <a href="/id/weekly-spelling-practice">Latihan mingguan</a> &middot; <a href="/sight-word-typing-game">Sight words</a> &middot; <a href="/homeschool-spelling-practice">Homeschool</a> &middot; <a href="/vocabulary-typing-game">Kosakata</a><br>
-            <a href="/id/privacy">Privasi</a> &middot; <a href="/id/about">Tentang</a> &middot; <a href="/id/contact">Kontak</a><br>
-            &copy; 2026 My Spelling Game All rights reserved.
+            <span class="footer-links"><a href="/id/sight-word-typing-game">Kata umum</a> &middot; <a href="/id/homeschool-spelling-practice">Di rumah</a> &middot; <a href="/id/vocabulary-typing-game">Kosakata</a> &middot; <a href="/id/faq">Pertanyaan umum</a> &middot; <a href="/id/privacy">Privasi</a> &middot; <a href="/id/about">Tentang</a> &middot; <a href="/id/contact">Kontak</a></span><br>
+            &copy; 2026 My Spelling Game Hak cipta dilindungi.
         </p>
     </footer>
 
@@ -347,7 +351,7 @@
   "@context": "https://schema.org",
   "@type": "VideoGame",
   "name": "My Spelling Game",
-  "description": "Tempel kata sendiri untuk tes spelling dengan audio atau Typing Rain, lengkap dengan hasil dan latihan ulang.",
+  "description": "Tempel kata sendiri untuk tes ejaan dengan audio atau hujan kata, lengkap dengan hasil dan latihan ulang.",
   "url": "https://myspellinggame.com/id/",
   "author": {
     "@type": "Organization",
@@ -398,7 +402,7 @@
       "name": "Perlu membuat akun?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Tidak. Game berjalan di browser tanpa login atau akun siswa."
+        "text": "Tidak. Game berjalan di browser tanpa akun siswa atau kelas online."
       }
     }
   ]
@@ -419,7 +423,7 @@
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "Game spelling bahasa Inggris",
+      "name": "Game ejaan bahasa Inggris",
       "item": "https://myspellinggame.com/id/"
     }
   ]

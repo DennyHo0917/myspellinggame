@@ -77,7 +77,11 @@
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
-    <div class="top-right-nav">
+    <header class="top-right-nav">
+        <a class="brand-link" href="/" aria-label="My Spelling Game home">
+            <img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt="">
+            <span class="brand-name">My Spelling Game</span>
+        </a>
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="Change language">Language</summary>
             <div class="lang-menu" id="language-menu">
@@ -89,23 +93,23 @@
                 <a class="lang-option" href="/zh/" hreflang="zh-CN">中文</a>
             </div>
         </details>
+        <a class="teacher-nav-link" href="/teacher?lang=en">For teachers</a>
         <button class="privacy-btn" onclick="showPrivacyPolicyLegacy()" data-i18n-title="privacyPolicyTooltip" title="Privacy Policy">Privacy</button>
         <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Sound</button>
-    </div>
-
-    <div class="seo-content" id="seo-content">
-        <h1>Free Spelling Test With Your Own Words</h1>
-        <p>Paste your list, hear one hidden word at a time, type the answer, and get instant grading.</p>
-        <p>Retry missed words or switch to the original Typing Rain game. No account required.</p>
-        <ol class="practice-flow" aria-label="Practice steps">
-            <li>Paste words</li>
-            <li>Hear a hidden word</li>
-            <li>Type the answer</li>
-            <li>Retry missed words</li>
-        </ol>
-    </div>
+    </header>
 
     <div class="main-content-wrapper">
+        <section class="seo-content" id="seo-content">
+            <h1>Free Spelling Test With Your Own Words</h1>
+            <ul class="practice-flow" aria-label="Practice steps">
+                <li>No login required</li>
+                <li>Paste words</li>
+                <li>Hear a hidden word</li>
+                <li>Type the answer</li>
+                <li>Retry missed words</li>
+            </ul>
+        </section>
+
         <div id="game-container">
             <div class="background-particles">
                 <canvas id="particles-canvas"></canvas>
@@ -113,6 +117,7 @@
 
             <div class="top-bar">
                 <div class="game-title">Practice Round</div>
+                <button type="button" class="return-menu-btn" onclick="returnToMainMenu()">Return to word list</button>
                 <div class="combo-display" id="combo-display">
                     Streak <span id="combo-count">0</span>
                 </div>
@@ -151,7 +156,7 @@
                             <span>Instant grading</span>
                             <span>Hidden words</span>
                             <span>Missed-word replay</span>
-                            <span>Share link, no login</span>
+                            <span>No account required</span>
                         </div>
                         <fieldset class="mode-selector">
                             <legend>Choose a mode</legend>
@@ -176,7 +181,9 @@
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">Sample list</button>
                                 <button type="button" onclick="copyPracticeLink()">Copy practice link</button>
-                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Assign &amp; View Results</button>
+                                <div class="assignment-entry-group">
+                                    <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Teacher: assign this list</button>
+                                </div>
                             </div>
                         </div>
                         <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Start Spelling Test</button>
@@ -323,14 +330,7 @@
             </ul>
 
             <h3>Practice Pages By Use Case</h3>
-            <p>Use the <a href="/custom-spelling-words-game">custom spelling words game</a> when you want a paste-and-play page, the <a href="/spelling-list-game">spelling list game</a> for a teacher handout, the <a href="/weekly-spelling-practice">weekly spelling practice page</a> for quiz week, the <a href="/homeschool-spelling-practice">homeschool spelling practice page</a> for curriculum lists, the <a href="/sight-word-typing-game">sight word typing game</a> for early readers, or the <a href="/vocabulary-typing-game">vocabulary typing game</a> for ESL and tutoring.</p>
 
-            <h3>Quick FAQ</h3>
-            <p><strong>Can I use my own spelling words?</strong> Yes. Paste a weekly spelling list and My Spelling Game will use those exact words in either Spelling Test or Typing Rain.</p>
-            <p><strong>Can I use this as a spelling test with my own words?</strong> Yes. The audio test keeps each word hidden until the answer is submitted, then shows the result and saves missed words for retry.</p>
-            <p><strong>Can teachers share a custom spelling list with a class?</strong> Yes. Copy the practice link so students can open the same list without an account.</p>
-            <p><strong>Can students replay missed words?</strong> Yes. Missed words are saved at the end of the round for focused replay.</p>
-            <p><strong>Do students need an account?</strong> No. My Spelling Game works in the browser with no student account, class setup, or login.</p>
         </div>
     </div>
 
@@ -343,8 +343,7 @@
 
     <footer>
         <p>
-            <a href="/custom-spelling-words-game">Custom Spelling Game</a> &middot; <a href="/spelling-list-game">Spelling List Game</a> &middot; <a href="/weekly-spelling-practice">Weekly Practice</a> &middot; <a href="/sight-word-typing-game">Sight Words</a> &middot; <a href="/homeschool-spelling-practice">Homeschool</a> &middot; <a href="/vocabulary-typing-game">Vocabulary</a><br>
-            <a href="/privacy">Privacy</a> &middot; <a href="/about">About</a> &middot; <a href="/contact">Contact</a><br>
+            <span class="footer-links"><a href="/sight-word-typing-game">Sight Words</a> &middot; <a href="/homeschool-spelling-practice">Homeschool</a> &middot; <a href="/vocabulary-typing-game">Vocabulary</a> &middot; <a href="/faq">FAQ</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/about">About</a> &middot; <a href="/contact">Contact</a></span><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>

@@ -27,13 +27,13 @@ test('legacy query shares still load and default to Typing Rain', () => {
 });
 
 test('landing launchers preserve the selected mode and autostart', () => {
-  const url = new URL(launcherUrl('/fr/', ' Apple\napple\nbanana ', 'typing', '/fr/custom-spelling-words-game'));
+  const url = new URL(launcherUrl('/fr/', ' Apple\napple\nbanana ', 'typing', '/fr/'));
   const state = readShareState(url);
   assert.equal(url.pathname, '/fr/');
   assert.equal(state.words, 'apple,banana');
   assert.equal(state.mode, 'typing');
   assert.equal(state.autoStart, true);
-  assert.equal(state.entryPage, '/fr/custom-spelling-words-game');
+  assert.equal(state.entryPage, '/fr/');
 });
 
 test('GA page location strips query strings and fragments', () => {

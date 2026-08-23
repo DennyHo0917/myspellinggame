@@ -51,7 +51,11 @@
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
-    <div class="top-right-nav">
+    <header class="top-right-nav">
+        <a class="brand-link" href="/" aria-label="My Spelling Game home">
+            <img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt="">
+            <span class="brand-name">My Spelling Game</span>
+        </a>
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="Language">Language</summary>
             <div class="lang-menu">
@@ -63,8 +67,9 @@
                 <a class="lang-option" href="/zh/privacy" hreflang="zh-CN">中文</a>
             </div>
         </details>
+        <a class="teacher-nav-link" href="/teacher?lang=en">For teachers</a>
         <button class="lang-btn" onclick="window.location.href='/'" id="back-home" title="Home">Home</button>
-    </div>
+    </header>
 
     <main class="seo-landing content-page">
         <section class="seo-hero">
@@ -111,8 +116,7 @@
 
     <footer>
         <p>
-            <a href="/custom-spelling-words-game">Custom Spelling Game</a> &middot; <a href="/spelling-list-game">Spelling List Game</a> &middot; <a href="/weekly-spelling-practice">Weekly Practice</a><br>
-            <a href="/privacy">Privacy</a> &middot; <a href="/about">About</a> &middot; <a href="/contact">Contact</a><br>
+            <span class="footer-links"><a href="/sight-word-typing-game">Sight Words</a> &middot; <a href="/homeschool-spelling-practice">Homeschool</a> &middot; <a href="/vocabulary-typing-game">Vocabulary</a> &middot; <a href="/faq">FAQ</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/about">About</a> &middot; <a href="/contact">Contact</a></span><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>

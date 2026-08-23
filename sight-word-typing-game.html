@@ -50,7 +50,11 @@
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
-    <div class="top-right-nav">
+    <header class="top-right-nav">
+        <a class="brand-link" href="/" aria-label="My Spelling Game home">
+            <img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt="">
+            <span class="brand-name">My Spelling Game</span>
+        </a>
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="Language">Language</summary>
             <div class="lang-menu">
@@ -62,29 +66,19 @@
                 <a class="lang-option" href="/zh/sight-word-typing-game" hreflang="zh-CN">中文</a>
             </div>
         </details>
+        <a class="teacher-nav-link" href="/teacher?lang=en">For teachers</a>
         <button class="lang-btn" onclick="window.location.href='/'" id="back-home" title="Home">Home</button>
-    </div>
+    </header>
     <main class="seo-landing content-page">
         <section class="seo-hero">
             <h1>Sight Word Typing Game With Your Own List</h1>
             <p>Paste the exact sight words your student is learning and turn them into a short typing round for class, home, or early-grade practice.</p>
-            <p><strong>Short answer:</strong> My Spelling Game lets teachers and parents paste a custom sight word list, run a quick no-login typing round, and replay missed sight words.</p>
             <a class="seo-cta" href="/">Start Practice</a>
         </section>
 
         <aside class="ad-slot" aria-label="Advertisement">
             <span>Advertisement</span>
         </aside>
-
-        <section class="seo-panel">
-            <h2>Good For Short Custom Word Lists</h2>
-            <p>Sight word practice works best when the list is small and repeated. Missed words can come back for another quick round.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Simple Classroom Or Home Use</h2>
-            <p>Use it for classroom centers, homework, homeschool reading practice, or a small Dolch-style or Fry-style list.</p>
-        </section>
 
         <section class="seo-panel">
             <h2>When Sight Word Typing Helps</h2>
@@ -102,41 +96,7 @@
         </section>
 
         <section class="seo-panel">
-            <h2>For Classroom Centers And Home</h2>
-            <p>The no-login link makes the page easy to use during a reading center, homework routine, tutoring session, or homeschool lesson. A teacher can share one list with a small group, while a parent can keep a short list for daily reading practice on the same device.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Sight Word Typing Vs Flashcards</h2>
-            <p>Flashcards help recognition. A short typing game adds careful letter attention, which is useful when students mix up look-alike sight words or need one more low-pressure repeat.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Watch For Look-Alike Words</h2>
-            <p>Sight word lists often include words that look similar, such as where, were, there, their, then, and than. A typing round makes these differences visible. If a child misses one of these words, pause after the round and compare the pair slowly before replaying the missed words.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Keep The Round Playful</h2>
-            <p>Early readers do not need a long score session. A short list, a quick round, and one retry is enough. Celebrate fluent words as much as corrected words. The goal is for common words to feel familiar in reading and writing, not for the practice to feel like a timed exam.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Read The Words After Typing</h2>
-            <p>After typing practice, ask the child to read the same words from a book, sentence strip, or flashcard. This connects keyboard recognition back to real reading. If a word was easy to type but hard to read in context, keep it in the next short list.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>When A Word Stays Hard</h2>
-            <p>If the same sight word is missed again and again, do not keep adding new words. Keep the next list shorter, write the hard word on paper, compare it with a similar word, and replay it later. Repeated misses are useful signals, not failures.</p>
-        </section>
-
-        <section class="seo-panel">
             <h2>Quick FAQ</h2>
-            <p><strong>What is a sight word typing game with my own list?</strong> It is a short browser game where students type the exact sight words a teacher or parent pasted.</p>
-            <p><strong>Can I use my own sight word list?</strong> Yes. Paste the sight words your student is practicing right now.</p>
-            <p><strong>Is it good for classroom centers?</strong> Yes. Share the same no-login link for a short independent typing round.</p>
-            <p><strong>Can students retry missed sight words?</strong> Yes. Missed words can be replayed after the round.</p>
             <p><strong>How many sight words should I put in one round?</strong> Five to ten words is a good starting point for early readers. Add more only when the student finishes comfortably.</p>
             <p><strong>Is this a replacement for reading practice?</strong> No. Use it as a quick typing and recognition activity alongside real reading, read-aloud time, and word work.</p>
             <p><strong>Can I use teacher sight words from school?</strong> Yes. Paste the exact words from the teacher so practice matches the current classroom list.</p>
@@ -145,9 +105,6 @@
         <section class="seo-panel">
             <h2>Related Practice Pages</h2>
             <div class="seo-link-grid">
-                <a href="/custom-spelling-words-game">Custom Spelling Words Game</a>
-                <a href="/spelling-list-game">Spelling List Game</a>
-                <a href="/weekly-spelling-practice">Weekly Spelling Practice</a>
                 <a href="/homeschool-spelling-practice">Homeschool Spelling Practice</a>
                 <a href="/vocabulary-typing-game">Vocabulary Typing Game</a>
             </div>
@@ -155,13 +112,7 @@
     </main>
     <footer>
         <p>
-            <a href="/custom-spelling-words-game">Custom Spelling Game</a> &middot;
-            <a href="/spelling-list-game">Spelling List Game</a> &middot;
-            <a href="/weekly-spelling-practice">Weekly Practice</a> &middot;
-            <a href="/sight-word-typing-game">Sight Words</a> &middot;
-            <a href="/homeschool-spelling-practice">Homeschool</a> &middot;
-            <a href="/vocabulary-typing-game">Vocabulary</a><br>
-            <a href="/privacy">Privacy</a> &middot; <a href="/about">About</a> &middot; <a href="/contact">Contact</a><br>
+            <span class="footer-links"><a href="/sight-word-typing-game">Sight Words</a> &middot; <a href="/homeschool-spelling-practice">Homeschool</a> &middot; <a href="/vocabulary-typing-game">Vocabulary</a> &middot; <a href="/faq">FAQ</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/about">About</a> &middot; <a href="/contact">Contact</a></span><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>
@@ -173,31 +124,12 @@
   "description": "Paste a teacher-provided sight word list and play a simple typing game. Great for classroom or home practice, missed-word replay, and no student login.",
   "url": "https://myspellinggame.com/sight-word-typing-game",
   "inLanguage": "en",
-  "datePublished": "2026-06-19",
-  "dateModified": "2026-06-22",
-  "isAccessibleForFree": true,
-  "publisher": {
-    "@type": "Organization",
-    "name": "My Spelling Game",
-    "url": "https://myspellinggame.com/"
-  },
   "isPartOf": {
     "@type": "WebSite",
     "name": "My Spelling Game",
     "url": "https://myspellinggame.com/"
   },
-  "mainEntity": {
-    "@type": "SoftwareApplication",
-    "name": "My Spelling Game",
-    "applicationCategory": "EducationalApplication",
-    "operatingSystem": "Any",
-    "isAccessibleForFree": true,
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    }
-  }
+  "dateModified": "2026-06-22"
 }
     </script>
     <script type="application/ld+json">
@@ -206,38 +138,6 @@
   "@type": "FAQPage",
   "inLanguage": "en",
   "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "What is a sight word typing game with my own list?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "It is a short browser game where students type the exact sight words a teacher or parent pasted."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can I use my own sight word list?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. Paste the sight words your student is practicing right now."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Is it good for classroom centers?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. Share the same no-login link for a short independent typing round."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can students retry missed sight words?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. Missed words can be replayed after the round."
-      }
-    },
     {
       "@type": "Question",
       "name": "How many sight words should I put in one round?",
@@ -285,5 +185,6 @@
   ]
 }
     </script>
+    <script type="module" src="/src/js/landingLauncher.mjs"></script>
 </body>
 </html>

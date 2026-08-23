@@ -12,7 +12,7 @@ const substantivePaths = new Set(['/homeschool-spelling-practice']);
 for (const dir of publicDirs) {
   const prefix = dir ? `/${dir}` : '';
   substantivePaths.add(prefix ? `${prefix}/` : '/');
-  for (const slug of ['about', 'privacy', 'custom-spelling-words-game', 'weekly-spelling-practice']) {
+  for (const slug of ['about', 'privacy', 'faq']) {
     substantivePaths.add(`${prefix}/${slug}`);
   }
   if (dir) substantivePaths.add(`${prefix}/contact`);

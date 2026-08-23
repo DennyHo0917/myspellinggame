@@ -77,7 +77,11 @@
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
-    <div class="top-right-nav">
+    <header class="top-right-nav">
+        <a class="brand-link" href="/fr" aria-label="My Spelling Game home">
+            <img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt="">
+            <span class="brand-name">My Spelling Game</span>
+        </a>
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="Langue">Langue</summary>
             <div class="lang-menu" id="language-menu">
@@ -89,25 +93,23 @@
                 <a class="lang-option" href="/zh/" hreflang="zh-CN">中文</a>
             </div>
         </details>
+        <a class="teacher-nav-link" href="/teacher?lang=fr">Espace enseignant</a>
         <button class="privacy-btn" onclick="showPrivacyPolicyLegacy()" data-i18n-title="privacyPolicyTooltip" title="Confidentialité">Confidentialité</button>
         <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Son</button>
-    </div>
+    </header>
 
-    <div class="seo-content" id="seo-content">
+    <div class="main-content-wrapper">
+    <section class="seo-content" id="seo-content">
         <h1>Test gratuit d’orthographe anglaise avec vos propres mots</h1>
-        <p>Collez votre liste et écoutez chaque mot sans le voir à l’écran.</p>
-        <p>Tapez la réponse, voyez la correction tout de suite, puis reprenez seulement vos erreurs.</p>
-        <p>Aucun compte n’est nécessaire.</p>
-        <ol class="practice-flow" aria-label="Étapes de la pratique">
+        <ul class="practice-flow" aria-label="Étapes de la pratique">
+            <li>Sans connexion</li>
             <li>Collez les mots</li>
             <li>Écoutez un mot caché</li>
             <li>Tapez la réponse</li>
             <li>Reprenez vos erreurs</li>
-        </ol>
-        <p>Choisissez un test d’orthographe vocal ou le jeu original de pluie de mots.</p>
-    </div>
+        </ul>
+    </section>
 
-    <div class="main-content-wrapper">
         <div id="game-container">
             <div class="background-particles">
                 <canvas id="particles-canvas"></canvas>
@@ -115,8 +117,9 @@
 
             <div class="top-bar">
                 <div class="game-title">Partie de pratique</div>
+                <button type="button" class="return-menu-btn" onclick="returnToMainMenu()">Retourner à la liste</button>
                 <div class="combo-display" id="combo-display">
-                    Streak <span id="combo-count">0</span>
+                    Série <span id="combo-count">0</span>
                 </div>
             </div>
 
@@ -147,13 +150,13 @@
                 <div class="start-screen-content">
                     <div class="start-title">Pratiquez avec votre propre liste</div>
                     <div class="spelling-start">
-                        <div class="spelling-subtitle">Test audio ou jeu de frappe, sans compte</div>
-                        <p class="spelling-intro">Choisissez le test audio recommandé ou Typing Rain, collez vos mots et commencez.</p>
-                        <div class="hero-proof-row" aria-label="My Spelling Game benefits">
+                        <div class="spelling-subtitle">Test d’orthographe ou jeu de frappe, sans compte</div>
+                        <p class="spelling-intro">Choisissez le test audio recommandé ou la pluie de mots, collez vos mots et commencez.</p>
+                        <div class="hero-proof-row" aria-label="Atouts de My Spelling Game">
                             <span>Correction immédiate</span>
                             <span>Mot caché</span>
                             <span>Reprendre les erreurs</span>
-                            <span>Lien sans compte</span>
+                            <span>Sans créer de compte</span>
                         </div>
                         <fieldset class="mode-selector">
                             <legend>Choisissez un mode</legend>
@@ -178,7 +181,9 @@
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">Liste exemple</button>
                                 <button type="button" onclick="copyPracticeLink()">Copier le lien</button>
-                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Donner un devoir et voir les résultats</button>
+                                <div class="assignment-entry-group">
+                                    <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Enseignant : créer un devoir avec cette liste</button>
+                                </div>
                             </div>
                         </div>
                         <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Commencer le test d’orthographe</button>
@@ -194,7 +199,7 @@
                         <p><span data-i18n="levelReached">Partie atteinte</span>: <span id="final-level">1</span></p>
                         <p><span data-i18n="maxWPM">Meilleure vitesse</span>: <span id="final-wpm">0</span></p>
                         <p><span data-i18n="accuracy">Précision</span>: <span id="final-accuracy">100%</span></p>
-                        <p id="duration-row" style="display:none;"><span data-i18n="duration">Duration</span>: <span id="final-duration">0:00</span></p>
+                        <p id="duration-row" style="display:none;"><span data-i18n="duration">Durée</span>: <span id="final-duration">0:00</span></p>
                         <p><span data-i18n="wordsMatched">Mots manqués</span>: <span id="final-missed">0</span></p>
                     </div>
                     <div class="final-stats" id="dictation-final-stats" hidden>
@@ -278,8 +283,8 @@
         </div>
     </div>
 
-    <aside class="ad-slot ad-slot-after-game" aria-label="Advertisement">
-        <span>Advertisement</span>
+    <aside class="ad-slot ad-slot-after-game" aria-label="Publicité">
+        <span>Publicité</span>
     </aside>
 
     <div class="below-game">
@@ -289,8 +294,8 @@
                     <h3>Pour la liste de cette semaine</h3>
                     <p>Utilisez le test pour écouter un mot caché à la fois, ou la pluie de mots pour saisir les mots qui tombent.</p>
                     <p>Collez les mots anglais déjà donnés par le professeur ou le cours.</p>
-                    <p>Choisissez le test audio pour écouter un mot caché, ou Typing Rain pour taper les mots qui tombent.</p>
-                    <p>Appuyez sur <kbd>Enter</kbd> pour valider ; Typing Rain accepte aussi <kbd>Space</kbd>.</p>
+                    <p>Choisissez le test audio pour écouter un mot caché, ou la pluie de mots pour taper les mots qui tombent.</p>
+                    <p>Appuyez sur <kbd>Enter</kbd> pour valider ; la pluie de mots accepte aussi <kbd>Space</kbd>.</p>
                     <p>Les mots manqués sont gardés pour une révision en un clic.</p>
                     <p>Copiez un lien pour partager la même liste.</p>
                     <h4>Mode facile</h4>
@@ -302,7 +307,7 @@
                 <div class="practice-proof-copy">
                     <h3>Pourquoi ça marche</h3>
                     <p>On travaille les mots exacts de la semaine, pas une liste au hasard.</p>
-                    <p>Pratique pour les devoirs, le soutien, l’ESL et l’école à la maison.</p>
+                    <p>Pratique pour les devoirs, le soutien, l’apprentissage de l’anglais et l’école à la maison.</p>
                     <p>La révision se concentre sur les mots réellement manqués.</p>
                     <p>Le mode facile ralentit la partie sans changer la règle.</p>
                 </div>
@@ -311,12 +316,12 @@
 
         <div class="spelling-seo-copy">
             <h2>Deux façons de travailler votre propre liste</h2>
-            <p><strong>Spelling Test</strong> lit un mot caché et corrige la réponse. <strong>Typing Rain</strong> conserve le jeu original de mots qui tombent.</p>
+            <p><strong>Test d’orthographe</strong> lit un mot caché et corrige la réponse. La <strong>pluie de mots</strong> conserve le jeu original de mots qui tombent.</p>
 
             <h3>Une liste précise rend la pratique plus utile</h3>
             <p>Coller la liste de la semaine garde la pratique centrée sur les bons mots. Les deux modes enregistrent les erreurs pour les reprendre.</p>
             <ul>
-                <li><strong>Votre vraie liste :</strong> Collez les mots d’un devoir, d’un cours ou d’un support homeschool.</li>
+                <li><strong>Votre vraie liste :</strong> Collez les mots d’un devoir, d’un cours ou d’un support d’école à la maison.</li>
                 <li><strong>Révision ciblée :</strong> Les mots manqués reviennent dans une autre partie.</li>
                 <li><strong>Lien partageable :</strong> Envoyez la même liste sans compte ni espace classe.</li>
                 <li><strong>Test audio :</strong> Le mot reste caché jusqu’à l’envoi de la réponse.</li>
@@ -336,9 +341,8 @@
 
     <footer>
         <p>
-            <a href="/custom-spelling-words-game">Jeu personnalisé</a> &middot; <a href="/fr/spelling-list-game">Liste de mots</a> &middot; <a href="/fr/weekly-spelling-practice">Pratique hebdomadaire</a> &middot; <a href="/sight-word-typing-game">Sight words</a> &middot; <a href="/homeschool-spelling-practice">Homeschool</a> &middot; <a href="/vocabulary-typing-game">Vocabulaire</a><br>
-            <a href="/fr/privacy">Confidentialité</a> &middot; <a href="/fr/about">À propos</a> &middot; <a href="/fr/contact">Contact</a><br>
-            &copy; 2026 My Spelling Game All rights reserved.
+            <span class="footer-links"><a href="/fr/sight-word-typing-game">Mots fréquents</a> &middot; <a href="/fr/homeschool-spelling-practice">À la maison</a> &middot; <a href="/fr/vocabulary-typing-game">Vocabulaire</a> &middot; <a href="/fr/faq">Questions fréquentes</a> &middot; <a href="/fr/privacy">Confidentialité</a> &middot; <a href="/fr/about">À propos</a> &middot; <a href="/fr/contact">Contact</a></span><br>
+            &copy; 2026 My Spelling Game Tous droits réservés.
         </p>
     </footer>
 
@@ -347,7 +351,7 @@
   "@context": "https://schema.org",
   "@type": "VideoGame",
   "name": "My Spelling Game",
-  "description": "Collez vos mots pour un test audio ou Typing Rain, avec correction et reprise des erreurs.",
+  "description": "Collez vos mots pour un test audio ou une pluie de mots, avec correction et reprise des erreurs.",
   "url": "https://myspellinggame.com/fr/",
   "author": {
     "@type": "Organization",

@@ -62,6 +62,7 @@ type AttemptDetailRow = {
   duration_seconds: number;
   completed_at: string;
   missed_words: string | null;
+  status: "completed" | "incomplete";
 };
 
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
@@ -207,7 +208,7 @@ async function listAssignments(db: D1Database, ownerUserId: string) {
               a.created_at, a.expires_at,
               COUNT(at.id) AS attempt_count,
               COUNT(DISTINCT at.nickname_key) AS student_count,
-              COALESCE(ROUND(AVG(at.accuracy)), 0) AS average_accuracy
+              COALESCE(ROUND(AVG(CASE WHEN at.status = 'completed' THEN at.accuracy END)), 0) AS average_accuracy
        FROM assignments a
        LEFT JOIN attempts at ON at.assignment_id = a.id AND at.retention_expires_at > ?
        WHERE a.owner_user_id = ?
@@ -234,7 +235,7 @@ async function assignmentDetail(
       .all<AssignmentWord>(),
     db
       .prepare(
-        `SELECT at.id, at.nickname, at.attempt_number, at.score, at.correct_count,
+        `SELECT at.id, at.nickname, at.attempt_number, at.status, at.score, at.correct_count,
                 at.incorrect_count, at.accuracy, at.duration_seconds, at.completed_at,
                 GROUP_CONCAT(CASE WHEN ai.is_correct = 0 THEN aw.word END, char(31)) AS missed_words
          FROM attempts at
@@ -249,7 +250,7 @@ async function assignmentDetail(
     db
       .prepare(
         `SELECT COUNT(*) AS attempts, COUNT(DISTINCT nickname_key) AS students,
-                COALESCE(ROUND(AVG(accuracy)), 0) AS average_accuracy
+                COALESCE(ROUND(AVG(CASE WHEN status = 'completed' THEN accuracy END)), 0) AS average_accuracy
          FROM attempts WHERE assignment_id = ? AND retention_expires_at > ?`,
       )
       .bind(assignment.id, now)
@@ -458,7 +459,7 @@ async function loadAttemptResult(
   const attempt = await db
     .prepare(
       `SELECT at.id, at.nickname, at.score, at.correct_count, at.incorrect_count,
-              at.accuracy, at.duration_seconds, at.completed_at
+              at.accuracy, at.duration_seconds, at.completed_at, at.status
        FROM attempts at JOIN assignments a ON a.id = at.assignment_id
        WHERE at.id = ? AND a.public_id = ?`,
     )
@@ -492,24 +493,27 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
   const { nickname, nicknameKey } = validateNickname(body.nickname);
   const durationSeconds = validateDuration(body.durationSeconds);
   const words = assignment.words;
-  const result = scoreAnswers(words, body.answers);
+  const completed = body.completed !== false;
+  const result = scoreAnswers(words, body.answers, completed);
   const plan = await getPlan(env.DB, assignment.owner_user_id);
   const limits = PLAN_LIMITS[plan];
   const now = new Date();
   const completedAt = now.toISOString();
   const retentionExpiresAt = addDays(completedAt, limits.retentionDays);
   const monthKey = monthStart(now);
-  const monthlyLimit = limits.monthlyAttempts ?? 2_147_483_647;
+  const monthlyLimit = completed
+    ? (limits.monthlyAttempts ?? 2_147_483_647)
+    : 2_147_483_647;
   const statements = [
     env.DB.prepare(
       `INSERT OR IGNORE INTO attempts (
            id, assignment_id, nickname, nickname_key, attempt_number, score,
            correct_count, incorrect_count, accuracy, duration_seconds,
-           completed_at, retention_expires_at
+           completed_at, retention_expires_at, status
          )
          SELECT ?, a.id, ?, ?,
            (SELECT COUNT(*) + 1 FROM attempts x WHERE x.assignment_id = a.id AND x.nickname_key = ?),
-           ?, ?, ?, ?, ?, ?, ?
+           ?, ?, ?, ?, ?, ?, ?, ?
          FROM assignments a
          WHERE a.public_id = ? AND a.status = 'published' AND a.expires_at > ?
            AND (SELECT COUNT(*) FROM attempts x WHERE x.assignment_id = a.id AND x.nickname_key = ?) < a.max_attempts
@@ -534,6 +538,7 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       durationSeconds,
       completedAt,
       retentionExpiresAt,
+      completed ? "completed" : "incomplete",
       publicId,
       completedAt,
       nicknameKey,
@@ -552,7 +557,8 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
     env.DB.prepare(
       `INSERT OR IGNORE INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at)
          SELECT ?, a.owner_user_id, ?, ? FROM attempts at
-         JOIN assignments a ON a.id = at.assignment_id WHERE at.id = ?`,
+         JOIN assignments a ON a.id = at.assignment_id
+         WHERE at.id = ? AND at.status = 'completed'`,
     ).bind(attemptId, monthKey, completedAt, attemptId),
   ];
   await env.DB.batch(statements);
@@ -600,6 +606,7 @@ async function exportCsv(
     [
       "Nickname",
       "Attempt",
+      "Status",
       "Score",
       "Correct",
       "Incorrect",
@@ -614,6 +621,7 @@ async function exportCsv(
       [
         attempt.nickname,
         attempt.attempt_number,
+        attempt.status,
         attempt.score,
         attempt.correct_count,
         attempt.incorrect_count,

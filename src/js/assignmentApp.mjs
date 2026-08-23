@@ -1,5 +1,6 @@
 import { trackEvent } from "./analytics.mjs";
 import {
+  productPagePath,
   productLocale,
   productMessage,
   productMessages,
@@ -17,6 +18,7 @@ let attemptId = "";
 let index = 0;
 let answers = [];
 let startedAt = 0;
+let leaving = false;
 
 document.documentElement.lang = locale;
 document.title = copy.brand;
@@ -53,8 +55,8 @@ function card(titleText) {
   section.className = "product-card";
   const brand = document.createElement("a");
   brand.className = "product-brand";
-  brand.href = `/?lang=${encodeURIComponent(locale)}`;
-  brand.textContent = copy.brand;
+  brand.href = productPagePath("", locale);
+  brand.innerHTML = `<img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span>${copy.brand}</span>`;
   const title = document.createElement("h1");
   title.className = "assignment-title";
   title.textContent = titleText;
@@ -200,6 +202,12 @@ function renderWord() {
   feedback.setAttribute("role", "status");
   form.append(input, check, feedback);
   section.append(form);
+  const leave = document.createElement("button");
+  leave.type = "button";
+  leave.className = "button-secondary assignment-return";
+  leave.textContent = copy.returnMenu;
+  leave.addEventListener("click", leaveAssignment);
+  section.append(leave);
   input.focus();
   form.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -223,6 +231,47 @@ function renderWord() {
     form.append(next);
     next.focus();
   });
+}
+
+async function leaveAssignment() {
+  if (leaving) return;
+  if (!attemptId) return renderIntro();
+  leaving = true;
+  const button = document.querySelector(".assignment-return");
+  if (button) button.disabled = true;
+  try {
+    await request(`/api/public/assignments/${publicId}/attempts`, {
+      method: "POST",
+      body: JSON.stringify({
+        attemptId,
+        nickname,
+        answers,
+        durationSeconds: Math.max(
+          1,
+          Math.round((Date.now() - startedAt) / 1000),
+        ),
+        completed: false,
+      }),
+    });
+    trackEvent("assignment_abandoned", {
+      mode: assignment.mode,
+      word_count: assignment.words.length,
+    });
+    try {
+      sessionStorage.removeItem(storageKey);
+    } catch {}
+    attemptId = "";
+    answers = [];
+    index = 0;
+    renderIntro();
+  } catch (error) {
+    if (button) button.disabled = false;
+    leaving = false;
+    const notice = document.createElement("p");
+    notice.className = "status error";
+    notice.textContent = error.message;
+    button?.after(notice);
+  }
 }
 
 async function saveResult() {

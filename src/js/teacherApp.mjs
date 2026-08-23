@@ -1,10 +1,10 @@
 import { trackEvent } from "./analytics.mjs";
 import {
   PRODUCT_LOCALES,
+  productPagePath,
   productLocale,
   productMessage,
   productMessages,
-  setProductLocale,
 } from "./productLocale.mjs";
 
 const root = document.getElementById("product-app");
@@ -63,31 +63,33 @@ async function api(path, options = {}) {
   return data;
 }
 
-function nav() {
+function nav({ signedIn = true } = {}) {
   const element = document.createElement("nav");
   element.className = "product-nav";
+  const homeHref = productPagePath("", locale);
+  const pricingHref = `/teacher?lang=${encodeURIComponent(locale)}#pricing`;
+  const languageOptions = PRODUCT_LOCALES.map(
+    ([value, label]) =>
+      `<a class="lang-option" href="?lang=${encodeURIComponent(value)}"${value === locale ? ' aria-current="page"' : ""}>${label}</a>`,
+  ).join("");
   element.innerHTML = `
-    <a class="product-brand" href="/">${copy.brand}</a>
-    <a class="product-nav-link" href="/">${copy.home}</a>
-    <a class="product-nav-link" href="/pricing?lang=${encodeURIComponent(locale)}">${copy.pricing}</a>
-    <span class="product-nav-spacer"></span>
-    <label><span class="muted">${copy.language}</span> <select id="product-language"></select></label>
-    <button class="button-secondary" id="sign-out" type="button">${copy.signOut}</button>`;
-  const select = element.querySelector("#product-language");
-  for (const [value, label] of PRODUCT_LOCALES) {
-    const option = document.createElement("option");
-    option.value = value;
-    option.textContent = label;
-    option.selected = value === locale;
-    select.append(option);
+    <a class="product-brand" href="${homeHref}"><img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span>${copy.brand}</span></a>
+    <div class="product-nav-center">
+      <a class="product-nav-link" href="${homeHref}">${copy.home}</a>
+      <a class="product-nav-link" href="${pricingHref}">${copy.pricing}</a>
+    </div>
+    <div class="product-nav-actions">
+      <details class="language-switcher"><summary class="lang-btn" aria-label="${copy.language}">${copy.language}</summary><div class="lang-menu">${languageOptions}</div></details>
+      ${signedIn ? `<button class="button-secondary" id="sign-out" type="button">${copy.signOut}</button>` : ""}
+    </div>`;
+  if (signedIn) {
+    element.querySelector("#sign-out").addEventListener("click", async () => {
+      await api("/api/auth/sign-out", { method: "POST", body: "{}" }).catch(
+        () => null,
+      );
+      location.href = homeHref;
+    });
   }
-  select.addEventListener("change", () => setProductLocale(select.value));
-  element.querySelector("#sign-out").addEventListener("click", async () => {
-    await api("/api/auth/sign-out", { method: "POST", body: "{}" }).catch(
-      () => null,
-    );
-    location.href = `/?lang=${encodeURIComponent(locale)}`;
-  });
   return element;
 }
 
@@ -97,7 +99,7 @@ function shell() {
   wrapper.className = "product-shell";
   wrapper.append(nav());
   const main = document.createElement("main");
-  main.className = "product-main";
+  main.className = "product-main teacher-main";
   wrapper.append(main);
   root.append(wrapper);
   return main;
@@ -111,6 +113,27 @@ function statusElement(parent) {
   return status;
 }
 
+async function appendPricing(main) {
+  const pricing = document.createElement("section");
+  pricing.id = "pricing";
+  pricing.className = "teacher-pricing";
+  try {
+    const response = await fetch(productPagePath("pricing", locale));
+    if (!response.ok) throw new Error("pricing unavailable");
+    const html = await response.text();
+    const documentCopy = new DOMParser().parseFromString(html, "text/html");
+    const source = documentCopy.querySelector("main");
+    if (!source) throw new Error("pricing unavailable");
+    pricing.innerHTML = source.innerHTML;
+    main.append(pricing);
+    document.body.dataset.productLocale = locale;
+    await import("./pricingApp.mjs");
+    if (location.hash === "#pricing") pricing.scrollIntoView();
+  } catch {
+    // Pricing remains available as a standalone page if this optional section fails.
+  }
+}
+
 async function renderLogin() {
   const config = await api("/api/config").catch(() => ({
     googleAuthConfigured: false,
@@ -118,17 +141,19 @@ async function renderLogin() {
   root.innerHTML = "";
   const wrapper = document.createElement("div");
   wrapper.className = "product-shell";
+  wrapper.append(nav({ signedIn: false }));
   const main = document.createElement("main");
-  main.className = "product-main";
+  main.className = "product-main teacher-main teacher-login-main has-pricing";
   const card = document.createElement("section");
-  card.className = "product-card";
+  card.className = "product-card auth-card";
   const title = document.createElement("h1");
   title.textContent = copy.signInTitle;
   const text = document.createElement("p");
   text.textContent = copy.signInCopy;
   const button = document.createElement("button");
   button.type = "button";
-  button.textContent = copy.signIn;
+  button.className = "google-sign-in";
+  button.innerHTML = `<svg class="google-logo" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.482h4.844a4.14 4.14 0 0 1-1.796 2.716v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.258c-.807.54-1.836.86-3.048.86-2.345 0-4.332-1.584-5.044-3.715H.95v2.332A9 9 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.956 10.707A5.4 5.4 0 0 1 3.674 9c0-.592.102-1.167.282-1.707V4.96H.95A9 9 0 0 0 0 9c0 1.454.348 2.832.95 4.04l3.006-2.333Z"/><path fill="#EA4335" d="M9 3.578c1.322 0 2.508.454 3.442 1.345l2.582-2.582C13.463.89 11.426 0 9 0A9 9 0 0 0 .95 4.96l3.006 2.333C4.668 5.162 6.655 3.578 9 3.578Z"/></svg><span>${copy.signIn}</span>`;
   const status = statusElement(card);
   card.prepend(title, text, button);
   button.disabled = !config.googleAuthConfigured;
@@ -157,6 +182,7 @@ async function renderLogin() {
     }
   });
   main.append(card);
+  await appendPricing(main);
   wrapper.append(main);
   root.append(wrapper);
 }
@@ -217,7 +243,7 @@ async function renderDashboard(me) {
     billing.textContent = copy.manageBilling;
     billing.addEventListener("click", openPortal);
   } else {
-    billing.href = `/pricing?lang=${encodeURIComponent(locale)}`;
+    billing.href = "#pricing";
     billing.className = "button-link pro";
     billing.textContent = copy.upgrade;
   }
@@ -466,6 +492,7 @@ async function renderDetail(me, id) {
     for (const text of [
       copy.nickname,
       copy.attempt,
+      copy.attemptStatus,
       copy.score,
       copy.accuracy,
       copy.missedWords,
@@ -485,6 +512,9 @@ async function renderDetail(me, id) {
       for (const value of [
         attempt.nickname,
         attempt.attempt_number,
+        attempt.status === "incomplete"
+          ? copy.statusIncomplete
+          : copy.statusCompleted,
         `${attempt.correct_count}/${attempt.correct_count + attempt.incorrect_count}`,
         `${attempt.accuracy}%`,
         attempt.missed_words.join(", ") || "—",
@@ -536,6 +566,7 @@ async function renderDetail(me, id) {
     misses.append(list);
   }
   main.append(misses);
+  await appendPricing(main);
 }
 
 async function init() {

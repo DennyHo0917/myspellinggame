@@ -42,7 +42,6 @@ test('sitemap contains each extensionless canonical exactly once with complete h
     tagContent(block, /<lastmod>([^<]+)<\/lastmod>/),
   ]));
   assert.equal(byUrl.get('https://myspellinggame.com/'), '2026-08-14');
-  assert.equal(byUrl.get('https://myspellinggame.com/custom-spelling-words-game'), '2026-08-14');
   assert.equal(byUrl.get('https://myspellinggame.com/homeschool-spelling-practice'), '2026-08-14');
   assert.equal(byUrl.get('https://myspellinggame.com/es/about'), '2026-08-14');
   assert.equal(byUrl.get('https://myspellinggame.com/zh/contact'), '2026-08-14');
@@ -59,9 +58,9 @@ test('sitemap contains each extensionless canonical exactly once with complete h
   }
 });
 
-test('home, weekly, and custom pages have one H1 and distinct metadata per locale', () => {
+test('home and remaining long-tail pages have one H1 and distinct metadata per locale', () => {
   for (const locale of locales) {
-    const files = ['index.html', 'weekly-spelling-practice.html', 'custom-spelling-words-game.html']
+    const files = ['index.html', 'homeschool-spelling-practice.html', 'sight-word-typing-game.html']
       .map((name) => path.join(root, locale, name));
     const pages = files.map((file) => fs.readFileSync(file, 'utf8'));
     for (const html of pages) assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
@@ -86,9 +85,8 @@ test('localized legal pages keep SEO links inside the active locale', () => {
   for (const locale of locales.filter(Boolean)) {
     for (const page of ['about.html', 'contact.html', 'privacy.html']) {
       const html = fs.readFileSync(path.join(root, locale, page), 'utf8');
-      for (const slug of ['custom-spelling-words-game', 'spelling-list-game', 'weekly-spelling-practice']) {
-        assert.match(html, new RegExp(`href="/${locale}/${slug}"`));
-      }
+      assert.match(html, new RegExp(`href="/${locale}/faq"`));
+      assert.doesNotMatch(html, /(?:custom-spelling-words-game|spelling-list-game|weekly-spelling-practice)/);
     }
   }
 });

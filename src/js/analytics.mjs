@@ -15,6 +15,7 @@ const EVENT_PARAMS = {
   assignment_link_copied: ['mode', 'word_count'],
   assignment_opened: ['mode', 'word_count'],
   assignment_completed: ['mode', 'word_count', 'accuracy_range', 'duration_range'],
+  assignment_abandoned: ['mode', 'word_count'],
   upgrade_viewed: [],
   checkout_started: ['billing_interval'],
   subscription_started: ['billing_interval'],

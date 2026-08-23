@@ -171,7 +171,11 @@ export function validateDuration(value: unknown): number {
 export type AssignmentWord = { id: string; word: string; position: number };
 export type SubmittedAnswer = { wordId: string; answer: string };
 
-export function scoreAnswers(words: AssignmentWord[], input: unknown) {
+export function scoreAnswers(
+  words: AssignmentWord[],
+  input: unknown,
+  requireAll = true,
+) {
   if (!Array.isArray(input) || input.length > 80) {
     throw new HttpError(
       400,
@@ -200,11 +204,20 @@ export function scoreAnswers(words: AssignmentWord[], input: unknown) {
       "An answer does not belong to this assignment.",
     );
   }
-  const items = words.map((word) => ({
-    wordId: word.id,
-    word: word.word,
-    correct: normalizeWord(answers.get(word.id)) === normalizeWord(word.word),
-  }));
+  if (requireAll && answers.size !== words.length) {
+    throw new HttpError(
+      400,
+      "invalid_answers",
+      "Answers must contain one value for each word.",
+    );
+  }
+  const items = words
+    .filter((word) => requireAll || answers.has(word.id))
+    .map((word) => ({
+      wordId: word.id,
+      word: word.word,
+      correct: normalizeWord(answers.get(word.id)) === normalizeWord(word.word),
+    }));
   const correctCount = items.filter((item) => item.correct).length;
   const incorrectCount = items.length - correctCount;
   return {

@@ -204,6 +204,36 @@ describe("teacher authorization and quotas", () => {
 });
 
 describe("assignment attempts", () => {
+  it("records an unfinished attempt when a student returns to the assignment start", async () => {
+    const created = await createAssignment();
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    const response = await call(
+      `/api/public/assignments/${publicId}/attempts`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          attemptId: crypto.randomUUID(),
+          nickname: "Student 01",
+          durationSeconds: 12,
+          answers: [{ wordId: assignment.words[0].id, answer: "apple" }],
+          completed: false,
+        }),
+      },
+      null,
+    );
+    expect(response.status).toBe(201);
+    expect(((await response.json()) as Record<string, unknown>).status).toBe(
+      "incomplete",
+    );
+
+    const detail = await call(`/api/assignments/${created.body.id}`);
+    const body = (await detail.json()) as {
+      attempts: Array<{ status: string }>;
+    };
+    expect(body.attempts[0].status).toBe("incomplete");
+  });
+
   it.each(["dictation", "typing"] as const)(
     "completes and reports a %s assignment",
     async (mode) => {

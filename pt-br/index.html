@@ -17,25 +17,25 @@
     <link rel="dns-prefetch" href="//www.googletagmanager.com">
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
 
-    <title>Teste de Spelling Grátis com Suas Palavras — Sem Login</title>
+    <title>Teste de Ortografia Grátis com Suas Palavras — Sem Conta</title>
     <meta name="description" content="Cole sua lista, ouça uma palavra escondida, digite a resposta e veja a correção na hora. Revise os erros sem criar conta.">
     <meta name="author" content="My Spelling Game">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-9244949928133071">
 
-    <meta property="og:title" content="Teste de spelling com suas próprias palavras">
+    <meta property="og:title" content="Teste de ortografia com suas próprias palavras">
     <meta property="og:description" content="Ouça palavras escondidas, veja a correção na hora e revise os erros. Sem login.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://myspellinggame.com/pt-br/">
     <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Teste de spelling com suas próprias palavras preview">
+    <meta property="og:image:alt" content="Teste de ortografia com suas próprias palavras preview">
     <meta property="og:site_name" content="My Spelling Game">
     <meta property="og:locale" content="pt_BR">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Teste de spelling com suas próprias palavras">
+    <meta name="twitter:title" content="Teste de ortografia com suas próprias palavras">
     <meta name="twitter:description" content="Ouça palavras escondidas, veja a correção na hora e revise os erros. Sem login.">
     <meta name="twitter:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
 
@@ -77,7 +77,11 @@
     <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
-    <div class="top-right-nav">
+    <header class="top-right-nav">
+        <a class="brand-link" href="/pt-br" aria-label="My Spelling Game home">
+            <img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt="">
+            <span class="brand-name">My Spelling Game</span>
+        </a>
         <details class="language-switcher">
             <summary class="lang-btn" aria-label="Idioma">Idioma</summary>
             <div class="lang-menu" id="language-menu">
@@ -89,25 +93,23 @@
                 <a class="lang-option" href="/zh/" hreflang="zh-CN">中文</a>
             </div>
         </details>
+        <a class="teacher-nav-link" href="/teacher?lang=pt-BR">Para professores</a>
         <button class="privacy-btn" onclick="showPrivacyPolicyLegacy()" data-i18n-title="privacyPolicyTooltip" title="Privacidade">Privacidade</button>
         <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Som</button>
-    </div>
+    </header>
 
-    <div class="seo-content" id="seo-content">
-        <h1>Teste de spelling grátis com suas próprias palavras</h1>
-        <p>Cole sua lista e ouça cada palavra sem vê-la na tela.</p>
-        <p>Digite a resposta, confira a correção na hora e revise somente o que errou.</p>
-        <p>Não precisa criar conta.</p>
-        <ol class="practice-flow" aria-label="Etapas da prática">
+    <div class="main-content-wrapper">
+    <section class="seo-content" id="seo-content">
+        <h1>Teste de ortografia grátis com suas próprias palavras</h1>
+        <ul class="practice-flow" aria-label="Etapas da prática">
+            <li>Sem fazer login</li>
             <li>Cole as palavras</li>
             <li>Ouça uma palavra escondida</li>
             <li>Digite a resposta</li>
             <li>Revise os erros</li>
-        </ol>
-        <p>Escolha um teste de spelling com voz ou o jogo original de chuva de palavras.</p>
-    </div>
+        </ul>
+    </section>
 
-    <div class="main-content-wrapper">
         <div id="game-container">
             <div class="background-particles">
                 <canvas id="particles-canvas"></canvas>
@@ -115,8 +117,9 @@
 
             <div class="top-bar">
                 <div class="game-title">Rodada de prática</div>
+                <button type="button" class="return-menu-btn" onclick="returnToMainMenu()">Voltar para a lista</button>
                 <div class="combo-display" id="combo-display">
-                    Streak <span id="combo-count">0</span>
+                    Sequência <span id="combo-count">0</span>
                 </div>
             </div>
 
@@ -147,19 +150,19 @@
                 <div class="start-screen-content">
                     <div class="start-title">Pratique com sua própria lista</div>
                     <div class="spelling-start">
-                        <div class="spelling-subtitle">Teste de spelling ou jogo de digitação, sem login</div>
-                        <p class="spelling-intro">Escolha o teste por áudio recomendado ou Typing Rain, cole as palavras e comece.</p>
-                        <div class="hero-proof-row" aria-label="My Spelling Game benefits">
+                        <div class="spelling-subtitle">Teste de ortografia ou jogo de palavras, sem conta</div>
+                        <p class="spelling-intro">Escolha o teste por áudio recomendado ou a chuva de palavras, cole as palavras e comece.</p>
+                        <div class="hero-proof-row" aria-label="Vantagens do My Spelling Game">
                             <span>Correção imediata</span>
                             <span>Palavra escondida</span>
                             <span>Revise os erros</span>
-                            <span>Link sem login</span>
+                            <span>Sem criar uma conta</span>
                         </div>
                         <fieldset class="mode-selector">
                             <legend>Escolha um modo</legend>
                             <label class="mode-card">
                                 <input type="radio" name="practice-mode" value="dictation" checked>
-                                <span><strong>Teste de spelling</strong><small>Ouça uma palavra oculta e digite a grafia.</small></span>
+                                <span><strong>Teste de ortografia</strong><small>Ouça uma palavra escondida e digite a grafia.</small></span>
                                 <span class="recommended-badge">Recomendado</span>
                             </label>
                             <label class="mode-card">
@@ -178,10 +181,12 @@
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">Lista de exemplo</button>
                                 <button type="button" onclick="copyPracticeLink()">Copiar link de prática</button>
-                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Criar tarefa e ver resultados</button>
+                                <div class="assignment-entry-group">
+                                    <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Professor: criar tarefa com esta lista</button>
+                                </div>
                             </div>
                         </div>
-                        <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Começar teste de spelling</button>
+                        <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Começar teste de ortografia</button>
                     </div>
                 </div>
             </div>
@@ -194,7 +199,7 @@
                         <p><span data-i18n="levelReached">Rodada alcançada</span>: <span id="final-level">1</span></p>
                         <p><span data-i18n="maxWPM">Melhor velocidade</span>: <span id="final-wpm">0</span></p>
                         <p><span data-i18n="accuracy">Precisão</span>: <span id="final-accuracy">100%</span></p>
-                        <p id="duration-row" style="display:none;"><span data-i18n="duration">Duration</span>: <span id="final-duration">0:00</span></p>
+                        <p id="duration-row" style="display:none;"><span data-i18n="duration">Duração</span>: <span id="final-duration">0:00</span></p>
                         <p><span data-i18n="wordsMatched">Palavras erradas</span>: <span id="final-missed">0</span></p>
                     </div>
                     <div class="final-stats" id="dictation-final-stats" hidden>
@@ -278,8 +283,8 @@
         </div>
     </div>
 
-    <aside class="ad-slot ad-slot-after-game" aria-label="Advertisement">
-        <span>Advertisement</span>
+    <aside class="ad-slot ad-slot-after-game" aria-label="Anúncio">
+        <span>Anúncio</span>
     </aside>
 
     <div class="below-game">
@@ -289,8 +294,8 @@
                     <h3>Para a lista desta semana</h3>
                     <p>Use o teste para ouvir uma palavra oculta por vez, ou a chuva de palavras para digitar palavras que caem.</p>
                     <p>Cole as palavras de inglês que a turma ou a criança já recebeu.</p>
-                    <p>Use o teste por áudio para ouvir uma palavra escondida ou o Typing Rain para digitar palavras que caem.</p>
-                    <p>Use <kbd>Enter</kbd> para enviar; o Typing Rain também aceita <kbd>Space</kbd>.</p>
+                    <p>Use o teste por áudio para ouvir uma palavra escondida ou a chuva de palavras para digitar as palavras que caem.</p>
+                    <p>Use <kbd>Enter</kbd> para enviar; a chuva de palavras também aceita <kbd>Space</kbd>.</p>
                     <p>As palavras erradas ficam salvas para revisão em um clique.</p>
                     <p>Copie um link para compartilhar a mesma lista.</p>
                     <h4>Modo fácil</h4>
@@ -302,28 +307,28 @@
                 <div class="practice-proof-copy">
                     <h3>Por que funciona</h3>
                     <p>Usa as palavras exatas da semana, não uma lista aleatória.</p>
-                    <p>Ajuda em tarefa de casa, reforço, ESL e homeschool.</p>
+                    <p>Ajuda em tarefa de casa, reforço, estudantes de inglês e educação em casa.</p>
                     <p>A revisão foca nas palavras que o aluno errou.</p>
-                    <p>O modo fácil reduz a velocidade sem mudar a regra de soletrar.</p>
+                    <p>O modo fácil reduz a velocidade sem mudar as regras de ortografia.</p>
                 </div>
             </div>
         </div>
 
         <div class="spelling-seo-copy">
             <h2>Duas formas de praticar sua própria lista</h2>
-            <p><strong>Spelling Test</strong> toca uma palavra escondida e corrige a resposta. <strong>Typing Rain</strong> mantém o jogo original de palavras caindo.</p>
+            <p><strong>Teste de ortografia</strong> toca uma palavra escondida e corrige a resposta. A <strong>chuva de palavras</strong> mantém o jogo original de palavras caindo.</p>
 
             <h3>Uma lista real deixa a prática mais útil</h3>
             <p>Colar a lista da semana mantém o foco nas palavras certas. Os dois modos guardam os erros para uma rodada de revisão.</p>
             <ul>
-                <li><strong>Use sua lista real:</strong> Cole palavras da tarefa, da escola ou do material homeschool.</li>
+                <li><strong>Use sua lista real:</strong> Cole palavras da tarefa, da escola ou do material de educação em casa.</li>
                 <li><strong>Revise os erros:</strong> Respostas erradas e palavras perdidas entram em outra rodada.</li>
                 <li><strong>Compartilhe a prática:</strong> Copie um link com a mesma lista, sem conta nem turma online.</li>
                 <li><strong>Faça um teste por áudio:</strong> A palavra fica escondida até a resposta ser enviada.</li>
             </ul>
 
             <h3>Feito para prática semanal</h3>
-            <p>É uma ferramenta pequena para uma rotina que se repete: pegar uma lista curta, praticar, descobrir os erros e praticar de novo. Grátis, sem login de aluno e sem depender de plataforma escolar.</p>
+            <p>É uma ferramenta pequena para uma rotina que se repete: pegar uma lista curta, praticar, descobrir os erros e praticar de novo. Grátis, sem conta de aluno e sem depender de plataforma escolar.</p>
         </div>
     </div>
 
@@ -336,9 +341,8 @@
 
     <footer>
         <p>
-            <a href="/custom-spelling-words-game">Jogo personalizado</a> &middot; <a href="/pt-br/spelling-list-game">Lista de soletrar</a> &middot; <a href="/pt-br/weekly-spelling-practice">Prática semanal</a> &middot; <a href="/sight-word-typing-game">Sight words</a> &middot; <a href="/homeschool-spelling-practice">Homeschool</a> &middot; <a href="/vocabulary-typing-game">Vocabulário</a><br>
-            <a href="/pt-br/privacy">Privacidade</a> &middot; <a href="/pt-br/about">Sobre</a> &middot; <a href="/pt-br/contact">Contato</a><br>
-            &copy; 2026 My Spelling Game All rights reserved.
+            <span class="footer-links"><a href="/pt-br/sight-word-typing-game">Palavras frequentes</a> &middot; <a href="/pt-br/homeschool-spelling-practice">Em casa</a> &middot; <a href="/pt-br/vocabulary-typing-game">Vocabulário</a> &middot; <a href="/pt-br/faq">Perguntas frequentes</a> &middot; <a href="/pt-br/privacy">Privacidade</a> &middot; <a href="/pt-br/about">Sobre</a> &middot; <a href="/pt-br/contact">Contato</a></span><br>
+            &copy; 2026 My Spelling Game Todos os direitos reservados.
         </p>
     </footer>
 
@@ -347,7 +351,7 @@
   "@context": "https://schema.org",
   "@type": "VideoGame",
   "name": "My Spelling Game",
-  "description": "Cole suas palavras para um teste de spelling por áudio ou Typing Rain, com correção e revisão de erros.",
+  "description": "Cole suas palavras para um teste de ortografia por áudio ou uma chuva de palavras, com correção e revisão de erros.",
   "url": "https://myspellinggame.com/pt-br/",
   "author": {
     "@type": "Organization",
@@ -398,7 +402,7 @@
       "name": "Precisa criar conta?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Não. Funciona no navegador, sem login, turma online ou cadastro de aluno."
+        "text": "Não. Funciona no navegador, sem conta, turma online ou cadastro de aluno."
       }
     }
   ]

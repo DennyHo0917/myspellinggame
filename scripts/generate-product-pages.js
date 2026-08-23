@@ -12,6 +12,71 @@ const locales = [
   { code: "zh", html: "zh-CN", dir: "zh", label: "中文" },
 ];
 
+const footerLinks = {
+  en: [
+    "Sight Words",
+    "Homeschool",
+    "Vocabulary",
+    "FAQ",
+    "Privacy",
+    "About",
+    "Contact",
+  ],
+  es: [
+    "Palabras frecuentes",
+    "En casa",
+    "Vocabulario",
+    "Preguntas frecuentes",
+    "Privacidad",
+    "Acerca de",
+    "Contacto",
+  ],
+  "pt-BR": [
+    "Palavras frequentes",
+    "Em casa",
+    "Vocabulário",
+    "Perguntas frequentes",
+    "Privacidade",
+    "Sobre",
+    "Contato",
+  ],
+  fr: [
+    "Mots fréquents",
+    "À la maison",
+    "Vocabulaire",
+    "Questions fréquentes",
+    "Confidentialité",
+    "À propos",
+    "Contact",
+  ],
+  id: [
+    "Kata umum",
+    "Di rumah",
+    "Kosakata",
+    "Pertanyaan umum",
+    "Privasi",
+    "Tentang",
+    "Kontak",
+  ],
+  zh: [
+    "高频词练习",
+    "家庭学习",
+    "词汇练习",
+    "常见问题",
+    "隐私",
+    "关于",
+    "联系",
+  ],
+};
+const footerRights = {
+  en: "All rights reserved.",
+  es: "Todos los derechos reservados.",
+  "pt-BR": "Todos os direitos reservados.",
+  fr: "Tous droits réservés.",
+  id: "Hak cipta dilindungi.",
+  zh: "版权所有。",
+};
+
 const copy = {
   en: {
     title: "Teacher Pricing | My Spelling Game",
@@ -38,10 +103,14 @@ const copy = {
       "CSV export",
       "Class-wide missed-word statistics",
     ],
-    monthly: "Choose monthly",
-    yearly: "Choose yearly",
+    monthly: "Monthly plan",
+    yearly: "Yearly plan",
+    billingPeriod: "Billing period",
+    confirmMonthly: "Continue with monthly plan · $5.99 / month",
+    confirmYearly: "Continue with yearly plan · $49 / year",
     signIn: "Teacher sign in",
     practice: "Free practice",
+    language: "Language",
     note: "The ordinary spelling game, custom lists, practice links, dictation, Typing Rain, and missed-word replay stay free.",
   },
   es: {
@@ -69,10 +138,14 @@ const copy = {
       "Exportación CSV",
       "Palabras más falladas de toda la clase",
     ],
-    monthly: "Elegir mensual",
-    yearly: "Elegir anual",
+    monthly: "Plan mensual",
+    yearly: "Plan anual",
+    billingPeriod: "Periodo de facturación",
+    confirmMonthly: "Continuar con el plan mensual · $5.99 al mes",
+    confirmYearly: "Continuar con el plan anual · $49 al año",
     signIn: "Acceso docente",
     practice: "Práctica gratuita",
+    language: "Idioma",
     note: "El juego normal, las listas propias, los enlaces de práctica, el dictado, la lluvia de palabras y el repaso de errores siguen siendo gratis.",
   },
   "pt-BR": {
@@ -100,10 +173,14 @@ const copy = {
       "Exportação CSV",
       "Estatísticas de erros da turma",
     ],
-    monthly: "Escolher mensal",
-    yearly: "Escolher anual",
+    monthly: "Plano mensal",
+    yearly: "Plano anual",
+    billingPeriod: "Periodicidade",
+    confirmMonthly: "Continuar com o plano mensal · $5.99 por mês",
+    confirmYearly: "Continuar com o plano anual · $49 por ano",
     signIn: "Acesso do professor",
     practice: "Prática grátis",
+    language: "Idioma",
     note: "O jogo comum, listas próprias, links de prática, ditado, chuva de palavras e revisão de erros continuam grátis.",
   },
   fr: {
@@ -131,10 +208,14 @@ const copy = {
       "Export CSV",
       "Statistiques des mots manqués par la classe",
     ],
-    monthly: "Choisir l’abonnement mensuel",
-    yearly: "Choisir l’abonnement annuel",
+    monthly: "Offre mensuelle",
+    yearly: "Offre annuelle",
+    billingPeriod: "Période de facturation",
+    confirmMonthly: "Continuer avec l’offre mensuelle · 5,99 $ / mois",
+    confirmYearly: "Continuer avec l’offre annuelle · 49 $ / an",
     signIn: "Connexion enseignant",
     practice: "Entraînement gratuit",
+    language: "Langue",
     note: "Le jeu classique, les listes personnalisées, les liens, la dictée, la pluie de mots et la reprise des erreurs restent gratuits.",
   },
   id: {
@@ -162,10 +243,14 @@ const copy = {
       "Ekspor CSV",
       "Statistik kata yang salah untuk seluruh kelas",
     ],
-    monthly: "Pilih bulanan",
-    yearly: "Pilih tahunan",
+    monthly: "Paket bulanan",
+    yearly: "Paket tahunan",
+    billingPeriod: "Periode tagihan",
+    confirmMonthly: "Lanjutkan dengan paket bulanan · $5.99 per bulan",
+    confirmYearly: "Lanjutkan dengan paket tahunan · $49 per tahun",
     signIn: "Login guru",
     practice: "Latihan gratis",
+    language: "Bahasa",
     note: "Game biasa, daftar sendiri, link latihan, dikte, hujan kata, dan latihan ulang kata yang salah tetap gratis.",
   },
   zh: {
@@ -192,10 +277,14 @@ const copy = {
       "导出 CSV",
       "查看全班错词统计",
     ],
-    monthly: "选择月付",
-    yearly: "选择年付",
+    monthly: "月付方案",
+    yearly: "年付方案",
+    billingPeriod: "计费周期",
+    confirmMonthly: "继续月付 · 每月 $5.99",
+    confirmYearly: "继续年付 · 每年 $49",
     signIn: "教师登录",
     practice: "免费练习",
+    language: "语言",
     note: "普通拼写游戏、自定义词表、练习链接、听写、单词雨和错词重练都继续免费。",
   },
 };
@@ -212,18 +301,28 @@ function escape(value) {
 
 function render(locale) {
   const c = copy[locale.code];
+  const prefix = locale.dir ? `/${locale.dir}` : "";
+  const links = [
+    `<a href="${prefix}/sight-word-typing-game">${footerLinks[locale.code][0]}</a>`,
+    `<a href="${prefix}/homeschool-spelling-practice">${footerLinks[locale.code][1]}</a>`,
+    `<a href="${prefix}/vocabulary-typing-game">${footerLinks[locale.code][2]}</a>`,
+    `<a href="${prefix}/faq">${footerLinks[locale.code][3]}</a>`,
+    `<a href="${prefix}/privacy">${footerLinks[locale.code][4]}</a>`,
+    `<a href="${prefix}/about">${footerLinks[locale.code][5]}</a>`,
+    `<a href="${prefix}/contact">${footerLinks[locale.code][6]}</a>`,
+  ].join(" &middot; ");
   const alternates = locales
     .map(
       (item) =>
         `<link rel="alternate" hreflang="${item.html}" href="${baseUrl}${pagePath(item)}">`,
     )
     .join("\n    ");
-  const languages = locales
+  const languageOptions = locales
     .map(
       (item) =>
-        `<a class="product-nav-language" href="${pagePath(item)}" hreflang="${item.html}"${item.code === locale.code ? ' aria-current="page"' : ""}>${item.label}</a>`,
+        `<a class="lang-option" href="${pagePath(item)}" hreflang="${item.html}"${item.code === locale.code ? ' aria-current="page"' : ""}>${item.label}</a>`,
     )
-    .join(" · ");
+    .join("");
   return `<!doctype html>
 <html lang="${locale.html}">
 <head>
@@ -236,21 +335,22 @@ function render(locale) {
   ${alternates}
   <link rel="alternate" hreflang="x-default" href="${baseUrl}/pricing">
   <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="stylesheet" href="/src/css/product.css">
+  <link rel="stylesheet" href="/src/css/product.css?v=teacher-shell3">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VYF1V40KVS"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-VYF1V40KVS',{page_location: window.location.origin + window.location.pathname,page_path: window.location.pathname});</script>
   <script type="module" src="/src/js/analytics.mjs"></script>
 </head>
 <body class="product-page" data-product-locale="${locale.code}">
   <div class="product-shell">
-    <nav class="product-nav"><a class="product-brand" href="${locale.dir ? `/${locale.dir}/` : "/"}">My Spelling Game</a><a class="product-nav-link" href="${locale.dir ? `/${locale.dir}/` : "/"}">${escape(c.practice)}</a><a class="product-nav-link" href="/teacher?lang=${encodeURIComponent(locale.code)}">${escape(c.signIn)}</a><span class="product-nav-spacer"></span><span class="product-nav-languages">${languages}</span></nav>
+    <nav class="product-nav"><a class="product-brand" href="${locale.dir ? `/${locale.dir}/` : "/"}"><img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span>My Spelling Game</span></a><div class="product-nav-center"><a class="product-nav-link" href="${locale.dir ? `/${locale.dir}/` : "/"}">${escape(c.practice)}</a><a class="product-nav-link" href="/teacher?lang=${encodeURIComponent(locale.code)}">${escape(c.signIn)}</a></div><div class="product-nav-actions"><details class="language-switcher"><summary class="lang-btn" aria-label="${escape(c.language)}">${escape(c.language)}</summary><div class="lang-menu">${languageOptions}</div></details></div></nav>
     <main class="product-main">
       <section class="product-card"><h1>${escape(c.heading)}</h1><p>${escape(c.intro)}</p><p class="notice">${escape(c.note)}</p></section>
       <div class="pricing-grid">
         <section class="product-card pricing-card"><h2>${escape(c.free)}</h2><p class="price">${escape(c.freePrice)}</p><ul>${c.freeItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><a class="button-link button-secondary" href="${locale.dir ? `/${locale.dir}/` : "/"}">${escape(c.practice)}</a></section>
-        <section class="product-card pricing-card"><span class="badge pro">Pro</span><h2>${escape(c.pro)}</h2><p class="price">${escape(c.month)}</p><p>${escape(c.year)}</p><ul>${c.proItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><div class="actions"><button type="button" data-checkout="month">${escape(c.monthly)}</button><button type="button" class="button-secondary" data-checkout="year">${escape(c.yearly)}</button></div><p class="status" id="pricing-status" role="status"></p></section>
+        <section class="product-card pricing-card"><h2>${escape(c.pro)}</h2><div class="plan-selector" role="group" aria-label="${escape(c.billingPeriod)}"><button type="button" class="plan-option" data-plan-option="month" aria-pressed="true">${escape(c.monthly)}</button><button type="button" class="plan-option" data-plan-option="year" aria-pressed="false">${escape(c.yearly)}</button></div><div class="selected-plan" aria-live="polite"><p class="price" id="selected-plan-price" data-month="${escape(c.month)}" data-year="${escape(c.year)}">${escape(c.month)}</p><p id="selected-plan-description" data-month="${escape(c.monthly)}" data-year="${escape(c.yearly)}">${escape(c.monthly)}</p></div><ul>${c.proItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><div class="actions"><button type="button" class="checkout-confirm" data-confirm-checkout data-checkout="month" data-confirm-month="${escape(c.confirmMonthly)}" data-confirm-year="${escape(c.confirmYearly)}">${escape(c.confirmMonthly)}</button></div><p class="status" id="pricing-status" role="status"></p></section>
       </div>
     </main>
+    <footer class="product-footer"><p><span class="footer-links">${links}</span><br>&copy; 2026 My Spelling Game ${footerRights[locale.code]}</p></footer>
   </div>
   <script type="module" src="/src/js/pricingApp.mjs"></script>
 </body>

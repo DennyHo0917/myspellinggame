@@ -39,3 +39,5 @@ eslint.config.mjs
 .dev.vars.example
 .gitignore
 .prettierignore
+client-key.txt
+client-key.txt/**

@@ -264,6 +264,8 @@ async function renderDashboard(me) {
       const row = document.createElement("article");
       row.className = "assignment-row";
       const body = document.createElement("div");
+      const titleRow = document.createElement("div");
+      titleRow.className = "assignment-title-row";
       const title = document.createElement("h3");
       title.textContent = assignment.title;
       const badges = document.createElement("div");
@@ -284,12 +286,13 @@ async function renderDashboard(me) {
         item.textContent = text;
         badges.append(item);
       }
-      body.append(title, badges);
+      titleRow.append(title, state);
+      body.append(titleRow, badges);
       const link = document.createElement("a");
       link.className = "button-link button-secondary";
       link.href = `/teacher/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`;
       link.textContent = copy.open;
-      row.append(body, link, state);
+      row.append(body, link);
       list.append(row);
     }
     listCard.append(list);
@@ -415,9 +418,16 @@ async function renderDetail(me, id) {
   badge.className = `badge ${data.status === "closed" ? "closed" : ""}`;
   badge.textContent =
     data.status === "closed" ? copy.statusClosed : copy.statusPublished;
+  const titleRow = document.createElement("div");
+  titleRow.className = "assignment-title-row";
+  titleRow.append(heading, badge);
   const headingRow = document.createElement("div");
   headingRow.className = "assignment-detail-heading";
-  headingRow.append(heading, badge);
+  const backLink = document.createElement("a");
+  backLink.className = "button-link button-secondary";
+  backLink.href = `/teacher?lang=${encodeURIComponent(locale)}`;
+  backLink.textContent = copy.backToDashboard;
+  headingRow.append(titleRow, backLink);
   const linkLabel = document.createElement("h2");
   linkLabel.textContent = copy.studentLink;
   const studentUrl = `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`;

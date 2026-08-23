@@ -407,7 +407,6 @@ fieldset {
   gap: 0.75rem;
 }
 .assignment-row {
-  position: relative;
   display: grid;
   gap: 0.7rem;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -416,13 +415,14 @@ fieldset {
   border-radius: 12px;
   padding: 1rem;
 }
-.assignment-row > div:first-child {
-  padding-right: 5rem;
-}
 .assignment-row-status {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
+  flex: 0 0 auto;
+}
+.assignment-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.55rem;
 }
 .assignment-row h3 {
   margin: 0;
@@ -449,6 +449,13 @@ fieldset {
   margin-bottom: 0;
 }
 .assignment-form-heading .button-link {
+  min-height: 36px;
+  flex: 0 0 auto;
+  padding: 0 0.75rem;
+  font-size: 0.86rem;
+  white-space: nowrap;
+}
+.assignment-detail-heading .button-link {
   min-height: 36px;
   flex: 0 0 auto;
   padding: 0 0.75rem;

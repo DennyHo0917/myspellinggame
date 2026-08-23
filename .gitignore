@@ -1,0 +1,6 @@
+node_modules/
+.dev.vars
+client-key.txt
+.wrangler/
+playwright-report/
+test-results/

@@ -54,6 +54,32 @@ test('analytics allowlists omit raw words and typed answers', () => {
   }), { mode: 'dictation', word_length: 7, correct: true });
 });
 
+test('teacher analytics omit student, assignment, and Stripe identifiers', () => {
+  const privateValues = {
+    nickname: 'Student 01',
+    word: 'because',
+    words: ['because'],
+    answer: 'becuase',
+    assignment_id: 'assignment-secret',
+    public_id: 'public-secret',
+    stripe_id: 'sub_secret',
+  };
+  const expected = {
+    mode: 'typing',
+    word_count: 8,
+    accuracy_range: '90-100',
+    duration_range: '1-3m',
+  };
+  assert.deepEqual(sanitizeEventParams('assignment_completed', {
+    ...privateValues,
+    ...expected,
+  }), expected);
+  assert.deepEqual(sanitizeEventParams('checkout_started', {
+    ...privateValues,
+    billing_interval: 'year',
+  }), { billing_interval: 'year' });
+});
+
 test('return visits are emitted at most once per session', () => {
   const local = new Map([['mySpellingGameVisitHistory', JSON.stringify({ lastVisit: 1000, count: 2 })]]);
   const session = new Map();

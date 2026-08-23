@@ -1,0 +1,5 @@
+node_modules
+.wrangler
+sitemap.xml
+*.ico
+images

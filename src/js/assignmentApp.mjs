@@ -1,0 +1,349 @@
+import { trackEvent } from "./analytics.mjs";
+import {
+  productLocale,
+  productMessage,
+  productMessages,
+} from "./productLocale.mjs";
+
+const root = document.getElementById("product-app");
+const locale = productLocale();
+const copy = productMessages(locale);
+const publicId =
+  location.pathname.match(/^\/a\/([A-Za-z0-9_-]{24})$/)?.[1] || "";
+const storageKey = `mySpellingAssignment:${publicId}`;
+let assignment;
+let nickname = "";
+let attemptId = "";
+let index = 0;
+let answers = [];
+let startedAt = 0;
+
+document.documentElement.lang = locale;
+document.title = copy.brand;
+
+function m(key, vars) {
+  return productMessage(key, vars, locale);
+}
+const ERROR_KEYS = {
+  assignment_not_found: "assignmentNotFound",
+  assignment_closed: "assignmentClosed",
+  assignment_expired: "assignmentExpired",
+  attempt_limit: "attemptLimit",
+  monthly_submission_limit: "teacherLimit",
+  student_limit: "teacherLimit",
+  invalid_nickname: "invalidNickname",
+  personal_info_not_allowed: "invalidNickname",
+  invalid_answers: "invalidSubmission",
+  invalid_duration: "invalidSubmission",
+  invalid_attempt_id: "invalidSubmission",
+  rate_limited: "rateLimited",
+};
+
+function shell() {
+  root.replaceChildren();
+  const wrapper = document.createElement("main");
+  wrapper.className = "assignment-player";
+  root.append(wrapper);
+  return wrapper;
+}
+
+function card(titleText) {
+  const main = shell();
+  const section = document.createElement("section");
+  section.className = "product-card";
+  const brand = document.createElement("a");
+  brand.className = "product-brand";
+  brand.href = `/?lang=${encodeURIComponent(locale)}`;
+  brand.textContent = copy.brand;
+  const title = document.createElement("h1");
+  title.className = "assignment-title";
+  title.textContent = titleText;
+  section.append(brand, title);
+  main.append(section);
+  return section;
+}
+
+async function request(path, options = {}) {
+  let response;
+  try {
+    response = await fetch(path, {
+      ...options,
+      headers: options.body
+        ? { "content-type": "application/json" }
+        : undefined,
+    });
+  } catch {
+    const error = new Error(copy.submitFailed);
+    error.network = true;
+    throw error;
+  }
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(m(ERROR_KEYS[data.error] || "error"));
+    error.code = data.error;
+    throw error;
+  }
+  return data;
+}
+
+function readSaved() {
+  try {
+    return JSON.parse(sessionStorage.getItem(storageKey) || "null");
+  } catch {
+    return null;
+  }
+}
+
+function saveState(value) {
+  try {
+    sessionStorage.setItem(storageKey, JSON.stringify(value));
+  } catch {}
+}
+
+function renderIntro() {
+  const section = card(assignment.title);
+  const meta = document.createElement("p");
+  meta.className = "muted";
+  meta.textContent = `${assignment.mode === "dictation" ? copy.dictation : copy.typing} · ${m("due", { date: new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(assignment.expires_at)) })}`;
+  const form = document.createElement("form");
+  form.className = "product-form";
+  const field = document.createElement("div");
+  field.className = "field";
+  const label = document.createElement("label");
+  label.htmlFor = "student-nickname";
+  label.textContent = copy.nickname;
+  const input = document.createElement("input");
+  input.id = "student-nickname";
+  input.required = true;
+  input.minLength = 2;
+  input.maxLength = 32;
+  input.autocomplete = "off";
+  input.value = nickname;
+  const help = document.createElement("small");
+  help.textContent = copy.nicknameHelp;
+  const start = document.createElement("button");
+  start.type = "submit";
+  start.textContent = copy.start;
+  const status = document.createElement("p");
+  status.className = "status";
+  status.setAttribute("role", "status");
+  field.append(label, input, help);
+  form.append(field, start, status);
+  section.append(meta, form);
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    nickname = input.value.trim();
+    if (nickname.length < 2 || nickname.length > 32 || nickname.includes("@")) {
+      status.textContent = copy.invalidNickname;
+      status.className = "status error";
+      return;
+    }
+    attemptId = crypto.randomUUID();
+    index = 0;
+    answers = [];
+    startedAt = Date.now();
+    saveState({ attemptId, nickname });
+    renderWord();
+  });
+}
+
+function speak(word) {
+  if (!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = "en-US";
+  speechSynthesis.speak(utterance);
+}
+
+function renderWord() {
+  const word = assignment.words[index];
+  if (!word) return saveResult();
+  const section = card(assignment.title);
+  const progress = document.createElement("p");
+  progress.className = "player-progress";
+  progress.textContent = m("wordProgress", {
+    current: index + 1,
+    total: assignment.words.length,
+  });
+  const instruction = document.createElement("p");
+  instruction.textContent =
+    assignment.mode === "dictation" ? copy.typeHeard : copy.typeShown;
+  section.append(progress, instruction);
+  if (assignment.mode === "dictation") {
+    const listen = document.createElement("button");
+    listen.type = "button";
+    listen.className = "button-secondary";
+    listen.textContent = copy.listen;
+    listen.addEventListener("click", () => speak(word.word));
+    section.append(listen);
+    queueMicrotask(() => speak(word.word));
+  } else {
+    const shown = document.createElement("div");
+    shown.className = "player-word falling";
+    shown.textContent = word.word;
+    section.append(shown);
+  }
+  const form = document.createElement("form");
+  form.className = "answer-form";
+  const input = document.createElement("input");
+  input.required = true;
+  input.maxLength = 64;
+  input.autocomplete = "off";
+  input.autocapitalize = "none";
+  input.spellcheck = false;
+  input.placeholder = copy.answerPlaceholder;
+  const check = document.createElement("button");
+  check.type = "submit";
+  check.textContent = copy.submitAnswer;
+  const feedback = document.createElement("p");
+  feedback.className = "feedback";
+  feedback.setAttribute("role", "status");
+  form.append(input, check, feedback);
+  section.append(form);
+  input.focus();
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const answer = input.value.trim();
+    if (!answer) return;
+    answers.push({ wordId: word.id, answer });
+    input.disabled = true;
+    check.remove();
+    const correct = answer.toLowerCase() === word.word.toLowerCase();
+    feedback.textContent = correct
+      ? copy.correct
+      : m("incorrect", { word: word.word });
+    feedback.className = `feedback ${correct ? "correct" : "incorrect"}`;
+    const next = document.createElement("button");
+    next.type = "button";
+    next.textContent = copy.nextWord;
+    next.addEventListener("click", () => {
+      index += 1;
+      renderWord();
+    });
+    form.append(next);
+    next.focus();
+  });
+}
+
+async function saveResult() {
+  const section = card(copy.practiceComplete);
+  const status = document.createElement("p");
+  status.className = "status";
+  status.textContent = copy.sending;
+  section.append(status);
+  const durationSeconds = Math.max(
+    1,
+    Math.round((Date.now() - startedAt) / 1000),
+  );
+  const body = JSON.stringify({
+    attemptId,
+    nickname,
+    answers,
+    durationSeconds,
+  });
+  const submit = async () => {
+    status.textContent = copy.sending;
+    status.className = "status";
+    try {
+      const result = await request(
+        `/api/public/assignments/${publicId}/attempts`,
+        { method: "POST", body },
+      );
+      saveState({ attemptId, nickname, result });
+      trackEvent("assignment_completed", {
+        mode: assignment.mode,
+        word_count: assignment.words.length,
+        accuracy_range:
+          result.accuracy < 50
+            ? "0-49"
+            : result.accuracy < 75
+              ? "50-74"
+              : result.accuracy < 90
+                ? "75-89"
+                : "90-100",
+        duration_range:
+          durationSeconds < 60
+            ? "<1m"
+            : durationSeconds < 180
+              ? "1-3m"
+              : durationSeconds < 600
+                ? "3-10m"
+                : "10m+",
+      });
+      renderResult(result);
+    } catch (error) {
+      status.textContent = error.network ? copy.submitFailed : error.message;
+      status.className = "status error";
+      let retry = section.querySelector("button");
+      if (!retry) {
+        retry = document.createElement("button");
+        retry.type = "button";
+        retry.textContent = copy.retrySubmit;
+        retry.addEventListener("click", submit);
+        section.append(retry);
+      }
+    }
+  };
+  await submit();
+}
+
+function renderResult(result) {
+  const section = card(copy.yourResult);
+  const saved = document.createElement("p");
+  saved.className = "status success";
+  saved.textContent = copy.resultSaved;
+  const accuracy = document.createElement("p");
+  const strong = document.createElement("span");
+  strong.className = "stat-value";
+  strong.textContent = `${result.accuracy}%`;
+  accuracy.append(strong, document.createTextNode(copy.accuracy));
+  const counts = document.createElement("p");
+  counts.textContent = m("resultCorrect", {
+    correct: result.correct_count,
+    incorrect: result.incorrect_count,
+  });
+  const missed = document.createElement("p");
+  missed.textContent = result.missedWords.length
+    ? m("resultMissed", { words: result.missedWords.join(", ") })
+    : copy.noMisses;
+  const again = document.createElement("button");
+  again.type = "button";
+  again.className = "button-secondary";
+  again.textContent = copy.retry;
+  again.addEventListener("click", () => {
+    try {
+      sessionStorage.removeItem(storageKey);
+    } catch {}
+    nickname = result.nickname || nickname;
+    renderIntro();
+  });
+  section.append(saved, accuracy, counts, missed, again);
+}
+
+async function init() {
+  root.textContent = copy.assignmentLoading;
+  try {
+    assignment = await request(`/api/public/assignments/${publicId}`);
+    trackEvent("assignment_opened", {
+      mode: assignment.mode,
+      word_count: assignment.words.length,
+    });
+    const saved = readSaved();
+    if (saved?.result) {
+      nickname = saved.nickname || "";
+      renderResult(saved.result);
+      return;
+    }
+    if (saved?.nickname) nickname = saved.nickname;
+    renderIntro();
+  } catch (error) {
+    const section = card(error.message);
+    const retry = document.createElement("button");
+    retry.type = "button";
+    retry.textContent = copy.retry;
+    retry.addEventListener("click", init);
+    section.append(retry);
+  }
+}
+
+init();

@@ -1,7 +1,40 @@
 {
   "name": "myspellinggame",
+  "main": "src/worker/index.ts",
   "compatibility_date": "2026-06-26",
+  "compatibility_flags": ["nodejs_compat"],
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*", "/teacher", "/teacher/*", "/a/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "myspellinggame-prod",
+      "database_id": "eaa40b29-76da-4639-874f-3672271c26c2",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "CREATE_LIMITER",
+      "namespace_id": "1001",
+      "simple": {
+        "limit": 20,
+        "period": 60
+      }
+    },
+    {
+      "name": "SUBMIT_LIMITER",
+      "namespace_id": "1002",
+      "simple": {
+        "limit": 60,
+        "period": 60
+      }
+    }
+  ],
+  "triggers": {
+    "crons": ["17 3 * * *"]
   }
 }

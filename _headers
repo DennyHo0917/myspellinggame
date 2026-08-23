@@ -1,2 +1,11 @@
 /dist/*
   X-Robots-Tag: noindex, nofollow, noarchive
+
+/teacher
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/teacher/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/a/*
+  X-Robots-Tag: noindex, nofollow, noarchive

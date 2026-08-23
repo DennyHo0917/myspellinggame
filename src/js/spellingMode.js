@@ -231,6 +231,16 @@ export async function copyPracticeLink() {
   track('practice_link_copied', { word_count: words.length, mode: selectedMode(), locale: pageLocale() });
 }
 
+export function openTeacherAssignment() {
+  try {
+    sessionStorage.setItem('mySpellingTeacherDraftWords', currentWords().join('\n'));
+    sessionStorage.setItem('mySpellingTeacherDraftMode', selectedMode());
+  } catch (_) {
+    // The teacher form still works when browser storage is unavailable.
+  }
+  window.location.href = `/teacher/assignments/new?lang=${encodeURIComponent(pageLocale())}`;
+}
+
 if (typeof window !== 'undefined') {
   const api = {
     initSpellingMode,
@@ -244,6 +254,7 @@ if (typeof window !== 'undefined') {
     renderSummary,
     replayMissedWords,
     copyPracticeLink,
+    openTeacherAssignment,
   };
   window.spellingMode = api;
   Object.assign(window, api);

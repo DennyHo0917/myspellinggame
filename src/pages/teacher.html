@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="strict-origin" />
+    <title>My Spelling Game</title>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="stylesheet" href="/src/css/product.css" />
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-VYF1V40KVS"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-VYF1V40KVS", {
+        page_location: window.location.origin + "/teacher",
+        page_path: "/teacher",
+      });
+    </script>
+    <script type="module" src="/src/js/analytics.mjs"></script>
+  </head>
+  <body class="product-page">
+    <div id="product-app" aria-live="polite"></div>
+    <script type="module" src="/src/js/teacherApp.mjs"></script>
+  </body>
+</html>

@@ -58,6 +58,7 @@ const pages = {
       ready: '8 palabras listas',
       sample: 'Lista de ejemplo',
       copy: 'Copiar enlace de práctica',
+      assign: 'Asignar y ver resultados',
       start: 'Empezar práctica',
       complete: 'Práctica terminada',
       finalScore: 'Puntos finales',
@@ -78,6 +79,7 @@ const pages = {
       local: [
         'Tu lista de palabras y tus preferencias se guardan localmente en este navegador.',
         'Los enlaces nuevos guardan la lista en el fragmento de la URL, que el navegador procesa sin enviarlo al servidor.',
+        'Las tareas que un docente publica de forma explícita y sus resultados se guardan en Cloudflare D1 durante 30 días en Gratis o 365 días en Pro. No recopilamos email, IP ni User-Agent del estudiante.',
         'Puedes borrar estos datos desde el navegador o desde este panel.',
       ],
       analyticsTitle: 'Analítica',
@@ -177,6 +179,7 @@ const pages = {
       ready: '8 palavras prontas',
       sample: 'Lista de exemplo',
       copy: 'Copiar link de prática',
+      assign: 'Criar tarefa e ver resultados',
       start: 'Começar prática',
       complete: 'Prática concluída',
       finalScore: 'Pontuação final',
@@ -197,6 +200,7 @@ const pages = {
       local: [
         'Sua lista de palavras e preferências ficam salvas neste navegador.',
         'Os links novos guardam a lista no fragmento da URL, processado pelo navegador sem ser enviado ao servidor.',
+        'Tarefas publicadas explicitamente por professores e seus resultados ficam no Cloudflare D1 por 30 dias no Grátis ou 365 dias no Pro. Não coletamos email, IP ou User-Agent do aluno.',
         'Você pode apagar esses dados pelo navegador ou por este painel.',
       ],
       analyticsTitle: 'Analytics',
@@ -296,6 +300,7 @@ const pages = {
       ready: '8 mots prêts',
       sample: 'Liste exemple',
       copy: 'Copier le lien',
+      assign: 'Donner un devoir et voir les résultats',
       start: 'Commencer',
       complete: 'Entraînement terminé',
       finalScore: 'Score final',
@@ -316,6 +321,7 @@ const pages = {
       local: [
         'Votre liste de mots et vos préférences sont enregistrées localement dans ce navigateur.',
         'Les nouveaux liens placent la liste dans le fragment de l’URL, traité par le navigateur sans être envoyé au serveur.',
+        'Les devoirs publiés explicitement par un enseignant et leurs résultats sont conservés dans Cloudflare D1 pendant 30 jours en gratuit ou 365 jours avec Pro. Aucun email, IP ni User-Agent élève n’est collecté.',
         'Vous pouvez effacer ces données depuis le navigateur ou depuis ce panneau.',
       ],
       analyticsTitle: 'Mesure d’audience',
@@ -415,6 +421,7 @@ const pages = {
       ready: '8 kata siap',
       sample: 'Contoh daftar',
       copy: 'Salin link latihan',
+      assign: 'Buat tugas dan lihat hasil',
       start: 'Mulai latihan',
       complete: 'Latihan selesai',
       finalScore: 'Skor akhir',
@@ -435,6 +442,7 @@ const pages = {
       local: [
         'Daftar kata dan pilihan latihan disimpan di browser ini.',
         'Link baru menyimpan daftar di fragmen URL yang diproses browser tanpa dikirim ke server.',
+        'Tugas yang diterbitkan guru dan hasilnya disimpan di Cloudflare D1 selama 30 hari pada paket Gratis atau 365 hari pada Pro. Email, IP, dan User-Agent siswa tidak dikumpulkan.',
         'Kamu bisa menghapus data ini lewat browser atau panel ini.',
       ],
       analyticsTitle: 'Analytics',
@@ -534,6 +542,7 @@ const pages = {
       ready: '已准备 8 个单词',
       sample: '示例单词表',
       copy: '复制练习链接',
+      assign: '布置作业并查看结果',
       start: '开始练习',
       complete: '练习完成',
       finalScore: '最终得分',
@@ -554,6 +563,7 @@ const pages = {
       local: [
         '你的单词表和练习偏好会保存在当前浏览器里。',
         '新分享链接把单词表放在 URL 片段中，由浏览器处理，不会发送到服务器。',
+        '教师明确发布的作业及学生成绩会保存到 Cloudflare D1：免费版 30 天，Pro 版 365 天。我们不采集学生邮箱、IP 或 User-Agent。',
         '你可以在浏览器设置里清除，也可以用这里的清除按钮。',
       ],
       analyticsTitle: '访问分析',
@@ -689,7 +699,7 @@ function jsonLd(data) {
   return JSON.stringify(data, null, 2).replace(/</g, '\\u003c');
 }
 
-function alternateLinks(currentPath) {
+function alternateLinks(_currentPath) {
   return [
     ...alternates.map((alt) => `    <link rel="alternate" hreflang="${alt.hreflang}" href="${baseUrl}${alt.path}">`),
     `    <link rel="alternate" hreflang="x-default" href="${baseUrl}/">`,
@@ -893,6 +903,7 @@ ${game.chips.map((chip) => `                            <span>${chip}</span>`).j
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">${game.sample}</button>
                                 <button type="button" onclick="copyPracticeLink()">${game.copy}</button>
+                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">${game.assign}</button>
                             </div>
                         </div>
                         <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">${mode.start}</button>

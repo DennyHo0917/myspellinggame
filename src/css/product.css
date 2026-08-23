@@ -973,6 +973,30 @@ body.assignment-page {
   box-shadow: 0 12px 30px rgba(39, 62, 70, 0.08);
 }
 
+body.assignment-page {
+  padding: 0;
+}
+
+.assignment-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.assignment-content {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.assignment-content .assignment-player {
+  display: grid;
+  flex: 1;
+  align-items: center;
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+}
+
 @media (max-width: 700px) {
   body.product-page,
   body.assignment-page {
@@ -1001,6 +1025,10 @@ body.assignment-page {
 
   .pricing-card {
     min-height: 0;
+  }
+
+  .assignment-content .assignment-player {
+    padding-top: 1.25rem;
   }
 }
 

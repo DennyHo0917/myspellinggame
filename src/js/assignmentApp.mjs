@@ -1,5 +1,6 @@
 import { trackEvent } from "./analytics.mjs";
 import {
+  PRODUCT_LOCALES,
   productPagePath,
   productLocale,
   productMessage,
@@ -43,9 +44,68 @@ const ERROR_KEYS = {
 
 function shell() {
   root.replaceChildren();
+  const chrome = document.createElement("div");
+  chrome.className = "product-shell assignment-shell";
+  const nav = document.createElement("nav");
+  nav.className = "product-nav";
+
+  const brand = document.createElement("a");
+  brand.className = "product-brand";
+  brand.href = productPagePath("", locale);
+  brand.innerHTML = `<img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span>${copy.brand}</span>`;
+
+  const center = document.createElement("div");
+  center.className = "product-nav-center";
+  for (const [href, text] of [
+    [productPagePath("", locale), copy.home],
+    [productPagePath("pricing", locale), copy.pricing],
+  ]) {
+    const link = document.createElement("a");
+    link.className = "product-nav-link";
+    link.href = href;
+    link.textContent = text;
+    center.append(link);
+  }
+
+  const actions = document.createElement("div");
+  actions.className = "product-nav-actions";
+  const language = document.createElement("details");
+  language.className = "language-switcher";
+  const summary = document.createElement("summary");
+  summary.className = "lang-btn";
+  summary.setAttribute("aria-label", copy.language);
+  summary.textContent = copy.language;
+  const menu = document.createElement("div");
+  menu.className = "lang-menu";
+  for (const [value, label] of PRODUCT_LOCALES) {
+    const link = document.createElement("a");
+    const url = new URL(location.href);
+    url.searchParams.set("lang", value);
+    link.className = "lang-option";
+    link.href = url.toString();
+    link.hreflang =
+      value === "pt-BR" ? "pt-BR" : value === "zh" ? "zh-CN" : value;
+    link.textContent = label;
+    if (value === locale) link.setAttribute("aria-current", "page");
+    link.addEventListener("click", () => {
+      try {
+        localStorage.setItem("mySpellingGamePreferredLocale", value);
+      } catch {}
+    });
+    menu.append(link);
+  }
+  language.append(summary, menu);
+  actions.append(language);
+  nav.append(brand, center, actions);
+
+  const content = document.createElement("div");
+  content.className = "assignment-content";
+  chrome.append(nav, content);
+  root.append(chrome);
+
   const wrapper = document.createElement("main");
   wrapper.className = "assignment-player";
-  root.append(wrapper);
+  content.append(wrapper);
   return wrapper;
 }
 
@@ -53,14 +113,10 @@ function card(titleText) {
   const main = shell();
   const section = document.createElement("section");
   section.className = "product-card";
-  const brand = document.createElement("a");
-  brand.className = "product-brand";
-  brand.href = productPagePath("", locale);
-  brand.innerHTML = `<img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span>${copy.brand}</span>`;
   const title = document.createElement("h1");
   title.className = "assignment-title";
   title.textContent = titleText;
-  section.append(brand, title);
+  section.append(title);
   main.append(section);
   return section;
 }

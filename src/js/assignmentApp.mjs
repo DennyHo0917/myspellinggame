@@ -44,31 +44,15 @@ const ERROR_KEYS = {
 
 function shell() {
   root.replaceChildren();
-  const chrome = document.createElement("div");
-  chrome.className = "product-shell assignment-shell";
-  const nav = document.createElement("nav");
-  nav.className = "product-nav";
+  const nav = document.createElement("header");
+  nav.className = "top-right-nav";
 
   const brand = document.createElement("a");
-  brand.className = "product-brand";
+  brand.className = "brand-link";
   brand.href = productPagePath("", locale);
-  brand.innerHTML = `<img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span>${copy.brand}</span>`;
+  brand.setAttribute("aria-label", `${copy.brand} home`);
+  brand.innerHTML = `<img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span class="brand-name">${copy.brand}</span>`;
 
-  const center = document.createElement("div");
-  center.className = "product-nav-center";
-  for (const [href, text] of [
-    [productPagePath("", locale), copy.home],
-    [productPagePath("pricing", locale), copy.pricing],
-  ]) {
-    const link = document.createElement("a");
-    link.className = "product-nav-link";
-    link.href = href;
-    link.textContent = text;
-    center.append(link);
-  }
-
-  const actions = document.createElement("div");
-  actions.className = "product-nav-actions";
   const language = document.createElement("details");
   language.className = "language-switcher";
   const summary = document.createElement("summary");
@@ -95,17 +79,16 @@ function shell() {
     menu.append(link);
   }
   language.append(summary, menu);
-  actions.append(language);
-  nav.append(brand, center, actions);
-
-  const content = document.createElement("div");
-  content.className = "assignment-content";
-  chrome.append(nav, content);
-  root.append(chrome);
+  const teacher = document.createElement("a");
+  teacher.className = "teacher-nav-link";
+  teacher.href = `/teacher?lang=${encodeURIComponent(locale)}`;
+  teacher.textContent = copy.backToDashboard;
+  nav.append(brand, language, teacher);
+  root.append(nav);
 
   const wrapper = document.createElement("main");
   wrapper.className = "assignment-player";
-  content.append(wrapper);
+  root.append(wrapper);
   return wrapper;
 }
 

@@ -222,13 +222,13 @@ async function renderDashboard(me) {
   const data = await api("/api/assignments");
   const main = shell();
   const card = document.createElement("section");
-  card.className = "product-card";
+  card.className = "product-card teacher-dashboard-card";
   const heading = document.createElement("h1");
   heading.textContent = copy.dashboardTitle;
   const greeting = document.createElement("p");
   greeting.textContent = m("greeting", { name: me.user.name });
   const plan = document.createElement("span");
-  plan.className = `badge ${me.plan === "pro" ? "pro" : ""}`;
+  plan.className = `badge teacher-plan-badge ${me.plan === "pro" ? "pro" : ""}`;
   plan.textContent = m("plan", { plan: me.plan === "pro" ? "Pro" : "Free" });
   const actions = document.createElement("div");
   actions.className = "actions";
@@ -411,10 +411,13 @@ async function renderDetail(me, id) {
   const linkLabel = document.createElement("h2");
   linkLabel.textContent = copy.studentLink;
   const studentUrl = `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`;
+  const linkPanel = document.createElement("div");
+  linkPanel.className = "assignment-student-link";
   const link = document.createElement("a");
   link.href = studentUrl;
   link.textContent = studentUrl;
   link.rel = "noreferrer";
+  linkPanel.append(link);
   const actions = document.createElement("div");
   actions.className = "actions";
   const copyButton = document.createElement("button");
@@ -459,7 +462,7 @@ async function renderDetail(me, id) {
     actions.append(exportLink);
   }
   actions.append(remove);
-  card.append(heading, badge, linkLabel, link, actions);
+  card.append(heading, badge, linkLabel, linkPanel, actions);
   main.append(card);
   const summary = document.createElement("section");
   summary.className = "product-card";

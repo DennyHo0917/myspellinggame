@@ -68,8 +68,8 @@ function nav() {
   element.className = "product-nav";
   element.innerHTML = `
     <a class="product-brand" href="/">${copy.brand}</a>
-    <a href="/">${copy.home}</a>
-    <a href="/pricing?lang=${encodeURIComponent(locale)}">${copy.pricing}</a>
+    <a class="product-nav-link" href="/">${copy.home}</a>
+    <a class="product-nav-link" href="/pricing?lang=${encodeURIComponent(locale)}">${copy.pricing}</a>
     <span class="product-nav-spacer"></span>
     <label><span class="muted">${copy.language}</span> <select id="product-language"></select></label>
     <button class="button-secondary" id="sign-out" type="button">${copy.signOut}</button>`;

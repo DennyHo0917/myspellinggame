@@ -91,6 +91,33 @@ a {
   font-weight: 800;
   font-size: 1.1rem;
 }
+.product-nav-link {
+  color: var(--brand-dark);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+}
+.product-nav-link:hover,
+.product-nav-link:focus-visible {
+  background: #e6efee;
+}
+.product-nav-languages {
+  color: var(--muted);
+}
+.product-nav-language {
+  color: var(--brand-dark);
+  text-decoration: none;
+  padding: 0.25rem 0.2rem;
+  border-radius: 6px;
+}
+.product-nav-language:hover,
+.product-nav-language:focus-visible {
+  background: #e6efee;
+}
+.product-nav-language[aria-current="page"] {
+  font-weight: 700;
+}
 .product-nav-spacer {
   flex: 1;
 }

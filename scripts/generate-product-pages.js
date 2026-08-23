@@ -221,7 +221,7 @@ function render(locale) {
   const languages = locales
     .map(
       (item) =>
-        `<a href="${pagePath(item)}" hreflang="${item.html}"${item.code === locale.code ? ' aria-current="page"' : ""}>${item.label}</a>`,
+        `<a class="product-nav-language" href="${pagePath(item)}" hreflang="${item.html}"${item.code === locale.code ? ' aria-current="page"' : ""}>${item.label}</a>`,
     )
     .join(" · ");
   return `<!doctype html>
@@ -243,7 +243,7 @@ function render(locale) {
 </head>
 <body class="product-page" data-product-locale="${locale.code}">
   <div class="product-shell">
-    <nav class="product-nav"><a class="product-brand" href="${locale.dir ? `/${locale.dir}/` : "/"}">My Spelling Game</a><a href="${locale.dir ? `/${locale.dir}/` : "/"}">${escape(c.practice)}</a><a href="/teacher?lang=${encodeURIComponent(locale.code)}">${escape(c.signIn)}</a><span class="product-nav-spacer"></span><span>${languages}</span></nav>
+    <nav class="product-nav"><a class="product-brand" href="${locale.dir ? `/${locale.dir}/` : "/"}">My Spelling Game</a><a class="product-nav-link" href="${locale.dir ? `/${locale.dir}/` : "/"}">${escape(c.practice)}</a><a class="product-nav-link" href="/teacher?lang=${encodeURIComponent(locale.code)}">${escape(c.signIn)}</a><span class="product-nav-spacer"></span><span class="product-nav-languages">${languages}</span></nav>
     <main class="product-main">
       <section class="product-card"><h1>${escape(c.heading)}</h1><p>${escape(c.intro)}</p><p class="notice">${escape(c.note)}</p></section>
       <div class="pricing-grid">

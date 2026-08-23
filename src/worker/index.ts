@@ -731,8 +731,14 @@ export async function handleRequest(
   if (url.pathname === "/api/me" && method === "GET") {
     const user = await requireTeacher(env, request, getSession);
     const plan = await getPlan(env.DB, user.id);
+    const subscription = await env.DB.prepare(
+      "SELECT billing_interval FROM subscriptions WHERE user_id = ?",
+    )
+      .bind(user.id)
+      .first<{ billing_interval: "month" | "year" | null }>();
     return json({
       user: { id: user.id, name: user.name, email: user.email },
+      billingInterval: subscription?.billing_interval || null,
       ...(await usage(env.DB, user.id, plan)),
     });
   }

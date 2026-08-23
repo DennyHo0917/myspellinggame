@@ -79,11 +79,11 @@ function shell() {
     menu.append(link);
   }
   language.append(summary, menu);
-  const teacher = document.createElement("a");
-  teacher.className = "teacher-nav-link";
-  teacher.href = `/teacher?lang=${encodeURIComponent(locale)}`;
-  teacher.textContent = copy.backToDashboard;
-  nav.append(brand, language, teacher);
+  const home = document.createElement("a");
+  home.className = "teacher-nav-link";
+  home.href = productPagePath("", locale);
+  home.textContent = copy.home;
+  nav.append(brand, language, home);
   root.append(nav);
 
   const wrapper = document.createElement("main");

@@ -78,6 +78,13 @@ test('teacher analytics omit student, assignment, and Stripe identifiers', () =>
     ...privateValues,
     billing_interval: 'year',
   }), { billing_interval: 'year' });
+  assert.deepEqual(sanitizeEventParams('purchase', {
+    ...privateValues,
+    billing_interval: 'year',
+    value: 49.99,
+    currency: 'USD',
+  }), { billing_interval: 'year', value: 49.99, currency: 'USD' });
+  assert.deepEqual(sanitizeEventParams('teacher_auth_completed', privateValues), {});
 });
 
 test('return visits are emitted at most once per session', () => {

@@ -41,11 +41,12 @@ test('sitemap contains each extensionless canonical exactly once with complete h
     tagContent(block, /<loc>([^<]+)<\/loc>/),
     tagContent(block, /<lastmod>([^<]+)<\/lastmod>/),
   ]));
-  assert.equal(byUrl.get('https://myspellinggame.com/'), '2026-08-14');
-  assert.equal(byUrl.get('https://myspellinggame.com/homeschool-spelling-practice'), '2026-08-14');
-  assert.equal(byUrl.get('https://myspellinggame.com/es/about'), '2026-08-14');
-  assert.equal(byUrl.get('https://myspellinggame.com/zh/contact'), '2026-08-14');
-  assert.equal(byUrl.get('https://myspellinggame.com/contact'), '2026-06-28');
+  assert.equal(byUrl.get('https://myspellinggame.com/'), '2026-08-23');
+  assert.equal(byUrl.get('https://myspellinggame.com/homeschool-spelling-practice'), '2026-08-23');
+  assert.equal(byUrl.get('https://myspellinggame.com/es/about'), '2026-08-23');
+  assert.equal(byUrl.get('https://myspellinggame.com/zh/contact'), '2026-08-23');
+  assert.equal(byUrl.get('https://myspellinggame.com/pricing'), '2026-08-23');
+  assert.equal(byUrl.get('https://myspellinggame.com/contact'), '2026-08-23');
   assert.equal(byUrl.get('https://myspellinggame.com/es/sight-word-typing-game'), '2026-06-28');
   assert.equal(byUrl.get('https://myspellinggame.com/sight-word-typing-game'), '2026-06-22');
 

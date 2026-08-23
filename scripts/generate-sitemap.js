@@ -6,16 +6,16 @@ const output = path.join(root, 'sitemap.xml');
 const publicDirs = ['', 'es', 'pt-br', 'fr', 'id', 'zh'];
 const baseUrl = 'https://myspellinggame.com';
 const baselineLastmod = '2026-06-28';
-const currentContentLastmod = '2026-08-14';
+const currentContentLastmod = '2026-08-23';
 
 const substantivePaths = new Set(['/homeschool-spelling-practice']);
 for (const dir of publicDirs) {
   const prefix = dir ? `/${dir}` : '';
   substantivePaths.add(prefix ? `${prefix}/` : '/');
-  for (const slug of ['about', 'privacy', 'faq']) {
+  for (const slug of ['about', 'privacy', 'faq', 'pricing']) {
     substantivePaths.add(`${prefix}/${slug}`);
   }
-  if (dir) substantivePaths.add(`${prefix}/contact`);
+  substantivePaths.add(`${prefix}/contact`);
 }
 
 function htmlFiles() {

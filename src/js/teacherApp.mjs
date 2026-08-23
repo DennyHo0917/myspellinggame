@@ -162,7 +162,7 @@ async function renderLogin() {
     status.className = "status error";
   }
   button.addEventListener("click", async () => {
-    trackEvent("teacher_signup_started");
+    trackEvent("teacher_auth_started");
     button.disabled = true;
     status.textContent = copy.loading;
     try {
@@ -602,9 +602,9 @@ async function init() {
     return;
   }
   try {
-    if (!sessionStorage.getItem("teacherSignupCompletedSent")) {
-      trackEvent("teacher_signup_completed");
-      sessionStorage.setItem("teacherSignupCompletedSent", "1");
+    if (!sessionStorage.getItem("teacherAuthCompletedSent")) {
+      trackEvent("teacher_auth_completed");
+      sessionStorage.setItem("teacherAuthCompletedSent", "1");
     }
   } catch {}
   try {
@@ -622,9 +622,16 @@ async function init() {
     }
   } catch {}
   const params = new URLSearchParams(location.search);
-  if (params.get("checkout") === "success") {
+  if (params.get("checkout") === "success" && me.plan === "pro") {
+    const billingInterval = me.billingInterval === "year" ? "year" : "month";
+    const value = billingInterval === "year" ? 49.99 : 5.99;
     trackEvent("subscription_started", {
-      billing_interval: params.get("interval") === "year" ? "year" : "month",
+      billing_interval: billingInterval,
+    });
+    trackEvent("purchase", {
+      billing_interval: billingInterval,
+      value,
+      currency: "USD",
     });
     history.replaceState({}, "", `/teacher?lang=${encodeURIComponent(locale)}`);
   }

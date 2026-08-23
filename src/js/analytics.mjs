@@ -9,8 +9,8 @@ const EVENT_PARAMS = {
   word_completed: ['mode', 'word_length', 'correct'],
   word_missed: ['mode', 'word_length', 'correct'],
   return_visit: ['days_since_last_visit', 'visit_count_range'],
-  teacher_signup_started: [],
-  teacher_signup_completed: [],
+  teacher_auth_started: [],
+  teacher_auth_completed: [],
   assignment_created: ['mode', 'word_count'],
   assignment_link_copied: ['mode', 'word_count'],
   assignment_opened: ['mode', 'word_count'],
@@ -19,6 +19,7 @@ const EVENT_PARAMS = {
   upgrade_viewed: [],
   checkout_started: ['billing_interval'],
   subscription_started: ['billing_interval'],
+  purchase: ['billing_interval', 'value', 'currency'],
 };
 
 export function cleanPageLocation(locationLike) {

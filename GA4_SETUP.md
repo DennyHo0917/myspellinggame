@@ -14,8 +14,9 @@ In the GA4 property, complete these manual steps:
    - `assignment_created`
    - `assignment_completed`
    - `subscription_started`
+   - `purchase`
 3. After traffic arrives, verify event parameters in DebugView or Realtime. Do not mark `word_completed` or `word_missed` as Key Events; they are per-word diagnostic events.
 
 Key Event configuration is an administrative GA4 setting and cannot be completed by static front-end code.
 
-Teacher analytics also include `teacher_signup_started`, `teacher_signup_completed`, `assignment_link_copied`, `assignment_opened`, `upgrade_viewed`, and `checkout_started`. The shared analytics helper accepts only aggregate allowlisted parameters. Never add student nicknames, words, answers, assignment IDs, URL fragments, or Stripe IDs to GA4.
+Teacher analytics also include `teacher_auth_started`, `teacher_auth_completed`, `assignment_link_copied`, `assignment_opened`, `upgrade_viewed`, and `checkout_started`. `subscription_started` and `purchase` are emitted only after `/api/me` confirms the signed-in teacher has an active Pro plan; the URL return alone is not treated as payment confirmation. `purchase.value` uses the displayed USD plan price ($5.99 monthly or $49.99 yearly), not net revenue after taxes, discounts, or refunds. The shared analytics helper accepts only aggregate allowlisted parameters. Never add student nicknames, words, answers, assignment IDs, URL fragments, or Stripe IDs to GA4.

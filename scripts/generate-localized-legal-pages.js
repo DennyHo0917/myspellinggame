@@ -879,10 +879,17 @@ ${
         name: data.title,
         url: canonical,
         inLanguage: loc.htmlLang,
-        about: {
-          "@type": "VideoGame",
-          name: "My Spelling Game",
-        },
+         about: {
+           "@type": "VideoGame",
+           name: "My Spelling Game",
+           publisher: {
+             "@type": "Organization",
+             "@id": `${baseUrl}/#organization`,
+             name: "My Spelling Game",
+             url: baseUrl,
+             logo: `${baseUrl}/images/icon-512.png`,
+           },
+         },
       },
       null,
       6,

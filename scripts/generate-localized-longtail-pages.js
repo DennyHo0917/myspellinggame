@@ -2429,13 +2429,21 @@ function schemaScripts(lang, slug, page) {
     inLanguage: lang.htmlLang,
     isPartOf: {
       "@type": "WebSite",
+      "@id": `${baseUrl}/#website`,
       name: "My Spelling Game",
       url: `${baseUrl}/`,
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": `${baseUrl}/#organization`,
+      name: "My Spelling Game",
+      url: baseUrl,
+      logo: `${baseUrl}/images/icon-512.png`,
     },
   };
   if (lang.code === "en") {
     webpage.dateModified = {
-      "homeschool-spelling-practice": "2026-08-14",
+      "homeschool-spelling-practice": "2026-08-23",
       "sight-word-typing-game": "2026-06-22",
       "vocabulary-typing-game": "2026-06-22",
     }[slug];

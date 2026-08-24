@@ -82,6 +82,17 @@ test('all public pages use clean GA configuration and final URL signals', () => 
   }
 });
 
+test('all public pages keep the My Spelling Game brand untranslated', () => {
+  const forbidden = /My (?:ortografía|orthographe|ortografia|ejaan|拼写) Game/i;
+  for (const file of publicHtmlFiles()) {
+    const html = fs.readFileSync(file, 'utf8');
+    assert.doesNotMatch(html, forbidden, file);
+    for (const match of html.matchAll(/my\s+([^<>"\n]{1,30}?)\s+game/gi)) {
+      assert.equal(match[0], 'My Spelling Game', file);
+    }
+  }
+});
+
 test('localized legal pages keep SEO links inside the active locale', () => {
   for (const locale of locales.filter(Boolean)) {
     for (const page of ['about.html', 'contact.html', 'privacy.html']) {

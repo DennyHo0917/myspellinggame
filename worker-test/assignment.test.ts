@@ -5,7 +5,7 @@ import type Stripe from "stripe";
 
 import { HttpError, monthStart } from "../src/worker/domain";
 import { handleRequest, type Env } from "../src/worker/index";
-import { processStripeEvent } from "../src/worker/stripe";
+import { createCheckout, processStripeEvent } from "../src/worker/stripe";
 
 type TestBindings = {
   DB: D1Database;
@@ -26,7 +26,7 @@ const teacherB: Teacher = {
   email: "b@example.test",
 };
 
-function testEnv(): Env {
+function testEnv(overrides: Partial<Env> = {}): Env {
   const allow = { limit: async () => ({ success: true }) };
   return {
     DB: bindings.DB,
@@ -41,6 +41,7 @@ function testEnv(): Env {
     STRIPE_WEBHOOK_SECRET: "whsec_placeholder",
     STRIPE_PRICE_MONTHLY: "price_monthly",
     STRIPE_PRICE_YEARLY: "price_yearly",
+    ...overrides,
   };
 }
 
@@ -66,9 +67,10 @@ async function call(
   path: string,
   init: RequestInit = {},
   teacher: Teacher | null = teacherA,
+  env: Env = testEnv(),
 ) {
   try {
-    return await handleRequest(request(path, init), testEnv(), {
+    return await handleRequest(request(path, init), env, {
       getSession: sessionFor(teacher),
     });
   } catch (error) {
@@ -125,7 +127,12 @@ async function publicWords(publicId: string) {
 async function submit(
   publicId: string,
   words: Array<{ id: string; word: string }>,
-  options: { attemptId?: string; nickname?: string; answers?: string[] } = {},
+  options: {
+    attemptId?: string;
+    nickname?: string;
+    answers?: string[];
+    completed?: boolean;
+  } = {},
 ) {
   return call(
     `/api/public/assignments/${publicId}/attempts`,
@@ -141,6 +148,7 @@ async function submit(
         })),
         score: 999,
         accuracy: 100,
+        completed: options.completed,
       }),
     },
     null,
@@ -201,6 +209,46 @@ describe("teacher authorization and quotas", () => {
       "monthly_submission_limit",
     );
   });
+
+  it("describes student_limit as the teacher account nickname quota", async () => {
+    const created = await createAssignment();
+    const id = String(created.body.id);
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    const now = new Date().toISOString();
+    await bindings.DB.batch(
+      Array.from({ length: 30 }, (_, index) =>
+        bindings.DB.prepare(
+          `INSERT INTO attempts (
+             id, assignment_id, nickname, nickname_key, attempt_number, score,
+             correct_count, incorrect_count, accuracy, duration_seconds,
+             completed_at, retention_expires_at, status
+           ) VALUES (?, ?, ?, ?, NULL, 0, 0, 0, 0, 1, ?, ?, 'incomplete')`,
+        ).bind(
+          crypto.randomUUID(),
+          id,
+          `Student ${index}`,
+          `student ${index}`,
+          now,
+          new Date(Date.now() + 86_400_000).toISOString(),
+        ),
+      ),
+    );
+
+    const response = await submit(publicId, assignment.words, {
+      nickname: "Student 31",
+      completed: false,
+    });
+    const body = (await response.json()) as {
+      error: string;
+      message: string;
+    };
+    expect(response.status).toBe(403);
+    expect(body.error).toBe("student_limit");
+    expect(body.message).toContain(
+      "teacher account’s saved distinct student nickname limit",
+    );
+  });
 });
 
 describe("assignment attempts", () => {
@@ -232,6 +280,91 @@ describe("assignment attempts", () => {
       attempts: Array<{ status: string }>;
     };
     expect(body.attempts[0].status).toBe("incomplete");
+  });
+
+  it("does not count incomplete records toward attempt numbers or limits", async () => {
+    const created = await createAssignment(teacherA, { maxAttempts: 1 });
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+
+    expect(
+      (await submit(publicId, assignment.words, { completed: false })).status,
+    ).toBe(201);
+    const completed = await submit(publicId, assignment.words);
+    expect(completed.status).toBe(201);
+    expect(
+      ((await completed.json()) as { attempt_number: number }).attempt_number,
+    ).toBe(1);
+    expect((await submit(publicId, assignment.words)).status).toBe(403);
+
+    const detail = (await (
+      await call(`/api/assignments/${created.body.id}`)
+    ).json()) as {
+      attempts: Array<{ status: string; attempt_number: number | null }>;
+      summary: { attempts: number };
+    };
+    expect(detail.summary.attempts).toBe(1);
+    expect(detail.attempts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ status: "incomplete", attempt_number: null }),
+        expect.objectContaining({ status: "completed", attempt_number: 1 }),
+      ]),
+    );
+    expect(
+      await bindings.DB.prepare(
+        "SELECT COUNT(*) AS count FROM monthly_submission_usage",
+      ).first("count"),
+    ).toBe(1);
+  });
+
+  it("uses MAX attempt number after a teacher deletes a non-final result", async () => {
+    const created = await createAssignment(teacherA, { maxAttempts: 2 });
+    const id = String(created.body.id);
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    const first = (await (await submit(publicId, assignment.words)).json()) as {
+      id: string;
+      attempt_number: number;
+    };
+    const second = (await (
+      await submit(publicId, assignment.words)
+    ).json()) as { attempt_number: number };
+
+    expect([first.attempt_number, second.attempt_number]).toEqual([1, 2]);
+    expect(
+      (
+        await call(`/api/assignments/${id}/attempts/${first.id}`, {
+          method: "DELETE",
+        })
+      ).status,
+    ).toBe(204);
+    const third = await submit(publicId, assignment.words);
+    expect(third.status).toBe(201);
+    expect(
+      ((await third.json()) as { attempt_number: number }).attempt_number,
+    ).toBe(3);
+  });
+
+  it("rate-limits only by the assignment public ID", async () => {
+    const created = await createAssignment();
+    const publicId = String(created.body.publicId);
+    const keys: string[] = [];
+    const response = await call(
+      `/api/public/assignments/${publicId}/attempts`,
+      { method: "POST", body: "{}" },
+      null,
+      testEnv({
+        SUBMIT_LIMITER: {
+          limit: async ({ key }) => {
+            keys.push(key);
+            return { success: false };
+          },
+        },
+      }),
+    );
+
+    expect(response.status).toBe(429);
+    expect(keys).toEqual([`submit:${publicId}`]);
   });
 
   it.each(["dictation", "typing"] as const)(
@@ -402,6 +535,34 @@ describe("assignment attempts", () => {
     };
     expect(proDetail.missedWordStats).toEqual([{ word: "banana", misses: 1 }]);
   });
+});
+
+describe("Stripe checkout", () => {
+  it.each([
+    ["pro", "inactive"],
+    ["free", "active"],
+    ["free", "trialing"],
+  ] as const)(
+    "rejects another Checkout Session for a %s/%s subscription",
+    async (plan, status) => {
+      await bindings.DB.prepare(
+        `INSERT INTO subscriptions (user_id, plan, status, updated_at)
+         VALUES (?, ?, ?, ?)`,
+      )
+        .bind(teacherA.id, plan, status, new Date().toISOString())
+        .run();
+
+      await expect(
+        createCheckout(
+          testEnv(),
+          bindings.DB,
+          teacherA,
+          "month",
+          "https://example.test",
+        ),
+      ).rejects.toMatchObject({ status: 409, code: "already_subscribed" });
+    },
+  );
 });
 
 describe("Stripe event processing", () => {

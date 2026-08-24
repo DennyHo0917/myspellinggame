@@ -67,6 +67,7 @@ const PACKS = {
     duration: "Time",
     completed: "Completed",
     deleteResult: "Delete result",
+    deleteResultFailed: "The result could not be deleted. Try again.",
     commonMisses: "Most commonly missed words",
     proStatsLocked:
       "Upgrade to Pro for class-wide missed-word statistics and CSV export.",
@@ -105,6 +106,11 @@ const PACKS = {
     assignmentExpired: "This assignment has expired.",
     attemptLimit: "This nickname has used all allowed attempts.",
     teacherLimit: "The teacher’s submission limit has been reached.",
+    studentLimit:
+      "This teacher account has reached its saved student nickname limit.",
+    attemptConflict: "This attempt could not be saved. Try again.",
+    alreadySubscribed:
+      "You already have an active subscription. Manage it from the teacher dashboard.",
     invalidNickname:
       "Enter a nickname or classroom number with 2–32 characters.",
     activeLimit: "Your active assignment limit has been reached.",
@@ -187,6 +193,7 @@ const PACKS = {
     duration: "Tiempo",
     completed: "Completada",
     deleteResult: "Eliminar resultado",
+    deleteResultFailed: "No se pudo eliminar el resultado. Inténtalo de nuevo.",
     commonMisses: "Palabras con más errores",
     proStatsLocked:
       "Pasa a Pro para ver estadísticas de errores de toda la clase y exportar CSV.",
@@ -225,6 +232,11 @@ const PACKS = {
     assignmentExpired: "Esta tarea ha caducado.",
     attemptLimit: "Este apodo ya utilizó todos los intentos.",
     teacherLimit: "Se alcanzó el límite de entregas del docente.",
+    studentLimit:
+      "Esta cuenta docente alcanzó el límite de apodos de estudiantes guardados.",
+    attemptConflict: "No se pudo guardar este intento. Inténtalo de nuevo.",
+    alreadySubscribed:
+      "Ya tienes una suscripción activa. Adminístrala desde el panel docente.",
     invalidNickname:
       "Introduce un apodo o número de clase de 2 a 32 caracteres.",
     activeLimit: "Has alcanzado el límite de tareas activas.",
@@ -307,6 +319,8 @@ const PACKS = {
     duration: "Tempo",
     completed: "Conclusão",
     deleteResult: "Excluir resultado",
+    deleteResultFailed:
+      "Não foi possível excluir o resultado. Tente novamente.",
     commonMisses: "Palavras mais erradas",
     proStatsLocked: "Assine o Pro para ver erros da turma e exportar CSV.",
     copied: "Link do aluno copiado.",
@@ -344,6 +358,11 @@ const PACKS = {
     assignmentExpired: "Esta tarefa expirou.",
     attemptLimit: "Este apelido já usou todas as tentativas.",
     teacherLimit: "O limite de envios do professor foi atingido.",
+    studentLimit:
+      "Esta conta de professor atingiu o limite de apelidos de alunos salvos.",
+    attemptConflict: "Não foi possível salvar esta tentativa. Tente novamente.",
+    alreadySubscribed:
+      "Você já tem uma assinatura ativa. Gerencie-a no painel do professor.",
     invalidNickname: "Use um apelido ou número de sala com 2 a 32 caracteres.",
     activeLimit: "Você atingiu o limite de tarefas ativas.",
     billingUnavailable:
@@ -426,6 +445,8 @@ const PACKS = {
     duration: "Temps",
     completed: "Terminé",
     deleteResult: "Supprimer le résultat",
+    deleteResultFailed:
+      "Impossible de supprimer le résultat. Veuillez réessayer.",
     commonMisses: "Mots les plus souvent manqués",
     proStatsLocked:
       "Passez à Pro pour les statistiques de classe et l’export CSV.",
@@ -464,6 +485,11 @@ const PACKS = {
     assignmentExpired: "Ce devoir a expiré.",
     attemptLimit: "Ce pseudonyme a utilisé tous ses essais.",
     teacherLimit: "La limite de remises de l’enseignant est atteinte.",
+    studentLimit:
+      "Ce compte enseignant a atteint la limite de pseudonymes d’élèves enregistrés.",
+    attemptConflict: "Cet essai n’a pas pu être enregistré. Réessayez.",
+    alreadySubscribed:
+      "Vous avez déjà un abonnement actif. Gérez-le depuis l’espace enseignant.",
     invalidNickname: "Saisissez un pseudonyme ou numéro de 2 à 32 caractères.",
     activeLimit: "Votre limite de devoirs actifs est atteinte.",
     billingUnavailable: "La facturation n’est pas encore configurée ici.",
@@ -543,6 +569,7 @@ const PACKS = {
     duration: "Waktu",
     completed: "Selesai",
     deleteResult: "Hapus hasil",
+    deleteResultFailed: "Hasil tidak dapat dihapus. Coba lagi.",
     commonMisses: "Kata yang paling sering salah",
     proStatsLocked:
       "Naik ke Pro untuk statistik kesalahan kelas dan ekspor CSV.",
@@ -580,6 +607,11 @@ const PACKS = {
     assignmentExpired: "Tugas ini sudah kedaluwarsa.",
     attemptLimit: "Nama panggilan ini sudah memakai semua percobaan.",
     teacherLimit: "Batas kiriman guru sudah tercapai.",
+    studentLimit:
+      "Akun guru ini telah mencapai batas nama panggilan siswa yang tersimpan.",
+    attemptConflict: "Percobaan ini belum dapat disimpan. Coba lagi.",
+    alreadySubscribed:
+      "Kamu sudah memiliki langganan aktif. Kelola dari ruang kerja guru.",
     invalidNickname:
       "Masukkan nama panggilan atau nomor kelas sepanjang 2–32 karakter.",
     activeLimit: "Batas tugas aktif sudah tercapai.",
@@ -658,6 +690,7 @@ const PACKS = {
     duration: "用时",
     completed: "完成时间",
     deleteResult: "删除结果",
+    deleteResultFailed: "删除结果失败，请重试。",
     commonMisses: "全班最容易拼错的单词",
     proStatsLocked: "升级 Pro 后可查看全班错词统计并导出 CSV。",
     copied: "学生链接已复制。",
@@ -694,6 +727,9 @@ const PACKS = {
     assignmentExpired: "这份作业已过期。",
     attemptLimit: "这个昵称的尝试次数已经用完。",
     teacherLimit: "老师本月的成绩提交额度已用完。",
+    studentLimit: "该教师账号保存的不同学生昵称数量已达上限。",
+    attemptConflict: "本次尝试暂时无法保存，请重试。",
+    alreadySubscribed: "你已有生效中的订阅，请在教师工作台中管理。",
     invalidNickname: "请输入 2～32 个字符的昵称或课堂编号。",
     activeLimit: "活跃作业额度已用完。",
     billingUnavailable: "当前环境尚未配置付费功能。",

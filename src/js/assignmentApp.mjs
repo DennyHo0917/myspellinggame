@@ -33,7 +33,8 @@ const ERROR_KEYS = {
   assignment_expired: "assignmentExpired",
   attempt_limit: "attemptLimit",
   monthly_submission_limit: "teacherLimit",
-  student_limit: "teacherLimit",
+  student_limit: "studentLimit",
+  attempt_conflict: "attemptConflict",
   invalid_nickname: "invalidNickname",
   personal_info_not_allowed: "invalidNickname",
   invalid_answers: "invalidSubmission",
@@ -302,6 +303,7 @@ async function leaveAssignment() {
     attemptId = "";
     answers = [];
     index = 0;
+    leaving = false;
     renderIntro();
   } catch (error) {
     if (button) button.disabled = false;

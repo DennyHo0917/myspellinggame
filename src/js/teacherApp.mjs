@@ -37,6 +37,7 @@ const ERROR_KEYS = {
   invalid_nickname: "invalidNickname",
   active_assignment_limit: "activeLimit",
   billing_not_configured: "billingUnavailable",
+  already_subscribed: "alreadySubscribed",
   invalid_title: "invalidTitle",
   invalid_words: "invalidWords",
   invalid_deadline: "invalidDeadline",
@@ -63,7 +64,7 @@ async function api(path, options = {}) {
   return data;
 }
 
-function nav({ signedIn = true } = {}) {
+function nav({ signedIn = true, showPricing = true } = {}) {
   const element = document.createElement("nav");
   element.className = "product-nav";
   const homeHref = productPagePath("", locale);
@@ -76,7 +77,7 @@ function nav({ signedIn = true } = {}) {
     <a class="product-brand" href="${homeHref}"><img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span>${copy.brand}</span></a>
     <div class="product-nav-center">
       <a class="product-nav-link" href="${homeHref}">${copy.home}</a>
-      <a class="product-nav-link" href="${pricingHref}">${copy.pricing}</a>
+      ${showPricing ? `<a class="product-nav-link" href="${pricingHref}">${copy.pricing}</a>` : ""}
     </div>
     <div class="product-nav-actions">
       <details class="language-switcher"><summary class="lang-btn" aria-label="${copy.language}">${copy.language}</summary><div class="lang-menu">${languageOptions}</div></details>
@@ -93,11 +94,11 @@ function nav({ signedIn = true } = {}) {
   return element;
 }
 
-function shell() {
+function shell({ showPricing = true } = {}) {
   root.replaceChildren();
   const wrapper = document.createElement("div");
   wrapper.className = "product-shell";
-  wrapper.append(nav());
+  wrapper.append(nav({ showPricing }));
   const main = document.createElement("main");
   main.className = "product-main teacher-main";
   wrapper.append(main);
@@ -220,7 +221,7 @@ function usageCards(data) {
 
 async function renderDashboard(me) {
   const data = await api("/api/assignments");
-  const main = shell();
+  const main = shell({ showPricing: me.plan !== "pro" });
   const card = document.createElement("section");
   card.className = "product-card teacher-dashboard-card";
   const heading = document.createElement("h1");
@@ -298,7 +299,7 @@ async function renderDashboard(me) {
     listCard.append(list);
   }
   main.append(listCard);
-  await appendPricing(main);
+  if (me.plan !== "pro") await appendPricing(main);
 }
 
 async function openPortal() {
@@ -534,7 +535,7 @@ async function renderDetail(me, id) {
       const row = document.createElement("tr");
       for (const value of [
         attempt.nickname,
-        attempt.attempt_number,
+        attempt.attempt_number ?? "—",
         attempt.status === "incomplete"
           ? copy.statusIncomplete
           : copy.statusCompleted,
@@ -554,10 +555,22 @@ async function renderDetail(me, id) {
       deleteButton.type = "button";
       deleteButton.textContent = copy.deleteResult;
       deleteButton.addEventListener("click", async () => {
-        await api(`/api/assignments/${id}/attempts/${attempt.id}`, {
-          method: "DELETE",
-        });
-        row.remove();
+        const deleteButtons = results.querySelectorAll("tbody button");
+        for (const button of deleteButtons) button.disabled = true;
+        results.querySelector(".delete-result-error")?.remove();
+        try {
+          await api(`/api/assignments/${id}/attempts/${attempt.id}`, {
+            method: "DELETE",
+          });
+          await renderDetail(me, id);
+        } catch {
+          for (const button of deleteButtons) button.disabled = false;
+          const notice = document.createElement("p");
+          notice.className = "status error delete-result-error";
+          notice.setAttribute("role", "alert");
+          notice.textContent = copy.deleteResultFailed;
+          results.append(notice);
+        }
       });
       actionCell.append(deleteButton);
       row.append(actionCell);

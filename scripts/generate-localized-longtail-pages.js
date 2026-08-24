@@ -255,7 +255,7 @@ const legacyTermTranslations = {
     [/homeschool/gi, "educación en casa"],
     [/no-login/gi, "sin cuenta"],
     [/login/gi, "inicio de sesión"],
-    [/spelling/gi, "ortografía"],
+    [/(?<!My )spelling(?! Game)/gi, "ortografía"],
     [/Advertisement/g, "Publicidad"],
   ],
   "pt-BR": [
@@ -265,7 +265,7 @@ const legacyTermTranslations = {
     [/homeschool/gi, "educação em casa"],
     [/no-login/gi, "sem conta"],
     [/login/gi, "conta"],
-    [/spelling/gi, "ortografia"],
+    [/(?<!My )spelling(?! Game)/gi, "ortografia"],
     [/Advertisement/g, "Anúncio"],
   ],
   fr: [
@@ -275,7 +275,7 @@ const legacyTermTranslations = {
     [/homeschool/gi, "école à la maison"],
     [/no-login/gi, "sans compte"],
     [/login/gi, "connexion"],
-    [/spelling/gi, "orthographe"],
+    [/(?<!My )spelling(?! Game)/gi, "orthographe"],
     [/Advertisement/g, "Publicité"],
   ],
   id: [
@@ -285,7 +285,7 @@ const legacyTermTranslations = {
     [/homeschool/gi, "belajar di rumah"],
     [/no-login/gi, "tanpa akun"],
     [/login/gi, "akun"],
-    [/spelling/gi, "ejaan"],
+    [/(?<!My )spelling(?! Game)/gi, "ejaan"],
     [/Advertisement/g, "Iklan"],
   ],
   zh: [
@@ -295,7 +295,7 @@ const legacyTermTranslations = {
     [/homeschool/gi, "家庭教育"],
     [/no-login/gi, "无需账号"],
     [/login/gi, "登录"],
-    [/spelling/gi, "拼写"],
+    [/(?<!My )spelling(?! Game)/gi, "拼写"],
     [/Advertisement/g, "广告"],
   ],
 };

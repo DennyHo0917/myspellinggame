@@ -20,6 +20,10 @@ The local D1 state is kept in `../.myspellinggame-wrangler-state` so Wrangler's 
 5. Apply migrations with `npm run db:migrate:remote` before deploying the Worker.
 6. After configuration, run `npm run build`, then deploy through the existing Cloudflare workflow. This repository does not deploy automatically.
 
+### Submission rate limiting
+
+Student submissions use an assignment-wide limit of 300 requests per minute. This allows a 150-student Pro class to submit together with room for retries while bounding abuse against a shared assignment link. The limiter key contains only the assignment public ID; My Spelling Game does not read or persist student IP addresses, User-Agent values, or additional personal information for rate limiting.
+
 ## Google OAuth
 
 Create a Google OAuth web client and configure:

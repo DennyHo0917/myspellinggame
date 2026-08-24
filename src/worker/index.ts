@@ -54,7 +54,7 @@ type AssignmentRow = {
 type AttemptDetailRow = {
   id: string;
   nickname: string;
-  attempt_number: number;
+  attempt_number: number | null;
   score: number;
   correct_count: number;
   incorrect_count: number;
@@ -206,7 +206,7 @@ async function listAssignments(db: D1Database, ownerUserId: string) {
     .prepare(
       `SELECT a.id, a.public_id, a.title, a.mode, a.status, a.max_attempts,
               a.created_at, a.expires_at,
-              COUNT(at.id) AS attempt_count,
+              COUNT(CASE WHEN at.status = 'completed' THEN 1 END) AS attempt_count,
               COUNT(DISTINCT at.nickname_key) AS student_count,
               COALESCE(ROUND(AVG(CASE WHEN at.status = 'completed' THEN at.accuracy END)), 0) AS average_accuracy
        FROM assignments a
@@ -249,7 +249,8 @@ async function assignmentDetail(
       .all<AttemptDetailRow>(),
     db
       .prepare(
-        `SELECT COUNT(*) AS attempts, COUNT(DISTINCT nickname_key) AS students,
+        `SELECT COUNT(CASE WHEN status = 'completed' THEN 1 END) AS attempts,
+                COUNT(DISTINCT nickname_key) AS students,
                 COALESCE(ROUND(AVG(CASE WHEN status = 'completed' THEN accuracy END)), 0) AS average_accuracy
          FROM attempts WHERE assignment_id = ? AND retention_expires_at > ?`,
       )
@@ -265,7 +266,8 @@ async function assignmentDetail(
            FROM attempt_items ai
            JOIN attempts at ON at.id = ai.attempt_id
            JOIN assignment_words aw ON aw.id = ai.word_id
-           WHERE at.assignment_id = ? AND at.retention_expires_at > ? AND ai.is_correct = 0
+           WHERE at.assignment_id = ? AND at.retention_expires_at > ?
+             AND at.status = 'completed' AND ai.is_correct = 0
            GROUP BY aw.id ORDER BY misses DESC, aw.position LIMIT 10`,
         )
         .bind(assignment.id, now)
@@ -458,7 +460,7 @@ async function loadAttemptResult(
 ) {
   const attempt = await db
     .prepare(
-      `SELECT at.id, at.nickname, at.score, at.correct_count, at.incorrect_count,
+      `SELECT at.id, at.nickname, at.attempt_number, at.score, at.correct_count, at.incorrect_count,
               at.accuracy, at.duration_seconds, at.completed_at, at.status
        FROM attempts at JOIN assignments a ON a.id = at.assignment_id
        WHERE at.id = ? AND a.public_id = ?`,
@@ -512,11 +514,16 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
            completed_at, retention_expires_at, status
          )
          SELECT ?, a.id, ?, ?,
-           (SELECT COUNT(*) + 1 FROM attempts x WHERE x.assignment_id = a.id AND x.nickname_key = ?),
+           CASE WHEN ? = 1 THEN
+             (SELECT COALESCE(MAX(x.attempt_number), 0) + 1 FROM attempts x
+              WHERE x.assignment_id = a.id AND x.nickname_key = ? AND x.status = 'completed')
+           END,
            ?, ?, ?, ?, ?, ?, ?, ?
          FROM assignments a
          WHERE a.public_id = ? AND a.status = 'published' AND a.expires_at > ?
-           AND (SELECT COUNT(*) FROM attempts x WHERE x.assignment_id = a.id AND x.nickname_key = ?) < a.max_attempts
+           AND (? = 0 OR (SELECT COUNT(*) FROM attempts x
+                          WHERE x.assignment_id = a.id AND x.nickname_key = ?
+                            AND x.status = 'completed') < a.max_attempts)
            AND (SELECT COUNT(*) FROM monthly_submission_usage mu
                 WHERE mu.user_id = a.owner_user_id AND mu.month_key = ?) < ?
            AND (
@@ -530,6 +537,7 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       attemptId,
       nickname,
       nicknameKey,
+      completed ? 1 : 0,
       nicknameKey,
       result.score,
       result.correctCount,
@@ -541,6 +549,7 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       completed ? "completed" : "incomplete",
       publicId,
       completedAt,
+      completed ? 1 : 0,
       nicknameKey,
       monthKey,
       monthlyLimit,
@@ -565,11 +574,15 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
   const saved = await loadAttemptResult(env.DB, attemptId, publicId);
   if (saved) return saved;
   const attemptCount = await env.DB.prepare(
-    "SELECT COUNT(*) AS count FROM attempts WHERE assignment_id = ? AND nickname_key = ?",
+    `SELECT COUNT(*) AS count FROM attempts
+     WHERE assignment_id = ? AND nickname_key = ? AND status = 'completed'`,
   )
     .bind(assignment.id, nicknameKey)
     .first<{ count: number }>();
-  if (Number(attemptCount?.count ?? 0) >= assignment.max_attempts) {
+  if (
+    completed &&
+    Number(attemptCount?.count ?? 0) >= assignment.max_attempts
+  ) {
     throw new HttpError(
       403,
       "attempt_limit",
@@ -578,6 +591,7 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
   }
   const currentUsage = await usage(env.DB, assignment.owner_user_id, plan, now);
   if (
+    completed &&
     limits.monthlyAttempts !== null &&
     currentUsage.monthlyAttempts >= limits.monthlyAttempts
   ) {
@@ -587,10 +601,26 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       "The teacher’s monthly submission limit has been reached.",
     );
   }
+  const savedNickname = await env.DB.prepare(
+    `SELECT 1 FROM attempts at JOIN assignments a ON a.id = at.assignment_id
+     WHERE a.owner_user_id = ? AND at.nickname_key = ? LIMIT 1`,
+  )
+    .bind(assignment.owner_user_id, nicknameKey)
+    .first();
+  if (
+    !savedNickname &&
+    currentUsage.studentNicknames >= limits.studentNicknames
+  ) {
+    throw new HttpError(
+      403,
+      "student_limit",
+      "The teacher account’s saved distinct student nickname limit has been reached.",
+    );
+  }
   throw new HttpError(
-    403,
-    "student_limit",
-    "The assignment’s student limit has been reached.",
+    409,
+    "attempt_conflict",
+    "The attempt could not be numbered. Please retry.",
   );
 }
 

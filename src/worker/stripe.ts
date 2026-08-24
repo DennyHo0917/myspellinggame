@@ -70,9 +70,26 @@ export async function createCheckout(
       "Billing is not configured yet.",
     );
   const subscription = await db
-    .prepare("SELECT stripe_customer_id FROM subscriptions WHERE user_id = ?")
+    .prepare(
+      "SELECT plan, status, stripe_customer_id FROM subscriptions WHERE user_id = ?",
+    )
     .bind(user.id)
-    .first<{ stripe_customer_id: string | null }>();
+    .first<{
+      plan: "free" | "pro";
+      status: string;
+      stripe_customer_id: string | null;
+    }>();
+  if (
+    subscription?.plan === "pro" ||
+    subscription?.status === "active" ||
+    subscription?.status === "trialing"
+  ) {
+    throw new HttpError(
+      409,
+      "already_subscribed",
+      "This teacher already has an active subscription.",
+    );
+  }
   const client = stripe(env);
   return client.checkout.sessions.create({
     mode: "subscription",

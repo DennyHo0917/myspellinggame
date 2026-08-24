@@ -53,7 +53,9 @@ confirmButton.addEventListener("click", async () => {
       throw new Error(
         data.error === "billing_not_configured"
           ? productMessage("billingUnavailable", {}, locale)
-          : productMessage("error", {}, locale),
+          : data.error === "already_subscribed"
+            ? productMessage("alreadySubscribed", {}, locale)
+            : productMessage("error", {}, locale),
       );
     try {
       sessionStorage.removeItem("pendingCheckoutInterval");

@@ -94,6 +94,33 @@ async function insertTeacher(teacher: Teacher) {
     .run();
 }
 
+async function insertSubscription({
+  plan,
+  status,
+  priceId = "price_monthly",
+  currentPeriodEnd = null,
+}: {
+  plan: "free" | "pro";
+  status: string;
+  priceId?: string;
+  currentPeriodEnd?: string | null;
+}) {
+  await bindings.DB.prepare(
+    `INSERT INTO subscriptions (
+       user_id, plan, status, stripe_price_id, current_period_end, updated_at
+     ) VALUES (?, ?, ?, ?, ?, ?)`,
+  )
+    .bind(
+      teacherA.id,
+      plan,
+      status,
+      priceId,
+      currentPeriodEnd,
+      new Date().toISOString(),
+    )
+    .run();
+}
+
 async function createAssignment(
   teacher: Teacher = teacherA,
   overrides: Record<string, unknown> = {},
@@ -317,6 +344,52 @@ describe("assignment attempts", () => {
     ).toBe(1);
   });
 
+  it("replaces an older incomplete record for the same assignment and nickname", async () => {
+    const created = await createAssignment();
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    const firstId = crypto.randomUUID();
+    const secondId = crypto.randomUUID();
+
+    expect(
+      (
+        await submit(publicId, assignment.words, {
+          attemptId: firstId,
+          completed: false,
+        })
+      ).status,
+    ).toBe(201);
+    expect(
+      (
+        await submit(publicId, assignment.words, {
+          attemptId: secondId,
+          answers: ["wrong", "banana"],
+          completed: false,
+        })
+      ).status,
+    ).toBe(201);
+
+    const incomplete = await bindings.DB.prepare(
+      `SELECT id, attempt_number FROM attempts
+       WHERE assignment_id = ? AND nickname_key = ? AND status = 'incomplete'`,
+    )
+      .bind(created.body.id, "student 01")
+      .all<{ id: string; attempt_number: number | null }>();
+    expect(incomplete.results).toEqual([
+      { id: secondId, attempt_number: null },
+    ]);
+    expect(
+      await bindings.DB.prepare(
+        "SELECT COUNT(*) AS count FROM attempt_items",
+      ).first("count"),
+    ).toBe(2);
+    expect(
+      await bindings.DB.prepare(
+        "SELECT COUNT(*) AS count FROM monthly_submission_usage",
+      ).first("count"),
+    ).toBe(0);
+  });
+
   it("uses MAX attempt number after a teacher deletes a non-final result", async () => {
     const created = await createAssignment(teacherA, { maxAttempts: 2 });
     const id = String(created.body.id);
@@ -538,19 +611,25 @@ describe("assignment attempts", () => {
 });
 
 describe("Stripe checkout", () => {
+  const now = new Date();
+  const future = new Date(now.getTime() + 24 * 60 * 60_000).toISOString();
+  const expired = new Date(now.getTime() - 24 * 60 * 60_000).toISOString();
+  const createSession = async () => ({ url: "https://checkout.test/session" });
+
   it.each([
-    ["pro", "inactive"],
-    ["free", "active"],
-    ["free", "trialing"],
+    ["pro", "inactive", "price_monthly", future],
+    ["pro", "canceled", "price_monthly", future],
+    ["pro", "active", "price_monthly", expired],
+    ["free", "active", "price_unknown", future],
   ] as const)(
-    "rejects another Checkout Session for a %s/%s subscription",
-    async (plan, status) => {
-      await bindings.DB.prepare(
-        `INSERT INTO subscriptions (user_id, plan, status, updated_at)
-         VALUES (?, ?, ?, ?)`,
-      )
-        .bind(teacherA.id, plan, status, new Date().toISOString())
-        .run();
+    "allows Checkout for an ineffective %s/%s subscription",
+    async (plan, status, priceId, currentPeriodEnd) => {
+      await insertSubscription({
+        plan,
+        status,
+        priceId,
+        currentPeriodEnd,
+      });
 
       await expect(
         createCheckout(
@@ -559,10 +638,97 @@ describe("Stripe checkout", () => {
           teacherA,
           "month",
           "https://example.test",
+          { now, createSession },
+        ),
+      ).resolves.toEqual({ url: "https://checkout.test/session" });
+    },
+  );
+
+  it.each([
+    ["pro", "active"],
+    ["free", "trialing"],
+  ] as const)(
+    "rejects Checkout for an effective %s/%s configured subscription",
+    async (plan, status) => {
+      await insertSubscription({
+        plan,
+        status,
+        currentPeriodEnd: future,
+      });
+      expect(
+        ((await (await call("/api/me")).json()) as { plan: string }).plan,
+      ).toBe("pro");
+
+      await expect(
+        createCheckout(
+          testEnv(),
+          bindings.DB,
+          teacherA,
+          "month",
+          "https://example.test",
+          { now, createSession },
         ),
       ).rejects.toMatchObject({ status: 409, code: "already_subscribed" });
     },
   );
+
+  it("keeps an active unknown price on Free while allowing upgrade", async () => {
+    await insertSubscription({
+      plan: "free",
+      status: "active",
+      priceId: "price_unknown",
+      currentPeriodEnd: future,
+    });
+    const me = (await (await call("/api/me")).json()) as { plan: string };
+    expect(me.plan).toBe("free");
+    await expect(
+      createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        "month",
+        "https://example.test",
+        { now, createSession },
+      ),
+    ).resolves.toEqual({ url: "https://checkout.test/session" });
+  });
+
+  it("creates one Session for concurrent requests and reuses its URL", async () => {
+    let calls = 0;
+    let release: (() => void) | undefined;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const delayedSession = async () => {
+      calls += 1;
+      await gate;
+      return { url: "https://checkout.test/shared" };
+    };
+    const checkout = () =>
+      createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        "month",
+        "https://example.test",
+        { now, createSession: delayedSession },
+      );
+
+    const first = checkout();
+    while (!calls) await new Promise((resolve) => setTimeout(resolve, 0));
+    await expect(checkout()).rejects.toMatchObject({
+      status: 409,
+      code: "checkout_pending",
+    });
+    release?.();
+    await expect(first).resolves.toEqual({
+      url: "https://checkout.test/shared",
+    });
+    await expect(checkout()).resolves.toEqual({
+      url: "https://checkout.test/shared",
+    });
+    expect(calls).toBe(1);
+  });
 });
 
 describe("Stripe event processing", () => {

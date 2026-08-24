@@ -8,6 +8,36 @@ export interface StripeEnv {
   STRIPE_PRICE_YEARLY: string;
 }
 
+type SubscriptionAccess = {
+  status: string;
+  current_period_end: string | null;
+  stripe_price_id: string | null;
+};
+
+type CheckoutOptions = {
+  now?: Date;
+  createSession?: (
+    params: Stripe.Checkout.SessionCreateParams,
+    options: Stripe.RequestOptions,
+  ) => Promise<{ url: string | null }>;
+};
+
+export function hasActiveSubscription(
+  subscription: SubscriptionAccess | null,
+  env: StripeEnv,
+  now = new Date(),
+) {
+  return Boolean(
+    subscription &&
+    (subscription.status === "active" || subscription.status === "trialing") &&
+    (!subscription.current_period_end ||
+      subscription.current_period_end > now.toISOString()) &&
+    subscription.stripe_price_id &&
+    (subscription.stripe_price_id === env.STRIPE_PRICE_MONTHLY ||
+      subscription.stripe_price_id === env.STRIPE_PRICE_YEARLY),
+  );
+}
+
 function stripe(env: StripeEnv) {
   return new Stripe(env.STRIPE_SECRET_KEY, {
     httpClient: Stripe.createFetchHttpClient(),
@@ -60,6 +90,7 @@ export async function createCheckout(
   user: { id: string; email: string },
   interval: "month" | "year",
   origin: string,
+  options: CheckoutOptions = {},
 ) {
   const price =
     interval === "month" ? env.STRIPE_PRICE_MONTHLY : env.STRIPE_PRICE_YEARLY;
@@ -71,40 +102,119 @@ export async function createCheckout(
     );
   const subscription = await db
     .prepare(
-      "SELECT plan, status, stripe_customer_id FROM subscriptions WHERE user_id = ?",
+      `SELECT status, current_period_end, stripe_price_id, stripe_customer_id
+       FROM subscriptions WHERE user_id = ?`,
     )
     .bind(user.id)
     .first<{
-      plan: "free" | "pro";
       status: string;
+      current_period_end: string | null;
+      stripe_price_id: string | null;
       stripe_customer_id: string | null;
     }>();
-  if (
-    subscription?.plan === "pro" ||
-    subscription?.status === "active" ||
-    subscription?.status === "trialing"
-  ) {
+  const now = options.now ?? new Date();
+  if (hasActiveSubscription(subscription ?? null, env, now)) {
     throw new HttpError(
       409,
       "already_subscribed",
       "This teacher already has an active subscription.",
     );
   }
-  const client = stripe(env);
-  return client.checkout.sessions.create({
-    mode: "subscription",
-    line_items: [{ price, quantity: 1 }],
-    success_url: `${origin}/teacher?checkout=success&interval=${interval}`,
-    cancel_url: `${origin}/pricing?checkout=cancelled`,
-    client_reference_id: user.id,
-    customer: subscription?.stripe_customer_id || undefined,
-    customer_email: subscription?.stripe_customer_id ? undefined : user.email,
-    metadata: { owner_user_id: user.id, billing_interval: interval },
-    subscription_data: {
-      metadata: { owner_user_id: user.id, billing_interval: interval },
-    },
-    allow_promotion_codes: true,
-  });
+  const nowIso = now.toISOString();
+  const existingLock = await db
+    .prepare(
+      `SELECT interval, session_url, expires_at FROM checkout_locks
+       WHERE user_id = ? AND expires_at > ?`,
+    )
+    .bind(user.id, nowIso)
+    .first<{
+      interval: "month" | "year";
+      session_url: string | null;
+      expires_at: string;
+    }>();
+  if (existingLock) {
+    if (existingLock.interval === interval && existingLock.session_url)
+      return { url: existingLock.session_url };
+    throw new HttpError(
+      409,
+      "checkout_pending",
+      "A subscription checkout is already being created.",
+    );
+  }
+  const token = crypto.randomUUID();
+  const expiresAt = new Date(now.getTime() + 10 * 60_000).toISOString();
+  const claim = await db
+    .prepare(
+      `INSERT INTO checkout_locks (user_id, token, interval, expires_at, created_at)
+       VALUES (?, ?, ?, ?, ?)
+       ON CONFLICT(user_id) DO UPDATE SET
+         token = excluded.token, interval = excluded.interval,
+         session_url = NULL, expires_at = excluded.expires_at,
+         created_at = excluded.created_at
+       WHERE checkout_locks.expires_at <= ?`,
+    )
+    .bind(user.id, token, interval, expiresAt, nowIso, nowIso)
+    .run();
+  if (!claim.meta.changes) {
+    const pending = await db
+      .prepare(
+        `SELECT interval, session_url FROM checkout_locks
+         WHERE user_id = ? AND expires_at > ?`,
+      )
+      .bind(user.id, nowIso)
+      .first<{ interval: "month" | "year"; session_url: string | null }>();
+    if (pending?.interval === interval && pending.session_url)
+      return { url: pending.session_url };
+    throw new HttpError(
+      409,
+      "checkout_pending",
+      "A subscription checkout is already being created.",
+    );
+  }
+  const createSession =
+    options.createSession ??
+    ((params, requestOptions) =>
+      stripe(env).checkout.sessions.create(params, requestOptions));
+  try {
+    const session = await createSession(
+      {
+        mode: "subscription",
+        line_items: [{ price, quantity: 1 }],
+        success_url: `${origin}/teacher?checkout=success&interval=${interval}`,
+        cancel_url: `${origin}/pricing?checkout=cancelled`,
+        client_reference_id: user.id,
+        customer: subscription?.stripe_customer_id || undefined,
+        customer_email: subscription?.stripe_customer_id
+          ? undefined
+          : user.email,
+        metadata: { owner_user_id: user.id, billing_interval: interval },
+        subscription_data: {
+          metadata: { owner_user_id: user.id, billing_interval: interval },
+        },
+        allow_promotion_codes: true,
+      },
+      { idempotencyKey: `checkout-${token}` },
+    );
+    if (!session.url)
+      throw new HttpError(
+        502,
+        "checkout_unavailable",
+        "Stripe did not return a Checkout URL.",
+      );
+    await db
+      .prepare(
+        "UPDATE checkout_locks SET session_url = ? WHERE user_id = ? AND token = ?",
+      )
+      .bind(session.url, user.id, token)
+      .run();
+    return session;
+  } catch (error) {
+    await db
+      .prepare("DELETE FROM checkout_locks WHERE user_id = ? AND token = ?")
+      .bind(user.id, token)
+      .run();
+    throw error;
+  }
 }
 
 export async function createPortal(
@@ -174,6 +284,10 @@ async function applySubscription(
       subscription.cancel_at_period_end ? 1 : 0,
       new Date().toISOString(),
     )
+    .run();
+  await db
+    .prepare("DELETE FROM checkout_locks WHERE user_id = ?")
+    .bind(ownerUserId)
     .run();
 }
 

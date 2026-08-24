@@ -21,6 +21,7 @@ import {
 import {
   createCheckout,
   createPortal,
+  hasActiveSubscription,
   verifyAndProcessWebhook,
   type StripeEnv,
 } from "./stripe";
@@ -127,25 +128,21 @@ async function requireTeacher(
 }
 
 async function getPlan(
-  db: D1Database,
+  env: Env,
   userId: string,
   now = new Date(),
 ): Promise<Plan> {
-  const subscription = await db
-    .prepare(
-      `SELECT plan, status, current_period_end FROM subscriptions
+  const subscription = await env.DB.prepare(
+    `SELECT status, current_period_end, stripe_price_id FROM subscriptions
        WHERE user_id = ?`,
-    )
+  )
     .bind(userId)
-    .first<{ plan: Plan; status: string; current_period_end: string | null }>();
-  const paidStatus =
-    subscription?.status === "active" || subscription?.status === "trialing";
-  const unexpired =
-    !subscription?.current_period_end ||
-    subscription.current_period_end > now.toISOString();
-  return subscription?.plan === "pro" && paidStatus && unexpired
-    ? "pro"
-    : "free";
+    .first<{
+      status: string;
+      current_period_end: string | null;
+      stripe_price_id: string | null;
+    }>();
+  return hasActiveSubscription(subscription ?? null, env, now) ? "pro" : "free";
 }
 
 async function usage(
@@ -306,7 +303,7 @@ async function createAssignment(env: Env, request: Request, userId: string) {
   const mode = validateMode(body.mode);
   const maxAttempts = validateMaxAttempts(body.maxAttempts);
   const expiresAt = validateDeadline(body.expiresAt);
-  const plan = await getPlan(env.DB, userId);
+  const plan = await getPlan(env, userId);
   const currentUsage = await usage(env.DB, userId, plan);
   if (currentUsage.activeAssignments >= PLAN_LIMITS[plan].activeAssignments) {
     throw new HttpError(
@@ -382,7 +379,7 @@ async function updateAssignment(
       );
     }
     if (assignment.status !== "published") {
-      const plan = await getPlan(env.DB, userId);
+      const plan = await getPlan(env, userId);
       const now = new Date().toISOString();
       const reopened = await env.DB.prepare(
         `UPDATE assignments SET status = 'published', closed_at = NULL
@@ -497,7 +494,7 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
   const words = assignment.words;
   const completed = body.completed !== false;
   const result = scoreAnswers(words, body.answers, completed);
-  const plan = await getPlan(env.DB, assignment.owner_user_id);
+  const plan = await getPlan(env, assignment.owner_user_id);
   const limits = PLAN_LIMITS[plan];
   const now = new Date();
   const completedAt = now.toISOString();
@@ -507,6 +504,18 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
     ? (limits.monthlyAttempts ?? 2_147_483_647)
     : 2_147_483_647;
   const statements = [
+    ...(completed
+      ? []
+      : [
+          env.DB.prepare(
+            `DELETE FROM attempts
+             WHERE status = 'incomplete' AND nickname_key = ?
+               AND assignment_id = (
+                 SELECT id FROM assignments
+                 WHERE public_id = ? AND status = 'published' AND expires_at > ?
+               )`,
+          ).bind(nicknameKey, publicId, completedAt),
+        ]),
     env.DB.prepare(
       `INSERT OR IGNORE INTO attempts (
            id, assignment_id, nickname, nickname_key, attempt_number, score,
@@ -760,7 +769,7 @@ export async function handleRequest(
 
   if (url.pathname === "/api/me" && method === "GET") {
     const user = await requireTeacher(env, request, getSession);
-    const plan = await getPlan(env.DB, user.id);
+    const plan = await getPlan(env, user.id);
     const subscription = await env.DB.prepare(
       "SELECT billing_interval FROM subscriptions WHERE user_id = ?",
     )
@@ -776,7 +785,7 @@ export async function handleRequest(
   if (url.pathname === "/api/assignments") {
     const user = await requireTeacher(env, request, getSession);
     if (method === "GET") {
-      const plan = await getPlan(env.DB, user.id);
+      const plan = await getPlan(env, user.id);
       return json({
         assignments: await listAssignments(env.DB, user.id),
         usage: await usage(env.DB, user.id, plan),
@@ -800,11 +809,7 @@ export async function handleRequest(
     );
     if (method === "GET")
       return json(
-        await assignmentDetail(
-          env.DB,
-          assignment,
-          await getPlan(env.DB, user.id),
-        ),
+        await assignmentDetail(env.DB, assignment, await getPlan(env, user.id)),
       );
     if (method === "PATCH") {
       requireSameOrigin(request);
@@ -852,7 +857,7 @@ export async function handleRequest(
       exportMatch[1],
       user.id,
     );
-    return exportCsv(env.DB, assignment, await getPlan(env.DB, user.id));
+    return exportCsv(env.DB, assignment, await getPlan(env, user.id));
   }
 
   if (url.pathname === "/api/billing/checkout" && method === "POST") {

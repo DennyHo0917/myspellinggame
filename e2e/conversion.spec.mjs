@@ -68,6 +68,12 @@ test("ordinary teacher routes do not override the stored locale", async ({
 
   await page.goto("/teacher?lang=__proto__");
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
+
+  await page.evaluate(() =>
+    sessionStorage.setItem("pendingCheckoutLocale", "zh"),
+  );
+  await page.goto("/teacher?lang=es");
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
 });
 
 test("Checkout success waits for Free to become Pro and records once", async ({
@@ -145,6 +151,54 @@ test("Checkout success restores supported locales and cleans its URL", async ({
   }
 });
 
+test("Checkout success prefers its pending locale and preserves unrelated URL state", async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    sessionStorage.setItem("pendingCheckoutLocale", "zh"),
+  );
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(account("pro", "year")),
+    }),
+  );
+  await mockAssignments(page);
+
+  await page.goto(
+    "/teacher?lang=es&checkout=success&interval=year&keep=value#workspace",
+  );
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "zh");
+  await expect(page).toHaveURL("/teacher?lang=zh&keep=value#workspace");
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("pendingCheckoutLocale")),
+  ).toBeNull();
+});
+
+test("an invalid pending Checkout locale cannot override the URL locale", async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    sessionStorage.setItem("pendingCheckoutLocale", "not-a-locale"),
+  );
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(account("pro", "month")),
+    }),
+  );
+  await mockAssignments(page);
+
+  await page.goto("/teacher?lang=es&checkout=success");
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+  await expect(page).toHaveURL("/teacher?lang=es");
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("pendingCheckoutLocale")),
+  ).toBeNull();
+});
+
 test("Checkout success times out safely and can be checked again", async ({
   page,
 }) => {
@@ -160,6 +214,9 @@ test("Checkout success times out safely and can be checked again", async ({
     });
   });
   await mockAssignments(page);
+  await page.addInitScript(() =>
+    sessionStorage.setItem("pendingCheckoutLocale", "en"),
+  );
 
   await page.goto("/teacher?lang=en&checkout=success");
   await expect(
@@ -168,6 +225,9 @@ test("Checkout success times out safely and can be checked again", async ({
   expect(calls).toBe(11);
   expect(await conversionEvents(page)).toEqual([]);
   await expect(page).toHaveURL(/checkout=success/);
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("pendingCheckoutLocale")),
+  ).toBe("en");
 
   activated = true;
   await page.getByRole("button", { name: "Check again" }).click();
@@ -176,6 +236,46 @@ test("Checkout success times out safely and can be checked again", async ({
     "subscription_started",
     "purchase",
   ]);
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("pendingCheckoutLocale")),
+  ).toBeNull();
+});
+
+test("the teacher sends its locale when opening Billing Portal", async ({
+  page,
+}) => {
+  let portalBody;
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(account("pro", "month")),
+    }),
+  );
+  await mockAssignments(page);
+  await page.route("**/api/billing/portal", async (route) => {
+    portalBody = route.request().postDataJSON();
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ url: "" }),
+    });
+  });
+
+  await page.goto("/teacher?lang=zh");
+  await page.locator(".teacher-dashboard-card .actions button").click();
+
+  await expect.poll(() => portalBody).toEqual({ locale: "zh" });
+});
+
+test("a cancelled Checkout clears its pending locale", async ({ page }) => {
+  await page.addInitScript(() =>
+    sessionStorage.setItem("pendingCheckoutLocale", "zh"),
+  );
+
+  await page.goto("/zh/pricing?checkout=cancelled");
+
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("pendingCheckoutLocale")),
+  ).toBeNull();
 });
 
 test("Checkout activation recovers from a temporary network error", async ({

@@ -1,5 +1,9 @@
 import { trackEvent } from "./analytics.mjs";
-import { normalizeProductLocale, productMessage } from "./productLocale.mjs";
+import {
+  normalizeProductLocale,
+  PENDING_CHECKOUT_LOCALE_KEY,
+  productMessage,
+} from "./productLocale.mjs";
 
 const locale = normalizeProductLocale(document.body.dataset.productLocale);
 const status = document.getElementById("pricing-status");
@@ -10,6 +14,10 @@ const selectedDescription = document.getElementById(
 );
 const selectedSavings = document.getElementById("selected-plan-savings");
 const confirmButton = document.querySelector("[data-confirm-checkout]");
+try {
+  if (new URLSearchParams(location.search).get("checkout") === "cancelled")
+    sessionStorage.removeItem(PENDING_CHECKOUT_LOCALE_KEY);
+} catch {}
 trackEvent("upgrade_viewed");
 
 function selectPlan(interval) {
@@ -39,6 +47,7 @@ confirmButton.addEventListener("click", async () => {
   try {
     previousInterval = sessionStorage.getItem("pendingCheckoutInterval");
     sessionStorage.setItem("pendingCheckoutInterval", interval);
+    sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
   } catch {}
   if (previousInterval !== interval)
     trackEvent("upgrade_clicked", { billing_interval: interval });

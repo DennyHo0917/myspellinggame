@@ -9,7 +9,11 @@ import {
   safeTeacherCallbackURL,
 } from "../src/worker/auth";
 import { handleRequest, type Env } from "../src/worker/index";
-import { createCheckout, processStripeEvent } from "../src/worker/stripe";
+import {
+  createCheckout,
+  createPortal,
+  processStripeEvent,
+} from "../src/worker/stripe";
 
 type TestBindings = {
   DB: D1Database;
@@ -661,17 +665,19 @@ describe("Stripe checkout", () => {
   });
 
   it.each([
-    ["en", "en"],
-    ["es", "es"],
-    ["pt-BR", "pt-BR"],
-    ["fr", "fr"],
-    ["id", "id"],
-    ["zh", "zh"],
-    ["teacher", "en"],
+    ["en", "en", "/pricing"],
+    ["es", "es", "/es/pricing"],
+    ["pt-BR", "pt-BR", "/pt-br/pricing"],
+    ["fr", "fr", "/fr/pricing"],
+    ["id", "id", "/id/pricing"],
+    ["zh", "zh", "/zh/pricing"],
+    ["teacher", "en", "/pricing"],
+    [undefined, "en", "/pricing"],
   ])(
-    "uses only a supported checkout locale for %s",
-    async (locale, expected) => {
+    "uses only a supported checkout locale and cancel URL for %s",
+    async (locale, expected, pricingPath) => {
       let successUrl = "";
+      let cancelUrl = "";
       await createCheckout(
         testEnv(),
         bindings.DB,
@@ -683,6 +689,7 @@ describe("Stripe checkout", () => {
           locale,
           createSession: async (params) => {
             successUrl = params.success_url ?? "";
+            cancelUrl = params.cancel_url ?? "";
             return createSession(params);
           },
         },
@@ -691,8 +698,46 @@ describe("Stripe checkout", () => {
       expect(successUrl).toBe(
         `https://example.test/teacher?lang=${expected}&checkout=success&interval=month`,
       );
+      expect(cancelUrl).toBe(
+        `https://example.test${pricingPath}?checkout=cancelled`,
+      );
     },
   );
+
+  it.each([
+    ["en", "en"],
+    ["es", "es"],
+    ["pt-BR", "pt-BR"],
+    ["fr", "fr"],
+    ["id", "id"],
+    ["zh", "zh"],
+    ["teacher", "en"],
+    [undefined, "en"],
+  ])("uses only a supported Portal locale for %s", async (locale, expected) => {
+    await insertSubscription({ plan: "pro", status: "active" });
+    await bindings.DB.prepare(
+      "UPDATE subscriptions SET stripe_customer_id = ? WHERE user_id = ?",
+    )
+      .bind("cus_test", teacherA.id)
+      .run();
+    let returnUrl = "";
+
+    await createPortal(
+      testEnv(),
+      bindings.DB,
+      teacherA.id,
+      "https://example.test",
+      {
+        locale,
+        createSession: async (params) => {
+          returnUrl = params.return_url ?? "";
+          return { url: "https://billing.test/session" };
+        },
+      },
+    );
+
+    expect(returnUrl).toBe(`https://example.test/teacher?lang=${expected}`);
+  });
 
   it.each([
     ["pro", "inactive", "price_monthly", future],

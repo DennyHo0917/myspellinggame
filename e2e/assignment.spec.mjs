@@ -247,6 +247,9 @@ test("Checkout analytics wait for a Stripe URL and do not duplicate intent", asy
       sessionStorage.getItem("pendingCheckoutInterval"),
     ),
   ).toBe("month");
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("pendingCheckoutLocale")),
+  ).toBe("en");
 
   const eventNames = () =>
     page.evaluate(() =>
@@ -269,6 +272,9 @@ test("Checkout analytics wait for a Stripe URL and do not duplicate intent", asy
       sessionStorage.getItem("pendingCheckoutInterval"),
     ),
   ).toBeNull();
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("pendingCheckoutLocale")),
+  ).toBe("en");
   expect(
     (await eventNames()).filter((name) => name === "upgrade_clicked"),
   ).toHaveLength(1);
@@ -333,6 +339,9 @@ test("failed automatic Checkout stays retryable on the teacher page", async ({
       sessionStorage.getItem("pendingCheckoutInterval"),
     ),
   ).toBe("year");
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("pendingCheckoutLocale")),
+  ).toBe("en");
 
   await page.getByRole("button", { name: "Try checkout again" }).click();
   await expect(page).toHaveURL(/#stripe-checkout$/);
@@ -341,6 +350,9 @@ test("failed automatic Checkout stays retryable on the teacher page", async ({
       sessionStorage.getItem("pendingCheckoutInterval"),
     ),
   ).toBeNull();
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("pendingCheckoutLocale")),
+  ).toBe("en");
   expect(checkoutCalls).toBe(2);
 });
 

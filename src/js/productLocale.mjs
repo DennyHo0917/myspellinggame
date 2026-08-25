@@ -861,6 +861,8 @@ const URL_LOCALES = {
   zh: "zh",
 };
 
+export const PENDING_CHECKOUT_LOCALE_KEY = "pendingCheckoutLocale";
+
 function productUrlLocale(value) {
   const key = String(value || "").toLowerCase();
   return Object.hasOwn(URL_LOCALES, key) ? URL_LOCALES[key] : "";
@@ -889,16 +891,24 @@ export function productPagePath(page = "", locale = productLocale()) {
 }
 
 export function productLocale() {
-  const query = new URLSearchParams(location.search).get("lang");
+  const params = new URLSearchParams(location.search);
+  const query = params.get("lang");
   const path = location.pathname.split("/")[1];
+  let pending = "";
   let stored = "";
+  if (params.get("checkout") === "success") {
+    try {
+      pending = sessionStorage.getItem(PENDING_CHECKOUT_LOCALE_KEY) || "";
+    } catch {}
+  }
   try {
     stored = localStorage.getItem("mySpellingGamePreferredLocale") || "";
   } catch {}
+  const pendingLocale = productUrlLocale(pending);
   const queryLocale = productUrlLocale(query);
   const pathLocale = path === "en" ? "" : productUrlLocale(path);
   return normalizeProductLocale(
-    queryLocale || pathLocale || stored || navigator.language,
+    pendingLocale || queryLocale || pathLocale || stored || navigator.language,
   );
 }
 

@@ -1,5 +1,6 @@
 import { trackEvent } from "./analytics.mjs";
 import {
+  PENDING_CHECKOUT_LOCALE_KEY,
   PRODUCT_LOCALES,
   productPagePath,
   productLocale,
@@ -385,7 +386,7 @@ async function openPortal() {
   try {
     const data = await api("/api/billing/portal", {
       method: "POST",
-      body: "{}",
+      body: JSON.stringify({ locale }),
     });
     if (data.url) location.href = data.url;
   } catch (error) {
@@ -394,6 +395,9 @@ async function openPortal() {
 }
 
 async function startCheckout(interval) {
+  try {
+    sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
+  } catch {}
   const checkout = await api("/api/billing/checkout", {
     method: "POST",
     body: JSON.stringify({ interval, locale }),
@@ -772,9 +776,13 @@ function recordPurchase(me) {
 
 function clearCheckoutParam() {
   const url = new URL(location.href);
+  url.searchParams.set("lang", locale);
   url.searchParams.delete("checkout");
   url.searchParams.delete("interval");
   history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+  try {
+    sessionStorage.removeItem(PENDING_CHECKOUT_LOCALE_KEY);
+  } catch {}
 }
 
 async function renderTeacherRoute(me) {

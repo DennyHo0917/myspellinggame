@@ -891,7 +891,10 @@ export async function handleRequest(
   if (url.pathname === "/api/billing/portal" && method === "POST") {
     requireSameOrigin(request);
     const user = await requireTeacher(env, request, getSession);
-    const portal = await createPortal(env, env.DB, user.id, url.origin);
+    const body = await readJson(request);
+    const portal = await createPortal(env, env.DB, user.id, url.origin, {
+      locale: typeof body.locale === "string" ? body.locale : undefined,
+    });
     return json({ url: portal.url });
   }
 

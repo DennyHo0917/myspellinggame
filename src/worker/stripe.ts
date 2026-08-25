@@ -25,7 +25,29 @@ type CheckoutOptions = {
   ) => Promise<Pick<Stripe.Checkout.Session, "id" | "url" | "expires_at">>;
 };
 
-const CHECKOUT_LOCALES = new Set(["en", "es", "pt-BR", "fr", "id", "zh"]);
+type PortalOptions = {
+  locale?: string;
+  createSession?: (
+    params: Stripe.BillingPortal.SessionCreateParams,
+  ) => Promise<Pick<Stripe.BillingPortal.Session, "url">>;
+};
+
+const STRIPE_LOCALE_PATHS = {
+  en: "",
+  es: "/es",
+  "pt-BR": "/pt-br",
+  fr: "/fr",
+  id: "/id",
+  zh: "/zh",
+} as const;
+
+type StripeLocale = keyof typeof STRIPE_LOCALE_PATHS;
+
+function stripeLocale(value?: string): StripeLocale {
+  return value && Object.hasOwn(STRIPE_LOCALE_PATHS, value)
+    ? (value as StripeLocale)
+    : "en";
+}
 
 export function hasActiveSubscription(
   subscription: SubscriptionAccess | null,
@@ -199,16 +221,13 @@ export async function createCheckout(
     ((params, requestOptions) =>
       stripe(env).checkout.sessions.create(params, requestOptions));
   try {
-    const locale =
-      options.locale && CHECKOUT_LOCALES.has(options.locale)
-        ? options.locale
-        : "en";
+    const locale = stripeLocale(options.locale);
     const session = await createSession(
       {
         mode: "subscription",
         line_items: [{ price, quantity: 1 }],
         success_url: `${origin}/teacher?lang=${locale}&checkout=success&interval=${interval}`,
-        cancel_url: `${origin}/pricing?checkout=cancelled`,
+        cancel_url: `${origin}${STRIPE_LOCALE_PATHS[locale]}/pricing?checkout=cancelled`,
         client_reference_id: user.id,
         customer: subscription?.stripe_customer_id || undefined,
         customer_email: subscription?.stripe_customer_id
@@ -258,6 +277,7 @@ export async function createPortal(
   db: D1Database,
   userId: string,
   origin: string,
+  options: PortalOptions = {},
 ) {
   const subscription = await db
     .prepare("SELECT stripe_customer_id FROM subscriptions WHERE user_id = ?")
@@ -270,9 +290,13 @@ export async function createPortal(
       "No Stripe billing account exists for this teacher.",
     );
   }
-  return stripe(env).billingPortal.sessions.create({
+  const locale = stripeLocale(options.locale);
+  const createSession =
+    options.createSession ??
+    ((params) => stripe(env).billingPortal.sessions.create(params));
+  return createSession({
     customer: subscription.stripe_customer_id,
-    return_url: `${origin}/teacher`,
+    return_url: `${origin}/teacher?lang=${locale}`,
   });
 }
 

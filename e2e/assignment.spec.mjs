@@ -344,9 +344,9 @@ test("failed automatic Checkout stays retryable on the teacher page", async ({
   expect(checkoutCalls).toBe(2);
 });
 
-test("localized homepage actions stay on one desktop row", async ({ page }) => {
-  await page.setViewportSize({ width: 1005, height: 900 });
-  for (const path of ["/", "/es/", "/pt-br/", "/fr/", "/id/", "/zh/"]) {
+for (const path of ["/", "/es/", "/pt-br/", "/fr/", "/id/", "/zh/"]) {
+  test(`${path} homepage actions stay on one desktop row`, async ({ page }) => {
+    await page.setViewportSize({ width: 1005, height: 900 });
     await page.goto(path);
     const layout = await page
       .locator(".spelling-actions")
@@ -365,8 +365,8 @@ test("localized homepage actions stay on one desktop row", async ({ page }) => {
     expect(layout.count, path).toBe(4);
     expect(layout.rowOffset, path).toBeLessThanOrEqual(1);
     expect(layout.overflow, path).toBe(false);
-  }
-});
+  });
+}
 
 test("mobile conversion pages keep their key actions usable", async ({
   page,

@@ -319,19 +319,16 @@ for (const viewport of [
   });
 }
 
-test("localized pricing cards stay aligned without crowding", async ({
-  page,
-}) => {
-  test.setTimeout(60_000);
-  await mockSignedOut(page);
-  const locales = ["en", "es", "pt-BR", "fr", "id", "zh"];
-
-  for (const viewport of [
-    { width: 1280, height: 900, desktop: true },
-    { width: 390, height: 844, desktop: false },
-  ]) {
-    await page.setViewportSize(viewport);
-    for (const locale of locales) {
+for (const viewport of [
+  { name: "desktop", width: 1280, height: 900, desktop: true },
+  { name: "mobile", width: 390, height: 844, desktop: false },
+]) {
+  for (const locale of ["en", "es", "pt-BR", "fr", "id", "zh"]) {
+    test(`${viewport.name} ${locale} pricing stays aligned without crowding`, async ({
+      page,
+    }) => {
+      await mockSignedOut(page);
+      await page.setViewportSize(viewport);
       await page.goto(`/teacher?lang=${encodeURIComponent(locale)}`);
       const layout = await page.locator(".teacher-pricing").evaluate((root) => {
         const cards = [...root.querySelectorAll(".pricing-card")];
@@ -367,9 +364,9 @@ test("localized pricing cards stay aligned without crowding", async ({
         expect(layout.descriptionOffset, locale).toBeLessThanOrEqual(1);
         expect(layout.listOffset, locale).toBeLessThanOrEqual(1);
       }
-    }
+    });
   }
-});
+}
 
 test("standalone Free CTA opens the matching teacher sign-in area", async ({
   page,

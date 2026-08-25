@@ -36,7 +36,7 @@ Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a high-entropy `BETTER_AUTH_
 
 ## Stripe
 
-1. Create one recurring monthly Price at USD 5.99 and one recurring yearly Price at USD 49.
+1. Create one recurring monthly Price at USD 5.99 and one recurring yearly Price at USD 49.99.
 2. Set their IDs as `STRIPE_PRICE_MONTHLY` and `STRIPE_PRICE_YEARLY`.
 3. Enable and configure the Stripe Customer Portal for subscription management.
 4. Create a webhook endpoint at `https://myspellinggame.com/api/stripe/webhook` for:

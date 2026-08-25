@@ -564,6 +564,144 @@ test("localized FAQ home control is centered and returns home", async ({
   await expect(page).toHaveURL(/\/zh\/$/);
 });
 
+test("workspace P0 flow keeps empty smart review actions retryable", async ({
+  page,
+}) => {
+  const learnerId = "77777777-7777-4777-8777-777777777777";
+  const assignmentId = "88888888-8888-4888-8888-888888888888";
+  let savedLists = [];
+  let learners = [];
+  const json = (route, body, status = 200) =>
+    route.fulfill({
+      status,
+      contentType: "application/json",
+      body: JSON.stringify(body),
+    });
+
+  await page.route("**/api/me", (route) =>
+    json(route, {
+      user: { id: "teacher-a", name: "Account A", email: "a@example.test" },
+      plan: "pro",
+      limits: {
+        activeAssignments: 20,
+        monthlyAttempts: null,
+        savedLists: null,
+        learnerProfiles: 150,
+      },
+    }),
+  );
+  await page.route("**/api/assignments", (route) =>
+    json(route, {
+      assignments: [],
+      savedLists,
+      learners,
+      usage: {
+        limits: {
+          activeAssignments: 20,
+          monthlyAttempts: null,
+          savedLists: null,
+          learnerProfiles: 150,
+        },
+        activeAssignments: 0,
+        monthlyAttempts: 0,
+        savedLists: savedLists.length,
+        learnerProfiles: learners.length,
+      },
+    }),
+  );
+  await page.route("**/api/saved-lists", async (route) => {
+    const body = route.request().postDataJSON();
+    savedLists = [
+      {
+        id: "99999999-9999-4999-8999-999999999999",
+        title: body.title,
+        words: String(body.words).split("\n"),
+      },
+    ];
+    await json(route, savedLists[0], 201);
+  });
+  await page.route("**/api/learners", async (route) => {
+    const body = route.request().postDataJSON();
+    learners = [
+      {
+        id: learnerId,
+        name: body.name,
+        archived: 0,
+        completed_attempts: 0,
+        accuracy: 0,
+      },
+    ];
+    await json(route, learners[0], 201);
+  });
+  await page.route(`**/api/learners/${learnerId}`, (route) =>
+    json(route, {
+      learner: { id: learnerId, name: "Learner 01", archived: false },
+      historyDays: 365,
+      smartReview: true,
+      summary: {
+        completedAttempts: 0,
+        accuracy: 0,
+        mastered: 0,
+        learning: 0,
+        needsReview: 0,
+      },
+      words: [],
+    }),
+  );
+  await page.route(`**/api/learners/${learnerId}/review`, async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    await json(route, { words: [] });
+  });
+  await page.route(`**/api/assignments/${assignmentId}`, (route) =>
+    json(route, {
+      id: assignmentId,
+      public_id: publicId,
+      title: "Week one",
+      mode: "dictation",
+      status: "published",
+      words,
+      summary: { students: 0, attempts: 0, averageAccuracy: 0 },
+      attempts: [],
+      missedWordStats: [],
+    }),
+  );
+  await page.route(`**/api/assignments/${assignmentId}/review`, (route) =>
+    json(route, { words: [] }),
+  );
+
+  await page.goto("/teacher?lang=en");
+  await page.getByLabel("List title").fill("Week one");
+  await page.getByLabel("Spelling words").fill("apple\nbanana");
+  await page.getByRole("button", { name: "Save list" }).click();
+  await expect(page.getByRole("heading", { name: "Week one" })).toBeVisible();
+
+  await page.getByLabel("Learner nickname or number").fill("Learner 01");
+  await page.getByRole("button", { name: "Add learner" }).click();
+  await page.getByRole("link", { name: "View progress" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Mastery overview" }),
+  ).toBeVisible();
+  const learnerReview = page.getByRole("button", {
+    name: "Create review assignment",
+  });
+  await learnerReview.click();
+  await expect(learnerReview).toBeDisabled();
+  await expect(
+    page.getByText("There are no missed words that need review yet."),
+  ).toBeVisible();
+  await expect(learnerReview).toBeEnabled();
+
+  await page.goto(`/teacher/assignments/${assignmentId}?lang=en`);
+  const assignmentReview = page.getByRole("button", {
+    name: "Create review assignment",
+  });
+  await assignmentReview.click();
+  await expect(
+    page.getByText("There are no missed words that need review yet."),
+  ).toBeVisible();
+  await expect(assignmentReview).toBeEnabled();
+});
+
 test("a Pro dashboard never requests or displays upgrade pricing", async ({
   page,
 }) => {
@@ -765,12 +903,12 @@ test("deleting a result refreshes teacher summaries and reports failures", async
   await deleteButton.click();
   await expect(deleteButton).toBeDisabled();
   await expect(
-    page.getByText("No student has completed this assignment yet."),
+    page.getByText("No learner has completed this assignment yet."),
   ).toBeVisible();
   await expect(
     page
       .locator(".stat-card")
-      .filter({ hasText: "Students" })
+      .filter({ hasText: "Learners" })
       .locator(".stat-value"),
   ).toHaveText("0");
   expect(await analyticsEvents(page, "assignment_results_viewed")).toHaveLength(

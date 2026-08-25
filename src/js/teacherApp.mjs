@@ -484,7 +484,7 @@ function renderLearners(me, learners) {
   intro.textContent = copy.learnersCopy;
   const form = document.createElement("form");
   form.className = "product-form compact-form inline-form";
-  form.innerHTML = `<div class="field"><label for="learner-name">${copy.learnerName}</label><input id="learner-name" maxlength="40" required placeholder="${copy.learnerNamePlaceholder}"></div><div class="actions"><button type="submit">${copy.addLearner}</button></div>`;
+  form.innerHTML = `<div class="field"><label for="learner-name">${copy.learnerName}</label><input id="learner-name" maxlength="32" required placeholder="${copy.learnerNamePlaceholder}"></div><div class="actions"><button type="submit">${copy.addLearner}</button></div>`;
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const button = form.querySelector('button[type="submit"]');
@@ -969,6 +969,7 @@ async function renderDetail(me, id) {
       } catch (error) {
         reviewStatus.textContent = error.message;
         reviewStatus.className = "status error";
+      } finally {
         createReview.disabled = false;
       }
     });
@@ -1173,6 +1174,7 @@ async function renderLearner(me, id) {
       } catch (error) {
         status.textContent = error.message;
         status.className = "status error";
+      } finally {
         button.disabled = false;
       }
     });

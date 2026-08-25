@@ -5,7 +5,7 @@ export const PLAN_LIMITS = {
     savedLists: 3,
     learnerProfiles: 3,
     historyDays: 30,
-    retentionDays: 365,
+    retentionDays: 30,
     smartReview: false,
     csvExport: false,
     missedWordStats: false,

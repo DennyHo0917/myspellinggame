@@ -571,6 +571,38 @@ describe("cross-assignment mastery", () => {
 });
 
 describe("assignment attempts", () => {
+  it("expires Free results after 30 days and Pro results after 365 days", async () => {
+    const retentionDays = async (attemptId: string) => {
+      const row = await bindings.DB.prepare(
+        "SELECT completed_at, retention_expires_at FROM attempts WHERE id = ?",
+      )
+        .bind(attemptId)
+        .first<{ completed_at: string; retention_expires_at: string }>();
+      return (
+        (new Date(row!.retention_expires_at).getTime() -
+          new Date(row!.completed_at).getTime()) /
+        86_400_000
+      );
+    };
+
+    const freeAssignment = await createAssignment();
+    const freeWords = await publicWords(String(freeAssignment.body.publicId));
+    const freeAttempt = (await (
+      await submit(String(freeAssignment.body.publicId), freeWords.words)
+    ).json()) as { id: string };
+    expect(await retentionDays(freeAttempt.id)).toBe(30);
+
+    await insertSubscription({ plan: "pro", status: "active" });
+    const proAssignment = await createAssignment(teacherA, {
+      title: "Pro retention",
+    });
+    const proWords = await publicWords(String(proAssignment.body.publicId));
+    const proAttempt = (await (
+      await submit(String(proAssignment.body.publicId), proWords.words)
+    ).json()) as { id: string };
+    expect(await retentionDays(proAttempt.id)).toBe(365);
+  });
+
   it("records an unfinished attempt when a student returns to the assignment start", async () => {
     const created = await createAssignment();
     const publicId = String(created.body.publicId);

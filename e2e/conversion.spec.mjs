@@ -79,6 +79,9 @@ test("ordinary teacher routes do not override the stored locale", async ({
 test("Checkout success waits for Free to become Pro and records once", async ({
   page,
 }) => {
+  await page.addInitScript(() =>
+    sessionStorage.setItem("pendingCheckoutLocale", "en"),
+  );
   let calls = 0;
   await page.route("**/api/me", async (route) => {
     calls += 1;
@@ -110,6 +113,9 @@ test("Checkout success waits for Free to become Pro and records once", async ({
 test("Checkout success handles an account that is already Pro", async ({
   page,
 }) => {
+  await page.addInitScript(() =>
+    sessionStorage.setItem("pendingCheckoutLocale", "en"),
+  );
   let calls = 0;
   await page.route("**/api/me", (route) => {
     calls += 1;
@@ -127,6 +133,22 @@ test("Checkout success handles an account that is already Pro", async ({
     "subscription_started",
     "purchase",
   ]);
+});
+
+test("an arbitrary Checkout success URL does not record a purchase", async ({
+  page,
+}) => {
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(account("pro", "month")),
+    }),
+  );
+  await mockAssignments(page);
+
+  await page.goto("/teacher?lang=en&checkout=success");
+  await expect(page.getByText("Pro plan", { exact: true })).toBeVisible();
+  expect(await conversionEvents(page)).toEqual([]);
 });
 
 test("Checkout success restores supported locales and cleans its URL", async ({
@@ -281,6 +303,9 @@ test("a cancelled Checkout clears its pending locale", async ({ page }) => {
 test("Checkout activation recovers from a temporary network error", async ({
   page,
 }) => {
+  await page.addInitScript(() =>
+    sessionStorage.setItem("pendingCheckoutLocale", "en"),
+  );
   let calls = 0;
   await page.route("**/api/me", (route) => {
     calls += 1;

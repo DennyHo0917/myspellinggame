@@ -122,13 +122,16 @@ export function prepareSession() {
   localStorage.setItem(EASY_KEY, gameState.easyMode ? '1' : '0');
   status(t('wordsInRound', { count: words.length }));
   const shareState = readShareState(window.location);
-  track('word_list_created', {
-    word_count: words.length,
-    mode: practiceMode,
-    locale: pageLocale(),
-    shared_link: shareState.sharedLink,
-    entry_page: shareState.entryPage || entryPage(),
-  });
+  if (!gameState.replayRound) {
+    track('word_list_created', {
+      word_count: words.length,
+      mode: practiceMode,
+      locale: pageLocale(),
+      shared_link: shareState.sharedLink,
+      entry_page: shareState.entryPage || entryPage(),
+    });
+    track('practice_started', { word_count: words.length, mode: practiceMode });
+  }
   return { words, mode: practiceMode };
 }
 
@@ -233,6 +236,11 @@ export async function copyPracticeLink() {
 }
 
 export function openTeacherAssignment() {
+  track('assignment_entry_clicked', {
+    word_count: currentWords().length,
+    mode: selectedMode(),
+    entry_point: 'practice',
+  });
   try {
     sessionStorage.setItem('mySpellingTeacherDraftWords', currentWords().join('\n'));
     sessionStorage.setItem('mySpellingTeacherDraftMode', selectedMode());

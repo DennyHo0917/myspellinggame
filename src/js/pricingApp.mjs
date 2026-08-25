@@ -18,7 +18,15 @@ try {
   if (new URLSearchParams(location.search).get("checkout") === "cancelled")
     sessionStorage.removeItem(PENDING_CHECKOUT_LOCALE_KEY);
 } catch {}
-trackEvent("upgrade_viewed");
+const pricingGrid = document.querySelector(".pricing-grid");
+if (pricingGrid && "IntersectionObserver" in window) {
+  const observer = new IntersectionObserver((entries) => {
+    if (!entries.some((entry) => entry.isIntersecting)) return;
+    trackEvent("upgrade_viewed");
+    observer.disconnect();
+  });
+  observer.observe(pricingGrid);
+}
 
 function selectPlan(interval) {
   for (const option of planOptions) {
@@ -66,6 +74,7 @@ confirmButton.addEventListener("click", async () => {
       location.href = `/teacher?lang=${encodeURIComponent(locale)}`;
       return;
     }
+    trackEvent("checkout_started", { billing_interval: interval });
     if (!response.ok || !data.url)
       throw new Error(
         data.error === "billing_not_configured"
@@ -74,7 +83,7 @@ confirmButton.addEventListener("click", async () => {
             ? productMessage("alreadySubscribed", {}, locale)
             : productMessage("error", {}, locale),
       );
-    trackEvent("checkout_started", { billing_interval: interval });
+    trackEvent("checkout_redirected", { billing_interval: interval });
     try {
       sessionStorage.removeItem("pendingCheckoutInterval");
       sessionStorage.removeItem("teacherPurchaseRecorded");

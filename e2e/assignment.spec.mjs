@@ -37,6 +37,28 @@ async function completeAssignment(page) {
   }
 }
 
+const analyticsEvents = (page, name) =>
+  page.evaluate(
+    (eventName) =>
+      window.dataLayer
+        .map((entry) => Array.from(entry))
+        .filter((entry) => entry[0] === "event" && entry[1] === eventName)
+        .map((entry) => entry[2]),
+    name,
+  );
+
+test("practice records a valid list and start separately", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#custom-word-list").fill("because\nfriend");
+  await page.locator('input[name="practice-mode"][value="typing"]').check();
+  await page.getByRole("button", { name: "Start Typing Rain" }).click();
+
+  await expect
+    .poll(() => analyticsEvents(page, "practice_started"))
+    .toEqual([{ mode: "typing", word_count: 2 }]);
+  expect(await analyticsEvents(page, "word_list_created")).toHaveLength(1);
+});
+
 for (const mode of ["dictation", "typing"]) {
   test(`${mode} assignment completes on a student device`, async ({ page }) => {
     let submittedBody;
@@ -119,6 +141,24 @@ test("mobile student UI fits the viewport and reports a failed save before retry
   expect(calls).toBe(2);
 });
 
+test("student quota errors record their type once", async ({ page }) => {
+  await mockAssignment(page, "typing", (route) =>
+    route.fulfill({
+      status: 403,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "monthly_submission_limit" }),
+    }),
+  );
+
+  await page.goto(`/a/${publicId}?lang=en`);
+  await completeAssignment(page);
+  await expect(page.locator(".status.error")).toBeVisible();
+  await page.getByRole("button", { name: "Retry saving" }).click();
+  await expect
+    .poll(() => analyticsEvents(page, "usage_limit_reached"))
+    .toEqual([{ limit_type: "monthly_submissions" }]);
+});
+
 test("a student can return to the start during consecutive assignments", async ({
   page,
 }) => {
@@ -193,6 +233,14 @@ test("Google sign-in returns to a prefilled new teacher assignment", async ({
   await page.goto("/");
   await page.locator("#custom-word-list").fill("because\nfriend");
   await page.locator('input[name="practice-mode"][value="typing"]').check();
+  await page.evaluate(() => {
+    addEventListener("beforeunload", () => {
+      const events = window.dataLayer
+        .map((entry) => Array.from(entry))
+        .filter((entry) => entry[0] === "event");
+      sessionStorage.setItem("eventsBeforeNavigation", JSON.stringify(events));
+    });
+  });
   const assign = page.getByRole("button", {
     name: "Assign homework",
   });
@@ -207,6 +255,19 @@ test("Google sign-in returns to a prefilled new teacher assignment", async ({
   ).toBeLessThanOrEqual(12);
   await assign.click();
   await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
+  expect(
+    await page.evaluate(() =>
+      JSON.parse(
+        sessionStorage.getItem("eventsBeforeNavigation") || "[]",
+      ).filter((entry) => entry[1] === "assignment_entry_clicked"),
+    ),
+  ).toEqual([
+    [
+      "event",
+      "assignment_entry_clicked",
+      { mode: "typing", word_count: 2, entry_point: "practice" },
+    ],
+  ]);
   await page.getByRole("button", { name: "Continue with Google" }).click();
 
   await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
@@ -215,9 +276,10 @@ test("Google sign-in returns to a prefilled new teacher assignment", async ({
     "because\nfriend",
   );
   await expect(page.getByLabel("Typing", { exact: true })).toBeChecked();
+  expect(await analyticsEvents(page, "teacher_auth_completed")).toEqual([{}]);
 });
 
-test("Checkout analytics wait for a Stripe URL and do not duplicate intent", async ({
+test("Checkout analytics separate creation attempts from Stripe redirects", async ({
   page,
 }) => {
   let calls = 0;
@@ -238,6 +300,10 @@ test("Checkout analytics wait for a Stripe URL and do not duplicate intent", asy
   const checkout = page.getByRole("button", {
     name: "Continue with monthly plan · $5.99 / month",
   });
+  await checkout.scrollIntoViewIfNeeded();
+  await expect
+    .poll(() => analyticsEvents(page, "upgrade_viewed"))
+    .toHaveLength(1);
   await checkout.click();
   await expect(
     page.getByText("Something went wrong. Please try again."),
@@ -263,6 +329,9 @@ test("Checkout analytics wait for a Stripe URL and do not duplicate intent", asy
   ).toHaveLength(1);
   expect(
     (await eventNames()).filter((name) => name === "checkout_started"),
+  ).toHaveLength(1);
+  expect(
+    (await eventNames()).filter((name) => name === "checkout_redirected"),
   ).toHaveLength(0);
 
   await checkout.click();
@@ -280,6 +349,9 @@ test("Checkout analytics wait for a Stripe URL and do not duplicate intent", asy
   ).toHaveLength(1);
   expect(
     (await eventNames()).filter((name) => name === "checkout_started"),
+  ).toHaveLength(2);
+  expect(
+    (await eventNames()).filter((name) => name === "checkout_redirected"),
   ).toHaveLength(1);
 });
 
@@ -600,6 +672,10 @@ test("teacher results render assignment and nickname as inert text", async ({
   await expect(page.getByRole("heading", { name: hostileTitle })).toBeVisible();
   await expect(page.getByRole("cell", { name: hostileNickname })).toBeVisible();
   expect(await page.evaluate(() => globalThis.pwned)).toBeUndefined();
+  expect(await analyticsEvents(page, "assignment_results_viewed")).toEqual([
+    { mode: "typing", word_count: 2 },
+  ]);
+  expect(await analyticsEvents(page, "teacher_auth_completed")).toEqual([]);
 });
 
 test("deleting a result refreshes teacher summaries and reports failures", async ({
@@ -697,6 +773,9 @@ test("deleting a result refreshes teacher summaries and reports failures", async
       .filter({ hasText: "Students" })
       .locator(".stat-value"),
   ).toHaveText("0");
+  expect(await analyticsEvents(page, "assignment_results_viewed")).toHaveLength(
+    1,
+  );
   await expect(
     page
       .locator(".stat-card")

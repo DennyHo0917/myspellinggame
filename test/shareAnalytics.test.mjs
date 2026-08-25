@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { cleanPageLocation, initReturnVisit, sanitizeEventParams } from '../src/js/analytics.mjs';
+import { cleanPageLocation, initReturnVisit, sanitizeEventParams, trackUsageLimit } from '../src/js/analytics.mjs';
 import { launcherUrl } from '../src/js/landingLauncher.mjs';
 import { buildShareHash, readShareState } from '../src/js/shareState.mjs';
 
@@ -78,6 +78,20 @@ test('teacher analytics omit student, assignment, and Stripe identifiers', () =>
     ...privateValues,
     billing_interval: 'year',
   }), { billing_interval: 'year' });
+  assert.deepEqual(sanitizeEventParams('checkout_redirected', {
+    ...privateValues,
+    billing_interval: 'year',
+  }), { billing_interval: 'year' });
+  assert.deepEqual(sanitizeEventParams('assignment_entry_clicked', {
+    ...privateValues,
+    mode: 'typing',
+    word_count: 8,
+    entry_point: 'practice',
+  }), { mode: 'typing', word_count: 8, entry_point: 'practice' });
+  assert.deepEqual(sanitizeEventParams('usage_limit_reached', {
+    ...privateValues,
+    limit_type: 'monthly_submissions',
+  }), { limit_type: 'monthly_submissions' });
   assert.deepEqual(sanitizeEventParams('upgrade_clicked', {
     ...privateValues,
     billing_interval: 'month',
@@ -89,6 +103,23 @@ test('teacher analytics omit student, assignment, and Stripe identifiers', () =>
     currency: 'USD',
   }), { billing_interval: 'year', value: 49.99, currency: 'USD' });
   assert.deepEqual(sanitizeEventParams('teacher_auth_completed', privateValues), {});
+});
+
+test('usage limits report a known type at most once per page', () => {
+  const events = [];
+  globalThis.window = { gtag: (...args) => events.push(args) };
+  try {
+    trackUsageLimit('monthly_submission_limit');
+    trackUsageLimit('monthly_submission_limit');
+    trackUsageLimit('attempt_limit');
+    assert.deepEqual(events, [[
+      'event',
+      'usage_limit_reached',
+      { limit_type: 'monthly_submissions' },
+    ]]);
+  } finally {
+    delete globalThis.window;
+  }
 });
 
 test('return visits are emitted at most once per session', () => {

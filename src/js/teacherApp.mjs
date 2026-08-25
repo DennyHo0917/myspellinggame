@@ -1,4 +1,4 @@
-import { trackEvent } from "./analytics.mjs";
+import { trackEvent, trackUsageLimit } from "./analytics.mjs";
 import {
   PENDING_CHECKOUT_LOCALE_KEY,
   PRODUCT_LOCALES,
@@ -12,7 +12,9 @@ const root = document.getElementById("product-app");
 const locale = productLocale();
 const copy = productMessages(locale);
 const PURCHASE_RECORDED_KEY = "teacherPurchaseRecorded";
+const AUTH_PENDING_KEY = "teacherOAuthPending";
 const ACTIVATION_POLL_ATTEMPTS = 10;
+let assignmentResultsViewed = false;
 document.documentElement.lang = locale;
 document.title = copy.dashboardTitle;
 
@@ -59,6 +61,7 @@ async function api(path, options = {}) {
   if (response.status === 204) return null;
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
+    trackUsageLimit(data.error);
     const error = new Error(m(ERROR_KEYS[data.error] || "error"));
     error.code = data.error;
     error.status = response.status;
@@ -254,6 +257,9 @@ async function renderLogin() {
         }),
       });
       if (!response.url) throw new Error(copy.error);
+      try {
+        sessionStorage.setItem(AUTH_PENDING_KEY, "1");
+      } catch {}
       location.href = response.url;
     } catch (error) {
       status.textContent = error.message;
@@ -398,12 +404,13 @@ async function startCheckout(interval) {
   try {
     sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
   } catch {}
+  trackEvent("checkout_started", { billing_interval: interval });
   const checkout = await api("/api/billing/checkout", {
     method: "POST",
     body: JSON.stringify({ interval, locale }),
   });
   if (!checkout?.url) throw new Error(copy.error);
-  trackEvent("checkout_started", { billing_interval: interval });
+  trackEvent("checkout_redirected", { billing_interval: interval });
   try {
     sessionStorage.removeItem("pendingCheckoutInterval");
     sessionStorage.removeItem(PURCHASE_RECORDED_KEY);
@@ -710,6 +717,13 @@ async function renderDetail(me, id) {
     results.append(wrap);
   }
   main.append(results);
+  if (data.summary.attempts > 0 && !assignmentResultsViewed) {
+    assignmentResultsViewed = true;
+    trackEvent("assignment_results_viewed", {
+      mode: data.mode,
+      word_count: data.words.length,
+    });
+  }
   const misses = document.createElement("section");
   misses.className = "product-card";
   const missesTitle = document.createElement("h2");
@@ -759,10 +773,13 @@ async function pollForPro() {
 }
 
 function recordPurchase(me) {
-  let shouldRecord = true;
+  let shouldRecord = false;
   try {
-    shouldRecord = sessionStorage.getItem(PURCHASE_RECORDED_KEY) !== "1";
-    sessionStorage.setItem(PURCHASE_RECORDED_KEY, "1");
+    const pendingLocale = sessionStorage.getItem(PENDING_CHECKOUT_LOCALE_KEY);
+    shouldRecord =
+      PRODUCT_LOCALES.some(([value]) => value === pendingLocale) &&
+      sessionStorage.getItem(PURCHASE_RECORDED_KEY) !== "1";
+    if (shouldRecord) sessionStorage.setItem(PURCHASE_RECORDED_KEY, "1");
   } catch {}
   if (!shouldRecord) return;
   const billingInterval = me.billingInterval === "year" ? "year" : "month";
@@ -836,9 +853,9 @@ async function init() {
     return;
   }
   try {
-    if (!sessionStorage.getItem("teacherAuthCompletedSent")) {
+    if (sessionStorage.getItem(AUTH_PENDING_KEY) === "1") {
       trackEvent("teacher_auth_completed");
-      sessionStorage.setItem("teacherAuthCompletedSent", "1");
+      sessionStorage.removeItem(AUTH_PENDING_KEY);
     }
   } catch {}
   let pendingInterval = null;

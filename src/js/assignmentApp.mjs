@@ -1,4 +1,4 @@
-import { trackEvent } from "./analytics.mjs";
+import { trackEvent, trackUsageLimit } from "./analytics.mjs";
 import {
   PRODUCT_LOCALES,
   productPagePath,
@@ -121,6 +121,7 @@ async function request(path, options = {}) {
   }
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
+    trackUsageLimit(data.error);
     const error = new Error(m(ERROR_KEYS[data.error] || "error"));
     error.code = data.error;
     throw error;

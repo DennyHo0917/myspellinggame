@@ -3,6 +3,7 @@ const SESSION_KEY = 'mySpellingGameReturnVisitSent';
 
 const EVENT_PARAMS = {
   word_list_created: ['mode', 'word_count', 'locale', 'shared_link', 'entry_page'],
+  practice_started: ['mode', 'word_count'],
   game_completed: ['mode', 'word_count', 'correct_count', 'missed_count', 'accuracy', 'duration_seconds', 'replay_round'],
   practice_link_copied: ['mode', 'word_count', 'locale'],
   missed_words_replayed: ['mode', 'word_count', 'locale'],
@@ -11,17 +12,28 @@ const EVENT_PARAMS = {
   return_visit: ['days_since_last_visit', 'visit_count_range'],
   teacher_auth_started: [],
   teacher_auth_completed: [],
+  assignment_entry_clicked: ['mode', 'word_count', 'entry_point'],
   assignment_created: ['mode', 'word_count'],
+  assignment_results_viewed: ['mode', 'word_count'],
   assignment_link_copied: ['mode', 'word_count'],
   assignment_opened: ['mode', 'word_count'],
   assignment_completed: ['mode', 'word_count', 'accuracy_range', 'duration_range'],
   assignment_abandoned: ['mode', 'word_count'],
   upgrade_viewed: [],
   upgrade_clicked: ['billing_interval'],
+  usage_limit_reached: ['limit_type'],
   checkout_started: ['billing_interval'],
+  checkout_redirected: ['billing_interval'],
   subscription_started: ['billing_interval'],
   purchase: ['billing_interval', 'value', 'currency'],
 };
+
+const LIMIT_TYPES = {
+  active_assignment_limit: 'active_assignments',
+  monthly_submission_limit: 'monthly_submissions',
+  student_limit: 'student_nicknames',
+};
+const reportedLimits = new Set();
 
 export function cleanPageLocation(locationLike) {
   const location = locationLike || (typeof window !== 'undefined' ? window.location : null);
@@ -53,6 +65,13 @@ export function entryPage() {
 export function trackEvent(name, params = {}) {
   if (typeof window === 'undefined' || typeof window.gtag !== 'function') return;
   window.gtag('event', name, sanitizeEventParams(name, params));
+}
+
+export function trackUsageLimit(errorCode) {
+  const limitType = LIMIT_TYPES[errorCode];
+  if (!limitType || reportedLimits.has(limitType)) return;
+  reportedLimits.add(limitType);
+  trackEvent('usage_limit_reached', { limit_type: limitType });
 }
 
 function visitRange(count) {

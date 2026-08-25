@@ -119,3 +119,18 @@ test('workspace navigation and assignment pricing stay role-inclusive in every l
     assert.ok(pricing.includes(`<h1>${heading}</h1>`), locale || 'en');
   }
 });
+
+test('pricing explains the complete 30-day trial in every locale', () => {
+  const expected = {
+    '': ['30', '$0', 'Card required', '$5.99/month', '$49.99/year', 'automatically', 'cancel'],
+    es: ['30', '$0', 'tarjeta', '$5.99', '$49,99', 'automáticamente', 'canceles'],
+    'pt-br': ['30', '$0', 'cartão', '$5.99', '$49,99', 'automática', 'cancele'],
+    fr: ['30', '0 $', 'carte requise', '5,99 $', '49,99 $', 'automatiquement', 'résiliation'],
+    id: ['30', '$0', 'kartu wajib', '$5.99', '$49.99', 'otomatis', 'dibatalkan'],
+    zh: ['30 天', '$0', '付款方式', '$5.99', '$49.99', '自动', '取消'],
+  };
+  for (const [locale, terms] of Object.entries(expected)) {
+    const pricing = fs.readFileSync(path.join(root, locale, 'pricing.html'), 'utf8');
+    for (const term of terms) assert.ok(pricing.includes(term), `${locale || 'en'}: ${term}`);
+  }
+});

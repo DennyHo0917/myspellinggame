@@ -26,6 +26,7 @@ const EVENT_PARAMS = {
   checkout_started: ['billing_interval'],
   checkout_redirected: ['billing_interval'],
   subscription_started: ['billing_interval'],
+  trial_started: ['billing_interval', 'trial_days'],
   purchase: ['billing_interval', 'value', 'currency'],
 };
 

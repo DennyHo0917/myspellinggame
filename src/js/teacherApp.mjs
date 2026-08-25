@@ -195,7 +195,7 @@ function focusTeacherSignIn() {
 
 async function appendPricing(
   main,
-  { signInTarget = false, currentPlan = false } = {},
+  { signInTarget = false, currentPlan = false, trialEligible } = {},
 ) {
   const pricing = document.createElement("section");
   pricing.id = "pricing";
@@ -208,6 +208,8 @@ async function appendPricing(
     const source = documentCopy.querySelector("main");
     if (!source) throw new Error("pricing unavailable");
     pricing.innerHTML = source.innerHTML;
+    if (typeof trialEligible === "boolean")
+      pricing.dataset.trialEligible = String(trialEligible);
     const freeCta = pricing.querySelector("[data-free-teacher-cta]");
     const proSecurity = pricing.querySelector(".checkout-security");
     if (freeCta && proSecurity) {
@@ -662,7 +664,11 @@ async function renderDashboard(me) {
     renderSavedLists(me, data.savedLists || []),
     renderLearners(me, data.learners || []),
   );
-  if (me.plan !== "pro") await appendPricing(main, { currentPlan: true });
+  if (me.plan !== "pro")
+    await appendPricing(main, {
+      currentPlan: true,
+      trialEligible: me.trialEligible,
+    });
 }
 
 async function openPortal() {
@@ -1281,6 +1287,13 @@ function recordPurchase(me) {
   } catch {}
   if (!shouldRecord) return;
   const billingInterval = me.billingInterval === "year" ? "year" : "month";
+  if (me.subscriptionStatus === "trialing") {
+    trackEvent("trial_started", {
+      billing_interval: billingInterval,
+      trial_days: 30,
+    });
+    return;
+  }
   trackEvent("subscription_started", { billing_interval: billingInterval });
   trackEvent("purchase", {
     billing_interval: billingInterval,
@@ -1332,7 +1345,15 @@ async function finishProActivation(me) {
     const notice = document.createElement("p");
     notice.className = "notice pro-activation-notice";
     notice.setAttribute("role", "status");
-    notice.textContent = copy.proActive;
+    notice.textContent =
+      me.subscriptionStatus === "trialing" && me.trialEndsAt
+        ? m(
+            me.billingInterval === "year"
+              ? "trialActiveYear"
+              : "trialActiveMonth",
+            { date: date(me.trialEndsAt) },
+          )
+        : copy.proActive;
     main.prepend(notice);
   }
 }

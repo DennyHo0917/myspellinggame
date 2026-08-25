@@ -106,6 +106,11 @@ test('teacher analytics omit student, assignment, and Stripe identifiers', () =>
     value: 49.99,
     currency: 'USD',
   }), { billing_interval: 'year', value: 49.99, currency: 'USD' });
+  assert.deepEqual(sanitizeEventParams('trial_started', {
+    ...privateValues,
+    billing_interval: 'month',
+    trial_days: 30,
+  }), { billing_interval: 'month', trial_days: 30 });
   assert.deepEqual(sanitizeEventParams('teacher_auth_completed', privateValues), {});
 });
 

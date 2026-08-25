@@ -129,7 +129,8 @@ const PACKS = {
       "We couldn’t open Stripe Checkout. Your selected plan is still saved.",
     retryCheckout: "Try checkout again",
     activatingPro: "Activating your Pro plan…",
-    activationDelayed: "Payment received. Pro activation is still processing.",
+    activationDelayed:
+      "Checkout completed. Pro activation is still processing.",
     checkAgain: "Check again",
     invalidTitle: "Use an assignment title with 1–80 characters.",
     invalidWords: "Use 1–80 words, each 2–24 characters long.",
@@ -207,6 +208,10 @@ const PACKS = {
     smartReviewRequired: "Smart review is available on Pro.",
     proActive:
       "Pro is active. Saved lists, long-term mastery, and smart review are now unlocked.",
+    trialActiveMonth:
+      "Your 30-day Pro trial is active. Your card will be charged $5.99/month on {date} unless you cancel first.",
+    trialActiveYear:
+      "Your 30-day Pro trial is active. Your card will be charged $49.99/year on {date} unless you cancel first.",
     rateLimited: "Too many requests. Wait a moment and try again.",
     invalidSubmission:
       "This submission is invalid. Restart the assignment and try again.",
@@ -345,7 +350,7 @@ const PACKS = {
     retryCheckout: "Reintentar el pago",
     activatingPro: "Activando tu plan Pro…",
     activationDelayed:
-      "Pago recibido. La activación de Pro todavía se está procesando.",
+      "El pago seguro se completó. La activación de Pro todavía se está procesando.",
     checkAgain: "Comprobar de nuevo",
     invalidTitle: "Usa un título de entre 1 y 80 caracteres.",
     invalidWords: "Usa entre 1 y 80 palabras, de 2 a 24 caracteres cada una.",
@@ -422,6 +427,10 @@ const PACKS = {
     smartReviewRequired: "El repaso inteligente está disponible con Pro.",
     proActive:
       "Pro está activo. Ya están disponibles las listas guardadas, el historial de dominio a largo plazo y el repaso inteligente.",
+    trialActiveMonth:
+      "Tu prueba Pro de 30 días está activa. Se cargarán $5.99 al mes en tu tarjeta el {date}, salvo que canceles antes.",
+    trialActiveYear:
+      "Tu prueba Pro de 30 días está activa. Se cargarán $49,99 al año en tu tarjeta el {date}, salvo que canceles antes.",
     rateLimited:
       "Hay demasiadas solicitudes. Espera un momento e inténtalo de nuevo.",
     invalidSubmission:
@@ -560,7 +569,7 @@ const PACKS = {
     retryCheckout: "Tentar o checkout novamente",
     activatingPro: "Ativando seu plano Pro…",
     activationDelayed:
-      "Pagamento recebido. A ativação do Pro ainda está sendo processada.",
+      "Checkout concluído. A ativação do Pro ainda está sendo processada.",
     checkAgain: "Verificar novamente",
     invalidTitle: "Use um título com 1 a 80 caracteres.",
     invalidWords: "Use de 1 a 80 palavras, cada uma com 2 a 24 caracteres.",
@@ -637,6 +646,10 @@ const PACKS = {
     smartReviewRequired: "A revisão inteligente está disponível no Pro.",
     proActive:
       "O Pro está ativo. Listas salvas, histórico de domínio de longo prazo e revisão inteligente já estão liberados.",
+    trialActiveMonth:
+      "Seu teste grátis do Pro por 30 dias está ativo. Seu cartão será cobrado em $5.99 por mês em {date}, a menos que você cancele antes.",
+    trialActiveYear:
+      "Seu teste grátis do Pro por 30 dias está ativo. Seu cartão será cobrado em $49,99 por ano em {date}, a menos que você cancele antes.",
     rateLimited: "Muitas solicitações. Aguarde um momento e tente novamente.",
     invalidSubmission:
       "Este envio é inválido. Reinicie a tarefa e tente novamente.",
@@ -776,7 +789,7 @@ const PACKS = {
     retryCheckout: "Réessayer le paiement",
     activatingPro: "Activation de votre offre Pro…",
     activationDelayed:
-      "Paiement reçu. L’activation de Pro est encore en cours.",
+      "Paiement sécurisé terminé. L’activation de Pro est encore en cours.",
     checkAgain: "Vérifier à nouveau",
     invalidTitle: "Utilisez un titre de 1 à 80 caractères.",
     invalidWords: "Utilisez 1 à 80 mots de 2 à 24 caractères chacun.",
@@ -856,6 +869,10 @@ const PACKS = {
     smartReviewRequired: "La révision intelligente est disponible avec Pro.",
     proActive:
       "Pro est actif. Les listes enregistrées, l’historique de maîtrise à long terme et la révision intelligente sont maintenant disponibles.",
+    trialActiveMonth:
+      "Votre essai Pro de 30 jours est actif. Votre carte sera débitée de 5,99 $ par mois le {date}, sauf résiliation préalable.",
+    trialActiveYear:
+      "Votre essai Pro de 30 jours est actif. Votre carte sera débitée de 49,99 $ par an le {date}, sauf résiliation préalable.",
     rateLimited: "Trop de demandes. Patientez un instant puis réessayez.",
     invalidSubmission:
       "Cette remise n’est pas valide. Recommencez le devoir puis réessayez.",
@@ -991,7 +1008,7 @@ const PACKS = {
       "Checkout belum dapat dibuka. Paket yang dipilih tetap tersimpan.",
     retryCheckout: "Coba checkout lagi",
     activatingPro: "Mengaktifkan paket Pro Anda…",
-    activationDelayed: "Pembayaran diterima. Aktivasi Pro masih diproses.",
+    activationDelayed: "Checkout selesai. Aktivasi Pro masih diproses.",
     checkAgain: "Periksa lagi",
     invalidTitle: "Gunakan judul sepanjang 1–80 karakter.",
     invalidWords: "Gunakan 1–80 kata, masing-masing sepanjang 2–24 karakter.",
@@ -1070,6 +1087,10 @@ const PACKS = {
     smartReviewRequired: "Ulasan pintar tersedia pada paket Pro.",
     proActive:
       "Pro sudah aktif. Daftar tersimpan, riwayat penguasaan jangka panjang, dan ulasan pintar kini terbuka.",
+    trialActiveMonth:
+      "Uji coba Pro 30 hari Anda aktif. Kartu Anda akan ditagih $5.99 per bulan pada {date}, kecuali Anda membatalkannya lebih dahulu.",
+    trialActiveYear:
+      "Uji coba Pro 30 hari Anda aktif. Kartu Anda akan ditagih $49.99 per tahun pada {date}, kecuali Anda membatalkannya lebih dahulu.",
     rateLimited: "Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.",
     invalidSubmission:
       "Kiriman ini tidak valid. Mulai ulang tugas lalu coba lagi.",
@@ -1196,7 +1217,7 @@ const PACKS = {
     checkoutRetry: "暂时无法打开 Stripe 结账页，你选择的方案仍已保留。",
     retryCheckout: "重新尝试结账",
     activatingPro: "正在激活 Pro 套餐…",
-    activationDelayed: "已收到付款，Pro 套餐仍在激活中。",
+    activationDelayed: "结账已完成，Pro 套餐仍在激活中。",
     checkAgain: "再次检查",
     invalidTitle: "作业标题需为 1～80 个字符。",
     invalidWords: "请输入 1～80 个单词，每个单词 2～24 个字符。",
@@ -1268,6 +1289,10 @@ const PACKS = {
       "你已达到免费版 3 个学习者档案的上限。升级 Pro 最多可管理 150 位学习者。",
     smartReviewRequired: "智能错词复习仅 Pro 可用。",
     proActive: "Pro 已激活。已解锁词表保存、长期掌握度和智能错词复习。",
+    trialActiveMonth:
+      "你的 30 天 Pro 免费试用已激活。若未提前取消，将于 {date} 从已绑定的付款方式扣取每月 $5.99。",
+    trialActiveYear:
+      "你的 30 天 Pro 免费试用已激活。若未提前取消，将于 {date} 从已绑定的付款方式扣取每年 $49.99。",
     rateLimited: "请求过于频繁，请稍后重试。",
     invalidSubmission: "本次提交数据无效，请重新开始作业后再试。",
   },

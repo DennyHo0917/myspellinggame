@@ -44,6 +44,27 @@ function selectPlan(interval) {
     confirmButton.dataset[`confirm${interval === "month" ? "Month" : "Year"}`];
 }
 
+function showImmediateBilling() {
+  selectedDescription.dataset.month =
+    selectedDescription.dataset.monthImmediate;
+  selectedDescription.dataset.year = selectedDescription.dataset.yearImmediate;
+  confirmButton.dataset.confirmMonth = confirmButton.dataset.confirmImmediate;
+  confirmButton.dataset.confirmYear = confirmButton.dataset.confirmImmediate;
+  selectPlan(confirmButton.dataset.checkout);
+}
+
+const embeddedEligibility =
+  confirmButton?.closest(".teacher-pricing")?.dataset.trialEligible;
+if (embeddedEligibility === "false") showImmediateBilling();
+else if (embeddedEligibility === undefined) {
+  fetch("/api/me", { credentials: "same-origin" })
+    .then((response) => (response.ok ? response.json() : null))
+    .then((me) => {
+      if (me?.trialEligible === false) showImmediateBilling();
+    })
+    .catch(() => null);
+}
+
 for (const option of planOptions) {
   option.addEventListener("click", () => selectPlan(option.dataset.planOption));
 }

@@ -298,7 +298,7 @@ test("Checkout analytics separate creation attempts from Stripe redirects", asyn
 
   await page.goto("/pricing");
   const checkout = page.getByRole("button", {
-    name: "Continue with monthly plan · $5.99 / month",
+    name: "Start 30-day free trial · Monthly",
   });
   await checkout.scrollIntoViewIfNeeded();
   await expect
@@ -528,7 +528,7 @@ test("mobile conversion pages keep their key actions usable", async ({
   ).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("button", { name: "Yearly plan", exact: true }).click();
   await expect(page.getByText("$4.17 / month")).toBeVisible();
-  await expect(page.getByText("Billed $49.99 yearly")).toBeVisible();
+  await expect(page.getByText(/\$49\.99\/year automatically/)).toBeVisible();
   await expect(page.getByText("Save 30%")).toBeVisible();
   await expect(
     page.getByText("Secure checkout by Stripe · Cancel anytime"),

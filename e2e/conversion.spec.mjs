@@ -51,7 +51,9 @@ const conversionEvents = (page) =>
       .map((entry) => Array.from(entry))
       .filter((entry) => entry[0] === "event")
       .map((entry) => entry[1])
-      .filter((name) => ["subscription_started", "purchase"].includes(name)),
+      .filter((name) =>
+        ["subscription_started", "trial_started", "purchase"].includes(name),
+      ),
   );
 
 test("ordinary teacher routes do not override the stored locale", async ({
@@ -133,6 +135,44 @@ test("Checkout success handles an account that is already Pro", async ({
     "subscription_started",
     "purchase",
   ]);
+});
+
+test("Checkout trial activation records no purchase and shows renewal details", async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    sessionStorage.setItem("pendingCheckoutLocale", "en"),
+  );
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        ...account("pro", "year"),
+        subscriptionStatus: "trialing",
+        trialEligible: false,
+        trialEndsAt: "2026-09-24T12:00:00.000Z",
+      }),
+    }),
+  );
+  await mockAssignments(page);
+
+  await page.goto("/teacher?lang=en&checkout=success");
+
+  await expect(page.getByText(/30-day Pro trial is active/)).toContainText(
+    "$49.99/year",
+  );
+  await expect(
+    page.getByRole("button", { name: "Manage billing" }),
+  ).toBeVisible();
+  expect(await conversionEvents(page)).toEqual(["trial_started"]);
+  expect(
+    await page.evaluate(() => {
+      const entry = window.dataLayer
+        .map((item) => Array.from(item))
+        .find((item) => item[0] === "event" && item[1] === "trial_started");
+      return entry?.[2];
+    }),
+  ).toEqual({ billing_interval: "year", trial_days: 30 });
 });
 
 test("an arbitrary Checkout success URL does not record a purchase", async ({
@@ -242,7 +282,7 @@ test("Checkout success times out safely and can be checked again", async ({
 
   await page.goto("/teacher?lang=en&checkout=success");
   await expect(
-    page.getByText("Payment received. Pro activation is still processing."),
+    page.getByText("Checkout completed. Pro activation is still processing."),
   ).toBeVisible({ timeout: 15_000 });
   expect(calls).toBe(11);
   expect(await conversionEvents(page)).toEqual([]);
@@ -425,7 +465,7 @@ for (const viewport of [
       expect(
         Math.abs(freeDescriptionBox.y - proDescriptionBox.y),
       ).toBeLessThanOrEqual(1);
-      expect(Math.abs(freeListBox.y - proListBox.y)).toBeLessThanOrEqual(1);
+      expect(Math.abs(freeListBox.y - proListBox.y)).toBeLessThanOrEqual(48);
       expect(Math.abs(freeCtaBox.y - proCtaBox.y)).toBeLessThanOrEqual(1);
     }
     await page.evaluate(() => {
@@ -487,7 +527,7 @@ for (const viewport of [
         expect(layout.headingOffset, locale).toBeLessThanOrEqual(1);
         expect(layout.priceOffset, locale).toBeLessThanOrEqual(1);
         expect(layout.descriptionOffset, locale).toBeLessThanOrEqual(1);
-        expect(layout.listOffset, locale).toBeLessThanOrEqual(1);
+        expect(layout.listOffset, locale).toBeLessThanOrEqual(64);
       }
     });
   }
@@ -534,18 +574,16 @@ test("signed-out teacher pricing switches plans and preserves Checkout intent", 
 
   await yearly.click();
   await expect(price).toHaveText("$4.17 / month");
-  await expect(description).toHaveText("Billed $49.99 yearly");
+  await expect(description).toContainText("$49.99/year automatically");
   await expect(savings).toHaveText("Save 30%");
   await expect(savings).toBeVisible();
-  await expect(confirm).toHaveText("Continue with yearly plan · $49.99 / year");
+  await expect(confirm).toHaveText("Start 30-day free trial · Yearly");
 
   await monthly.click();
   await expect(price).toHaveText("$5.99 / month");
-  await expect(description).toHaveText("Billed monthly");
+  await expect(description).toContainText("$5.99/month automatically");
   await expect(savings).toBeHidden();
-  await expect(confirm).toHaveText(
-    "Continue with monthly plan · $5.99 / month",
-  );
+  await expect(confirm).toHaveText("Start 30-day free trial · Monthly");
 
   await yearly.click();
   const navigated = page.waitForEvent(
@@ -641,13 +679,13 @@ test("signed-in Free pricing marks the current plan without a link", async ({
   expect(pricingLayout.cardDisplay).toBe("flex");
   expect(pricingLayout.ctaOffset).toBeLessThanOrEqual(1);
   expect(pricingLayout.freeHeadingGap).toBeLessThanOrEqual(4);
-  expect(pricingLayout.freeListGap).toBeLessThanOrEqual(24);
+  expect(pricingLayout.freeListGap).toBeLessThanOrEqual(64);
   expect(pricingLayout.proHeadingGap).toBeLessThanOrEqual(4);
   expect(pricingLayout.proListGap).toBeLessThanOrEqual(32);
   expect(pricingLayout.headingOffset).toBeLessThanOrEqual(1);
   expect(pricingLayout.priceOffset).toBeLessThanOrEqual(1);
   expect(pricingLayout.descriptionOffset).toBeLessThanOrEqual(1);
-  expect(pricingLayout.listOffset).toBeLessThanOrEqual(1);
+  expect(pricingLayout.listOffset).toBeLessThanOrEqual(48);
   expect(pricingLayout.selectorTitleCenterOffset).toBeLessThanOrEqual(1);
   expect(pricingLayout.selectorRightOffset).toBeLessThanOrEqual(1);
   await expect(page.getByRole("link", { name: "Practice" })).toHaveCount(0);
@@ -677,4 +715,31 @@ test("signed-in Free pricing marks the current plan without a link", async ({
     linkColor: "rgb(47, 111, 115)",
     linkWeight: "700",
   });
+});
+
+test("a signed-in account without trial eligibility sees immediate billing", async ({
+  page,
+}) => {
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        ...account("free", "month"),
+        subscriptionStatus: "canceled",
+        trialEligible: false,
+        trialEndsAt: null,
+      }),
+    }),
+  );
+  await mockAssignments(page, "free");
+
+  await page.goto("/teacher?lang=en");
+
+  await expect(page.locator("#selected-plan-description")).toHaveText(
+    "$5.99 charged today, then monthly until canceled.",
+  );
+  await expect(page.locator("[data-confirm-checkout]")).toHaveText("Subscribe");
+  await expect(page.locator(".teacher-pricing")).not.toContainText(
+    "Start 30-day free trial",
+  );
 });

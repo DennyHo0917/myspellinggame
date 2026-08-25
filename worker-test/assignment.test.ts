@@ -947,6 +947,71 @@ describe("Stripe checkout", () => {
   });
 
   it.each([
+    ["month", "price_monthly"],
+    ["year", "price_yearly"],
+  ] as const)(
+    "grants one 30-day %s trial and always collects a payment method",
+    async (interval, priceId) => {
+      let sent: Stripe.Checkout.SessionCreateParams | null = null;
+      await createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        interval,
+        "https://example.test",
+        {
+          now,
+          createSession: async (params) => {
+            sent = params;
+            return createSession(params);
+          },
+        },
+      );
+
+      expect(sent).toMatchObject({
+        mode: "subscription",
+        payment_method_collection: "always",
+        line_items: [{ price: priceId, quantity: 1 }],
+        metadata: { trial_granted: "true" },
+        subscription_data: {
+          trial_period_days: 30,
+          metadata: { trial_granted: "true" },
+        },
+      });
+    },
+  );
+
+  it("charges immediately after the account has used its trial", async () => {
+    await insertSubscription({ plan: "free", status: "inactive" });
+    await bindings.DB.prepare(
+      "UPDATE subscriptions SET trial_used_at = ? WHERE user_id = ?",
+    )
+      .bind(now.toISOString(), teacherA.id)
+      .run();
+    let sent: Stripe.Checkout.SessionCreateParams | null = null;
+
+    await createCheckout(
+      testEnv(),
+      bindings.DB,
+      teacherA,
+      "year",
+      "https://example.test",
+      {
+        now,
+        createSession: async (params) => {
+          sent = params;
+          return createSession(params);
+        },
+      },
+    );
+
+    const params = sent as unknown as Stripe.Checkout.SessionCreateParams;
+    expect(params.payment_method_collection).toBe("always");
+    expect(params.subscription_data?.trial_period_days).toBeUndefined();
+    expect(params.metadata?.trial_granted).toBe("false");
+  });
+
+  it.each([
     ["en", "en", "/pricing"],
     ["es", "es", "/es/pricing"],
     ["pt-BR", "pt-BR", "/pt-br/pricing"],
@@ -1267,7 +1332,11 @@ describe("Stripe event processing", () => {
           client_reference_id: teacherA.id,
           customer: "cus_test",
           subscription: "sub_test",
-          metadata: { owner_user_id: teacherA.id, billing_interval: "month" },
+          metadata: {
+            owner_user_id: teacherA.id,
+            billing_interval: "month",
+            trial_granted: "true",
+          },
         },
       },
     }) as unknown as Stripe.Event;
@@ -1289,6 +1358,195 @@ describe("Stripe event processing", () => {
       },
     );
   }
+
+  const subscriptionEvent = (
+    eventId: string,
+    status: string,
+    interval: "month" | "year" = "month",
+  ) =>
+    ({
+      id: eventId,
+      type:
+        status === "canceled"
+          ? "customer.subscription.deleted"
+          : "customer.subscription.updated",
+      data: {
+        object: {
+          id: "sub_trial",
+          customer: "cus_trial",
+          status,
+          cancel_at_period_end: status === "canceled",
+          metadata: { owner_user_id: teacherA.id },
+          items: {
+            data: [
+              {
+                current_period_end: Math.floor(Date.now() / 1000) + 86_400,
+                price: {
+                  id: interval === "year" ? "price_yearly" : "price_monthly",
+                  recurring: { interval },
+                },
+              },
+            ],
+          },
+        },
+      },
+    }) as unknown as Stripe.Event;
+
+  it("does not consume a trial when Checkout expires", async () => {
+    await createTestCheckout("cs_expired", new Date());
+    await processStripeEvent(
+      bindings.DB,
+      checkoutEvent("cs_expired", "checkout.session.expired"),
+      testEnv(),
+    );
+
+    expect(
+      await bindings.DB.prepare(
+        "SELECT trial_used_at FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .first("trial_used_at"),
+    ).toBeNull();
+  });
+
+  it("consumes the trial on completed Checkout across billing intervals", async () => {
+    await createTestCheckout("cs_trial", new Date());
+    await processStripeEvent(
+      bindings.DB,
+      checkoutEvent("cs_trial", "checkout.session.completed"),
+      testEnv(),
+    );
+    expect(
+      await bindings.DB.prepare(
+        "SELECT trial_used_at FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .first("trial_used_at"),
+    ).toBeTruthy();
+    await bindings.DB.prepare(
+      "UPDATE subscriptions SET status = 'canceled', plan = 'free' WHERE user_id = ?",
+    )
+      .bind(teacherA.id)
+      .run();
+    let sent: Stripe.Checkout.SessionCreateParams | null = null;
+
+    await createCheckout(
+      testEnv(),
+      bindings.DB,
+      teacherA,
+      "year",
+      "https://example.test",
+      {
+        createSession: async (params) => {
+          sent = params;
+          return {
+            id: "cs_year",
+            url: "https://checkout.test/year",
+            expires_at: params.expires_at!,
+          };
+        },
+      },
+    );
+
+    const params = sent as unknown as Stripe.Checkout.SessionCreateParams;
+    expect(params.subscription_data?.trial_period_days).toBeUndefined();
+    expect(params.metadata?.trial_granted).toBe("false");
+  });
+
+  it("keeps trial access and permanently preserves usage after cancellation or failure", async () => {
+    await processStripeEvent(
+      bindings.DB,
+      subscriptionEvent("evt_trialing", "trialing"),
+      testEnv(),
+    );
+    const usedAt = await bindings.DB.prepare(
+      "SELECT trial_used_at FROM subscriptions WHERE user_id = ?",
+    )
+      .bind(teacherA.id)
+      .first<string>("trial_used_at");
+    const me = (await (await call("/api/me")).json()) as {
+      plan: string;
+      subscriptionStatus: string;
+      trialEligible: boolean;
+      trialEndsAt: string | null;
+    };
+    expect(me).toMatchObject({
+      plan: "pro",
+      subscriptionStatus: "trialing",
+      trialEligible: false,
+    });
+    expect(me.trialEndsAt).toBeTruthy();
+
+    await processStripeEvent(
+      bindings.DB,
+      subscriptionEvent("evt_trial_canceled", "canceled"),
+      testEnv(),
+    );
+    await processStripeEvent(
+      bindings.DB,
+      {
+        id: "evt_trial_failed",
+        type: "invoice.payment_failed",
+        data: {
+          object: {
+            id: "in_failed",
+            customer: "cus_trial",
+            subscription: "sub_trial",
+          },
+        },
+      } as unknown as Stripe.Event,
+      testEnv(),
+    );
+    const row = await bindings.DB.prepare(
+      "SELECT plan, status, trial_used_at FROM subscriptions WHERE user_id = ?",
+    )
+      .bind(teacherA.id)
+      .first<{ plan: string; status: string; trial_used_at: string }>();
+    expect(row).toEqual({
+      plan: "free",
+      status: "past_due",
+      trial_used_at: usedAt,
+    });
+  });
+
+  it("ignores a $0 trial invoice but activates Pro after a real payment", async () => {
+    await processStripeEvent(
+      bindings.DB,
+      subscriptionEvent("evt_invoice_trialing", "trialing"),
+      testEnv(),
+    );
+    const invoice = (id: string, amountPaid: number) =>
+      ({
+        id,
+        type: "invoice.payment_succeeded",
+        data: {
+          object: {
+            id: `in_${id}`,
+            amount_paid: amountPaid,
+            customer: "cus_trial",
+            subscription: "sub_trial",
+          },
+        },
+      }) as unknown as Stripe.Event;
+
+    await processStripeEvent(bindings.DB, invoice("zero", 0), testEnv());
+    expect(
+      await bindings.DB.prepare(
+        "SELECT status FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .first("status"),
+    ).toBe("trialing");
+
+    await processStripeEvent(bindings.DB, invoice("paid", 599), testEnv());
+    expect(
+      await bindings.DB.prepare(
+        "SELECT plan, status FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .first(),
+    ).toEqual({ plan: "pro", status: "active" });
+  });
 
   it.each(["checkout.session.expired", "checkout.session.completed"] as const)(
     "clears the matching lock for %s",

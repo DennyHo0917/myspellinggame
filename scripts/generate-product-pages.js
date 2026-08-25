@@ -113,12 +113,18 @@ const copy = {
       "Save setup time and always know what each learner should practice next.",
     monthly: "Monthly plan",
     yearly: "Yearly plan",
-    monthlyBilling: "Billed monthly",
-    yearlyBilling: "Billed $49.99 yearly",
+    monthlyBilling:
+      "First 30 days free for new subscribers. $0 today. Card required. Then $5.99/month automatically unless canceled before the trial ends.",
+    yearlyBilling:
+      "First 30 days free for new subscribers. $0 today. Card required. Then $49.99/year automatically unless canceled before the trial ends.",
+    monthlyBillingImmediate:
+      "$5.99 charged today, then monthly until canceled.",
+    yearlyBillingImmediate: "$49.99 charged today, then yearly until canceled.",
     yearlySavings: "Save 30%",
     billingPeriod: "Billing period",
-    confirmMonthly: "Continue with monthly plan · $5.99 / month",
-    confirmYearly: "Continue with yearly plan · $49.99 / year",
+    confirmMonthly: "Start 30-day free trial · Monthly",
+    confirmYearly: "Start 30-day free trial · Yearly",
+    subscribe: "Subscribe",
     signIn: "Workspace sign in",
     practice: "Free practice",
     freeTeacher: "Create free account",
@@ -162,12 +168,19 @@ const copy = {
       "Ahorra tiempo de preparación y sabe siempre qué debe practicar cada aprendiz.",
     monthly: "Plan mensual",
     yearly: "Plan anual",
-    monthlyBilling: "Facturación mensual",
-    yearlyBilling: "Facturación anual de $49,99",
+    monthlyBilling:
+      "Los primeros 30 días son gratis para nuevos suscriptores. Hoy pagas $0 y debes registrar una tarjeta. Después se cobrarán automáticamente $5.99 al mes, salvo que canceles antes de que termine la prueba.",
+    yearlyBilling:
+      "Los primeros 30 días son gratis para nuevos suscriptores. Hoy pagas $0 y debes registrar una tarjeta. Después se cobrarán automáticamente $49,99 al año, salvo que canceles antes de que termine la prueba.",
+    monthlyBillingImmediate:
+      "$5.99 cobrados hoy y después cada mes hasta que canceles.",
+    yearlyBillingImmediate:
+      "$49,99 cobrados hoy y después cada año hasta que canceles.",
     yearlySavings: "Ahorra un 30 %",
     billingPeriod: "Periodo de facturación",
-    confirmMonthly: "Continuar con el plan mensual · $5.99 al mes",
-    confirmYearly: "Continuar con el plan anual · $49,99 al año",
+    confirmMonthly: "Iniciar prueba gratis de 30 días · Mensual",
+    confirmYearly: "Iniciar prueba gratis de 30 días · Anual",
+    subscribe: "Suscribirse",
     signIn: "Acceder al espacio de trabajo",
     practice: "Práctica gratuita",
     freeTeacher: "Crear una cuenta gratis",
@@ -211,12 +224,19 @@ const copy = {
       "Economize tempo de preparação e saiba sempre o que cada aprendiz deve praticar em seguida.",
     monthly: "Plano mensal",
     yearly: "Plano anual",
-    monthlyBilling: "Cobrança mensal",
-    yearlyBilling: "Cobrança anual de $49,99",
+    monthlyBilling:
+      "Os primeiros 30 dias são grátis para novos assinantes. Hoje você paga $0 e precisa cadastrar um cartão. Depois, a cobrança automática será de $5.99 por mês, a menos que você cancele antes do fim do teste.",
+    yearlyBilling:
+      "Os primeiros 30 dias são grátis para novos assinantes. Hoje você paga $0 e precisa cadastrar um cartão. Depois, a cobrança automática será de $49,99 por ano, a menos que você cancele antes do fim do teste.",
+    monthlyBillingImmediate:
+      "$5.99 cobrados hoje e depois mensalmente até o cancelamento.",
+    yearlyBillingImmediate:
+      "$49,99 cobrados hoje e depois anualmente até o cancelamento.",
     yearlySavings: "Economize 30%",
     billingPeriod: "Periodicidade",
-    confirmMonthly: "Continuar com o plano mensal · $5.99 por mês",
-    confirmYearly: "Continuar com o plano anual · $49,99 por ano",
+    confirmMonthly: "Iniciar teste grátis de 30 dias · Mensal",
+    confirmYearly: "Iniciar teste grátis de 30 dias · Anual",
+    subscribe: "Assinar",
     signIn: "Acessar espaço de trabalho",
     practice: "Prática grátis",
     freeTeacher: "Criar conta grátis",
@@ -260,12 +280,19 @@ const copy = {
       "Gagnez du temps de préparation et sachez toujours ce que chaque apprenant doit réviser ensuite.",
     monthly: "Offre mensuelle",
     yearly: "Offre annuelle",
-    monthlyBilling: "Facturation mensuelle",
-    yearlyBilling: "Facturé 49,99 $ par an",
+    monthlyBilling:
+      "Les 30 premiers jours sont gratuits pour les nouveaux abonnés. 0 $ aujourd’hui, carte requise. Ensuite, 5,99 $ seront prélevés automatiquement chaque mois, sauf résiliation avant la fin de l’essai.",
+    yearlyBilling:
+      "Les 30 premiers jours sont gratuits pour les nouveaux abonnés. 0 $ aujourd’hui, carte requise. Ensuite, 49,99 $ seront prélevés automatiquement chaque année, sauf résiliation avant la fin de l’essai.",
+    monthlyBillingImmediate:
+      "5,99 $ prélevés aujourd’hui, puis chaque mois jusqu’à résiliation.",
+    yearlyBillingImmediate:
+      "49,99 $ prélevés aujourd’hui, puis chaque année jusqu’à résiliation.",
     yearlySavings: "Économisez 30 %",
     billingPeriod: "Période de facturation",
-    confirmMonthly: "Continuer avec l’offre mensuelle · 5,99 $ / mois",
-    confirmYearly: "Continuer avec l’offre annuelle · 49,99 $ / an",
+    confirmMonthly: "Démarrer l’essai gratuit de 30 jours · Mensuel",
+    confirmYearly: "Démarrer l’essai gratuit de 30 jours · Annuel",
+    subscribe: "S’abonner",
     signIn: "Ouvrir l’espace de travail",
     practice: "Entraînement gratuit",
     freeTeacher: "Créer un compte gratuit",
@@ -309,12 +336,19 @@ const copy = {
       "Hemat waktu persiapan dan selalu ketahui apa yang perlu dilatih setiap pelajar berikutnya.",
     monthly: "Paket bulanan",
     yearly: "Paket tahunan",
-    monthlyBilling: "Ditagih bulanan",
-    yearlyBilling: "Ditagih $49.99 per tahun",
+    monthlyBilling:
+      "30 hari pertama gratis untuk pelanggan baru. Bayar $0 hari ini dan kartu wajib didaftarkan. Setelah itu, $5.99 ditagih otomatis setiap bulan kecuali dibatalkan sebelum masa uji coba berakhir.",
+    yearlyBilling:
+      "30 hari pertama gratis untuk pelanggan baru. Bayar $0 hari ini dan kartu wajib didaftarkan. Setelah itu, $49.99 ditagih otomatis setiap tahun kecuali dibatalkan sebelum masa uji coba berakhir.",
+    monthlyBillingImmediate:
+      "$5.99 ditagih hari ini, lalu setiap bulan sampai dibatalkan.",
+    yearlyBillingImmediate:
+      "$49.99 ditagih hari ini, lalu setiap tahun sampai dibatalkan.",
     yearlySavings: "Hemat 30%",
     billingPeriod: "Periode tagihan",
-    confirmMonthly: "Lanjutkan dengan paket bulanan · $5.99 per bulan",
-    confirmYearly: "Lanjutkan dengan paket tahunan · $49.99 per tahun",
+    confirmMonthly: "Mulai uji coba gratis 30 hari · Bulanan",
+    confirmYearly: "Mulai uji coba gratis 30 hari · Tahunan",
+    subscribe: "Berlangganan",
     signIn: "Masuk ke ruang kerja",
     practice: "Latihan gratis",
     freeTeacher: "Buat akun gratis",
@@ -356,12 +390,17 @@ const copy = {
     proValue: "节省每次准备词表的时间，并随时知道每位学习者接下来该练什么。",
     monthly: "月付方案",
     yearly: "年付方案",
-    monthlyBilling: "按月收费",
-    yearlyBilling: "每年收费 $49.99",
+    monthlyBilling:
+      "新订阅用户首 30 天免费。今天支付 $0，需绑定付款方式。30 天后自动扣取每月 $5.99，除非在试用结束前取消。",
+    yearlyBilling:
+      "新订阅用户首 30 天免费。今天支付 $0，需绑定付款方式。30 天后自动扣取每年 $49.99，除非在试用结束前取消。",
+    monthlyBillingImmediate: "今天扣取 $5.99，之后按月自动续费，直至取消。",
+    yearlyBillingImmediate: "今天扣取 $49.99，之后按年自动续费，直至取消。",
     yearlySavings: "立省 30%",
     billingPeriod: "计费周期",
-    confirmMonthly: "继续月付 · 每月 $5.99",
-    confirmYearly: "继续年付 · 每年 $49.99",
+    confirmMonthly: "开始 30 天免费试用 · 月付",
+    confirmYearly: "开始 30 天免费试用 · 年付",
+    subscribe: "订阅",
     signIn: "登录工作台",
     practice: "免费练习",
     freeTeacher: "免费创建账号",
@@ -430,7 +469,7 @@ function render(locale) {
       <section class="product-card"><h1>${escape(c.heading)}</h1><p>${escape(c.intro)}</p><p class="notice">${escape(c.note)}</p></section>
       <div class="pricing-grid">
         <section class="product-card pricing-card"><div class="pricing-card-heading"><h2>${escape(c.free)}</h2></div><div class="selected-plan"><p class="price">${escape(c.freePrice)}</p><p class="plan-description">${escape(c.freeBilling)}</p></div><ul>${c.freeItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><a class="button-link button-secondary" data-free-teacher-cta data-current-plan-label="${escape(c.currentPlan)}" href="/teacher?lang=${encodeURIComponent(locale.code)}#teacher-sign-in">${escape(c.freeTeacher)}</a></section>
-        <section class="product-card pricing-card"><div class="pricing-card-heading"><h2>${escape(c.pro)}</h2><div class="plan-selector" role="group" aria-label="${escape(c.billingPeriod)}"><button type="button" class="plan-option" data-plan-option="month" aria-pressed="true">${escape(c.monthly)}</button><button type="button" class="plan-option" data-plan-option="year" aria-pressed="false">${escape(c.yearly)}</button></div></div><div class="selected-plan" aria-live="polite"><p class="price" id="selected-plan-price" data-month="${escape(c.month)}" data-year="${escape(c.year)}">${escape(c.month)}</p><p class="plan-description" id="selected-plan-description" data-month="${escape(c.monthlyBilling)}" data-year="${escape(c.yearlyBilling)}">${escape(c.monthlyBilling)}</p><p class="plan-savings" id="selected-plan-savings" data-month="" data-year="${escape(c.yearlySavings)}" hidden></p></div><ul>${c.proItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><p class="plan-description">${escape(c.proValue)}</p><div class="actions"><button type="button" class="checkout-confirm" data-confirm-checkout data-checkout="month" data-confirm-month="${escape(c.confirmMonthly)}" data-confirm-year="${escape(c.confirmYearly)}">${escape(c.confirmMonthly)}</button></div><p class="checkout-security">${escape(c.secureCheckout)}</p><p class="status" id="pricing-status" role="status"></p></section>
+        <section class="product-card pricing-card"><div class="pricing-card-heading"><h2>${escape(c.pro)}</h2><div class="plan-selector" role="group" aria-label="${escape(c.billingPeriod)}"><button type="button" class="plan-option" data-plan-option="month" aria-pressed="true">${escape(c.monthly)}</button><button type="button" class="plan-option" data-plan-option="year" aria-pressed="false">${escape(c.yearly)}</button></div></div><div class="selected-plan" aria-live="polite"><p class="price" id="selected-plan-price" data-month="${escape(c.month)}" data-year="${escape(c.year)}">${escape(c.month)}</p><p class="plan-description" id="selected-plan-description" data-month="${escape(c.monthlyBilling)}" data-year="${escape(c.yearlyBilling)}" data-month-immediate="${escape(c.monthlyBillingImmediate)}" data-year-immediate="${escape(c.yearlyBillingImmediate)}">${escape(c.monthlyBilling)}</p><p class="plan-savings" id="selected-plan-savings" data-month="" data-year="${escape(c.yearlySavings)}" hidden></p></div><ul>${c.proItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><p class="plan-description">${escape(c.proValue)}</p><div class="actions"><button type="button" class="checkout-confirm" data-confirm-checkout data-checkout="month" data-confirm-month="${escape(c.confirmMonthly)}" data-confirm-year="${escape(c.confirmYearly)}" data-confirm-immediate="${escape(c.subscribe)}">${escape(c.confirmMonthly)}</button></div><p class="checkout-security">${escape(c.secureCheckout)}</p><p class="status" id="pricing-status" role="status"></p></section>
       </div>
     </main>
     <footer class="product-footer"><p><span class="footer-links">${links}</span><br>&copy; 2026 My Spelling Game ${footerRights[locale.code]}</p></footer>

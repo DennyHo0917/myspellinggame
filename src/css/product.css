@@ -334,12 +334,12 @@ a {
   margin: 0;
 }
 .selected-plan .plan-description {
-  grid-column: 1;
+  grid-column: 1 / -1;
   color: var(--muted);
   font-weight: 700;
 }
 .selected-plan .plan-savings {
-  grid-column: 2;
+  grid-column: 1 / -1;
   justify-self: start;
   display: inline-flex;
   margin: 0;

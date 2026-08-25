@@ -48,6 +48,8 @@ Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a high-entropy `BETTER_AUTH_
    - `invoice.payment_failed`
 5. Store the API key and webhook signing secret as `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` Cloudflare secrets.
 
+After deploying the 30-day trial, enable Stripe's trial-ending reminder email, confirm that the Customer Portal allows subscription cancellation, and verify that the monthly and yearly Prices remain USD 5.99 and USD 49.99. The Prices themselves do not need a trial configured; Checkout sets the trial period.
+
 For local webhook testing, run Stripe CLI forwarding to `http://localhost:5173/api/stripe/webhook` and use its temporary `whsec_...` value only in `.dev.vars`.
 
 ## Verification commands

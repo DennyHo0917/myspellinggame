@@ -30,6 +30,7 @@ import {
   createCheckout,
   createPortal,
   hasActiveSubscription,
+  isTrialEligible,
   verifyAndProcessWebhook,
   type StripeEnv,
 } from "./stripe";
@@ -1157,15 +1158,33 @@ export async function handleRequest(
 
   if (url.pathname === "/api/me" && method === "GET") {
     const user = await requireTeacher(env, request, getSession);
-    const plan = await getPlan(env, user.id);
     const subscription = await env.DB.prepare(
-      "SELECT billing_interval FROM subscriptions WHERE user_id = ?",
+      `SELECT status, billing_interval, current_period_end, stripe_price_id,
+              stripe_customer_id, stripe_subscription_id, trial_used_at
+       FROM subscriptions WHERE user_id = ?`,
     )
       .bind(user.id)
-      .first<{ billing_interval: "month" | "year" | null }>();
+      .first<{
+        status: string;
+        billing_interval: "month" | "year" | null;
+        current_period_end: string | null;
+        stripe_price_id: string | null;
+        stripe_customer_id: string | null;
+        stripe_subscription_id: string | null;
+        trial_used_at: string | null;
+      }>();
+    const plan = hasActiveSubscription(subscription ?? null, env)
+      ? "pro"
+      : "free";
     return json({
       user: { id: user.id, name: user.name, email: user.email },
       billingInterval: subscription?.billing_interval || null,
+      subscriptionStatus: subscription?.status || null,
+      trialEligible: isTrialEligible(subscription ?? null),
+      trialEndsAt:
+        subscription?.status === "trialing"
+          ? subscription.current_period_end
+          : null,
       ...(await usage(env.DB, user.id, plan)),
     });
   }

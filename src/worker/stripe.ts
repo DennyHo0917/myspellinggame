@@ -16,6 +16,12 @@ type SubscriptionAccess = {
   stripe_price_id: string | null;
 };
 
+type TrialAccess = {
+  trial_used_at: string | null;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+};
+
 type CheckoutOptions = {
   now?: Date;
   locale?: string;
@@ -62,6 +68,15 @@ export function hasActiveSubscription(
     subscription.stripe_price_id &&
     (subscription.stripe_price_id === env.STRIPE_PRICE_MONTHLY ||
       subscription.stripe_price_id === env.STRIPE_PRICE_YEARLY),
+  );
+}
+
+export function isTrialEligible(subscription: TrialAccess | null) {
+  return Boolean(
+    !subscription ||
+    (!subscription.trial_used_at &&
+      !subscription.stripe_customer_id &&
+      !subscription.stripe_subscription_id),
   );
 }
 
@@ -144,7 +159,8 @@ export async function createCheckout(
     );
   const subscription = await db
     .prepare(
-      `SELECT status, current_period_end, stripe_price_id, stripe_customer_id
+      `SELECT status, current_period_end, stripe_price_id, stripe_customer_id,
+              stripe_subscription_id, trial_used_at
        FROM subscriptions WHERE user_id = ?`,
     )
     .bind(user.id)
@@ -153,6 +169,8 @@ export async function createCheckout(
       current_period_end: string | null;
       stripe_price_id: string | null;
       stripe_customer_id: string | null;
+      stripe_subscription_id: string | null;
+      trial_used_at: string | null;
     }>();
   const now = options.now ?? new Date();
   if (hasActiveSubscription(subscription ?? null, env, now)) {
@@ -162,6 +180,7 @@ export async function createCheckout(
       "This teacher already has an active subscription.",
     );
   }
+  const trialGranted = isTrialEligible(subscription ?? null);
   const nowIso = now.toISOString();
   const existingLock = await db
     .prepare(
@@ -233,9 +252,19 @@ export async function createCheckout(
         customer_email: subscription?.stripe_customer_id
           ? undefined
           : user.email,
-        metadata: { owner_user_id: user.id, billing_interval: interval },
+        payment_method_collection: "always",
+        metadata: {
+          owner_user_id: user.id,
+          billing_interval: interval,
+          trial_granted: String(trialGranted),
+        },
         subscription_data: {
-          metadata: { owner_user_id: user.id, billing_interval: interval },
+          ...(trialGranted ? { trial_period_days: 30 } : {}),
+          metadata: {
+            owner_user_id: user.id,
+            billing_interval: interval,
+            trial_granted: String(trialGranted),
+          },
         },
         allow_promotion_codes: true,
         expires_at: sessionExpiresAt,
@@ -314,13 +343,14 @@ async function applySubscription(
   const active =
     configuredPrice &&
     (subscription.status === "active" || subscription.status === "trialing");
+  const now = new Date().toISOString();
   await db
     .prepare(
       `INSERT INTO subscriptions (
          user_id, plan, status, billing_interval, stripe_customer_id,
          stripe_subscription_id, stripe_price_id, current_period_end,
-         cancel_at_period_end, updated_at
-       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         cancel_at_period_end, trial_used_at, updated_at
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(user_id) DO UPDATE SET
          plan = excluded.plan,
          status = excluded.status,
@@ -330,6 +360,7 @@ async function applySubscription(
          stripe_price_id = excluded.stripe_price_id,
          current_period_end = excluded.current_period_end,
          cancel_at_period_end = excluded.cancel_at_period_end,
+         trial_used_at = COALESCE(subscriptions.trial_used_at, excluded.trial_used_at),
          updated_at = excluded.updated_at`,
     )
     .bind(
@@ -342,7 +373,8 @@ async function applySubscription(
       priceId,
       subscriptionPeriodEnd(subscription),
       subscription.cancel_at_period_end ? 1 : 0,
-      new Date().toISOString(),
+      subscription.status === "trialing" ? now : null,
+      now,
     )
     .run();
 }
@@ -355,18 +387,32 @@ async function applyCheckout(
   const ownerUserId =
     session.client_reference_id || session.metadata?.owner_user_id;
   if (!ownerUserId) return;
+  const existing = await db
+    .prepare(
+      `SELECT trial_used_at, stripe_customer_id, stripe_subscription_id
+       FROM subscriptions WHERE user_id = ?`,
+    )
+    .bind(ownerUserId)
+    .first<TrialAccess>();
+  const now = new Date().toISOString();
+  const trialUsedAt =
+    session.metadata?.trial_granted === "true" &&
+    isTrialEligible(existing ?? null)
+      ? now
+      : null;
   await db
     .prepare(
       `INSERT INTO subscriptions (
          user_id, plan, status, billing_interval, stripe_customer_id,
          stripe_subscription_id, stripe_price_id, current_period_end,
-         cancel_at_period_end, updated_at
-       ) VALUES (?, 'free', 'pending', ?, ?, ?, ?, NULL, 0, ?)
+         cancel_at_period_end, trial_used_at, updated_at
+       ) VALUES (?, 'free', 'pending', ?, ?, ?, ?, NULL, 0, ?, ?)
        ON CONFLICT(user_id) DO UPDATE SET
          billing_interval = excluded.billing_interval,
          stripe_customer_id = COALESCE(excluded.stripe_customer_id, subscriptions.stripe_customer_id),
          stripe_subscription_id = COALESCE(excluded.stripe_subscription_id, subscriptions.stripe_subscription_id),
          stripe_price_id = COALESCE(excluded.stripe_price_id, subscriptions.stripe_price_id),
+         trial_used_at = COALESCE(subscriptions.trial_used_at, excluded.trial_used_at),
          updated_at = excluded.updated_at`,
     )
     .bind(
@@ -377,7 +423,8 @@ async function applyCheckout(
       session.metadata?.billing_interval === "year"
         ? env.STRIPE_PRICE_YEARLY
         : env.STRIPE_PRICE_MONTHLY,
-      new Date().toISOString(),
+      trialUsedAt,
+      now,
     )
     .run();
   await clearCheckoutLock(db, session);
@@ -443,6 +490,7 @@ export async function applyStripeEvent(
       );
       break;
     case "invoice.payment_succeeded":
+      if (Number((event.data.object as Stripe.Invoice).amount_paid) <= 0) break;
       await applyInvoiceStatus(
         db,
         event.data.object as Stripe.Invoice,

@@ -19,7 +19,7 @@ type CheckoutOptions = {
   createSession?: (
     params: Stripe.Checkout.SessionCreateParams,
     options: Stripe.RequestOptions,
-  ) => Promise<{ url: string | null }>;
+  ) => Promise<Pick<Stripe.Checkout.Session, "id" | "url" | "expires_at">>;
 };
 
 export function hasActiveSubscription(
@@ -84,6 +84,21 @@ async function ownerFromStripeObject(
   return row?.user_id ?? null;
 }
 
+async function clearCheckoutLock(
+  db: D1Database,
+  session: Stripe.Checkout.Session,
+) {
+  const ownerUserId =
+    session.client_reference_id || session.metadata?.owner_user_id;
+  if (!ownerUserId) return;
+  await db
+    .prepare(
+      "DELETE FROM checkout_locks WHERE user_id = ? AND stripe_session_id = ?",
+    )
+    .bind(ownerUserId, session.id)
+    .run();
+}
+
 export async function createCheckout(
   env: StripeEnv,
   db: D1Database,
@@ -142,14 +157,16 @@ export async function createCheckout(
     );
   }
   const token = crypto.randomUUID();
-  const expiresAt = new Date(now.getTime() + 10 * 60_000).toISOString();
+  const sessionExpiresAt = Math.floor(now.getTime() / 1000) + 30 * 60;
+  const expiresAt = new Date(sessionExpiresAt * 1000).toISOString();
   const claim = await db
     .prepare(
       `INSERT INTO checkout_locks (user_id, token, interval, expires_at, created_at)
        VALUES (?, ?, ?, ?, ?)
        ON CONFLICT(user_id) DO UPDATE SET
          token = excluded.token, interval = excluded.interval,
-         session_url = NULL, expires_at = excluded.expires_at,
+         stripe_session_id = NULL, session_url = NULL,
+         expires_at = excluded.expires_at,
          created_at = excluded.created_at
        WHERE checkout_locks.expires_at <= ?`,
     )
@@ -192,6 +209,7 @@ export async function createCheckout(
           metadata: { owner_user_id: user.id, billing_interval: interval },
         },
         allow_promotion_codes: true,
+        expires_at: sessionExpiresAt,
       },
       { idempotencyKey: `checkout-${token}` },
     );
@@ -203,9 +221,17 @@ export async function createCheckout(
       );
     await db
       .prepare(
-        "UPDATE checkout_locks SET session_url = ? WHERE user_id = ? AND token = ?",
+        `UPDATE checkout_locks
+         SET stripe_session_id = ?, session_url = ?, expires_at = ?
+         WHERE user_id = ? AND token = ?`,
       )
-      .bind(session.url, user.id, token)
+      .bind(
+        session.id,
+        session.url,
+        new Date(session.expires_at * 1000).toISOString(),
+        user.id,
+        token,
+      )
       .run();
     return session;
   } catch (error) {
@@ -285,10 +311,6 @@ async function applySubscription(
       new Date().toISOString(),
     )
     .run();
-  await db
-    .prepare("DELETE FROM checkout_locks WHERE user_id = ?")
-    .bind(ownerUserId)
-    .run();
 }
 
 async function applyCheckout(
@@ -324,6 +346,7 @@ async function applyCheckout(
       new Date().toISOString(),
     )
     .run();
+  await clearCheckoutLock(db, session);
 }
 
 async function applyInvoiceStatus(
@@ -372,6 +395,9 @@ export async function applyStripeEvent(
         event.data.object as Stripe.Checkout.Session,
         env,
       );
+      break;
+    case "checkout.session.expired":
+      await clearCheckoutLock(db, event.data.object as Stripe.Checkout.Session);
       break;
     case "customer.subscription.created":
     case "customer.subscription.updated":

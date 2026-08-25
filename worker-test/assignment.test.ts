@@ -614,7 +614,13 @@ describe("Stripe checkout", () => {
   const now = new Date();
   const future = new Date(now.getTime() + 24 * 60 * 60_000).toISOString();
   const expired = new Date(now.getTime() - 24 * 60 * 60_000).toISOString();
-  const createSession = async () => ({ url: "https://checkout.test/session" });
+  const createSession = async (
+    params: Stripe.Checkout.SessionCreateParams,
+  ) => ({
+    id: "cs_test",
+    url: "https://checkout.test/session",
+    expires_at: params.expires_at!,
+  });
 
   it.each([
     ["pro", "inactive", "price_monthly", future],
@@ -640,7 +646,7 @@ describe("Stripe checkout", () => {
           "https://example.test",
           { now, createSession },
         ),
-      ).resolves.toEqual({ url: "https://checkout.test/session" });
+      ).resolves.toMatchObject({ url: "https://checkout.test/session" });
     },
   );
 
@@ -690,7 +696,7 @@ describe("Stripe checkout", () => {
         "https://example.test",
         { now, createSession },
       ),
-    ).resolves.toEqual({ url: "https://checkout.test/session" });
+    ).resolves.toMatchObject({ url: "https://checkout.test/session" });
   });
 
   it("creates one Session for concurrent requests and reuses its URL", async () => {
@@ -699,10 +705,16 @@ describe("Stripe checkout", () => {
     const gate = new Promise<void>((resolve) => {
       release = resolve;
     });
-    const delayedSession = async () => {
+    const delayedSession = async (
+      params: Stripe.Checkout.SessionCreateParams,
+    ) => {
       calls += 1;
       await gate;
-      return { url: "https://checkout.test/shared" };
+      return {
+        id: "cs_shared",
+        url: "https://checkout.test/shared",
+        expires_at: params.expires_at!,
+      };
     };
     const checkout = () =>
       createCheckout(
@@ -721,7 +733,7 @@ describe("Stripe checkout", () => {
       code: "checkout_pending",
     });
     release?.();
-    await expect(first).resolves.toEqual({
+    await expect(first).resolves.toMatchObject({
       url: "https://checkout.test/shared",
     });
     await expect(checkout()).resolves.toEqual({
@@ -729,9 +741,171 @@ describe("Stripe checkout", () => {
     });
     expect(calls).toBe(1);
   });
+
+  it("stores the exact expiration sent to Stripe", async () => {
+    let sentExpiresAt = 0;
+    await createCheckout(
+      testEnv(),
+      bindings.DB,
+      teacherA,
+      "month",
+      "https://example.test",
+      {
+        now,
+        createSession: async (params) => {
+          sentExpiresAt = params.expires_at!;
+          return {
+            id: "cs_expiration",
+            url: "https://checkout.test/expiration",
+            expires_at: sentExpiresAt,
+          };
+        },
+      },
+    );
+
+    const lock = await bindings.DB.prepare(
+      `SELECT stripe_session_id, expires_at FROM checkout_locks
+       WHERE user_id = ?`,
+    )
+      .bind(teacherA.id)
+      .first<{ stripe_session_id: string; expires_at: string }>();
+    expect(sentExpiresAt).toBe(Math.floor(now.getTime() / 1000) + 30 * 60);
+    expect(lock).toEqual({
+      stripe_session_id: "cs_expiration",
+      expires_at: new Date(sentExpiresAt * 1000).toISOString(),
+    });
+  });
+
+  it("releases the lock when Session creation fails", async () => {
+    await expect(
+      createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        "month",
+        "https://example.test",
+        {
+          now,
+          createSession: async () => {
+            throw new Error("Stripe unavailable");
+          },
+        },
+      ),
+    ).rejects.toThrow("Stripe unavailable");
+    expect(
+      await bindings.DB.prepare(
+        "SELECT COUNT(*) AS count FROM checkout_locks",
+      ).first("count"),
+    ).toBe(0);
+  });
+
+  it("creates a new Session after the previous Session expires", async () => {
+    let calls = 0;
+    const createUniqueSession = async (
+      params: Stripe.Checkout.SessionCreateParams,
+    ) => {
+      calls += 1;
+      return {
+        id: `cs_${calls}`,
+        url: `https://checkout.test/${calls}`,
+        expires_at: params.expires_at!,
+      };
+    };
+    const checkout = (requestTime: Date) =>
+      createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        "month",
+        "https://example.test",
+        { now: requestTime, createSession: createUniqueSession },
+      );
+
+    await expect(checkout(now)).resolves.toMatchObject({ id: "cs_1" });
+    await expect(
+      checkout(new Date(now.getTime() + 31 * 60_000)),
+    ).resolves.toMatchObject({ id: "cs_2" });
+    expect(calls).toBe(2);
+  });
 });
 
 describe("Stripe event processing", () => {
+  const checkoutEvent = (
+    id: string,
+    type: "checkout.session.expired" | "checkout.session.completed",
+  ) =>
+    ({
+      id: `evt_${type}_${id}`,
+      type,
+      data: {
+        object: {
+          id,
+          client_reference_id: teacherA.id,
+          customer: "cus_test",
+          subscription: "sub_test",
+          metadata: { owner_user_id: teacherA.id, billing_interval: "month" },
+        },
+      },
+    }) as unknown as Stripe.Event;
+
+  async function createTestCheckout(id: string, now: Date) {
+    return createCheckout(
+      testEnv(),
+      bindings.DB,
+      teacherA,
+      "month",
+      "https://example.test",
+      {
+        now,
+        createSession: async (params) => ({
+          id,
+          url: `https://checkout.test/${id}`,
+          expires_at: params.expires_at!,
+        }),
+      },
+    );
+  }
+
+  it.each(["checkout.session.expired", "checkout.session.completed"] as const)(
+    "clears the matching lock for %s",
+    async (eventType) => {
+      const now = new Date();
+      await createTestCheckout("cs_current", now);
+      await processStripeEvent(
+        bindings.DB,
+        checkoutEvent("cs_current", eventType),
+        testEnv(),
+      );
+      expect(
+        await bindings.DB.prepare(
+          "SELECT COUNT(*) AS count FROM checkout_locks",
+        ).first("count"),
+      ).toBe(0);
+    },
+  );
+
+  it.each(["checkout.session.expired", "checkout.session.completed"] as const)(
+    "does not clear a newer lock for an old %s",
+    async (eventType) => {
+      const now = new Date();
+      await createTestCheckout("cs_old", now);
+      await createTestCheckout("cs_new", new Date(now.getTime() + 31 * 60_000));
+
+      await processStripeEvent(
+        bindings.DB,
+        checkoutEvent("cs_old", eventType),
+        testEnv(),
+      );
+      expect(
+        await bindings.DB.prepare(
+          "SELECT stripe_session_id FROM checkout_locks WHERE user_id = ?",
+        )
+          .bind(teacherA.id)
+          .first("stripe_session_id"),
+      ).toBe("cs_new");
+    },
+  );
+
   it("processes a repeated webhook event only once", async () => {
     const event = {
       id: "evt_repeat",

@@ -118,6 +118,9 @@ const PACKS = {
     checkoutRetry:
       "We couldn’t open Stripe Checkout. Your selected plan is still saved.",
     retryCheckout: "Try checkout again",
+    activatingPro: "Activating your Pro plan…",
+    activationDelayed: "Payment received. Pro activation is still processing.",
+    checkAgain: "Check again",
     invalidTitle: "Use an assignment title with 1–80 characters.",
     invalidWords: "Use 1–80 words, each 2–24 characters long.",
     invalidDeadline: "Choose a future deadline within the next year.",
@@ -247,6 +250,10 @@ const PACKS = {
     checkoutRetry:
       "No pudimos abrir el pago seguro. El plan que elegiste sigue guardado.",
     retryCheckout: "Reintentar el pago",
+    activatingPro: "Activando tu plan Pro…",
+    activationDelayed:
+      "Pago recibido. La activación de Pro todavía se está procesando.",
+    checkAgain: "Comprobar de nuevo",
     invalidTitle: "Usa un título de entre 1 y 80 caracteres.",
     invalidWords: "Usa entre 1 y 80 palabras, de 2 a 24 caracteres cada una.",
     invalidDeadline: "Elige una fecha futura dentro del próximo año.",
@@ -376,6 +383,10 @@ const PACKS = {
     checkoutRetry:
       "Não foi possível abrir o checkout. O plano escolhido continua salvo.",
     retryCheckout: "Tentar o checkout novamente",
+    activatingPro: "Ativando seu plano Pro…",
+    activationDelayed:
+      "Pagamento recebido. A ativação do Pro ainda está sendo processada.",
+    checkAgain: "Verificar novamente",
     invalidTitle: "Use um título com 1 a 80 caracteres.",
     invalidWords: "Use de 1 a 80 palavras, cada uma com 2 a 24 caracteres.",
     invalidDeadline: "Escolha um prazo futuro dentro do próximo ano.",
@@ -505,6 +516,10 @@ const PACKS = {
     checkoutRetry:
       "Impossible d’ouvrir le paiement sécurisé. Votre offre reste enregistrée.",
     retryCheckout: "Réessayer le paiement",
+    activatingPro: "Activation de votre offre Pro…",
+    activationDelayed:
+      "Paiement reçu. L’activation de Pro est encore en cours.",
+    checkAgain: "Vérifier à nouveau",
     invalidTitle: "Utilisez un titre de 1 à 80 caractères.",
     invalidWords: "Utilisez 1 à 80 mots de 2 à 24 caractères chacun.",
     invalidDeadline: "Choisissez une échéance future dans l’année à venir.",
@@ -631,6 +646,9 @@ const PACKS = {
     checkoutRetry:
       "Checkout belum dapat dibuka. Paket yang dipilih tetap tersimpan.",
     retryCheckout: "Coba checkout lagi",
+    activatingPro: "Mengaktifkan paket Pro Anda…",
+    activationDelayed: "Pembayaran diterima. Aktivasi Pro masih diproses.",
+    checkAgain: "Periksa lagi",
     invalidTitle: "Gunakan judul sepanjang 1–80 karakter.",
     invalidWords: "Gunakan 1–80 kata, masing-masing sepanjang 2–24 karakter.",
     invalidDeadline:
@@ -750,6 +768,9 @@ const PACKS = {
     billingUnavailable: "当前环境尚未配置付费功能。",
     checkoutRetry: "暂时无法打开 Stripe 结账页，你选择的方案仍已保留。",
     retryCheckout: "重新尝试结账",
+    activatingPro: "正在激活 Pro 套餐…",
+    activationDelayed: "已收到付款，Pro 套餐仍在激活中。",
+    checkAgain: "再次检查",
     invalidTitle: "作业标题需为 1～80 个字符。",
     invalidWords: "请输入 1～80 个单词，每个单词 2～24 个字符。",
     invalidDeadline: "请选择未来一年内的截止时间。",

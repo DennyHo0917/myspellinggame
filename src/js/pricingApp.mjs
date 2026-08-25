@@ -68,6 +68,7 @@ confirmButton.addEventListener("click", async () => {
     trackEvent("checkout_started", { billing_interval: interval });
     try {
       sessionStorage.removeItem("pendingCheckoutInterval");
+      sessionStorage.removeItem("teacherPurchaseRecorded");
     } catch {}
     location.href = data.url;
   } catch (error) {

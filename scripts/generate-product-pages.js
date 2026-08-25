@@ -115,6 +115,7 @@ const copy = {
     signIn: "Teacher sign in",
     practice: "Free practice",
     freeTeacher: "Start free teacher account",
+    currentPlan: "Current plan",
     secureCheckout: "Secure checkout by Stripe · Cancel anytime",
     language: "Language",
     note: "The ordinary spelling game, custom lists, practice links, dictation, Typing Rain, and missed-word replay stay free.",
@@ -156,6 +157,7 @@ const copy = {
     signIn: "Acceso docente",
     practice: "Práctica gratuita",
     freeTeacher: "Crear una cuenta docente gratis",
+    currentPlan: "Plan actual",
     secureCheckout: "Pago seguro con Stripe · Cancela cuando quieras",
     language: "Idioma",
     note: "El juego normal, las listas propias, los enlaces de práctica, el dictado, la lluvia de palabras y el repaso de errores siguen siendo gratis.",
@@ -197,6 +199,7 @@ const copy = {
     signIn: "Acesso do professor",
     practice: "Prática grátis",
     freeTeacher: "Criar conta grátis de professor",
+    currentPlan: "Plano atual",
     secureCheckout: "Checkout seguro pelo Stripe · Cancele quando quiser",
     language: "Idioma",
     note: "O jogo comum, listas próprias, links de prática, ditado, chuva de palavras e revisão de erros continuam grátis.",
@@ -238,6 +241,7 @@ const copy = {
     signIn: "Connexion enseignant",
     practice: "Entraînement gratuit",
     freeTeacher: "Créer un compte enseignant gratuit",
+    currentPlan: "Offre actuelle",
     secureCheckout: "Paiement sécurisé par Stripe · Résiliable à tout moment",
     language: "Langue",
     note: "Le jeu classique, les listes personnalisées, les liens, la dictée, la pluie de mots et la reprise des erreurs restent gratuits.",
@@ -279,6 +283,7 @@ const copy = {
     signIn: "Login guru",
     practice: "Latihan gratis",
     freeTeacher: "Buat akun guru gratis",
+    currentPlan: "Paket saat ini",
     secureCheckout: "Checkout aman oleh Stripe · Batalkan kapan saja",
     language: "Bahasa",
     note: "Game biasa, daftar sendiri, link latihan, dikte, hujan kata, dan latihan ulang kata yang salah tetap gratis.",
@@ -319,6 +324,7 @@ const copy = {
     signIn: "教师登录",
     practice: "免费练习",
     freeTeacher: "免费创建教师账号",
+    currentPlan: "当前套餐",
     secureCheckout: "Stripe 安全结账 · 可随时取消",
     language: "语言",
     note: "普通拼写游戏、自定义词表、练习链接、听写、单词雨和错词重练都继续免费。",
@@ -382,7 +388,7 @@ function render(locale) {
     <main class="product-main">
       <section class="product-card"><h1>${escape(c.heading)}</h1><p>${escape(c.intro)}</p><p class="notice">${escape(c.note)}</p></section>
       <div class="pricing-grid">
-        <section class="product-card pricing-card"><h2>${escape(c.free)}</h2><p class="price">${escape(c.freePrice)}</p><ul>${c.freeItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><a class="button-link button-secondary" href="/teacher?lang=${encodeURIComponent(locale.code)}">${escape(c.freeTeacher)}</a></section>
+        <section class="product-card pricing-card"><h2>${escape(c.free)}</h2><p class="price">${escape(c.freePrice)}</p><ul>${c.freeItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><a class="button-link button-secondary" data-free-teacher-cta data-current-plan-label="${escape(c.currentPlan)}" href="/teacher?lang=${encodeURIComponent(locale.code)}#teacher-sign-in">${escape(c.freeTeacher)}</a></section>
         <section class="product-card pricing-card"><h2>${escape(c.pro)}</h2><div class="plan-selector" role="group" aria-label="${escape(c.billingPeriod)}"><button type="button" class="plan-option" data-plan-option="month" aria-pressed="true">${escape(c.monthly)}</button><button type="button" class="plan-option" data-plan-option="year" aria-pressed="false">${escape(c.yearly)}</button></div><div class="selected-plan" aria-live="polite"><p class="price" id="selected-plan-price" data-month="${escape(c.month)}" data-year="${escape(c.year)}">${escape(c.month)}</p><p id="selected-plan-description" data-month="${escape(c.monthlyBilling)}" data-year="${escape(c.yearlyBilling)}">${escape(c.monthlyBilling)}</p><p class="plan-savings" id="selected-plan-savings" data-month="" data-year="${escape(c.yearlySavings)}" hidden></p></div><ul>${c.proItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><div class="actions"><button type="button" class="checkout-confirm" data-confirm-checkout data-checkout="month" data-confirm-month="${escape(c.confirmMonthly)}" data-confirm-year="${escape(c.confirmYearly)}">${escape(c.confirmMonthly)}</button></div><p class="checkout-security">${escape(c.secureCheckout)}</p><p class="status" id="pricing-status" role="status"></p></section>
       </div>
     </main>

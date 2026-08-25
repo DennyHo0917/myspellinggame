@@ -393,7 +393,7 @@ test("mobile conversion pages keep their key actions usable", async ({
   await page.goto("/pricing");
   await expect(
     page.getByRole("link", { name: "Start free teacher account" }),
-  ).toHaveAttribute("href", "/teacher?lang=en");
+  ).toHaveAttribute("href", "/teacher?lang=en#teacher-sign-in");
   await expect(page.getByText("Unlimited student submissions")).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Monthly plan", exact: true }),

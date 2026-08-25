@@ -350,6 +350,13 @@ a {
   font-size: 0.78rem;
   text-align: center;
 }
+.current-plan-cta:disabled,
+.current-plan-cta:disabled:hover {
+  cursor: default;
+  opacity: 1;
+  background: #e6efee;
+  color: var(--brand-dark);
+}
 .checkout-retry-notice {
   display: flex;
   align-items: center;

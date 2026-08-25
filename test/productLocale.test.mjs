@@ -11,5 +11,8 @@ test("every product locale keeps the brand and has a distinct student-limit mess
     assert.notEqual(copy.studentLimit, copy.teacherLimit);
     assert.ok(copy.checkoutRetry);
     assert.ok(copy.retryCheckout);
+    assert.ok(copy.activatingPro);
+    assert.ok(copy.activationDelayed);
+    assert.ok(copy.checkAgain);
   }
 });

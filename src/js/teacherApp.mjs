@@ -10,6 +10,8 @@ import {
 const root = document.getElementById("product-app");
 const locale = productLocale();
 const copy = productMessages(locale);
+const PURCHASE_RECORDED_KEY = "teacherPurchaseRecorded";
+const ACTIVATION_POLL_ATTEMPTS = 10;
 document.documentElement.lang = locale;
 document.title = copy.dashboardTitle;
 
@@ -121,7 +123,18 @@ function teacherCallbackURL() {
   return `${pathname}?lang=${encodeURIComponent(locale)}`;
 }
 
-async function appendPricing(main) {
+function focusTeacherSignIn() {
+  const card = document.getElementById("teacher-sign-in");
+  const button = card?.querySelector(".google-sign-in");
+  if (!card || !button) return;
+  card.scrollIntoView({ behavior: "smooth", block: "center" });
+  button.focus({ preventScroll: true });
+}
+
+async function appendPricing(
+  main,
+  { signInTarget = false, currentPlan = false } = {},
+) {
   const pricing = document.createElement("section");
   pricing.id = "pricing";
   pricing.className = "teacher-pricing";
@@ -133,6 +146,22 @@ async function appendPricing(main) {
     const source = documentCopy.querySelector("main");
     if (!source) throw new Error("pricing unavailable");
     pricing.innerHTML = source.innerHTML;
+    const freeCta = pricing.querySelector("[data-free-teacher-cta]");
+    if (freeCta && currentPlan) {
+      const current = document.createElement("button");
+      current.type = "button";
+      current.disabled = true;
+      current.className = "button-secondary current-plan-cta";
+      current.dataset.freeTeacherCta = "";
+      current.textContent = freeCta.dataset.currentPlanLabel;
+      freeCta.replaceWith(current);
+    } else if (freeCta && signInTarget) {
+      freeCta.addEventListener("click", (event) => {
+        event.preventDefault();
+        history.replaceState({}, "", freeCta.href);
+        focusTeacherSignIn();
+      });
+    }
     main.append(pricing);
     document.body.dataset.productLocale = locale;
     await import("./pricingApp.mjs");
@@ -153,6 +182,7 @@ async function renderLogin() {
   const main = document.createElement("main");
   main.className = "product-main teacher-main teacher-login-main has-pricing";
   const card = document.createElement("section");
+  card.id = "teacher-sign-in";
   card.className = "product-card auth-card";
   const title = document.createElement("h1");
   title.textContent = copy.signInTitle;
@@ -190,9 +220,10 @@ async function renderLogin() {
     }
   });
   main.append(card);
-  await appendPricing(main);
   wrapper.append(main);
   root.append(wrapper);
+  await appendPricing(main, { signInTarget: true });
+  if (location.hash === "#teacher-sign-in") focusTeacherSignIn();
 }
 
 function usageCards(data) {
@@ -306,7 +337,7 @@ async function renderDashboard(me) {
     listCard.append(list);
   }
   main.append(listCard);
-  if (me.plan !== "pro") await appendPricing(main);
+  if (me.plan !== "pro") await appendPricing(main, { currentPlan: true });
 }
 
 async function openPortal() {
@@ -330,6 +361,7 @@ async function startCheckout(interval) {
   trackEvent("checkout_started", { billing_interval: interval });
   try {
     sessionStorage.removeItem("pendingCheckoutInterval");
+    sessionStorage.removeItem(PURCHASE_RECORDED_KEY);
   } catch {}
   location.href = checkout.url;
 }
@@ -656,6 +688,93 @@ async function renderDetail(me, id) {
   main.append(misses);
 }
 
+function activationCard(message) {
+  const main = shell({ showPricing: false });
+  const card = document.createElement("section");
+  card.className = "product-card auth-card activation-card";
+  card.setAttribute("role", "status");
+  const heading = document.createElement("h1");
+  heading.textContent = message;
+  card.append(heading);
+  main.append(card);
+  return card;
+}
+
+async function pollForPro() {
+  for (let attempt = 0; attempt < ACTIVATION_POLL_ATTEMPTS; attempt += 1) {
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
+    try {
+      const me = await api("/api/me");
+      if (me.plan === "pro") return me;
+    } catch {
+      // Keep the activation status visible and retry within the bounded window.
+    }
+  }
+  return null;
+}
+
+function recordPurchase(me) {
+  let shouldRecord = true;
+  try {
+    shouldRecord = sessionStorage.getItem(PURCHASE_RECORDED_KEY) !== "1";
+    sessionStorage.setItem(PURCHASE_RECORDED_KEY, "1");
+  } catch {}
+  if (!shouldRecord) return;
+  const billingInterval = me.billingInterval === "year" ? "year" : "month";
+  trackEvent("subscription_started", { billing_interval: billingInterval });
+  trackEvent("purchase", {
+    billing_interval: billingInterval,
+    value: billingInterval === "year" ? 49.99 : 5.99,
+    currency: "USD",
+  });
+}
+
+function clearCheckoutParam() {
+  const url = new URL(location.href);
+  url.searchParams.delete("checkout");
+  history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+}
+
+async function renderTeacherRoute(me) {
+  const detail = location.pathname.match(
+    /^\/teacher\/assignments\/([0-9a-f-]{36})$/i,
+  );
+  try {
+    if (location.pathname === "/teacher/assignments/new") await renderNew();
+    else if (detail) await renderDetail(me, detail[1]);
+    else await renderDashboard(me);
+  } catch (error) {
+    const main = shell();
+    const card = document.createElement("section");
+    card.className = "product-card error-card";
+    const title = document.createElement("h1");
+    title.textContent = error.message;
+    card.append(title);
+    main.append(card);
+  }
+}
+
+async function finishProActivation(me) {
+  recordPurchase(me);
+  clearCheckoutParam();
+  await renderTeacherRoute(me);
+}
+
+function showActivationTimeout() {
+  const card = activationCard(copy.activationDelayed);
+  const retry = document.createElement("button");
+  retry.type = "button";
+  retry.className = "button-secondary";
+  retry.textContent = copy.checkAgain;
+  retry.addEventListener("click", async () => {
+    activationCard(copy.activatingPro);
+    const me = await pollForPro();
+    if (me) await finishProActivation(me);
+    else showActivationTimeout();
+  });
+  card.append(retry);
+}
+
 async function init() {
   root.textContent = copy.loading;
   let me;
@@ -686,34 +805,18 @@ async function init() {
     }
   }
   const params = new URLSearchParams(location.search);
-  if (params.get("checkout") === "success" && me.plan === "pro") {
-    const billingInterval = me.billingInterval === "year" ? "year" : "month";
-    const value = billingInterval === "year" ? 49.99 : 5.99;
-    trackEvent("subscription_started", {
-      billing_interval: billingInterval,
-    });
-    trackEvent("purchase", {
-      billing_interval: billingInterval,
-      value,
-      currency: "USD",
-    });
-    history.replaceState({}, "", `/teacher?lang=${encodeURIComponent(locale)}`);
-  }
-  const detail = location.pathname.match(
-    /^\/teacher\/assignments\/([0-9a-f-]{36})$/i,
-  );
-  try {
-    if (location.pathname === "/teacher/assignments/new") await renderNew();
-    else if (detail) await renderDetail(me, detail[1]);
-    else await renderDashboard(me);
-  } catch (error) {
-    const main = shell();
-    const card = document.createElement("section");
-    card.className = "product-card error-card";
-    const title = document.createElement("h1");
-    title.textContent = error.message;
-    card.append(title);
-    main.append(card);
+  if (params.get("checkout") === "success") {
+    if (me.plan !== "pro") {
+      activationCard(copy.activatingPro);
+      me = await pollForPro();
+      if (!me) {
+        showActivationTimeout();
+        return;
+      }
+    }
+    await finishProActivation(me);
+  } else {
+    await renderTeacherRoute(me);
   }
   if (pendingCheckoutError)
     showCheckoutRetry(pendingInterval, pendingCheckoutError);

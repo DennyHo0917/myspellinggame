@@ -18,11 +18,14 @@ type SubscriptionAccess = {
 
 type CheckoutOptions = {
   now?: Date;
+  locale?: string;
   createSession?: (
     params: Stripe.Checkout.SessionCreateParams,
     options: Stripe.RequestOptions,
   ) => Promise<Pick<Stripe.Checkout.Session, "id" | "url" | "expires_at">>;
 };
+
+const CHECKOUT_LOCALES = new Set(["en", "es", "pt-BR", "fr", "id", "zh"]);
 
 export function hasActiveSubscription(
   subscription: SubscriptionAccess | null,
@@ -196,11 +199,15 @@ export async function createCheckout(
     ((params, requestOptions) =>
       stripe(env).checkout.sessions.create(params, requestOptions));
   try {
+    const locale =
+      options.locale && CHECKOUT_LOCALES.has(options.locale)
+        ? options.locale
+        : "en";
     const session = await createSession(
       {
         mode: "subscription",
         line_items: [{ price, quantity: 1 }],
-        success_url: `${origin}/teacher?checkout=success&interval=${interval}`,
+        success_url: `${origin}/teacher?lang=${locale}&checkout=success&interval=${interval}`,
         cancel_url: `${origin}/pricing?checkout=cancelled`,
         client_reference_id: user.id,
         customer: subscription?.stripe_customer_id || undefined,

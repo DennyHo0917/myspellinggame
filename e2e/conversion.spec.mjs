@@ -54,6 +54,22 @@ const conversionEvents = (page) =>
       .filter((name) => ["subscription_started", "purchase"].includes(name)),
   );
 
+test("ordinary teacher routes do not override the stored locale", async ({
+  page,
+}) => {
+  await mockSignedOut(page);
+  await page.goto("/");
+  await page.evaluate(() =>
+    localStorage.setItem("mySpellingGamePreferredLocale", "es"),
+  );
+
+  await page.goto("/teacher");
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+
+  await page.goto("/teacher?lang=__proto__");
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+});
+
 test("Checkout success waits for Free to become Pro and records once", async ({
   page,
 }) => {
@@ -105,6 +121,28 @@ test("Checkout success handles an account that is already Pro", async ({
     "subscription_started",
     "purchase",
   ]);
+});
+
+test("Checkout success restores supported locales and cleans its URL", async ({
+  page,
+}) => {
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(account("pro", "year")),
+    }),
+  );
+  await mockAssignments(page);
+
+  for (const locale of ["en", "es", "pt-BR", "fr", "id", "zh"]) {
+    await page.goto(
+      `/teacher?lang=${encodeURIComponent(locale)}&checkout=success&interval=year&keep=value#workspace`,
+    );
+    await expect(page.locator("html")).toHaveAttribute("lang", locale);
+    await expect(page).toHaveURL(
+      `/teacher?lang=${encodeURIComponent(locale)}&keep=value#workspace`,
+    );
+  }
 });
 
 test("Checkout success times out safely and can be checked again", async ({
@@ -345,6 +383,60 @@ test("standalone Free CTA opens the matching teacher sign-in area", async ({
   );
   await freeCta.click();
   await expect(page).toHaveURL(/\/teacher\?lang=en#teacher-sign-in$/);
+  await expect(
+    page.getByRole("button", { name: "Continue with Google" }),
+  ).toBeFocused();
+});
+
+test("signed-out teacher pricing switches plans and preserves Checkout intent", async ({
+  page,
+}) => {
+  let checkoutBody;
+  await mockSignedOut(page);
+  await page.route("**/api/billing/checkout", async (route) => {
+    checkoutBody = route.request().postDataJSON();
+    await route.fulfill({
+      status: 401,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "sign_in_required" }),
+    });
+  });
+  await page.goto("/teacher?lang=en");
+
+  const price = page.locator("#selected-plan-price");
+  const description = page.locator("#selected-plan-description");
+  const savings = page.locator("#selected-plan-savings");
+  const confirm = page.locator("[data-confirm-checkout]");
+  const monthly = page.getByRole("button", { name: "Monthly plan" });
+  const yearly = page.getByRole("button", { name: "Yearly plan" });
+
+  await yearly.click();
+  await expect(price).toHaveText("$4.17 / month");
+  await expect(description).toHaveText("Billed $49.99 yearly");
+  await expect(savings).toHaveText("Save 30%");
+  await expect(savings).toBeVisible();
+  await expect(confirm).toHaveText("Continue with yearly plan · $49.99 / year");
+
+  await monthly.click();
+  await expect(price).toHaveText("$5.99 / month");
+  await expect(description).toHaveText("Billed monthly");
+  await expect(savings).toBeHidden();
+  await expect(confirm).toHaveText(
+    "Continue with monthly plan · $5.99 / month",
+  );
+
+  await yearly.click();
+  await confirm.click();
+  await expect(page).toHaveURL(/\/teacher\?lang=en$/);
+  expect(checkoutBody).toEqual({ interval: "year", locale: "en" });
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("pendingCheckoutInterval"),
+    ),
+  ).toBe("year");
+
+  await page.locator("[data-free-teacher-cta]").click();
+  await expect(page).toHaveURL(/#teacher-sign-in$/);
   await expect(
     page.getByRole("button", { name: "Continue with Google" }),
   ).toBeFocused();

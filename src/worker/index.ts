@@ -883,6 +883,7 @@ export async function handleRequest(
       user,
       body.interval,
       url.origin,
+      { locale: typeof body.locale === "string" ? body.locale : undefined },
     );
     return json({ url: checkout.url });
   }

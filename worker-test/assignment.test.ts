@@ -661,6 +661,40 @@ describe("Stripe checkout", () => {
   });
 
   it.each([
+    ["en", "en"],
+    ["es", "es"],
+    ["pt-BR", "pt-BR"],
+    ["fr", "fr"],
+    ["id", "id"],
+    ["zh", "zh"],
+    ["teacher", "en"],
+  ])(
+    "uses only a supported checkout locale for %s",
+    async (locale, expected) => {
+      let successUrl = "";
+      await createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        "month",
+        "https://example.test",
+        {
+          now,
+          locale,
+          createSession: async (params) => {
+            successUrl = params.success_url ?? "";
+            return createSession(params);
+          },
+        },
+      );
+
+      expect(successUrl).toBe(
+        `https://example.test/teacher?lang=${expected}&checkout=success&interval=month`,
+      );
+    },
+  );
+
+  it.each([
     ["pro", "inactive", "price_monthly", future],
     ["pro", "canceled", "price_monthly", future],
     ["pro", "active", "price_monthly", expired],

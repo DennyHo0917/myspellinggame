@@ -50,7 +50,7 @@ confirmButton.addEventListener("click", async () => {
       method: "POST",
       credentials: "same-origin",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ interval }),
+      body: JSON.stringify({ interval, locale }),
     });
     const data = await response.json().catch(() => ({}));
     if (response.status === 401) {

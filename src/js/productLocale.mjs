@@ -852,6 +852,20 @@ const ALIASES = {
   "zh-hans": "zh",
 };
 
+const URL_LOCALES = {
+  en: "en",
+  es: "es",
+  "pt-br": "pt-BR",
+  fr: "fr",
+  id: "id",
+  zh: "zh",
+};
+
+function productUrlLocale(value) {
+  const key = String(value || "").toLowerCase();
+  return Object.hasOwn(URL_LOCALES, key) ? URL_LOCALES[key] : "";
+}
+
 export function normalizeProductLocale(value) {
   const raw = String(value || "en").toLowerCase();
   return (
@@ -881,12 +895,10 @@ export function productLocale() {
   try {
     stored = localStorage.getItem("mySpellingGamePreferredLocale") || "";
   } catch {}
-  const pathLocale = normalizeProductLocale(path);
+  const queryLocale = productUrlLocale(query);
+  const pathLocale = path === "en" ? "" : productUrlLocale(path);
   return normalizeProductLocale(
-    query ||
-      (PACKS[pathLocale] ? pathLocale : "") ||
-      stored ||
-      navigator.language,
+    queryLocale || pathLocale || stored || navigator.language,
   );
 }
 

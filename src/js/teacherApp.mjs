@@ -396,7 +396,7 @@ async function openPortal() {
 async function startCheckout(interval) {
   const checkout = await api("/api/billing/checkout", {
     method: "POST",
-    body: JSON.stringify({ interval }),
+    body: JSON.stringify({ interval, locale }),
   });
   if (!checkout?.url) throw new Error(copy.error);
   trackEvent("checkout_started", { billing_interval: interval });
@@ -773,6 +773,7 @@ function recordPurchase(me) {
 function clearCheckoutParam() {
   const url = new URL(location.href);
   url.searchParams.delete("checkout");
+  url.searchParams.delete("interval");
   history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
 }
 

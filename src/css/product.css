@@ -322,6 +322,7 @@ a {
 }
 .selected-plan .price {
   grid-column: 1 / -1;
+  line-height: 1.275;
 }
 .pricing-card-heading + .price {
   margin-bottom: 0;

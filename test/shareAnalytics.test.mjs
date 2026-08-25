@@ -96,6 +96,10 @@ test('teacher analytics omit student, assignment, and Stripe identifiers', () =>
     ...privateValues,
     billing_interval: 'month',
   }), { billing_interval: 'month' });
+  assert.deepEqual(sanitizeEventParams('upgrade_cta_clicked', {
+    ...privateValues,
+    cta_location: 'smart_review',
+  }), { cta_location: 'smart_review' });
   assert.deepEqual(sanitizeEventParams('purchase', {
     ...privateValues,
     billing_interval: 'year',
@@ -112,11 +116,13 @@ test('usage limits report a known type at most once per page', () => {
     trackUsageLimit('monthly_submission_limit');
     trackUsageLimit('monthly_submission_limit');
     trackUsageLimit('attempt_limit');
-    assert.deepEqual(events, [[
-      'event',
-      'usage_limit_reached',
-      { limit_type: 'monthly_submissions' },
-    ]]);
+    trackUsageLimit('saved_list_limit');
+    trackUsageLimit('learner_limit');
+    assert.deepEqual(events, [
+      ['event', 'usage_limit_reached', { limit_type: 'monthly_submissions' }],
+      ['event', 'usage_limit_reached', { limit_type: 'saved_lists' }],
+      ['event', 'usage_limit_reached', { limit_type: 'learner_profiles' }],
+    ]);
   } finally {
     delete globalThis.window;
   }

@@ -2,16 +2,22 @@ export const PLAN_LIMITS = {
   free: {
     activeAssignments: 2,
     monthlyAttempts: 30,
-    studentNicknames: 30,
-    retentionDays: 30,
+    savedLists: 3,
+    learnerProfiles: 3,
+    historyDays: 30,
+    retentionDays: 365,
+    smartReview: false,
     csvExport: false,
     missedWordStats: false,
   },
   pro: {
     activeAssignments: 20,
     monthlyAttempts: null,
-    studentNicknames: 150,
+    savedLists: null,
+    learnerProfiles: 150,
+    historyDays: 365,
     retentionDays: 365,
+    smartReview: true,
     csvExport: true,
     missedWordStats: true,
   },
@@ -77,6 +83,18 @@ export function validateTitle(value: unknown): string {
       400,
       "invalid_title",
       "Assignment titles must be 1–80 characters.",
+    );
+  }
+  return title;
+}
+
+export function validateSavedListTitle(value: unknown): string {
+  const title = cleanText(value);
+  if (title.length < 1 || title.length > 80) {
+    throw new HttpError(
+      400,
+      "invalid_list_title",
+      "Saved-list titles must be 1–80 characters.",
     );
   }
   return title;
@@ -249,6 +267,15 @@ export function monthStart(now = new Date()): string {
 
 export function addDays(iso: string, days: number): string {
   return new Date(new Date(iso).getTime() + days * 86_400_000).toISOString();
+}
+
+export type MasteryStatus = "mastered" | "learning" | "needs_review";
+
+export function masteryStatus(results: boolean[]): MasteryStatus {
+  if (results.length >= 3 && results.slice(-3).every(Boolean))
+    return "mastered";
+  if (results.includes(false)) return "needs_review";
+  return "learning";
 }
 
 export function accuracyRange(value: number): string {

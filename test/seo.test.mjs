@@ -105,12 +105,12 @@ test('localized legal pages keep SEO links inside the active locale', () => {
 
 test('workspace navigation and assignment pricing stay role-inclusive in every locale', () => {
   const expected = {
-    '': ['Workspace', 'Assign practice. See learning results.'],
-    es: ['Espacio de trabajo', 'Asigna prácticas y consulta los resultados'],
-    'pt-br': ['Espaço de trabalho', 'Crie atividades e acompanhe os resultados'],
-    fr: ['Espace de travail', 'Donnez des exercices et suivez les résultats'],
-    id: ['Ruang kerja', 'Berikan latihan dan lihat hasil belajar'],
-    zh: ['工作台', '布置练习，查看学习结果'],
+    '': ['Workspace', 'Save weekly lists. Track real progress.'],
+    es: ['Espacio de trabajo', 'Guarda las listas semanales y sigue el progreso real'],
+    'pt-br': ['Espaço de trabalho', 'Salve listas semanais e acompanhe o progresso real'],
+    fr: ['Espace de travail', 'Enregistrez vos listes et suivez les vrais progrès'],
+    id: ['Ruang kerja', 'Simpan daftar mingguan dan pantau perkembangan nyata'],
+    zh: ['工作台', '保存每周词表，持续追踪真实进步'],
   };
   for (const [locale, [workspace, heading]] of Object.entries(expected)) {
     const home = fs.readFileSync(path.join(root, locale, 'index.html'), 'utf8');

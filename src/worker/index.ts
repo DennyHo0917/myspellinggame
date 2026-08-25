@@ -9,7 +9,9 @@ import {
   PLAN_LIMITS,
   addDays,
   csvCell,
+  masteryStatus,
   monthStart,
+  normalizeWord,
   parseWordList,
   randomPublicId,
   scoreAnswers,
@@ -19,6 +21,7 @@ import {
   validateMaxAttempts,
   validateMode,
   validateNickname,
+  validateSavedListTitle,
   validateTitle,
   type AssignmentWord,
   type Plan,
@@ -69,6 +72,24 @@ type AttemptDetailRow = {
   completed_at: string;
   missed_words: string | null;
   status: "completed" | "incomplete";
+};
+
+type SavedListRow = {
+  id: string;
+  owner_user_id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+};
+
+type LearnerRow = {
+  id: string;
+  owner_user_id: string;
+  name: string;
+  name_key: string;
+  archived: number;
+  created_at: string;
+  updated_at: string;
 };
 
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
@@ -150,13 +171,17 @@ async function getPlan(
   return hasActiveSubscription(subscription ?? null, env, now) ? "pro" : "free";
 }
 
+function historyCutoff(plan: Plan, now = new Date()) {
+  return addDays(now.toISOString(), -PLAN_LIMITS[plan].historyDays);
+}
+
 async function usage(
   db: D1Database,
   userId: string,
   plan: Plan,
   now = new Date(),
 ) {
-  const [active, monthly, students] = await Promise.all([
+  const [active, monthly, savedLists, learners] = await Promise.all([
     db
       .prepare(
         `SELECT COUNT(*) AS count FROM assignments
@@ -173,11 +198,13 @@ async function usage(
       .first<{ count: number }>(),
     db
       .prepare(
-        `SELECT COUNT(DISTINCT at.nickname_key) AS count
-         FROM attempts at JOIN assignments a ON a.id = at.assignment_id
-         WHERE a.owner_user_id = ? AND at.retention_expires_at > ?`,
+        "SELECT COUNT(*) AS count FROM saved_lists WHERE owner_user_id = ?",
       )
-      .bind(userId, now.toISOString())
+      .bind(userId)
+      .first<{ count: number }>(),
+    db
+      .prepare("SELECT COUNT(*) AS count FROM learners WHERE owner_user_id = ?")
+      .bind(userId)
       .first<{ count: number }>(),
   ]);
   return {
@@ -185,7 +212,8 @@ async function usage(
     limits: PLAN_LIMITS[plan],
     activeAssignments: Number(active?.count ?? 0),
     monthlyAttempts: Number(monthly?.count ?? 0),
-    studentNicknames: Number(students?.count ?? 0),
+    savedLists: Number(savedLists?.count ?? 0),
+    learnerProfiles: Number(learners?.count ?? 0),
   };
 }
 
@@ -203,7 +231,11 @@ async function getOwnedAssignment(
   return assignment;
 }
 
-async function listAssignments(db: D1Database, ownerUserId: string) {
+async function listAssignments(
+  db: D1Database,
+  ownerUserId: string,
+  plan: Plan,
+) {
   const result = await db
     .prepare(
       `SELECT a.id, a.public_id, a.title, a.mode, a.status, a.max_attempts,
@@ -212,12 +244,12 @@ async function listAssignments(db: D1Database, ownerUserId: string) {
               COUNT(DISTINCT at.nickname_key) AS student_count,
               COALESCE(ROUND(AVG(CASE WHEN at.status = 'completed' THEN at.accuracy END)), 0) AS average_accuracy
        FROM assignments a
-       LEFT JOIN attempts at ON at.assignment_id = a.id AND at.retention_expires_at > ?
+       LEFT JOIN attempts at ON at.assignment_id = a.id AND at.completed_at >= ?
        WHERE a.owner_user_id = ?
        GROUP BY a.id
        ORDER BY a.created_at DESC`,
     )
-    .bind(new Date().toISOString(), ownerUserId)
+    .bind(historyCutoff(plan), ownerUserId)
     .all();
   return result.results;
 }
@@ -227,7 +259,7 @@ async function assignmentDetail(
   assignment: AssignmentRow,
   plan: Plan,
 ) {
-  const now = new Date().toISOString();
+  const cutoff = historyCutoff(plan);
   const [wordRows, attemptRows, average] = await Promise.all([
     db
       .prepare(
@@ -243,20 +275,20 @@ async function assignmentDetail(
          FROM attempts at
          LEFT JOIN attempt_items ai ON ai.attempt_id = at.id
          LEFT JOIN assignment_words aw ON aw.id = ai.word_id
-         WHERE at.assignment_id = ? AND at.retention_expires_at > ?
+         WHERE at.assignment_id = ? AND at.completed_at >= ?
          GROUP BY at.id
          ORDER BY at.completed_at DESC`,
       )
-      .bind(assignment.id, now)
+      .bind(assignment.id, cutoff)
       .all<AttemptDetailRow>(),
     db
       .prepare(
         `SELECT COUNT(CASE WHEN status = 'completed' THEN 1 END) AS attempts,
                 COUNT(DISTINCT nickname_key) AS students,
                 COALESCE(ROUND(AVG(CASE WHEN status = 'completed' THEN accuracy END)), 0) AS average_accuracy
-         FROM attempts WHERE assignment_id = ? AND retention_expires_at > ?`,
+         FROM attempts WHERE assignment_id = ? AND completed_at >= ?`,
       )
-      .bind(assignment.id, now)
+      .bind(assignment.id, cutoff)
       .first<Record<string, number>>(),
   ]);
   let missedWords: unknown[] | null = null;
@@ -268,11 +300,11 @@ async function assignmentDetail(
            FROM attempt_items ai
            JOIN attempts at ON at.id = ai.attempt_id
            JOIN assignment_words aw ON aw.id = ai.word_id
-           WHERE at.assignment_id = ? AND at.retention_expires_at > ?
+           WHERE at.assignment_id = ? AND at.completed_at >= ?
              AND at.status = 'completed' AND ai.is_correct = 0
            GROUP BY aw.id ORDER BY misses DESC, aw.position LIMIT 10`,
         )
-        .bind(assignment.id, now)
+        .bind(assignment.id, cutoff)
         .all()
     ).results;
   }
@@ -292,6 +324,376 @@ async function assignmentDetail(
     },
     missedWordStats: missedWords,
   };
+}
+
+async function getOwnedSavedList(
+  db: D1Database,
+  id: string,
+  ownerUserId: string,
+) {
+  const savedList = await db
+    .prepare("SELECT * FROM saved_lists WHERE id = ? AND owner_user_id = ?")
+    .bind(id, ownerUserId)
+    .first<SavedListRow>();
+  if (!savedList)
+    throw new HttpError(404, "saved_list_not_found", "Saved list not found.");
+  return savedList;
+}
+
+async function savedListDetail(db: D1Database, savedList: SavedListRow) {
+  const words = await db
+    .prepare(
+      "SELECT word FROM saved_list_words WHERE saved_list_id = ? ORDER BY position",
+    )
+    .bind(savedList.id)
+    .all<{ word: string }>();
+  return { ...savedList, words: words.results.map((row) => row.word) };
+}
+
+async function listSavedLists(db: D1Database, ownerUserId: string) {
+  const lists = await db
+    .prepare(
+      "SELECT * FROM saved_lists WHERE owner_user_id = ? ORDER BY updated_at DESC",
+    )
+    .bind(ownerUserId)
+    .all<SavedListRow>();
+  return Promise.all(
+    lists.results.map((savedList) => savedListDetail(db, savedList)),
+  );
+}
+
+async function createSavedList(
+  env: Env,
+  request: Request,
+  ownerUserId: string,
+) {
+  const body = await readJson(request);
+  const title = validateSavedListTitle(body.title);
+  const words = parseWordList(body.words);
+  const plan = await getPlan(env, ownerUserId);
+  const limit = PLAN_LIMITS[plan].savedLists ?? 2_147_483_647;
+  const id = crypto.randomUUID();
+  const now = new Date().toISOString();
+  await env.DB.batch([
+    env.DB.prepare(
+      `INSERT INTO saved_lists (id, owner_user_id, title, created_at, updated_at)
+       SELECT ?, ?, ?, ?, ?
+       WHERE (SELECT COUNT(*) FROM saved_lists WHERE owner_user_id = ?) < ?`,
+    ).bind(id, ownerUserId, title, now, now, ownerUserId, limit),
+    ...words.map((word, position) =>
+      env.DB.prepare(
+        `INSERT INTO saved_list_words (id, saved_list_id, position, word)
+         SELECT ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM saved_lists WHERE id = ?)`,
+      ).bind(crypto.randomUUID(), id, position, word, id),
+    ),
+  ]);
+  const savedList = await env.DB.prepare(
+    "SELECT * FROM saved_lists WHERE id = ?",
+  )
+    .bind(id)
+    .first<SavedListRow>();
+  if (!savedList)
+    throw new HttpError(
+      403,
+      "saved_list_limit",
+      "Your saved-list limit has been reached.",
+    );
+  return savedListDetail(env.DB, savedList);
+}
+
+async function updateSavedList(
+  db: D1Database,
+  request: Request,
+  savedList: SavedListRow,
+) {
+  const body = await readJson(request);
+  const title = validateSavedListTitle(body.title);
+  const words = parseWordList(body.words);
+  const updatedAt = new Date().toISOString();
+  await db.batch([
+    db
+      .prepare(
+        "UPDATE saved_lists SET title = ?, updated_at = ? WHERE id = ? AND owner_user_id = ?",
+      )
+      .bind(title, updatedAt, savedList.id, savedList.owner_user_id),
+    db
+      .prepare("DELETE FROM saved_list_words WHERE saved_list_id = ?")
+      .bind(savedList.id),
+    ...words.map((word, position) =>
+      db
+        .prepare(
+          "INSERT INTO saved_list_words (id, saved_list_id, position, word) VALUES (?, ?, ?, ?)",
+        )
+        .bind(crypto.randomUUID(), savedList.id, position, word),
+    ),
+  ]);
+  return savedListDetail(db, { ...savedList, title, updated_at: updatedAt });
+}
+
+async function getOwnedLearner(
+  db: D1Database,
+  id: string,
+  ownerUserId: string,
+) {
+  const learner = await db
+    .prepare("SELECT * FROM learners WHERE id = ? AND owner_user_id = ?")
+    .bind(id, ownerUserId)
+    .first<LearnerRow>();
+  if (!learner)
+    throw new HttpError(404, "learner_not_found", "Learner not found.");
+  return learner;
+}
+
+async function listLearners(db: D1Database, ownerUserId: string, plan: Plan) {
+  const learners = await db
+    .prepare(
+      `SELECT l.*, COUNT(DISTINCT at.id) AS completed_attempts,
+              COALESCE(ROUND(100.0 * SUM(ai.is_correct) / NULLIF(COUNT(ai.word_id), 0)), 0) AS accuracy,
+              MAX(at.completed_at) AS last_practiced_at
+       FROM learners l
+       LEFT JOIN attempts at ON at.learner_id = l.id AND at.status = 'completed'
+         AND at.completed_at >= ?
+       LEFT JOIN attempt_items ai ON ai.attempt_id = at.id
+       WHERE l.owner_user_id = ?
+       GROUP BY l.id
+       ORDER BY l.archived, l.updated_at DESC`,
+    )
+    .bind(historyCutoff(plan), ownerUserId)
+    .all();
+  return learners.results;
+}
+
+async function associateLearnerAttempts(db: D1Database, learner: LearnerRow) {
+  await db
+    .prepare(
+      `UPDATE attempts SET learner_id = ?
+       WHERE learner_id IS NULL AND nickname_key = ?
+         AND assignment_id IN (SELECT id FROM assignments WHERE owner_user_id = ?)`,
+    )
+    .bind(learner.id, learner.name_key, learner.owner_user_id)
+    .run();
+}
+
+async function createLearner(env: Env, request: Request, ownerUserId: string) {
+  const body = await readJson(request);
+  const { nickname: name, nicknameKey: nameKey } = validateNickname(body.name);
+  const existing = await env.DB.prepare(
+    "SELECT 1 FROM learners WHERE owner_user_id = ? AND name_key = ?",
+  )
+    .bind(ownerUserId, nameKey)
+    .first();
+  if (existing)
+    throw new HttpError(409, "learner_exists", "That learner already exists.");
+  const plan = await getPlan(env, ownerUserId);
+  const limit = PLAN_LIMITS[plan].learnerProfiles;
+  const id = crypto.randomUUID();
+  const now = new Date().toISOString();
+  const inserted = await env.DB.prepare(
+    `INSERT INTO learners (id, owner_user_id, name, name_key, archived, created_at, updated_at)
+     SELECT ?, ?, ?, ?, 0, ?, ?
+     WHERE (SELECT COUNT(*) FROM learners WHERE owner_user_id = ?) < ?`,
+  )
+    .bind(id, ownerUserId, name, nameKey, now, now, ownerUserId, limit)
+    .run();
+  if (!inserted.meta.changes)
+    throw new HttpError(
+      403,
+      "learner_limit",
+      "Your saved learner profile limit has been reached.",
+    );
+  const learner = {
+    id,
+    owner_user_id: ownerUserId,
+    name,
+    name_key: nameKey,
+    archived: 0,
+    created_at: now,
+    updated_at: now,
+  } satisfies LearnerRow;
+  await associateLearnerAttempts(env.DB, learner);
+  return learner;
+}
+
+async function updateLearner(
+  db: D1Database,
+  request: Request,
+  learner: LearnerRow,
+) {
+  const body = await readJson(request);
+  let name = learner.name;
+  let nameKey = learner.name_key;
+  if (body.name !== undefined) {
+    const validated = validateNickname(body.name);
+    name = validated.nickname;
+    nameKey = validated.nicknameKey;
+    const conflict = await db
+      .prepare(
+        "SELECT 1 FROM learners WHERE owner_user_id = ? AND name_key = ? AND id != ?",
+      )
+      .bind(learner.owner_user_id, nameKey, learner.id)
+      .first();
+    if (conflict)
+      throw new HttpError(
+        409,
+        "learner_exists",
+        "That learner already exists.",
+      );
+  }
+  const archived =
+    body.archived === undefined ? learner.archived : body.archived ? 1 : 0;
+  const updatedAt = new Date().toISOString();
+  await db
+    .prepare(
+      `UPDATE learners SET name = ?, name_key = ?, archived = ?, updated_at = ?
+       WHERE id = ? AND owner_user_id = ?`,
+    )
+    .bind(name, nameKey, archived, updatedAt, learner.id, learner.owner_user_id)
+    .run();
+  const updated = {
+    ...learner,
+    name,
+    name_key: nameKey,
+    archived,
+    updated_at: updatedAt,
+  };
+  await associateLearnerAttempts(db, updated);
+  return updated;
+}
+
+async function learnerMastery(db: D1Database, learner: LearnerRow, plan: Plan) {
+  const cutoff = historyCutoff(plan);
+  const [attempts, itemRows] = await Promise.all([
+    db
+      .prepare(
+        `SELECT COUNT(*) AS count, MAX(completed_at) AS last_practiced_at
+         FROM attempts WHERE learner_id = ? AND status = 'completed' AND completed_at >= ?`,
+      )
+      .bind(learner.id, cutoff)
+      .first<{ count: number; last_practiced_at: string | null }>(),
+    db
+      .prepare(
+        `SELECT at.id AS attempt_id, at.completed_at, aw.word, aw.position, ai.is_correct
+         FROM attempts at
+         JOIN assignments a ON a.id = at.assignment_id
+         JOIN attempt_items ai ON ai.attempt_id = at.id
+         JOIN assignment_words aw ON aw.id = ai.word_id
+         WHERE at.learner_id = ? AND a.owner_user_id = ?
+           AND at.status = 'completed' AND at.completed_at >= ?
+         ORDER BY at.completed_at, at.rowid, aw.position`,
+      )
+      .bind(learner.id, learner.owner_user_id, cutoff)
+      .all<{
+        attempt_id: string;
+        completed_at: string;
+        word: string;
+        position: number;
+        is_correct: number;
+      }>(),
+  ]);
+  const grouped = new Map<
+    string,
+    {
+      word: string;
+      results: boolean[];
+      correctCount: number;
+      incorrectCount: number;
+      lastPracticedAt: string;
+      lastIncorrectAt: string | null;
+    }
+  >();
+  for (const row of itemRows.results) {
+    const key = normalizeWord(row.word);
+    const current = grouped.get(key) ?? {
+      word: row.word,
+      results: [],
+      correctCount: 0,
+      incorrectCount: 0,
+      lastPracticedAt: row.completed_at,
+      lastIncorrectAt: null,
+    };
+    const correct = row.is_correct === 1;
+    current.word = row.word;
+    current.results.push(correct);
+    current.correctCount += correct ? 1 : 0;
+    current.incorrectCount += correct ? 0 : 1;
+    current.lastPracticedAt = row.completed_at;
+    if (!correct) current.lastIncorrectAt = row.completed_at;
+    grouped.set(key, current);
+  }
+  const words = [...grouped.values()].map(({ results, ...word }) => ({
+    ...word,
+    status: masteryStatus(results),
+    lastResult: results.at(-1) ? "correct" : "incorrect",
+  }));
+  const correctItems = words.reduce((sum, word) => sum + word.correctCount, 0);
+  const totalItems = words.reduce(
+    (sum, word) => sum + word.correctCount + word.incorrectCount,
+    0,
+  );
+  return {
+    learner: { ...learner, archived: Boolean(learner.archived) },
+    historyDays: PLAN_LIMITS[plan].historyDays,
+    smartReview: PLAN_LIMITS[plan].smartReview,
+    summary: {
+      completedAttempts: Number(attempts?.count ?? 0),
+      accuracy: totalItems ? Math.round((correctItems / totalItems) * 100) : 0,
+      lastPracticedAt: attempts?.last_practiced_at ?? null,
+      mastered: words.filter((word) => word.status === "mastered").length,
+      learning: words.filter((word) => word.status === "learning").length,
+      needsReview: words.filter((word) => word.status === "needs_review")
+        .length,
+    },
+    words: words.sort((a, b) =>
+      b.lastPracticedAt.localeCompare(a.lastPracticedAt),
+    ),
+  };
+}
+
+function requireSmartReview(plan: Plan) {
+  if (!PLAN_LIMITS[plan].smartReview)
+    throw new HttpError(
+      403,
+      "smart_review_required",
+      "Smart review is available on Pro.",
+    );
+}
+
+async function learnerReview(db: D1Database, learner: LearnerRow, plan: Plan) {
+  requireSmartReview(plan);
+  const mastery = await learnerMastery(db, learner, plan);
+  return {
+    words: mastery.words
+      .filter((word) => word.incorrectCount > 0 && word.status !== "mastered")
+      .sort(
+        (a, b) =>
+          String(b.lastIncorrectAt).localeCompare(String(a.lastIncorrectAt)) ||
+          b.incorrectCount - a.incorrectCount,
+      )
+      .slice(0, 10)
+      .map((word) => word.word),
+  };
+}
+
+async function assignmentReview(
+  db: D1Database,
+  assignment: AssignmentRow,
+  plan: Plan,
+) {
+  requireSmartReview(plan);
+  const rows = await db
+    .prepare(
+      `SELECT aw.word, COUNT(*) AS misses, MAX(at.completed_at) AS last_missed_at
+       FROM attempt_items ai
+       JOIN attempts at ON at.id = ai.attempt_id
+       JOIN assignment_words aw ON aw.id = ai.word_id
+       WHERE at.assignment_id = ? AND at.status = 'completed'
+         AND ai.is_correct = 0 AND at.completed_at >= ?
+       GROUP BY lower(aw.word)
+       ORDER BY last_missed_at DESC, misses DESC LIMIT 10`,
+    )
+    .bind(assignment.id, historyCutoff(plan))
+    .all<{ word: string }>();
+  return { words: rows.results.map((row) => row.word) };
 }
 
 async function createAssignment(env: Env, request: Request, userId: string) {
@@ -505,6 +907,11 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
   const completedAt = now.toISOString();
   const retentionExpiresAt = addDays(completedAt, limits.retentionDays);
   const monthKey = monthStart(now);
+  const learner = await env.DB.prepare(
+    "SELECT id FROM learners WHERE owner_user_id = ? AND name_key = ?",
+  )
+    .bind(assignment.owner_user_id, nicknameKey)
+    .first<{ id: string }>();
   const monthlyLimit = completed
     ? (limits.monthlyAttempts ?? 2_147_483_647)
     : 2_147_483_647;
@@ -523,30 +930,23 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
         ]),
     env.DB.prepare(
       `INSERT OR IGNORE INTO attempts (
-           id, assignment_id, nickname, nickname_key, attempt_number, score,
-           correct_count, incorrect_count, accuracy, duration_seconds,
-           completed_at, retention_expires_at, status
-         )
+            id, assignment_id, nickname, nickname_key, attempt_number, score,
+            correct_count, incorrect_count, accuracy, duration_seconds,
+            completed_at, retention_expires_at, status, learner_id
+          )
          SELECT ?, a.id, ?, ?,
            CASE WHEN ? = 1 THEN
              (SELECT COALESCE(MAX(x.attempt_number), 0) + 1 FROM attempts x
               WHERE x.assignment_id = a.id AND x.nickname_key = ? AND x.status = 'completed')
            END,
-           ?, ?, ?, ?, ?, ?, ?, ?
+            ?, ?, ?, ?, ?, ?, ?, ?, ?
          FROM assignments a
          WHERE a.public_id = ? AND a.status = 'published' AND a.expires_at > ?
            AND (? = 0 OR (SELECT COUNT(*) FROM attempts x
                           WHERE x.assignment_id = a.id AND x.nickname_key = ?
                             AND x.status = 'completed') < a.max_attempts)
-           AND (SELECT COUNT(*) FROM monthly_submission_usage mu
-                WHERE mu.user_id = a.owner_user_id AND mu.month_key = ?) < ?
-           AND (
-             EXISTS (SELECT 1 FROM attempts x JOIN assignments ax ON ax.id = x.assignment_id
-                     WHERE ax.owner_user_id = a.owner_user_id AND x.nickname_key = ?)
-             OR (SELECT COUNT(DISTINCT x.nickname_key) FROM attempts x
-                 JOIN assignments ax ON ax.id = x.assignment_id
-                 WHERE ax.owner_user_id = a.owner_user_id AND x.retention_expires_at > ?) < ?
-           )`,
+            AND (SELECT COUNT(*) FROM monthly_submission_usage mu
+                 WHERE mu.user_id = a.owner_user_id AND mu.month_key = ?) < ?`,
     ).bind(
       attemptId,
       nickname,
@@ -561,15 +961,13 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       completedAt,
       retentionExpiresAt,
       completed ? "completed" : "incomplete",
+      learner?.id ?? null,
       publicId,
       completedAt,
       completed ? 1 : 0,
       nicknameKey,
       monthKey,
       monthlyLimit,
-      nicknameKey,
-      completedAt,
-      limits.studentNicknames,
     ),
     ...result.items.map((item) =>
       env.DB.prepare(
@@ -613,22 +1011,6 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       403,
       "monthly_submission_limit",
       "The teacher’s monthly submission limit has been reached.",
-    );
-  }
-  const savedNickname = await env.DB.prepare(
-    `SELECT 1 FROM attempts at JOIN assignments a ON a.id = at.assignment_id
-     WHERE a.owner_user_id = ? AND at.nickname_key = ? LIMIT 1`,
-  )
-    .bind(assignment.owner_user_id, nicknameKey)
-    .first();
-  if (
-    !savedNickname &&
-    currentUsage.studentNicknames >= limits.studentNicknames
-  ) {
-    throw new HttpError(
-      403,
-      "student_limit",
-      "The teacher account’s saved distinct student nickname limit has been reached.",
     );
   }
   throw new HttpError(
@@ -788,12 +1170,97 @@ export async function handleRequest(
     });
   }
 
+  if (url.pathname === "/api/saved-lists") {
+    const user = await requireTeacher(env, request, getSession);
+    if (method === "GET")
+      return json({ savedLists: await listSavedLists(env.DB, user.id) });
+    if (method === "POST") {
+      requireSameOrigin(request);
+      return json(await createSavedList(env, request, user.id), 201);
+    }
+  }
+
+  const savedListMatch = url.pathname.match(
+    /^\/api\/saved-lists\/([0-9a-f-]{36})$/i,
+  );
+  if (savedListMatch) {
+    const user = await requireTeacher(env, request, getSession);
+    const savedList = await getOwnedSavedList(
+      env.DB,
+      savedListMatch[1],
+      user.id,
+    );
+    if (method === "GET") return json(await savedListDetail(env.DB, savedList));
+    if (method === "PATCH") {
+      requireSameOrigin(request);
+      return json(await updateSavedList(env.DB, request, savedList));
+    }
+    if (method === "DELETE") {
+      requireSameOrigin(request);
+      await env.DB.prepare(
+        "DELETE FROM saved_lists WHERE id = ? AND owner_user_id = ?",
+      )
+        .bind(savedList.id, user.id)
+        .run();
+      return new Response(null, { status: 204 });
+    }
+  }
+
+  if (url.pathname === "/api/learners") {
+    const user = await requireTeacher(env, request, getSession);
+    const plan = await getPlan(env, user.id);
+    if (method === "GET")
+      return json({
+        learners: await listLearners(env.DB, user.id, plan),
+        historyDays: PLAN_LIMITS[plan].historyDays,
+        smartReview: PLAN_LIMITS[plan].smartReview,
+      });
+    if (method === "POST") {
+      requireSameOrigin(request);
+      return json(await createLearner(env, request, user.id), 201);
+    }
+  }
+
+  const learnerReviewMatch = url.pathname.match(
+    /^\/api\/learners\/([0-9a-f-]{36})\/review$/i,
+  );
+  if (learnerReviewMatch && method === "POST") {
+    requireSameOrigin(request);
+    const user = await requireTeacher(env, request, getSession);
+    const learner = await getOwnedLearner(
+      env.DB,
+      learnerReviewMatch[1],
+      user.id,
+    );
+    return json(
+      await learnerReview(env.DB, learner, await getPlan(env, user.id)),
+    );
+  }
+
+  const learnerMatch = url.pathname.match(
+    /^\/api\/learners\/([0-9a-f-]{36})$/i,
+  );
+  if (learnerMatch) {
+    const user = await requireTeacher(env, request, getSession);
+    const learner = await getOwnedLearner(env.DB, learnerMatch[1], user.id);
+    if (method === "GET")
+      return json(
+        await learnerMastery(env.DB, learner, await getPlan(env, user.id)),
+      );
+    if (method === "PATCH") {
+      requireSameOrigin(request);
+      return json(await updateLearner(env.DB, request, learner));
+    }
+  }
+
   if (url.pathname === "/api/assignments") {
     const user = await requireTeacher(env, request, getSession);
     if (method === "GET") {
       const plan = await getPlan(env, user.id);
       return json({
-        assignments: await listAssignments(env.DB, user.id),
+        assignments: await listAssignments(env.DB, user.id, plan),
+        savedLists: await listSavedLists(env.DB, user.id),
+        learners: await listLearners(env.DB, user.id, plan),
         usage: await usage(env.DB, user.id, plan),
       });
     }
@@ -801,6 +1268,22 @@ export async function handleRequest(
       requireSameOrigin(request);
       return json(await createAssignment(env, request, user.id), 201);
     }
+  }
+
+  const assignmentReviewMatch = url.pathname.match(
+    /^\/api\/assignments\/([0-9a-f-]{36})\/review$/i,
+  );
+  if (assignmentReviewMatch && method === "POST") {
+    requireSameOrigin(request);
+    const user = await requireTeacher(env, request, getSession);
+    const assignment = await getOwnedAssignment(
+      env.DB,
+      assignmentReviewMatch[1],
+      user.id,
+    );
+    return json(
+      await assignmentReview(env.DB, assignment, await getPlan(env, user.id)),
+    );
   }
 
   const assignmentMatch = url.pathname.match(

@@ -414,6 +414,22 @@ a {
   display: grid;
   gap: 1rem;
 }
+.compact-form {
+  margin: 1rem 0;
+}
+.compact-form .field textarea {
+  min-height: 90px;
+}
+.inline-form {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+.workspace-list {
+  margin-top: 1rem;
+}
+.compact-actions {
+  justify-content: flex-end;
+}
 .field {
   display: grid;
   gap: 0.4rem;
@@ -646,6 +662,9 @@ th {
     display: none;
   }
   .assignment-row {
+    grid-template-columns: 1fr;
+  }
+  .inline-form {
     grid-template-columns: 1fr;
   }
   .pricing-grid {

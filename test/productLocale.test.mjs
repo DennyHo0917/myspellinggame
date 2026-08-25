@@ -32,3 +32,19 @@ test("workspace titles stay role-neutral in every product locale", () => {
     assert.equal(copy.dashboardTitle, expected[locale]);
   }
 });
+
+test("paid workspace features are localized in every product locale", () => {
+  const keys = [
+    "savedLists",
+    "learnerUsage",
+    "masteryHistoryUpgrade",
+    "smartReviewValue",
+    "savedListLimit",
+    "learnerLimit",
+    "proActive",
+  ];
+  for (const [locale] of PRODUCT_LOCALES) {
+    const copy = productMessages(locale);
+    for (const key of keys) assert.ok(copy[key], `${locale}: ${key}`);
+  }
+});

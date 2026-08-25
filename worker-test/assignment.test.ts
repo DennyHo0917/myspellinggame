@@ -3,7 +3,7 @@ import { applyD1Migrations, reset, type D1Migration } from "cloudflare:test";
 import { beforeEach, describe, expect, it } from "vitest";
 import type Stripe from "stripe";
 
-import { HttpError, monthStart } from "../src/worker/domain";
+import { HttpError, masteryStatus, monthStart } from "../src/worker/domain";
 import {
   restrictTeacherAuthCallback,
   safeTeacherCallbackURL,
@@ -151,6 +151,28 @@ async function createAssignment(
   return { response, body: (await response.json()) as Record<string, unknown> };
 }
 
+async function createSavedList(
+  title: string,
+  teacher: Teacher = teacherA,
+  words: string[] = ["apple", "banana"],
+) {
+  const response = await call(
+    "/api/saved-lists",
+    { method: "POST", body: JSON.stringify({ title, words }) },
+    teacher,
+  );
+  return { response, body: (await response.json()) as Record<string, unknown> };
+}
+
+async function createLearner(name: string, teacher: Teacher = teacherA) {
+  const response = await call(
+    "/api/learners",
+    { method: "POST", body: JSON.stringify({ name }) },
+    teacher,
+  );
+  return { response, body: (await response.json()) as Record<string, unknown> };
+}
+
 async function publicWords(publicId: string) {
   const response = await call(`/api/public/assignments/${publicId}`, {}, null);
   return (await response.json()) as {
@@ -279,44 +301,272 @@ describe("teacher authorization and quotas", () => {
     );
   });
 
-  it("describes student_limit as the teacher account nickname quota", async () => {
+  it("keeps public nickname submissions independent from saved learner quotas", async () => {
     const created = await createAssignment();
-    const id = String(created.body.id);
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
+    for (let index = 0; index < 4; index += 1) {
+      expect((await createLearner(`Learner ${index}`)).response.status).toBe(
+        index < 3 ? 201 : 403,
+      );
+    }
+    const response = await submit(publicId, assignment.words, {
+      nickname: "Untracked learner",
+    });
+    expect(response.status).toBe(201);
+    expect(
+      await bindings.DB.prepare("SELECT COUNT(*) AS count FROM learners").first(
+        "count",
+      ),
+    ).toBe(3);
+  });
+});
+
+describe("saved lists and learner profiles", () => {
+  it("enforces Free saved-list limits and leaves Pro lists unlimited", async () => {
+    for (const title of ["One", "Two", "Three"]) {
+      expect((await createSavedList(title)).response.status).toBe(201);
+    }
+    const limited = await createSavedList("Four");
+    expect(limited.response.status).toBe(403);
+    expect(limited.body.error).toBe("saved_list_limit");
+
+    await insertSubscription({ plan: "pro", status: "active" });
+    expect((await createSavedList("Four")).response.status).toBe(201);
+  });
+
+  it("enforces the 150-profile Pro limit", async () => {
+    await insertSubscription({ plan: "pro", status: "active" });
     const now = new Date().toISOString();
-    await bindings.DB.batch(
-      Array.from({ length: 30 }, (_, index) =>
-        bindings.DB.prepare(
-          `INSERT INTO attempts (
-             id, assignment_id, nickname, nickname_key, attempt_number, score,
-             correct_count, incorrect_count, accuracy, duration_seconds,
-             completed_at, retention_expires_at, status
-           ) VALUES (?, ?, ?, ?, NULL, 0, 0, 0, 0, 1, ?, ?, 'incomplete')`,
-        ).bind(
-          crypto.randomUUID(),
-          id,
-          `Student ${index}`,
-          `student ${index}`,
-          now,
-          new Date(Date.now() + 86_400_000).toISOString(),
-        ),
+    const statements = Array.from({ length: 150 }, (_, index) =>
+      bindings.DB.prepare(
+        `INSERT INTO learners (
+             id, owner_user_id, name, name_key, archived, created_at, updated_at
+           ) VALUES (?, ?, ?, ?, 0, ?, ?)`,
+      ).bind(
+        crypto.randomUUID(),
+        teacherA.id,
+        `Learner ${index}`,
+        `learner ${index}`,
+        now,
+        now,
       ),
     );
+    await bindings.DB.batch(statements.slice(0, 100));
+    await bindings.DB.batch(statements.slice(100));
+    const limited = await createLearner("Learner 151");
+    expect(limited.response.status).toBe(403);
+    expect(limited.body.error).toBe("learner_limit");
+  });
 
-    const response = await submit(publicId, assignment.words, {
-      nickname: "Student 31",
-      completed: false,
+  it("keeps saved lists and learner profiles private to their owner", async () => {
+    const savedList = await createSavedList("Private list");
+    const learner = await createLearner("Learner 01");
+    expect(
+      (await call(`/api/saved-lists/${savedList.body.id}`, {}, teacherB))
+        .status,
+    ).toBe(404);
+    expect(
+      (await call(`/api/learners/${learner.body.id}`, {}, teacherB)).status,
+    ).toBe(404);
+    const archived = (await (
+      await call(`/api/learners/${learner.body.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ name: "Learner 02", archived: true }),
+      })
+    ).json()) as { name: string; archived: number };
+    expect(archived).toMatchObject({ name: "Learner 02", archived: 1 });
+    const restored = (await (
+      await call(`/api/learners/${learner.body.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ archived: false }),
+      })
+    ).json()) as { archived: number };
+    expect(restored.archived).toBe(0);
+  });
+
+  it("copies list words into an assignment snapshot", async () => {
+    const savedList = await createSavedList("Week one");
+    const assignment = await createAssignment(teacherA, {
+      title: savedList.body.title,
+      words: savedList.body.words,
     });
-    const body = (await response.json()) as {
-      error: string;
-      message: string;
-    };
-    expect(response.status).toBe(403);
-    expect(body.error).toBe("student_limit");
-    expect(body.message).toContain(
-      "teacher account’s saved distinct student nickname limit",
+    expect(assignment.response.status).toBe(201);
+    expect(
+      (
+        await call(`/api/saved-lists/${savedList.body.id}`, {
+          method: "PATCH",
+          body: JSON.stringify({
+            title: "Changed",
+            words: ["cherry", "grape"],
+          }),
+        })
+      ).status,
+    ).toBe(200);
+    const detail = (await (
+      await call(`/api/assignments/${assignment.body.id}`)
+    ).json()) as { words: Array<{ word: string }> };
+    expect(detail.words.map((word) => word.word)).toEqual(["apple", "banana"]);
+    expect(
+      (
+        await call(`/api/saved-lists/${savedList.body.id}`, {
+          method: "DELETE",
+        })
+      ).status,
+    ).toBe(204);
+    expect((await call(`/api/saved-lists/${savedList.body.id}`)).status).toBe(
+      404,
     );
+  });
+
+  it("retains over-limit data after downgrade but blocks new records", async () => {
+    await insertSubscription({ plan: "pro", status: "active" });
+    for (const title of ["One", "Two", "Three", "Four"]) {
+      expect((await createSavedList(title)).response.status).toBe(201);
+    }
+    await bindings.DB.prepare(
+      "UPDATE subscriptions SET status = 'inactive' WHERE user_id = ?",
+    )
+      .bind(teacherA.id)
+      .run();
+
+    const dashboard = (await (await call("/api/assignments")).json()) as {
+      savedLists: unknown[];
+      usage: { savedLists: number };
+    };
+    expect(dashboard.savedLists).toHaveLength(4);
+    expect(dashboard.usage.savedLists).toBe(4);
+    expect((await createSavedList("Five")).response.status).toBe(403);
+  });
+
+  it("normalizes nickname matching without crossing owners", async () => {
+    const created = await createAssignment();
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    expect(
+      (
+        await submit(publicId, assignment.words, {
+          nickname: "  Learner   01 ",
+        })
+      ).status,
+    ).toBe(201);
+    const learnerA = await createLearner("learner 01");
+    const learnerB = await createLearner("Learner 01", teacherB);
+    const linked = await bindings.DB.prepare(
+      "SELECT learner_id FROM attempts WHERE assignment_id = ?",
+    )
+      .bind(created.body.id)
+      .first("learner_id");
+    expect(linked).toBe(learnerA.body.id);
+    expect(linked).not.toBe(learnerB.body.id);
+  });
+});
+
+describe("cross-assignment mastery", () => {
+  it("uses the last three results and keeps earlier misses until corrected", () => {
+    expect(masteryStatus([true])).toBe("learning");
+    expect(masteryStatus([false, true, true])).toBe("needs_review");
+    expect(masteryStatus([false, true, true, true])).toBe("mastered");
+  });
+
+  it("aggregates completed attempts and builds a focused Pro review", async () => {
+    await insertSubscription({ plan: "pro", status: "active" });
+    const first = await createAssignment(teacherA, {
+      words: ["apple", "banana"],
+      maxAttempts: 4,
+    });
+    const firstWords = await publicWords(String(first.body.publicId));
+    for (const answers of [
+      ["wrong", "banana"],
+      ["apple", "banana"],
+      ["apple", "wrong"],
+      ["apple", "banana"],
+    ]) {
+      expect(
+        (
+          await submit(String(first.body.publicId), firstWords.words, {
+            nickname: "Learner 01",
+            answers,
+          })
+        ).status,
+      ).toBe(201);
+    }
+    const second = await createAssignment(teacherA, {
+      title: "Second",
+      words: ["cherry", "grape"],
+    });
+    const secondWords = await publicWords(String(second.body.publicId));
+    await submit(String(second.body.publicId), secondWords.words, {
+      nickname: "learner 01",
+    });
+    const learner = await createLearner("Learner 01");
+    const detail = (await (
+      await call(`/api/learners/${learner.body.id}`)
+    ).json()) as {
+      summary: { completedAttempts: number };
+      words: Array<{ word: string; status: string }>;
+    };
+    expect(detail.summary.completedAttempts).toBe(5);
+    expect(detail.words).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ word: "apple", status: "mastered" }),
+        expect.objectContaining({ word: "banana", status: "needs_review" }),
+        expect.objectContaining({ word: "cherry", status: "learning" }),
+      ]),
+    );
+    const review = (await (
+      await call(`/api/learners/${learner.body.id}/review`, {
+        method: "POST",
+        body: "{}",
+      })
+    ).json()) as { words: string[] };
+    expect(review.words).toEqual(["banana"]);
+    const assignmentReview = (await (
+      await call(`/api/assignments/${first.body.id}/review`, {
+        method: "POST",
+        body: "{}",
+      })
+    ).json()) as { words: string[] };
+    expect(assignmentReview.words).toEqual(
+      expect.arrayContaining(["apple", "banana"]),
+    );
+  });
+
+  it("shows 30 days on Free, 365 days on Pro, and locks smart review", async () => {
+    const learner = await createLearner("Learner 01");
+    const created = await createAssignment();
+    const words = await publicWords(String(created.body.publicId));
+    await submit(String(created.body.publicId), words.words, {
+      nickname: "Learner 01",
+      answers: ["wrong", "banana"],
+    });
+    const oldDate = new Date(Date.now() - 45 * 86_400_000).toISOString();
+    await bindings.DB.prepare(
+      "UPDATE attempts SET completed_at = ? WHERE learner_id = ?",
+    )
+      .bind(oldDate, learner.body.id)
+      .run();
+
+    const free = (await (
+      await call(`/api/learners/${learner.body.id}`)
+    ).json()) as { historyDays: number; words: unknown[] };
+    expect(free.historyDays).toBe(30);
+    expect(free.words).toHaveLength(0);
+    expect(
+      (
+        await call(`/api/learners/${learner.body.id}/review`, {
+          method: "POST",
+          body: "{}",
+        })
+      ).status,
+    ).toBe(403);
+
+    await insertSubscription({ plan: "pro", status: "active" });
+    const pro = (await (
+      await call(`/api/learners/${learner.body.id}`)
+    ).json()) as { historyDays: number; words: unknown[] };
+    expect(pro.historyDays).toBe(365);
+    expect(pro.words).toHaveLength(2);
   });
 });
 

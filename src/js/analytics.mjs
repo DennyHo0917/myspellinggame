@@ -21,6 +21,7 @@ const EVENT_PARAMS = {
   assignment_abandoned: ['mode', 'word_count'],
   upgrade_viewed: [],
   upgrade_clicked: ['billing_interval'],
+  upgrade_cta_clicked: ['cta_location'],
   usage_limit_reached: ['limit_type'],
   checkout_started: ['billing_interval'],
   checkout_redirected: ['billing_interval'],
@@ -32,6 +33,8 @@ const LIMIT_TYPES = {
   active_assignment_limit: 'active_assignments',
   monthly_submission_limit: 'monthly_submissions',
   student_limit: 'student_nicknames',
+  saved_list_limit: 'saved_lists',
+  learner_limit: 'learner_profiles',
 };
 const reportedLimits = new Set();
 

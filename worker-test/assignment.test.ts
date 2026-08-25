@@ -769,11 +769,36 @@ describe("Stripe checkout", () => {
     )
       .bind(teacherA.id)
       .first<{ stripe_session_id: string; expires_at: string }>();
-    expect(sentExpiresAt).toBe(Math.floor(now.getTime() / 1000) + 30 * 60);
+    expect(sentExpiresAt).toBe(Math.floor(now.getTime() / 1000) + 35 * 60);
     expect(lock).toEqual({
       stripe_session_id: "cs_expiration",
       expires_at: new Date(sentExpiresAt * 1000).toISOString(),
     });
+  });
+
+  it("keeps more than 30 minutes at the Stripe call after setup delay", async () => {
+    const checkoutStartedAt = new Date(Date.now() - 4 * 60_000);
+    let remainingSeconds = 0;
+    await createCheckout(
+      testEnv(),
+      bindings.DB,
+      teacherA,
+      "month",
+      "https://example.test",
+      {
+        now: checkoutStartedAt,
+        createSession: async (params) => {
+          remainingSeconds = params.expires_at! - Math.floor(Date.now() / 1000);
+          return {
+            id: "cs_delayed",
+            url: "https://checkout.test/delayed",
+            expires_at: params.expires_at!,
+          };
+        },
+      },
+    );
+
+    expect(remainingSeconds).toBeGreaterThan(30 * 60);
   });
 
   it("releases the lock when Session creation fails", async () => {
@@ -823,7 +848,7 @@ describe("Stripe checkout", () => {
 
     await expect(checkout(now)).resolves.toMatchObject({ id: "cs_1" });
     await expect(
-      checkout(new Date(now.getTime() + 31 * 60_000)),
+      checkout(new Date(now.getTime() + 36 * 60_000)),
     ).resolves.toMatchObject({ id: "cs_2" });
     expect(calls).toBe(2);
   });
@@ -889,7 +914,7 @@ describe("Stripe event processing", () => {
     async (eventType) => {
       const now = new Date();
       await createTestCheckout("cs_old", now);
-      await createTestCheckout("cs_new", new Date(now.getTime() + 31 * 60_000));
+      await createTestCheckout("cs_new", new Date(now.getTime() + 36 * 60_000));
 
       await processStripeEvent(
         bindings.DB,

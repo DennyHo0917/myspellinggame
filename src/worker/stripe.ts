@@ -8,6 +8,8 @@ export interface StripeEnv {
   STRIPE_PRICE_YEARLY: string;
 }
 
+const CHECKOUT_SESSION_DURATION_SECONDS = 35 * 60;
+
 type SubscriptionAccess = {
   status: string;
   current_period_end: string | null;
@@ -157,7 +159,8 @@ export async function createCheckout(
     );
   }
   const token = crypto.randomUUID();
-  const sessionExpiresAt = Math.floor(now.getTime() / 1000) + 30 * 60;
+  const sessionExpiresAt =
+    Math.floor(now.getTime() / 1000) + CHECKOUT_SESSION_DURATION_SECONDS;
   const expiresAt = new Date(sessionExpiresAt * 1000).toISOString();
   const claim = await db
     .prepare(

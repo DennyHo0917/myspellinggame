@@ -94,7 +94,6 @@
             </div>
         </details>
         <a class="teacher-nav-link" href="/teacher?lang=fr">Espace enseignant</a>
-        <button class="privacy-btn" onclick="showPrivacyPolicyLegacy()" data-i18n-title="privacyPolicyTooltip" title="Confidentialité">Confidentialité</button>
         <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Son</button>
     </header>
 
@@ -181,10 +180,9 @@
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">Liste exemple</button>
                                 <button type="button" onclick="copyPracticeLink()">Copier le lien</button>
-                                <div class="assignment-entry-group">
-                                    <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Enseignant : créer un devoir avec cette liste</button>
-                                </div>
+                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Donner aux élèves</button>
                             </div>
+                            <button type="button" class="copy-assignment-hint" id="copy-assignment-hint" onclick="openTeacherAssignment()" hidden>Vous voulez les résultats des élèves ? Créez un devoir gratuit.</button>
                         </div>
                         <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Commencer le test d’orthographe</button>
                     </div>
@@ -216,6 +214,7 @@
                     <div class="game-over-buttons">
                         <button class="restart-btn" id="restart-same-btn" onclick="restartGame(true)">Recommencer</button>
                         <button class="share-score-btn" id="edit-list-btn" onclick="restartGame()">Modifier la liste</button>
+                        <button type="button" class="share-score-btn assignment-complete-btn" onclick="openTeacherAssignment()">Donner cette liste aux élèves</button>
                     </div>
                 </div>
             </div>

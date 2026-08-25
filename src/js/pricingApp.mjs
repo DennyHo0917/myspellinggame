@@ -8,6 +8,7 @@ const selectedPrice = document.getElementById("selected-plan-price");
 const selectedDescription = document.getElementById(
   "selected-plan-description",
 );
+const selectedSavings = document.getElementById("selected-plan-savings");
 const confirmButton = document.querySelector("[data-confirm-checkout]");
 trackEvent("upgrade_viewed");
 
@@ -20,6 +21,8 @@ function selectPlan(interval) {
   }
   selectedPrice.textContent = selectedPrice.dataset[interval];
   selectedDescription.textContent = selectedDescription.dataset[interval];
+  selectedSavings.textContent = selectedSavings.dataset[interval];
+  selectedSavings.hidden = !selectedSavings.textContent;
   confirmButton.dataset.checkout = interval;
   confirmButton.textContent =
     confirmButton.dataset[`confirm${interval === "month" ? "Month" : "Year"}`];
@@ -30,13 +33,18 @@ for (const option of planOptions) {
 }
 
 confirmButton.addEventListener("click", async () => {
+  if (confirmButton.disabled) return;
   const interval = confirmButton.dataset.checkout;
-  trackEvent("checkout_started", { billing_interval: interval });
+  let previousInterval = null;
   try {
+    previousInterval = sessionStorage.getItem("pendingCheckoutInterval");
     sessionStorage.setItem("pendingCheckoutInterval", interval);
   } catch {}
+  if (previousInterval !== interval)
+    trackEvent("upgrade_clicked", { billing_interval: interval });
   confirmButton.disabled = true;
   status.textContent = productMessage("loading", {}, locale);
+  status.className = "status";
   try {
     const response = await fetch("/api/billing/checkout", {
       method: "POST",
@@ -57,6 +65,7 @@ confirmButton.addEventListener("click", async () => {
             ? productMessage("alreadySubscribed", {}, locale)
             : productMessage("error", {}, locale),
       );
+    trackEvent("checkout_started", { billing_interval: interval });
     try {
       sessionStorage.removeItem("pendingCheckoutInterval");
     } catch {}

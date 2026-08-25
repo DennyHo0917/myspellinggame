@@ -1,4 +1,9 @@
-import { createAuth, getTeacherSession, type AuthEnv } from "./auth";
+import {
+  createAuth,
+  getTeacherSession,
+  restrictTeacherAuthCallback,
+  type AuthEnv,
+} from "./auth";
 import {
   HttpError,
   PLAN_LIMITS,
@@ -724,7 +729,8 @@ export async function handleRequest(
         "Teacher sign-in is not configured yet.",
       );
     }
-    return createAuth(env, request).handler(request);
+    const authRequest = await restrictTeacherAuthCallback(request);
+    return createAuth(env, authRequest).handler(authRequest);
   }
   if (url.pathname === "/api/stripe/webhook" && method === "POST") {
     const processed = await verifyAndProcessWebhook(env, env.DB, request);

@@ -228,6 +228,7 @@ export async function copyPracticeLink() {
     window.prompt(t('copyPrompt'), url.toString());
     status(t('linkReady'));
   }
+  document.getElementById('copy-assignment-hint')?.removeAttribute('hidden');
   track('practice_link_copied', { word_count: words.length, mode: selectedMode(), locale: pageLocale() });
 }
 

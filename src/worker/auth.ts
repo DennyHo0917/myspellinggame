@@ -8,6 +8,46 @@ export interface AuthEnv {
   GOOGLE_CLIENT_SECRET: string;
 }
 
+export function safeTeacherCallbackURL(value: unknown, origin: string) {
+  try {
+    const callback = new URL(
+      typeof value === "string" ? value : "/teacher",
+      origin,
+    );
+    if (
+      callback.origin === origin &&
+      /^\/teacher(?:\/|$)/.test(callback.pathname)
+    ) {
+      return `${callback.pathname}${callback.search}`;
+    }
+  } catch {}
+  return "/teacher";
+}
+
+export async function restrictTeacherAuthCallback(request: Request) {
+  const url = new URL(request.url);
+  if (
+    request.method !== "POST" ||
+    url.pathname !== "/api/auth/sign-in/social"
+  ) {
+    return request;
+  }
+  const body = (await request
+    .clone()
+    .json()
+    .catch(() => null)) as Record<string, unknown> | null;
+  if (!body) return request;
+  const headers = new Headers(request.headers);
+  headers.delete("content-length");
+  return new Request(request, {
+    headers,
+    body: JSON.stringify({
+      ...body,
+      callbackURL: safeTeacherCallbackURL(body.callbackURL, url.origin),
+    }),
+  });
+}
+
 export function createAuth(env: AuthEnv, request: Request) {
   const origin = new URL(request.url).origin;
   const baseURL = env.BETTER_AUTH_URL || origin;

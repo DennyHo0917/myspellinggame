@@ -78,6 +78,10 @@ test('teacher analytics omit student, assignment, and Stripe identifiers', () =>
     ...privateValues,
     billing_interval: 'year',
   }), { billing_interval: 'year' });
+  assert.deepEqual(sanitizeEventParams('upgrade_clicked', {
+    ...privateValues,
+    billing_interval: 'month',
+  }), { billing_interval: 'month' });
   assert.deepEqual(sanitizeEventParams('purchase', {
     ...privateValues,
     billing_interval: 'year',

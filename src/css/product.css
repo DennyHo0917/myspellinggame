@@ -218,6 +218,7 @@ a {
 .product-main {
   display: grid;
   gap: 1rem;
+  min-width: 0;
 }
 
 .product-footer {
@@ -248,6 +249,7 @@ a {
   text-decoration: underline;
 }
 .product-card {
+  min-width: 0;
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -294,27 +296,31 @@ a {
   align-items: center;
 }
 .plan-selector {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
+  display: inline-flex;
+  gap: 0.2rem;
   margin: 1rem 0 0.75rem;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #f4f7f6;
 }
 .plan-option {
-  min-height: 44px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #f4faf8;
-  color: var(--brand);
-  font-size: 0.9rem;
-  font-weight: 800;
+  min-height: 32px;
+  padding: 0 0.7rem;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 750;
 }
 .plan-option[aria-pressed="true"] {
-  border-color: var(--brand);
-  background: var(--brand);
-  color: white;
+  background: white;
+  color: var(--brand-dark);
+  box-shadow: 0 1px 4px rgba(39, 62, 70, 0.12);
 }
 .selected-plan {
-  min-height: 5.2rem;
+  min-height: 7rem;
 }
 .selected-plan .price {
   margin-bottom: 0.25rem;
@@ -323,8 +329,38 @@ a {
   color: var(--muted);
   font-weight: 700;
 }
+.selected-plan .plan-savings {
+  display: inline-flex;
+  margin: 0.35rem 0 0;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: #e8f5ee;
+  color: var(--green);
+  font-size: 0.8rem;
+}
+.selected-plan .plan-savings[hidden] {
+  display: none;
+}
 .checkout-confirm {
   width: 100%;
+}
+.checkout-security {
+  margin: 0.65rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-align: center;
+}
+.checkout-retry-notice {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.checkout-retry-notice p {
+  margin: 0;
+}
+.checkout-retry-notice .status {
+  flex-basis: 100%;
 }
 .grid {
   display: grid;
@@ -604,6 +640,11 @@ th {
   }
   .product-card {
     border-radius: 12px;
+  }
+
+  .assignment-form-heading,
+  .assignment-detail-heading {
+    flex-wrap: wrap;
   }
 }
 

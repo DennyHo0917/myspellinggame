@@ -4,6 +4,10 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type Stripe from "stripe";
 
 import { HttpError, monthStart } from "../src/worker/domain";
+import {
+  restrictTeacherAuthCallback,
+  safeTeacherCallbackURL,
+} from "../src/worker/auth";
 import { handleRequest, type Env } from "../src/worker/index";
 import { createCheckout, processStripeEvent } from "../src/worker/stripe";
 
@@ -187,6 +191,40 @@ beforeEach(async () => {
   await applyD1Migrations(bindings.DB, bindings.TEST_MIGRATIONS);
   await insertTeacher(teacherA);
   await insertTeacher(teacherB);
+});
+
+describe("teacher auth callback", () => {
+  it("allows only same-origin teacher paths", () => {
+    const origin = "https://example.test";
+    expect(
+      safeTeacherCallbackURL("/teacher/assignments/new?lang=en", origin),
+    ).toBe("/teacher/assignments/new?lang=en");
+    expect(safeTeacherCallbackURL("https://evil.test/teacher", origin)).toBe(
+      "/teacher",
+    );
+    expect(safeTeacherCallbackURL("/teacher-redirect", origin)).toBe(
+      "/teacher",
+    );
+  });
+
+  it("sanitizes the social sign-in request before auth handles it", async () => {
+    const request = new Request(
+      "https://example.test/api/auth/sign-in/social",
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          provider: "google",
+          callbackURL: "https://evil.test/teacher",
+        }),
+      },
+    );
+    const sanitized = await restrictTeacherAuthCallback(request);
+    await expect(sanitized.json()).resolves.toMatchObject({
+      provider: "google",
+      callbackURL: "/teacher",
+    });
+  });
 });
 
 describe("teacher authorization and quotas", () => {

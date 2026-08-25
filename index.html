@@ -94,7 +94,6 @@
             </div>
         </details>
         <a class="teacher-nav-link" href="/teacher?lang=en">For teachers</a>
-        <button class="privacy-btn" onclick="showPrivacyPolicyLegacy()" data-i18n-title="privacyPolicyTooltip" title="Privacy Policy">Privacy</button>
         <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Sound</button>
     </header>
 
@@ -181,10 +180,9 @@
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">Sample list</button>
                                 <button type="button" onclick="copyPracticeLink()">Copy practice link</button>
-                                <div class="assignment-entry-group">
-                                    <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Teacher: assign this list</button>
-                                </div>
+                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Assign to students</button>
                             </div>
+                            <button type="button" class="copy-assignment-hint" id="copy-assignment-hint" onclick="openTeacherAssignment()" hidden>Want student results? Create a free assignment.</button>
                         </div>
                         <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Start Spelling Test</button>
                     </div>
@@ -216,6 +214,7 @@
                     <div class="game-over-buttons">
                         <button class="restart-btn" id="restart-same-btn" onclick="restartGame(true)">Restart</button>
                         <button class="share-score-btn" id="edit-list-btn" onclick="restartGame()">Edit Word List</button>
+                        <button type="button" class="share-score-btn assignment-complete-btn" onclick="openTeacherAssignment()">Assign this list to students</button>
                     </div>
                 </div>
             </div>

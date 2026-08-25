@@ -115,6 +115,9 @@ const PACKS = {
       "Enter a nickname or classroom number with 2–32 characters.",
     activeLimit: "Your active assignment limit has been reached.",
     billingUnavailable: "Billing is not configured in this environment yet.",
+    checkoutRetry:
+      "We couldn’t open Stripe Checkout. Your selected plan is still saved.",
+    retryCheckout: "Try checkout again",
     invalidTitle: "Use an assignment title with 1–80 characters.",
     invalidWords: "Use 1–80 words, each 2–24 characters long.",
     invalidDeadline: "Choose a future deadline within the next year.",
@@ -241,6 +244,9 @@ const PACKS = {
       "Introduce un apodo o número de clase de 2 a 32 caracteres.",
     activeLimit: "Has alcanzado el límite de tareas activas.",
     billingUnavailable: "Los pagos aún no están configurados en este entorno.",
+    checkoutRetry:
+      "No pudimos abrir el pago seguro. El plan que elegiste sigue guardado.",
+    retryCheckout: "Reintentar el pago",
     invalidTitle: "Usa un título de entre 1 y 80 caracteres.",
     invalidWords: "Usa entre 1 y 80 palabras, de 2 a 24 caracteres cada una.",
     invalidDeadline: "Elige una fecha futura dentro del próximo año.",
@@ -367,6 +373,9 @@ const PACKS = {
     activeLimit: "Você atingiu o limite de tarefas ativas.",
     billingUnavailable:
       "Os pagamentos ainda não estão configurados neste ambiente.",
+    checkoutRetry:
+      "Não foi possível abrir o checkout. O plano escolhido continua salvo.",
+    retryCheckout: "Tentar o checkout novamente",
     invalidTitle: "Use um título com 1 a 80 caracteres.",
     invalidWords: "Use de 1 a 80 palavras, cada uma com 2 a 24 caracteres.",
     invalidDeadline: "Escolha um prazo futuro dentro do próximo ano.",
@@ -493,6 +502,9 @@ const PACKS = {
     invalidNickname: "Saisissez un pseudonyme ou numéro de 2 à 32 caractères.",
     activeLimit: "Votre limite de devoirs actifs est atteinte.",
     billingUnavailable: "La facturation n’est pas encore configurée ici.",
+    checkoutRetry:
+      "Impossible d’ouvrir le paiement sécurisé. Votre offre reste enregistrée.",
+    retryCheckout: "Réessayer le paiement",
     invalidTitle: "Utilisez un titre de 1 à 80 caractères.",
     invalidWords: "Utilisez 1 à 80 mots de 2 à 24 caractères chacun.",
     invalidDeadline: "Choisissez une échéance future dans l’année à venir.",
@@ -616,6 +628,9 @@ const PACKS = {
       "Masukkan nama panggilan atau nomor kelas sepanjang 2–32 karakter.",
     activeLimit: "Batas tugas aktif sudah tercapai.",
     billingUnavailable: "Pembayaran belum dikonfigurasi di lingkungan ini.",
+    checkoutRetry:
+      "Checkout belum dapat dibuka. Paket yang dipilih tetap tersimpan.",
+    retryCheckout: "Coba checkout lagi",
     invalidTitle: "Gunakan judul sepanjang 1–80 karakter.",
     invalidWords: "Gunakan 1–80 kata, masing-masing sepanjang 2–24 karakter.",
     invalidDeadline:
@@ -733,6 +748,8 @@ const PACKS = {
     invalidNickname: "请输入 2～32 个字符的昵称或课堂编号。",
     activeLimit: "活跃作业额度已用完。",
     billingUnavailable: "当前环境尚未配置付费功能。",
+    checkoutRetry: "暂时无法打开 Stripe 结账页，你选择的方案仍已保留。",
+    retryCheckout: "重新尝试结账",
     invalidTitle: "作业标题需为 1～80 个字符。",
     invalidWords: "请输入 1～80 个单词，每个单词 2～24 个字符。",
     invalidDeadline: "请选择未来一年内的截止时间。",

@@ -94,7 +94,6 @@
             </div>
         </details>
         <a class="teacher-nav-link" href="/teacher?lang=zh">教师工作台</a>
-        <button class="privacy-btn" onclick="showPrivacyPolicyLegacy()" data-i18n-title="privacyPolicyTooltip" title="隐私">隐私</button>
         <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">声音</button>
     </header>
 
@@ -181,10 +180,9 @@
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">示例单词表</button>
                                 <button type="button" onclick="copyPracticeLink()">复制练习链接</button>
-                                <div class="assignment-entry-group">
-                                    <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">教师：用这份词表布置作业</button>
-                                </div>
+                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">布置给学生</button>
                             </div>
+                            <button type="button" class="copy-assignment-hint" id="copy-assignment-hint" onclick="openTeacherAssignment()" hidden>想查看学生成绩？免费创建一份作业。</button>
                         </div>
                         <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">开始听写测试</button>
                     </div>
@@ -216,6 +214,7 @@
                     <div class="game-over-buttons">
                         <button class="restart-btn" id="restart-same-btn" onclick="restartGame(true)">重新开始</button>
                         <button class="share-score-btn" id="edit-list-btn" onclick="restartGame()">重新设置单词表</button>
+                        <button type="button" class="share-score-btn assignment-complete-btn" onclick="openTeacherAssignment()">用这份词表给学生布置作业</button>
                     </div>
                 </div>
             </div>

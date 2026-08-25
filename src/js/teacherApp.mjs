@@ -114,6 +114,13 @@ function statusElement(parent) {
   return status;
 }
 
+function teacherCallbackURL() {
+  const pathname = /^\/teacher(?:\/|$)/.test(location.pathname)
+    ? location.pathname
+    : "/teacher";
+  return `${pathname}?lang=${encodeURIComponent(locale)}`;
+}
+
 async function appendPricing(main) {
   const pricing = document.createElement("section");
   pricing.id = "pricing";
@@ -171,7 +178,7 @@ async function renderLogin() {
         method: "POST",
         body: JSON.stringify({
           provider: "google",
-          callbackURL: `/teacher?lang=${encodeURIComponent(locale)}`,
+          callbackURL: teacherCallbackURL(),
         }),
       });
       if (!response.url) throw new Error(copy.error);
@@ -312,6 +319,51 @@ async function openPortal() {
   } catch (error) {
     alert(error.message);
   }
+}
+
+async function startCheckout(interval) {
+  const checkout = await api("/api/billing/checkout", {
+    method: "POST",
+    body: JSON.stringify({ interval }),
+  });
+  if (!checkout?.url) throw new Error(copy.error);
+  trackEvent("checkout_started", { billing_interval: interval });
+  try {
+    sessionStorage.removeItem("pendingCheckoutInterval");
+  } catch {}
+  location.href = checkout.url;
+}
+
+function showCheckoutRetry(interval, error) {
+  const main = root.querySelector(".product-main");
+  if (!main) return;
+  main.querySelector(".checkout-retry-notice")?.remove();
+  const notice = document.createElement("section");
+  notice.className = "notice checkout-retry-notice";
+  notice.setAttribute("role", "alert");
+  const message = document.createElement("p");
+  message.textContent = copy.checkoutRetry;
+  const status = document.createElement("p");
+  status.className = "status error";
+  status.textContent = error.message;
+  const retry = document.createElement("button");
+  retry.type = "button";
+  retry.className = "button-secondary";
+  retry.textContent = copy.retryCheckout;
+  retry.addEventListener("click", async () => {
+    retry.disabled = true;
+    status.textContent = copy.loading;
+    status.className = "status";
+    try {
+      await startCheckout(interval);
+    } catch (retryError) {
+      status.textContent = retryError.message;
+      status.className = "status error";
+      retry.disabled = false;
+    }
+  });
+  notice.append(message, retry, status);
+  main.prepend(notice);
 }
 
 async function renderNew() {
@@ -620,20 +672,19 @@ async function init() {
       sessionStorage.setItem("teacherAuthCompletedSent", "1");
     }
   } catch {}
+  let pendingInterval = null;
+  let pendingCheckoutError = null;
   try {
-    const pendingInterval = sessionStorage.getItem("pendingCheckoutInterval");
-    if (pendingInterval === "month" || pendingInterval === "year") {
-      sessionStorage.removeItem("pendingCheckoutInterval");
-      const checkout = await api("/api/billing/checkout", {
-        method: "POST",
-        body: JSON.stringify({ interval: pendingInterval }),
-      });
-      if (checkout.url) {
-        location.href = checkout.url;
-        return;
-      }
-    }
+    pendingInterval = sessionStorage.getItem("pendingCheckoutInterval");
   } catch {}
+  if (pendingInterval === "month" || pendingInterval === "year") {
+    try {
+      await startCheckout(pendingInterval);
+      return;
+    } catch (error) {
+      pendingCheckoutError = error;
+    }
+  }
   const params = new URLSearchParams(location.search);
   if (params.get("checkout") === "success" && me.plan === "pro") {
     const billingInterval = me.billingInterval === "year" ? "year" : "month";
@@ -664,6 +715,8 @@ async function init() {
     card.append(title);
     main.append(card);
   }
+  if (pendingCheckoutError)
+    showCheckoutRetry(pendingInterval, pendingCheckoutError);
 }
 
 init();

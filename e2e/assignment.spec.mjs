@@ -151,6 +151,274 @@ test("a student can return to the start during consecutive assignments", async (
   expect(calls).toBe(2);
 });
 
+test("Google sign-in returns to a prefilled new teacher assignment", async ({
+  page,
+}) => {
+  let signedIn = false;
+  let callbackURL = "";
+  await page.route("**/api/config", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ googleAuthConfigured: true }),
+    }),
+  );
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      status: signedIn ? 200 : 401,
+      contentType: "application/json",
+      body: JSON.stringify(
+        signedIn
+          ? {
+              user: {
+                id: "teacher-a",
+                name: "Teacher A",
+                email: "a@example.test",
+              },
+              plan: "free",
+              billingInterval: null,
+            }
+          : { error: "sign_in_required" },
+      ),
+    }),
+  );
+  await page.route("**/api/auth/sign-in/social", async (route) => {
+    callbackURL = route.request().postDataJSON().callbackURL;
+    signedIn = true;
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ url: callbackURL }),
+    });
+  });
+
+  await page.goto("/");
+  await page.locator("#custom-word-list").fill("because\nfriend");
+  await page.locator('input[name="practice-mode"][value="typing"]').check();
+  await page.getByRole("button", { name: "Assign to students" }).click();
+  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
+  await page.getByRole("button", { name: "Continue with Google" }).click();
+
+  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
+  expect(callbackURL).toBe("/teacher/assignments/new?lang=en");
+  await expect(page.getByLabel("Spelling words")).toHaveValue(
+    "because\nfriend",
+  );
+  await expect(page.getByLabel("Typing", { exact: true })).toBeChecked();
+});
+
+test("Checkout analytics wait for a Stripe URL and do not duplicate intent", async ({
+  page,
+}) => {
+  let calls = 0;
+  await page.route("**/api/billing/checkout", async (route) => {
+    calls += 1;
+    await route.fulfill({
+      status: calls === 1 ? 500 : 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        calls === 1
+          ? { error: "internal_error" }
+          : { url: "/pricing#stripe-checkout" },
+      ),
+    });
+  });
+
+  await page.goto("/pricing");
+  const checkout = page.getByRole("button", {
+    name: "Continue with monthly plan · $5.99 / month",
+  });
+  await checkout.click();
+  await expect(
+    page.getByText("Something went wrong. Please try again."),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("pendingCheckoutInterval"),
+    ),
+  ).toBe("month");
+
+  const eventNames = () =>
+    page.evaluate(() =>
+      window.dataLayer
+        .map((entry) => Array.from(entry))
+        .filter((entry) => entry[0] === "event")
+        .map((entry) => entry[1]),
+    );
+  expect(
+    (await eventNames()).filter((name) => name === "upgrade_clicked"),
+  ).toHaveLength(1);
+  expect(
+    (await eventNames()).filter((name) => name === "checkout_started"),
+  ).toHaveLength(0);
+
+  await checkout.click();
+  await expect(page).toHaveURL(/#stripe-checkout$/);
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("pendingCheckoutInterval"),
+    ),
+  ).toBeNull();
+  expect(
+    (await eventNames()).filter((name) => name === "upgrade_clicked"),
+  ).toHaveLength(1);
+  expect(
+    (await eventNames()).filter((name) => name === "checkout_started"),
+  ).toHaveLength(1);
+});
+
+test("failed automatic Checkout stays retryable on the teacher page", async ({
+  page,
+}) => {
+  let checkoutCalls = 0;
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
+        plan: "free",
+        billingInterval: null,
+      }),
+    }),
+  );
+  await page.route("**/api/assignments", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        assignments: [],
+        usage: {
+          activeAssignments: 0,
+          monthlyAttempts: 0,
+          studentNicknames: 0,
+          limits: { activeAssignments: 2, monthlyAttempts: 30 },
+        },
+      }),
+    }),
+  );
+  await page.route("**/api/billing/checkout", async (route) => {
+    checkoutCalls += 1;
+    await route.fulfill({
+      status: checkoutCalls === 1 ? 500 : 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        checkoutCalls === 1
+          ? { error: "internal_error" }
+          : { url: "/teacher?lang=en#stripe-checkout" },
+      ),
+    });
+  });
+
+  await page.goto("/");
+  await page.evaluate(() =>
+    sessionStorage.setItem("pendingCheckoutInterval", "year"),
+  );
+  await page.goto("/teacher?lang=en");
+  await expect(
+    page.getByText(
+      "We couldn’t open Stripe Checkout. Your selected plan is still saved.",
+    ),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("pendingCheckoutInterval"),
+    ),
+  ).toBe("year");
+
+  await page.getByRole("button", { name: "Try checkout again" }).click();
+  await expect(page).toHaveURL(/#stripe-checkout$/);
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("pendingCheckoutInterval"),
+    ),
+  ).toBeNull();
+  expect(checkoutCalls).toBe(2);
+});
+
+test("mobile conversion pages keep their key actions usable", async ({
+  page,
+}) => {
+  let signedIn = false;
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route("**/api/config", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ googleAuthConfigured: true }),
+    }),
+  );
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      status: signedIn ? 200 : 401,
+      contentType: "application/json",
+      body: JSON.stringify(
+        signedIn
+          ? {
+              user: {
+                id: "teacher-a",
+                name: "Teacher A",
+                email: "a@example.test",
+              },
+              plan: "free",
+              billingInterval: null,
+            }
+          : { error: "sign_in_required" },
+      ),
+    }),
+  );
+
+  const expectNoHorizontalOverflow = async () => {
+    const layout = await page.evaluate(() => ({
+      fits: document.documentElement.scrollWidth <= window.innerWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+      viewportWidth: window.innerWidth,
+      offenders: Array.from(document.querySelectorAll("body *"))
+        .filter(
+          (element) =>
+            element.getBoundingClientRect().right > window.innerWidth + 1,
+        )
+        .slice(0, 5)
+        .map((element) => ({
+          element: `${element.tagName.toLowerCase()}.${element.className}`,
+          right: Math.round(element.getBoundingClientRect().right),
+        })),
+    }));
+    expect(layout.fits, JSON.stringify(layout)).toBe(true);
+  };
+
+  await page.goto("/");
+  await expect(page.locator(".brand-logo")).toBeVisible();
+  await expect(page.locator(".lang-btn")).toBeVisible();
+  await expect(page.getByRole("link", { name: "For teachers" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Sound/ })).toBeVisible();
+  await expect(page.locator("header").getByText("Privacy")).toHaveCount(0);
+  await expectNoHorizontalOverflow();
+
+  await page.goto("/pricing");
+  await expect(
+    page.getByRole("link", { name: "Start free teacher account" }),
+  ).toHaveAttribute("href", "/teacher?lang=en");
+  await expect(page.getByText("Unlimited student submissions")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Monthly plan", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Yearly plan", exact: true }).click();
+  await expect(page.getByText("$4.17 / month")).toBeVisible();
+  await expect(page.getByText("Billed $49.99 yearly")).toBeVisible();
+  await expect(page.getByText("Save 30%")).toBeVisible();
+  await expect(
+    page.getByText("Secure checkout by Stripe · Cancel anytime"),
+  ).toBeVisible();
+  await expectNoHorizontalOverflow();
+
+  await page.goto("/teacher?lang=en");
+  await expect(
+    page.getByRole("button", { name: "Continue with Google" }),
+  ).toBeVisible();
+  await expectNoHorizontalOverflow();
+
+  signedIn = true;
+  await page.goto("/teacher/assignments/new?lang=en");
+  await expect(page.getByLabel("Spelling words")).toBeVisible();
+  await expectNoHorizontalOverflow();
+});
+
 test("a Pro dashboard does not load the upgrade pricing component", async ({
   page,
 }) => {

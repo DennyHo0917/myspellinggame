@@ -94,7 +94,6 @@
             </div>
         </details>
         <a class="teacher-nav-link" href="/teacher?lang=id">Untuk guru</a>
-        <button class="privacy-btn" onclick="showPrivacyPolicyLegacy()" data-i18n-title="privacyPolicyTooltip" title="Privasi">Privasi</button>
         <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Suara</button>
     </header>
 
@@ -181,10 +180,9 @@
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">Contoh daftar</button>
                                 <button type="button" onclick="copyPracticeLink()">Salin link latihan</button>
-                                <div class="assignment-entry-group">
-                                    <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Untuk guru: buat tugas dari daftar ini</button>
-                                </div>
+                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Berikan ke siswa</button>
                             </div>
+                            <button type="button" class="copy-assignment-hint" id="copy-assignment-hint" onclick="openTeacherAssignment()" hidden>Ingin melihat hasil siswa? Buat tugas gratis.</button>
                         </div>
                         <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Mulai tes ejaan</button>
                     </div>
@@ -216,6 +214,7 @@
                     <div class="game-over-buttons">
                         <button class="restart-btn" id="restart-same-btn" onclick="restartGame(true)">Mulai ulang</button>
                         <button class="share-score-btn" id="edit-list-btn" onclick="restartGame()">Ubah daftar kata</button>
+                        <button type="button" class="share-score-btn assignment-complete-btn" onclick="openTeacherAssignment()">Berikan daftar ini ke siswa</button>
                     </div>
                 </div>
             </div>

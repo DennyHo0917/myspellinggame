@@ -540,6 +540,10 @@ a {
 
 .spelling-actions {
   justify-content: flex-start;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(247, 250, 248, 0.82);
 }
 
 .return-menu-btn {
@@ -559,17 +563,33 @@ a {
   background: #e6efee;
 }
 
-.assignment-entry-group {
-  margin-left: auto;
-}
-
-.assignment-entry-group .assignment-entry {
+.spelling-actions .assignment-entry {
   background: #edf6f3;
   border-color: rgba(47, 111, 115, 0.25);
 }
 
-.assignment-entry-group .assignment-entry:hover {
+.spelling-actions .assignment-entry:hover {
   background: #e2f0ec;
+}
+
+.copy-assignment-hint {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 750;
+  text-align: left;
+}
+
+.copy-assignment-hint:hover {
+  text-decoration: underline;
+}
+
+.copy-assignment-hint[hidden] {
+  display: none;
 }
 
 .spelling-actions button,
@@ -935,6 +955,12 @@ textarea:focus-visible,
   background: var(--primary);
   color: #ffffff;
   border-color: var(--primary);
+}
+
+.game-over-buttons .assignment-complete-btn {
+  background: var(--surface);
+  color: var(--primary);
+  border-color: var(--line);
 }
 
 .clear-data-btn,
@@ -1491,14 +1517,6 @@ footer a {
     width: 100%;
   }
 
-  .assignment-entry-group button {
-    width: 100%;
-  }
-
-  .assignment-entry-group {
-    width: 100%;
-    margin-left: 0;
-  }
 }
 
 /* Homepage shell: a calm workspace around the practice tool. */
@@ -1711,10 +1729,6 @@ footer a {
   font-size: 0.78rem;
 }
 
-.assignment-entry-group {
-  margin-left: auto;
-}
-
 .start-btn {
   min-height: 50px;
   margin-top: 16px;
@@ -1801,13 +1815,8 @@ footer a {
     align-items: stretch;
   }
 
-  .assignment-entry-group {
-    width: 100%;
-    margin-left: 0;
-  }
-
-  .assignment-entry-group button {
-    width: 100%;
+  .spelling-actions button {
+    flex: 1 1 140px;
   }
 }
 

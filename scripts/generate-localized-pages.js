@@ -103,7 +103,10 @@ const pages = {
       ready: "8 palabras listas",
       sample: "Lista de ejemplo",
       copy: "Copiar enlace de práctica",
-      assign: "Docentes: asignar esta lista",
+      assign: "Asignar a estudiantes",
+      assignComplete: "Asignar esta lista a estudiantes",
+      copyAssignmentHint:
+        "¿Quieres ver los resultados de tus alumnos? Crea una tarea gratis.",
       start: "Empezar práctica",
       complete: "Práctica terminada",
       returnMenu: "Volver a la lista",
@@ -257,7 +260,10 @@ const pages = {
       ready: "8 palavras prontas",
       sample: "Lista de exemplo",
       copy: "Copiar link de prática",
-      assign: "Professor: criar tarefa com esta lista",
+      assign: "Criar tarefa para alunos",
+      assignComplete: "Criar tarefa para alunos com esta lista",
+      copyAssignmentHint:
+        "Quer ver os resultados dos alunos? Crie uma tarefa grátis.",
       start: "Começar prática",
       complete: "Prática concluída",
       returnMenu: "Voltar para a lista",
@@ -411,7 +417,10 @@ const pages = {
       ready: "8 mots prêts",
       sample: "Liste exemple",
       copy: "Copier le lien",
-      assign: "Enseignant : créer un devoir avec cette liste",
+      assign: "Donner aux élèves",
+      assignComplete: "Donner cette liste aux élèves",
+      copyAssignmentHint:
+        "Vous voulez les résultats des élèves ? Créez un devoir gratuit.",
       start: "Commencer",
       complete: "Entraînement terminé",
       returnMenu: "Retourner à la liste",
@@ -565,7 +574,9 @@ const pages = {
       ready: "8 kata siap",
       sample: "Contoh daftar",
       copy: "Salin link latihan",
-      assign: "Untuk guru: buat tugas dari daftar ini",
+      assign: "Berikan ke siswa",
+      assignComplete: "Berikan daftar ini ke siswa",
+      copyAssignmentHint: "Ingin melihat hasil siswa? Buat tugas gratis.",
       start: "Mulai latihan",
       complete: "Latihan selesai",
       returnMenu: "Kembali ke daftar",
@@ -711,7 +722,9 @@ const pages = {
       ready: "已准备 8 个单词",
       sample: "示例单词表",
       copy: "复制练习链接",
-      assign: "教师：用这份词表布置作业",
+      assign: "布置给学生",
+      assignComplete: "用这份词表给学生布置作业",
+      copyAssignmentHint: "想查看学生成绩？免费创建一份作业。",
       start: "开始练习",
       complete: "练习完成",
       returnMenu: "返回单词表",
@@ -1076,7 +1089,6 @@ function body(page, code) {
         </a>
 ${languageMenu(code, nav)}
         <a class="teacher-nav-link" href="/teacher?lang=${encodeURIComponent(code)}">${nav.teacher}</a>
-        <button class="privacy-btn" onclick="showPrivacyPolicyLegacy()" data-i18n-title="privacyPolicyTooltip" title="${escapeAttr(nav.privacy)}">${nav.privacy}</button>
         <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">${nav.sound}</button>
     </header>
 
@@ -1157,10 +1169,9 @@ ${game.chips.map((chip) => `                            <span>${chip}</span>`).j
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">${game.sample}</button>
                                 <button type="button" onclick="copyPracticeLink()">${game.copy}</button>
-                                <div class="assignment-entry-group">
-                                    <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">${game.assign}</button>
-                                </div>
+                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">${game.assign}</button>
                             </div>
+                            <button type="button" class="copy-assignment-hint" id="copy-assignment-hint" onclick="openTeacherAssignment()" hidden>${game.copyAssignmentHint}</button>
                         </div>
                         <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">${mode.start}</button>
                     </div>
@@ -1192,6 +1203,7 @@ ${game.chips.map((chip) => `                            <span>${chip}</span>`).j
                     <div class="game-over-buttons">
                         <button class="restart-btn" id="restart-same-btn" onclick="restartGame(true)">${mode.restart}</button>
                         <button class="share-score-btn" id="edit-list-btn" onclick="restartGame()">${game.edit}</button>
+                        <button type="button" class="share-score-btn assignment-complete-btn" onclick="openTeacherAssignment()">${game.assignComplete}</button>
                     </div>
                 </div>
             </div>

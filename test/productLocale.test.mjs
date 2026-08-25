@@ -9,5 +9,7 @@ test("every product locale keeps the brand and has a distinct student-limit mess
     assert.equal(copy.brand, "My Spelling Game");
     assert.ok(copy.studentLimit);
     assert.notEqual(copy.studentLimit, copy.teacherLimit);
+    assert.ok(copy.checkoutRetry);
+    assert.ok(copy.retryCheckout);
   }
 });

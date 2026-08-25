@@ -2362,13 +2362,13 @@ ${links}
 function langCodeLabel(code) {
   return (
     {
-      en: "For teachers",
-      es: "Para docentes",
-      "pt-BR": "Para professores",
-      fr: "Espace enseignant",
-      id: "Untuk guru",
-      zh: "教师工作台",
-    }[code] || "For teachers"
+      en: "Workspace",
+      es: "Espacio de trabajo",
+      "pt-BR": "Espaço de trabalho",
+      fr: "Espace de travail",
+      id: "Ruang kerja",
+      zh: "工作台",
+    }[code] || "Workspace"
   );
 }
 

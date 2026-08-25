@@ -102,3 +102,20 @@ test('localized legal pages keep SEO links inside the active locale', () => {
     }
   }
 });
+
+test('workspace navigation and assignment pricing stay role-inclusive in every locale', () => {
+  const expected = {
+    '': ['Workspace', 'Assign practice. See learning results.'],
+    es: ['Espacio de trabajo', 'Asigna prácticas y consulta los resultados'],
+    'pt-br': ['Espaço de trabalho', 'Crie atividades e acompanhe os resultados'],
+    fr: ['Espace de travail', 'Donnez des exercices et suivez les résultats'],
+    id: ['Ruang kerja', 'Berikan latihan dan lihat hasil belajar'],
+    zh: ['工作台', '布置练习，查看学习结果'],
+  };
+  for (const [locale, [workspace, heading]] of Object.entries(expected)) {
+    const home = fs.readFileSync(path.join(root, locale, 'index.html'), 'utf8');
+    const pricing = fs.readFileSync(path.join(root, locale, 'pricing.html'), 'utf8');
+    assert.ok(home.includes(`>${workspace}</a>`), locale || 'en');
+    assert.ok(pricing.includes(`<h1>${heading}</h1>`), locale || 'en');
+  }
+});

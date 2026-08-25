@@ -66,23 +66,19 @@ async function api(path, options = {}) {
   return data;
 }
 
-function nav({ signedIn = true, showPricing = true } = {}) {
+function nav({ signedIn = true } = {}) {
   const element = document.createElement("nav");
-  element.className = "product-nav";
+  element.className = "product-nav teacher-product-nav";
   const homeHref = productPagePath("", locale);
-  const pricingHref = `/teacher?lang=${encodeURIComponent(locale)}#pricing`;
   const languageOptions = PRODUCT_LOCALES.map(
     ([value, label]) =>
       `<a class="lang-option" href="?lang=${encodeURIComponent(value)}"${value === locale ? ' aria-current="page"' : ""}>${label}</a>`,
   ).join("");
   element.innerHTML = `
     <a class="product-brand" href="${homeHref}"><img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span>${copy.brand}</span></a>
-    <div class="product-nav-center">
-      <a class="product-nav-link" href="${homeHref}">${copy.home}</a>
-      ${showPricing ? `<a class="product-nav-link" href="${pricingHref}">${copy.pricing}</a>` : ""}
-    </div>
     <div class="product-nav-actions">
       <details class="language-switcher"><summary class="lang-btn" aria-label="${copy.language}">${copy.language}</summary><div class="lang-menu">${languageOptions}</div></details>
+      <a class="button-link button-secondary" href="${homeHref}">${copy.homePage}</a>
       ${signedIn ? `<button class="button-secondary" id="sign-out" type="button">${copy.signOut}</button>` : ""}
     </div>`;
   if (signedIn) {
@@ -96,14 +92,49 @@ function nav({ signedIn = true, showPricing = true } = {}) {
   return element;
 }
 
-function shell({ showPricing = true } = {}) {
+const FOOTER_PAGES = [
+  "sight-word-typing-game",
+  "homeschool-spelling-practice",
+  "vocabulary-typing-game",
+  "faq",
+  "privacy",
+  "about",
+  "contact",
+];
+
+function footer() {
+  const element = document.createElement("footer");
+  element.className = "product-footer";
+  const links = FOOTER_PAGES.map((page, index) => {
+    const link = document.createElement("a");
+    link.href = productPagePath(page, locale);
+    link.textContent = copy.footerLinks[index];
+    return link;
+  });
+  const paragraph = document.createElement("p");
+  const linkGroup = document.createElement("span");
+  linkGroup.className = "footer-links";
+  links.forEach((link, index) => {
+    if (index) linkGroup.append(" · ");
+    linkGroup.append(link);
+  });
+  paragraph.append(
+    linkGroup,
+    document.createElement("br"),
+    `© 2026 My Spelling Game ${copy.footerRights}`,
+  );
+  element.append(paragraph);
+  return element;
+}
+
+function shell() {
   root.replaceChildren();
   const wrapper = document.createElement("div");
   wrapper.className = "product-shell";
-  wrapper.append(nav({ showPricing }));
+  wrapper.append(nav());
   const main = document.createElement("main");
   main.className = "product-main teacher-main";
-  wrapper.append(main);
+  wrapper.append(main, footer());
   root.append(wrapper);
   return main;
 }
@@ -147,6 +178,16 @@ async function appendPricing(
     if (!source) throw new Error("pricing unavailable");
     pricing.innerHTML = source.innerHTML;
     const freeCta = pricing.querySelector("[data-free-teacher-cta]");
+    const proSecurity = pricing.querySelector(".checkout-security");
+    if (freeCta && proSecurity) {
+      const securitySpacer = proSecurity.cloneNode(true);
+      securitySpacer.classList.add("pricing-card-spacer");
+      securitySpacer.setAttribute("aria-hidden", "true");
+      const statusSpacer = document.createElement("p");
+      statusSpacer.className = "status pricing-card-spacer";
+      statusSpacer.setAttribute("aria-hidden", "true");
+      freeCta.after(securitySpacer, statusSpacer);
+    }
     if (freeCta && currentPlan) {
       const current = document.createElement("button");
       current.type = "button";
@@ -220,7 +261,7 @@ async function renderLogin() {
     }
   });
   main.append(card);
-  wrapper.append(main);
+  wrapper.append(main, footer());
   root.append(wrapper);
   await appendPricing(main, { signInTarget: true });
   if (location.hash === "#teacher-sign-in") focusTeacherSignIn();
@@ -259,7 +300,7 @@ function usageCards(data) {
 
 async function renderDashboard(me) {
   const data = await api("/api/assignments");
-  const main = shell({ showPricing: me.plan !== "pro" });
+  const main = shell();
   const card = document.createElement("section");
   card.className = "product-card teacher-dashboard-card";
   const heading = document.createElement("h1");
@@ -689,7 +730,7 @@ async function renderDetail(me, id) {
 }
 
 function activationCard(message) {
-  const main = shell({ showPricing: false });
+  const main = shell();
   const card = document.createElement("section");
   card.className = "product-card auth-card activation-card";
   card.setAttribute("role", "status");

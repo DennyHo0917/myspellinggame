@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('./footer.css');
 
 :root {
   --bg: #f6faf8;
@@ -539,6 +540,7 @@ a {
 }
 
 .spelling-actions {
+  flex-wrap: nowrap;
   justify-content: flex-start;
   padding: 8px;
   border: 1px solid var(--line);
@@ -564,6 +566,7 @@ a {
 }
 
 .spelling-actions .assignment-entry {
+  margin-left: auto;
   background: #edf6f3;
   border-color: rgba(47, 111, 115, 0.25);
 }
@@ -1072,34 +1075,6 @@ textarea:focus-visible,
 .below-game ul {
   margin-top: 8px;
   padding-left: 20px;
-}
-
-footer {
-  width: min(100%, 1240px);
-  margin: 34px auto 0 !important;
-  padding: 18px 0 !important;
-  border-top: 1px solid var(--line) !important;
-  text-align: center;
-}
-
-footer p {
-  color: var(--muted) !important;
-  line-height: 1.8;
-}
-
-.footer-links {
-  display: block;
-  width: fit-content;
-  max-width: 100%;
-  margin: 0 auto;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
-footer a {
-  color: var(--primary) !important;
-  font-weight: 700;
-  text-decoration: none;
 }
 
 .seo-landing {
@@ -1811,6 +1786,7 @@ footer a {
   }
 
   .spelling-actions {
+    flex-wrap: wrap;
     flex-direction: row;
     align-items: stretch;
   }
@@ -1845,6 +1821,13 @@ footer a {
 .top-right-nav .teacher-nav-link {
   background: #e8f3ef;
   border-color: rgba(47, 111, 115, 0.22);
+}
+
+.top-right-nav .lang-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .start-screen-content {

@@ -93,7 +93,7 @@
                 <a class="lang-option" href="/zh/" hreflang="zh-CN">中文</a>
             </div>
         </details>
-        <a class="teacher-nav-link" href="/teacher?lang=fr">Espace enseignant</a>
+        <a class="teacher-nav-link" href="/teacher?lang=fr">Espace de travail</a>
         <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Son</button>
     </header>
 
@@ -180,7 +180,8 @@
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">Liste exemple</button>
                                 <button type="button" onclick="copyPracticeLink()">Copier le lien</button>
-                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Donner aux élèves</button>
+                                <button type="button" onclick="showPrivacyPolicyLegacy()">Confidentialité</button>
+                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Donner un devoir</button>
                             </div>
                             <button type="button" class="copy-assignment-hint" id="copy-assignment-hint" onclick="openTeacherAssignment()" hidden>Vous voulez les résultats des élèves ? Créez un devoir gratuit.</button>
                         </div>
@@ -229,7 +230,7 @@
                         <h4>Stockage local</h4>
                     <p>Votre liste de mots et vos préférences sont enregistrées localement dans ce navigateur.</p>
                     <p>Les nouveaux liens placent la liste dans le fragment de l’URL, traité par le navigateur sans être envoyé au serveur.</p>
-                    <p>Les devoirs publiés explicitement par un enseignant et leurs résultats sont conservés dans Cloudflare D1 pendant 30 jours en gratuit ou 365 jours avec Pro. Aucun email, IP ni User-Agent élève n’est collecté.</p>
+                    <p>Les devoirs publiés explicitement par un enseignant ou un parent et leurs résultats sont conservés dans Cloudflare D1 pendant 30 jours en gratuit ou 365 jours avec Pro. Aucun email, IP ni User-Agent élève n’est collecté.</p>
                     <p>Vous pouvez effacer ces données depuis le navigateur ou depuis ce panneau.</p>
 
                         <h4>Mesure d’audience</h4>

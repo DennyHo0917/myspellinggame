@@ -93,7 +93,7 @@
                 <a class="lang-option" href="/zh/" hreflang="zh-CN">中文</a>
             </div>
         </details>
-        <a class="teacher-nav-link" href="/teacher?lang=en">For teachers</a>
+        <a class="teacher-nav-link" href="/teacher?lang=en">Workspace</a>
         <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Sound</button>
     </header>
 
@@ -180,7 +180,8 @@
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">Sample list</button>
                                 <button type="button" onclick="copyPracticeLink()">Copy practice link</button>
-                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Assign to students</button>
+                                <button type="button" onclick="showPrivacyPolicyLegacy()">Privacy</button>
+                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Assign homework</button>
                             </div>
                             <button type="button" class="copy-assignment-hint" id="copy-assignment-hint" onclick="openTeacherAssignment()" hidden>Want student results? Create a free assignment.</button>
                         </div>
@@ -228,7 +229,7 @@
 
                         <h4>Local Storage</h4>
                         <p>Your spelling list and optional hear-words preference are stored locally in your browser using localStorage.</p>
-                        <p>Teacher-published assignments and student results are stored in Cloudflare D1 for 30 days on Free or 365 days on Pro. Student email, IP address, and User-Agent are not collected.</p>
+                        <p>Assignments published by a teacher or parent and student results are stored in Cloudflare D1 for 30 days on Free or 365 days on Pro. Student email, IP address, and User-Agent are not collected.</p>
                         <p>New share links store the word list in the URL fragment, which is processed by your browser and not sent to our server.</p>
                         <p>You can clear this data at any time through your browser settings.</p>
 

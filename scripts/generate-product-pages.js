@@ -79,14 +79,15 @@ const footerRights = {
 
 const copy = {
   en: {
-    title: "Teacher Pricing | My Spelling Game",
+    title: "Assignment Plans & Pricing | My Spelling Game",
     description:
-      "Simple teacher assignment plans for spelling practice and student reports.",
-    heading: "Teacher plans",
+      "Spelling assignment plans for teachers and parents to share practice and review results.",
+    heading: "Assign practice. See learning results.",
     intro:
-      "Keep the free spelling game for everyone. Upgrade only when you need more assignments, longer history, class insights, and CSV export.",
+      "Turn a word list into an assignment and share it with a child or student. After they submit, review scores and missed words in your workspace. Free works well for home practice and small groups; upgrade to Pro for more assignments, longer history, class-wide missed-word insights, or CSV export.",
     free: "Free",
     freePrice: "$0",
+    freeBilling: "Free forever",
     freeItems: [
       "2 active assignments",
       "30 student submissions per month",
@@ -112,23 +113,24 @@ const copy = {
     billingPeriod: "Billing period",
     confirmMonthly: "Continue with monthly plan · $5.99 / month",
     confirmYearly: "Continue with yearly plan · $49.99 / year",
-    signIn: "Teacher sign in",
+    signIn: "Workspace sign in",
     practice: "Free practice",
-    freeTeacher: "Start free teacher account",
+    freeTeacher: "Create free account",
     currentPlan: "Current plan",
     secureCheckout: "Secure checkout by Stripe · Cancel anytime",
     language: "Language",
     note: "The ordinary spelling game, custom lists, practice links, dictation, Typing Rain, and missed-word replay stay free.",
   },
   es: {
-    title: "Precios para docentes | My Spelling Game",
+    title: "Planes y precios para tareas | My Spelling Game",
     description:
-      "Planes sencillos para tareas de spelling e informes de estudiantes.",
-    heading: "Planes para docentes",
+      "Planes de tareas de spelling para docentes y familias que quieren compartir prácticas y consultar resultados.",
+    heading: "Asigna prácticas y consulta los resultados",
     intro:
-      "El juego gratuito sigue disponible para todos. Mejora el plan solo si necesitas más tareas, historial, información de la clase y exportación CSV.",
+      "Convierte una lista de palabras en una tarea y compártela con tus hijos o estudiantes. Cuando la entreguen, consulta las puntuaciones y las palabras falladas en tu espacio de trabajo. El plan Gratis es ideal para practicar en casa y con grupos pequeños; pásate a Pro si necesitas más tareas, un historial más largo, estadísticas del grupo o exportación CSV.",
     free: "Gratis",
     freePrice: "$0",
+    freeBilling: "Gratis para siempre",
     freeItems: [
       "2 tareas activas",
       "30 entregas de estudiantes al mes",
@@ -154,23 +156,24 @@ const copy = {
     billingPeriod: "Periodo de facturación",
     confirmMonthly: "Continuar con el plan mensual · $5.99 al mes",
     confirmYearly: "Continuar con el plan anual · $49,99 al año",
-    signIn: "Acceso docente",
+    signIn: "Acceder al espacio de trabajo",
     practice: "Práctica gratuita",
-    freeTeacher: "Crear una cuenta docente gratis",
+    freeTeacher: "Crear una cuenta gratis",
     currentPlan: "Plan actual",
     secureCheckout: "Pago seguro con Stripe · Cancela cuando quieras",
     language: "Idioma",
     note: "El juego normal, las listas propias, los enlaces de práctica, el dictado, la lluvia de palabras y el repaso de errores siguen siendo gratis.",
   },
   "pt-BR": {
-    title: "Planos para professores | My Spelling Game",
+    title: "Planos e preços para tarefas | My Spelling Game",
     description:
-      "Planos simples para tarefas de spelling e relatórios dos alunos.",
-    heading: "Planos para professores",
+      "Planos de atividades de spelling para professores e responsáveis compartilharem práticas e acompanharem resultados.",
+    heading: "Crie atividades e acompanhe os resultados",
     intro:
-      "O jogo gratuito continua disponível para todos. Assine apenas quando precisar de mais tarefas, histórico, dados da turma e CSV.",
+      "Transforme uma lista de palavras em uma tarefa e compartilhe com crianças ou alunos. Depois do envio, confira notas e palavras erradas no espaço de trabalho. O plano Grátis atende bem à prática em casa e a grupos pequenos; passe para o Pro quando precisar de mais tarefas, histórico maior, estatísticas da turma ou exportação CSV.",
     free: "Grátis",
     freePrice: "$0",
+    freeBilling: "Grátis para sempre",
     freeItems: [
       "2 tarefas ativas",
       "30 envios de alunos por mês",
@@ -196,23 +199,24 @@ const copy = {
     billingPeriod: "Periodicidade",
     confirmMonthly: "Continuar com o plano mensal · $5.99 por mês",
     confirmYearly: "Continuar com o plano anual · $49,99 por ano",
-    signIn: "Acesso do professor",
+    signIn: "Acessar espaço de trabalho",
     practice: "Prática grátis",
-    freeTeacher: "Criar conta grátis de professor",
+    freeTeacher: "Criar conta grátis",
     currentPlan: "Plano atual",
     secureCheckout: "Checkout seguro pelo Stripe · Cancele quando quiser",
     language: "Idioma",
     note: "O jogo comum, listas próprias, links de prática, ditado, chuva de palavras e revisão de erros continuam grátis.",
   },
   fr: {
-    title: "Tarifs enseignants | My Spelling Game",
+    title: "Offres et tarifs pour les devoirs | My Spelling Game",
     description:
-      "Des offres simples pour les devoirs d’orthographe et les rapports élèves.",
-    heading: "Offres pour enseignants",
+      "Des offres de devoirs d’orthographe pour les enseignants et les parents qui souhaitent partager des exercices et suivre les résultats.",
+    heading: "Donnez des exercices et suivez les résultats",
     intro:
-      "Le jeu d’orthographe reste gratuit pour tous. Passez à Pro uniquement pour davantage de devoirs, d’historique, d’analyses et l’export CSV.",
+      "Transformez une liste de mots en devoir et partagez-la avec un enfant ou un élève. Après l’envoi, consultez les scores et les mots manqués dans votre espace de travail. L’offre gratuite convient à la maison et aux petits groupes ; passez à Pro pour davantage de devoirs, un historique plus long, les statistiques du groupe ou l’export CSV.",
     free: "Gratuit",
     freePrice: "0 $",
+    freeBilling: "Gratuit pour toujours",
     freeItems: [
       "2 devoirs actifs",
       "30 remises d’élèves par mois",
@@ -238,23 +242,24 @@ const copy = {
     billingPeriod: "Période de facturation",
     confirmMonthly: "Continuer avec l’offre mensuelle · 5,99 $ / mois",
     confirmYearly: "Continuer avec l’offre annuelle · 49,99 $ / an",
-    signIn: "Connexion enseignant",
+    signIn: "Ouvrir l’espace de travail",
     practice: "Entraînement gratuit",
-    freeTeacher: "Créer un compte enseignant gratuit",
+    freeTeacher: "Créer un compte gratuit",
     currentPlan: "Offre actuelle",
     secureCheckout: "Paiement sécurisé par Stripe · Résiliable à tout moment",
     language: "Langue",
     note: "Le jeu classique, les listes personnalisées, les liens, la dictée, la pluie de mots et la reprise des erreurs restent gratuits.",
   },
   id: {
-    title: "Harga untuk guru | My Spelling Game",
+    title: "Paket dan harga tugas | My Spelling Game",
     description:
-      "Paket sederhana untuk tugas spelling dan laporan latihan siswa.",
-    heading: "Paket guru",
+      "Paket tugas spelling bagi guru dan orang tua untuk membagikan latihan dan melihat hasilnya.",
+    heading: "Berikan latihan dan lihat hasil belajar",
     intro:
-      "Game spelling gratis tetap tersedia untuk semua orang. Naik ke Pro hanya saat membutuhkan lebih banyak tugas, riwayat, analisis kelas, dan ekspor CSV.",
+      "Ubah daftar kata menjadi tugas lalu bagikan kepada anak atau siswa. Setelah mereka mengirim hasil, lihat nilai dan kata yang salah di ruang kerja. Paket Gratis cocok untuk latihan di rumah dan kelompok kecil; pilih Pro jika membutuhkan lebih banyak tugas, riwayat lebih panjang, statistik kelompok, atau ekspor CSV.",
     free: "Gratis",
     freePrice: "$0",
+    freeBilling: "Gratis selamanya",
     freeItems: [
       "2 tugas aktif",
       "30 kiriman siswa per bulan",
@@ -280,22 +285,23 @@ const copy = {
     billingPeriod: "Periode tagihan",
     confirmMonthly: "Lanjutkan dengan paket bulanan · $5.99 per bulan",
     confirmYearly: "Lanjutkan dengan paket tahunan · $49.99 per tahun",
-    signIn: "Login guru",
+    signIn: "Masuk ke ruang kerja",
     practice: "Latihan gratis",
-    freeTeacher: "Buat akun guru gratis",
+    freeTeacher: "Buat akun gratis",
     currentPlan: "Paket saat ini",
     secureCheckout: "Checkout aman oleh Stripe · Batalkan kapan saja",
     language: "Bahasa",
     note: "Game biasa, daftar sendiri, link latihan, dikte, hujan kata, dan latihan ulang kata yang salah tetap gratis.",
   },
   zh: {
-    title: "教师版价格 | My Spelling Game",
-    description: "用于布置拼写作业和查看学生报告的简单教师方案。",
-    heading: "教师版方案",
+    title: "作业方案与价格 | My Spelling Game",
+    description: "面向教师和家长的拼写作业方案，可分享练习并查看学习结果。",
+    heading: "布置练习，查看学习结果",
     intro:
-      "普通拼写游戏继续对所有人免费。只有需要更多作业、更长成绩记录、全班分析和 CSV 导出时才升级。",
+      "把单词表创建为作业并分享给孩子或学生，提交后即可在工作台查看成绩和错词。免费版适合家庭练习和小规模教学；需要更多作业、更长的成绩记录、全班错词统计或 CSV 导出时，可升级 Pro。",
     free: "免费版",
     freePrice: "$0",
+    freeBilling: "永久免费",
     freeItems: [
       "最多 2 个活跃作业",
       "每月 30 份学生提交",
@@ -321,9 +327,9 @@ const copy = {
     billingPeriod: "计费周期",
     confirmMonthly: "继续月付 · 每月 $5.99",
     confirmYearly: "继续年付 · 每年 $49.99",
-    signIn: "教师登录",
+    signIn: "登录工作台",
     practice: "免费练习",
-    freeTeacher: "免费创建教师账号",
+    freeTeacher: "免费创建账号",
     currentPlan: "当前套餐",
     secureCheckout: "Stripe 安全结账 · 可随时取消",
     language: "语言",
@@ -388,8 +394,8 @@ function render(locale) {
     <main class="product-main">
       <section class="product-card"><h1>${escape(c.heading)}</h1><p>${escape(c.intro)}</p><p class="notice">${escape(c.note)}</p></section>
       <div class="pricing-grid">
-        <section class="product-card pricing-card"><h2>${escape(c.free)}</h2><p class="price">${escape(c.freePrice)}</p><ul>${c.freeItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><a class="button-link button-secondary" data-free-teacher-cta data-current-plan-label="${escape(c.currentPlan)}" href="/teacher?lang=${encodeURIComponent(locale.code)}#teacher-sign-in">${escape(c.freeTeacher)}</a></section>
-        <section class="product-card pricing-card"><h2>${escape(c.pro)}</h2><div class="plan-selector" role="group" aria-label="${escape(c.billingPeriod)}"><button type="button" class="plan-option" data-plan-option="month" aria-pressed="true">${escape(c.monthly)}</button><button type="button" class="plan-option" data-plan-option="year" aria-pressed="false">${escape(c.yearly)}</button></div><div class="selected-plan" aria-live="polite"><p class="price" id="selected-plan-price" data-month="${escape(c.month)}" data-year="${escape(c.year)}">${escape(c.month)}</p><p id="selected-plan-description" data-month="${escape(c.monthlyBilling)}" data-year="${escape(c.yearlyBilling)}">${escape(c.monthlyBilling)}</p><p class="plan-savings" id="selected-plan-savings" data-month="" data-year="${escape(c.yearlySavings)}" hidden></p></div><ul>${c.proItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><div class="actions"><button type="button" class="checkout-confirm" data-confirm-checkout data-checkout="month" data-confirm-month="${escape(c.confirmMonthly)}" data-confirm-year="${escape(c.confirmYearly)}">${escape(c.confirmMonthly)}</button></div><p class="checkout-security">${escape(c.secureCheckout)}</p><p class="status" id="pricing-status" role="status"></p></section>
+        <section class="product-card pricing-card"><div class="pricing-card-heading"><h2>${escape(c.free)}</h2></div><div class="selected-plan"><p class="price">${escape(c.freePrice)}</p><p class="plan-description">${escape(c.freeBilling)}</p></div><ul>${c.freeItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><a class="button-link button-secondary" data-free-teacher-cta data-current-plan-label="${escape(c.currentPlan)}" href="/teacher?lang=${encodeURIComponent(locale.code)}#teacher-sign-in">${escape(c.freeTeacher)}</a></section>
+        <section class="product-card pricing-card"><div class="pricing-card-heading"><h2>${escape(c.pro)}</h2><div class="plan-selector" role="group" aria-label="${escape(c.billingPeriod)}"><button type="button" class="plan-option" data-plan-option="month" aria-pressed="true">${escape(c.monthly)}</button><button type="button" class="plan-option" data-plan-option="year" aria-pressed="false">${escape(c.yearly)}</button></div></div><div class="selected-plan" aria-live="polite"><p class="price" id="selected-plan-price" data-month="${escape(c.month)}" data-year="${escape(c.year)}">${escape(c.month)}</p><p class="plan-description" id="selected-plan-description" data-month="${escape(c.monthlyBilling)}" data-year="${escape(c.yearlyBilling)}">${escape(c.monthlyBilling)}</p><p class="plan-savings" id="selected-plan-savings" data-month="" data-year="${escape(c.yearlySavings)}" hidden></p></div><ul>${c.proItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><div class="actions"><button type="button" class="checkout-confirm" data-confirm-checkout data-checkout="month" data-confirm-month="${escape(c.confirmMonthly)}" data-confirm-year="${escape(c.confirmYearly)}">${escape(c.confirmMonthly)}</button></div><p class="checkout-security">${escape(c.secureCheckout)}</p><p class="status" id="pricing-status" role="status"></p></section>
       </div>
     </main>
     <footer class="product-footer"><p><span class="footer-links">${links}</span><br>&copy; 2026 My Spelling Game ${footerRights[locale.code]}</p></footer>

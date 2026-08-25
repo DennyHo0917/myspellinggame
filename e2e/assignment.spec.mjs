@@ -193,7 +193,19 @@ test("Google sign-in returns to a prefilled new teacher assignment", async ({
   await page.goto("/");
   await page.locator("#custom-word-list").fill("because\nfriend");
   await page.locator('input[name="practice-mode"][value="typing"]').check();
-  await page.getByRole("button", { name: "Assign to students" }).click();
+  const assign = page.getByRole("button", {
+    name: "Assign homework",
+  });
+  const alignment = await Promise.all([
+    assign.boundingBox(),
+    page.locator(".spelling-actions").boundingBox(),
+  ]);
+  expect(
+    Math.abs(
+      alignment[1].x + alignment[1].width - alignment[0].x - alignment[0].width,
+    ),
+  ).toBeLessThanOrEqual(12);
+  await assign.click();
   await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
   await page.getByRole("button", { name: "Continue with Google" }).click();
 
@@ -332,6 +344,30 @@ test("failed automatic Checkout stays retryable on the teacher page", async ({
   expect(checkoutCalls).toBe(2);
 });
 
+test("localized homepage actions stay on one desktop row", async ({ page }) => {
+  await page.setViewportSize({ width: 1005, height: 900 });
+  for (const path of ["/", "/es/", "/pt-br/", "/fr/", "/id/", "/zh/"]) {
+    await page.goto(path);
+    const layout = await page
+      .locator(".spelling-actions")
+      .evaluate((actions) => {
+        const buttons = [...actions.querySelectorAll("button")].map((button) =>
+          button.getBoundingClientRect(),
+        );
+        return {
+          count: buttons.length,
+          rowOffset:
+            Math.max(...buttons.map(({ top }) => top)) -
+            Math.min(...buttons.map(({ top }) => top)),
+          overflow: actions.scrollWidth > actions.clientWidth + 1,
+        };
+      });
+    expect(layout.count, path).toBe(4);
+    expect(layout.rowOffset, path).toBeLessThanOrEqual(1);
+    expect(layout.overflow, path).toBe(false);
+  }
+});
+
 test("mobile conversion pages keep their key actions usable", async ({
   page,
 }) => {
@@ -385,14 +421,22 @@ test("mobile conversion pages keep their key actions usable", async ({
   await page.goto("/");
   await expect(page.locator(".brand-logo")).toBeVisible();
   await expect(page.locator(".lang-btn")).toBeVisible();
-  await expect(page.getByRole("link", { name: "For teachers" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Workspace" })).toBeVisible();
   await expect(page.getByRole("button", { name: /Sound/ })).toBeVisible();
   await expect(page.locator("header").getByText("Privacy")).toHaveCount(0);
+  const privacy = page
+    .locator(".spelling-actions")
+    .getByRole("button", { name: "Privacy" });
+  await expect(privacy).toBeVisible();
+  await privacy.click();
+  await expect(page.locator("#privacy-policy")).toBeVisible();
+  await page.getByRole("button", { name: "Close" }).click();
+  await expect(page.locator("#game-start")).toBeVisible();
   await expectNoHorizontalOverflow();
 
   await page.goto("/pricing");
   await expect(
-    page.getByRole("link", { name: "Start free teacher account" }),
+    page.getByRole("link", { name: "Create free account" }),
   ).toHaveAttribute("href", "/teacher?lang=en#teacher-sign-in");
   await expect(page.getByText("Unlimited student submissions")).toBeVisible();
   await expect(
@@ -419,7 +463,24 @@ test("mobile conversion pages keep their key actions usable", async ({
   await expectNoHorizontalOverflow();
 });
 
-test("a Pro dashboard does not load the upgrade pricing component", async ({
+test("localized FAQ home control is centered and returns home", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/zh/faq");
+  const home = page.getByRole("link", { name: "首页", exact: true });
+  await expect(home).toBeVisible();
+  const style = await home.evaluate((element) => ({
+    display: getComputedStyle(element).display,
+    alignItems: getComputedStyle(element).alignItems,
+  }));
+  expect(style.display).toContain("flex");
+  expect(style.alignItems).toBe("center");
+  await home.click();
+  await expect(page).toHaveURL(/\/zh\/$/);
+});
+
+test("a Pro dashboard never requests or displays upgrade pricing", async ({
   page,
 }) => {
   let pricingRequests = 0;

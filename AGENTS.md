@@ -8,6 +8,11 @@ These instructions apply to the entire repository.
 - Do not translate mechanically or word for word. Write natural phrasing that matches each locale's language habits, tone, and product context.
 - When localized pages are generated, update the generation source first and regenerate the output pages.
 
+## Shared Page Layout
+
+- Every new page must reuse the existing shared header and footer templates, including their button styles, spacing, responsive behavior, and localized labels.
+- Do not create page-specific copies of header or footer styles. When a change is needed, update the shared template or shared stylesheet so all pages remain consistent.
+
 ## Change Workflow
 
 - After completing any modification, report the changes, checks performed, and anything not yet verified, then stop and wait for user confirmation.

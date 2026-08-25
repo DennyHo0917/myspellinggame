@@ -170,15 +170,15 @@ const locale = {
       panels: [
         [
           "Overview",
-          "Ordinary My Spelling Game practice works without an account. Teacher accounts and server-saved assignments are optional. Students never create accounts.",
+          "Ordinary My Spelling Game practice works without an account. Accounts for teachers and parents, along with server-saved assignments, are optional. Students never create accounts.",
         ],
         [
           "Local Storage and Share Links",
           "Your spelling list and preferences are stored in this browser. New share links put the list in the URL fragment, which is processed by the browser and is not sent to our server.",
         ],
         [
-          "Teacher Assignments and Results",
-          "When a signed-in teacher explicitly publishes an assignment, its title, word list, settings, and deadline are stored in Cloudflare D1. Student nicknames, server-calculated results, missed words, duration, and completion time are stored for 30 days on Free or 365 days on Pro. We do not collect student email, IP address, or User-Agent. Deleting an assignment also deletes its student results.",
+          "Assignments and Results",
+          "When a signed-in teacher or parent explicitly publishes an assignment, its title, word list, settings, and deadline are stored in Cloudflare D1. Student nicknames, server-calculated results, missed words, duration, and completion time are stored for 30 days on Free or 365 days on Pro. We do not collect student email, IP address, or User-Agent. Deleting an assignment also deletes its student results.",
         ],
         [
           "Analytics",
@@ -275,15 +275,15 @@ const locale = {
       panels: [
         [
           "Resumen",
-          "La práctica normal funciona sin cuenta. Las cuentas docentes y las tareas guardadas en el servidor son opcionales. Los estudiantes nunca crean una cuenta.",
+          "La práctica normal funciona sin cuenta. Las cuentas para docentes y familias, junto con las tareas guardadas en el servidor, son opcionales. Los estudiantes nunca crean una cuenta.",
         ],
         [
           "Almacenamiento local y enlaces",
           "Tu lista y tus preferencias se guardan en este navegador. Los enlaces nuevos colocan la lista en el fragmento de la URL, que el navegador procesa sin enviarlo a nuestro servidor.",
         ],
         [
-          "Tareas docentes y resultados",
-          "Cuando un docente conectado publica una tarea, su título, lista, ajustes y fecha límite se guardan en Cloudflare D1. Guardamos el apodo, resultado calculado por el servidor, errores, duración y hora de entrega durante 30 días en Gratis o 365 días en Pro. No recopilamos email, dirección IP ni User-Agent del estudiante. Al borrar la tarea también se borran sus resultados.",
+          "Tareas y resultados",
+          "Cuando un docente o familiar conectado publica una tarea, su título, lista, ajustes y fecha límite se guardan en Cloudflare D1. Guardamos el apodo, resultado calculado por el servidor, errores, duración y hora de entrega durante 30 días en Gratis o 365 días en Pro. No recopilamos email, dirección IP ni User-Agent del estudiante. Al borrar la tarea también se borran sus resultados.",
         ],
         [
           "Analítica",
@@ -380,7 +380,7 @@ const locale = {
       panels: [
         [
           "Visão geral",
-          "A prática comum funciona sem conta. Contas de professor e tarefas salvas no servidor são opcionais. Alunos nunca criam uma conta.",
+          "A prática comum funciona sem conta. Contas para professores e responsáveis, junto com tarefas salvas no servidor, são opcionais. Alunos nunca criam uma conta.",
         ],
         [
           "Armazenamento local e links",
@@ -388,7 +388,7 @@ const locale = {
         ],
         [
           "Tarefas e resultados",
-          "Quando um professor conectado publica uma tarefa, título, palavras, configurações e prazo ficam no Cloudflare D1. Apelido do aluno, resultado calculado no servidor, erros, duração e horário ficam por 30 dias no Grátis ou 365 dias no Pro. Não coletamos email, endereço IP ou User-Agent do aluno. Excluir a tarefa também exclui os resultados.",
+          "Quando um professor ou responsável conectado publica uma tarefa, título, palavras, configurações e prazo ficam no Cloudflare D1. Apelido do aluno, resultado calculado no servidor, erros, duração e horário ficam por 30 dias no Grátis ou 365 dias no Pro. Não coletamos email, endereço IP ou User-Agent do aluno. Excluir a tarefa também exclui os resultados.",
         ],
         [
           "Analytics",
@@ -485,7 +485,7 @@ const locale = {
       panels: [
         [
           "Vue d’ensemble",
-          "L’entraînement classique fonctionne sans compte. Les comptes enseignants et devoirs enregistrés sur le serveur sont facultatifs. Les élèves ne créent jamais de compte.",
+          "L’entraînement classique fonctionne sans compte. Les comptes pour enseignants et parents, ainsi que les devoirs enregistrés sur le serveur, sont facultatifs. Les élèves ne créent jamais de compte.",
         ],
         [
           "Stockage local et liens",
@@ -493,7 +493,7 @@ const locale = {
         ],
         [
           "Devoirs et résultats",
-          "Lorsqu’un enseignant connecté publie un devoir, son titre, sa liste, ses réglages et son échéance sont stockés dans Cloudflare D1. Le pseudonyme, le résultat recalculé par le serveur, les mots manqués, la durée et l’heure sont conservés 30 jours avec l’offre gratuite ou 365 jours avec Pro. Aucun email, adresse IP ni User-Agent élève n’est collecté. Supprimer le devoir supprime aussi ses résultats.",
+          "Lorsqu’un enseignant ou un parent connecté publie un devoir, son titre, sa liste, ses réglages et son échéance sont stockés dans Cloudflare D1. Le pseudonyme, le résultat recalculé par le serveur, les mots manqués, la durée et l’heure sont conservés 30 jours avec l’offre gratuite ou 365 jours avec Pro. Aucun email, adresse IP ni User-Agent élève n’est collecté. Supprimer le devoir supprime aussi ses résultats.",
         ],
         [
           "Mesure d’audience",
@@ -590,15 +590,15 @@ const locale = {
       panels: [
         [
           "Ringkasan",
-          "Latihan biasa berjalan tanpa akun. Akun guru dan tugas yang disimpan di server bersifat opsional. Siswa tidak pernah membuat akun.",
+          "Latihan biasa berjalan tanpa akun. Akun untuk guru dan orang tua, beserta tugas yang disimpan di server, bersifat opsional. Siswa tidak pernah membuat akun.",
         ],
         [
           "Penyimpanan lokal dan link",
           "Daftar kata dan pilihan latihan disimpan di browser ini. Link baru menaruh daftar di fragmen URL yang diproses browser tanpa dikirim ke server kami.",
         ],
         [
-          "Tugas dan hasil siswa",
-          "Saat guru yang sudah masuk menerbitkan tugas, judul, daftar kata, pengaturan, dan tenggat disimpan di Cloudflare D1. Nama panggilan, hasil yang dihitung server, kata salah, durasi, dan waktu selesai disimpan 30 hari pada paket Gratis atau 365 hari pada Pro. Kami tidak mengumpulkan email, alamat IP, atau User-Agent siswa. Menghapus tugas juga menghapus seluruh hasilnya.",
+          "Tugas dan hasil",
+          "Saat guru atau orang tua yang sudah masuk menerbitkan tugas, judul, daftar kata, pengaturan, dan tenggat disimpan di Cloudflare D1. Nama panggilan, hasil yang dihitung server, kata salah, durasi, dan waktu selesai disimpan 30 hari pada paket Gratis atau 365 hari pada Pro. Kami tidak mengumpulkan email, alamat IP, atau User-Agent siswa. Menghapus tugas juga menghapus seluruh hasilnya.",
         ],
         [
           "Analytics",
@@ -692,15 +692,15 @@ const locale = {
       panels: [
         [
           "概览",
-          "普通练习无需账号。教师账号和服务端保存的作业是可选功能，学生始终不需要注册。",
+          "普通练习无需账号。教师或家长使用的工作台账号及服务端保存的作业都是可选功能，学生始终不需要注册。",
         ],
         [
           "本地存储和分享链接",
           "单词表和练习偏好保存在当前浏览器。新分享链接会把单词表放在 URL 片段中，由浏览器处理，不会发送到我们的服务器。",
         ],
         [
-          "教师作业和学生成绩",
-          "登录教师明确发布作业后，标题、词表、设置和截止时间会保存到 Cloudflare D1。学生昵称、服务端重新计算的成绩、错词、用时和完成时间在免费版保存 30 天，在 Pro 版保存 365 天。我们不采集学生邮箱、IP 地址或 User-Agent。删除作业时，其学生成绩也会一并删除。",
+          "作业和学习结果",
+          "教师或家长登录并明确发布作业后，标题、词表、设置和截止时间会保存到 Cloudflare D1。学生昵称、服务端重新计算的成绩、错词、用时和完成时间在免费版保存 30 天，在 Pro 版保存 365 天。我们不采集学生邮箱、IP 地址或 User-Agent。删除作业时，其学生成绩也会一并删除。",
         ],
         [
           "访问分析",
@@ -838,7 +838,7 @@ ${alternateLinks(slug)}
             <span class="brand-name">My Spelling Game</span>
         </a>
 ${languageMenu(code, slug, loc.nav)}
-        <a class="teacher-nav-link" href="/teacher?lang=${encodeURIComponent(code)}">${loc.nav.home === "Home" ? "For teachers" : code === "zh" ? "教师工作台" : code === "es" ? "Para docentes" : code === "pt-BR" ? "Para professores" : code === "fr" ? "Espace enseignant" : "Untuk guru"}</a>
+        <a class="teacher-nav-link" href="/teacher?lang=${encodeURIComponent(code)}">${loc.nav.home === "Home" ? "Workspace" : code === "zh" ? "工作台" : code === "es" ? "Espacio de trabajo" : code === "pt-BR" ? "Espaço de trabalho" : code === "fr" ? "Espace de travail" : "Ruang kerja"}</a>
         <button class="lang-btn" onclick="window.location.href='${homeHref}'" id="back-home" title="${escapeAttr(loc.nav.home)}">${loc.nav.home}</button>
     </header>
 

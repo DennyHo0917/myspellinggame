@@ -9,11 +9,11 @@ const locales = {
     dir: "",
     language: "Language",
     home: "Home",
-    teacher: "For teachers",
+    teacher: "Workspace",
     title: "FAQ | My Spelling Game",
     heading: "Frequently asked questions",
     intro:
-      "Answers about word lists, practice modes, sharing, accounts, and teacher assignments.",
+      "Answers about word lists, practice modes, sharing, accounts, assignments, and reports.",
     questions: [
       [
         "Can I use my own spelling words?",
@@ -29,14 +29,14 @@ const locales = {
       ],
       [
         "Do students need an account?",
-        "No. Student practice works in the browser without a login. Teacher accounts are only needed for assignments and reports.",
+        "No. Student practice works in the browser without a login. A workspace account is only needed for assignments and reports.",
       ],
       [
         "Can I share a list with students?",
         "Yes. Copy a practice link and students can open the same list without creating an account.",
       ],
       [
-        "Are paid teacher subscriptions recurring?",
+        "Are paid subscriptions recurring?",
         "Yes. A paid plan renews automatically each billing period until canceled through the billing portal.",
       ],
       [
@@ -58,11 +58,11 @@ const locales = {
     dir: "es",
     language: "Idioma",
     home: "Inicio",
-    teacher: "Para docentes",
+    teacher: "Espacio de trabajo",
     title: "Preguntas frecuentes | My Spelling Game",
     heading: "Preguntas frecuentes",
     intro:
-      "Respuestas sobre listas, modos de práctica, enlaces, cuentas y tareas docentes.",
+      "Respuestas sobre listas, modos de práctica, enlaces, cuentas, tareas e informes.",
     questions: [
       [
         "¿Puedo usar mis propias palabras?",
@@ -78,7 +78,7 @@ const locales = {
       ],
       [
         "¿Los alumnos necesitan una cuenta?",
-        "No. La práctica funciona en el navegador sin iniciar sesión. Las cuentas docentes sirven para tareas e informes.",
+        "No. La práctica funciona en el navegador sin iniciar sesión. Las cuentas para docentes y familias sirven para tareas e informes.",
       ],
       [
         "¿Puedo compartir una lista?",
@@ -86,7 +86,7 @@ const locales = {
       ],
       [
         "¿Las suscripciones se renuevan?",
-        "Sí. Un plan docente de pago se renueva automáticamente hasta que se cancela desde el portal de facturación.",
+        "Sí. Un plan de pago se renueva automáticamente hasta que se cancela desde el portal de facturación.",
       ],
       [
         "¿Cómo practico la lista de spelling de esta semana?",
@@ -107,11 +107,11 @@ const locales = {
     dir: "pt-br",
     language: "Idioma",
     home: "Início",
-    teacher: "Para professores",
+    teacher: "Espaço de trabalho",
     title: "Perguntas frequentes | My Spelling Game",
     heading: "Perguntas frequentes",
     intro:
-      "Respostas sobre listas, modos de prática, links, contas e tarefas para professores.",
+      "Respostas sobre listas, modos de prática, links, contas, tarefas e relatórios.",
     questions: [
       [
         "Posso usar minhas próprias palavras?",
@@ -127,7 +127,7 @@ const locales = {
       ],
       [
         "Os alunos precisam de conta?",
-        "Não. A prática funciona no navegador sem login. Contas de professor servem para tarefas e relatórios.",
+        "Não. A prática funciona no navegador sem login. Contas para professores e responsáveis servem para tarefas e relatórios.",
       ],
       [
         "Posso compartilhar uma lista?",
@@ -156,7 +156,7 @@ const locales = {
     dir: "fr",
     language: "Langue",
     home: "Accueil",
-    teacher: "Espace enseignant",
+    teacher: "Espace de travail",
     title: "Questions fréquentes | My Spelling Game",
     heading: "Questions fréquentes",
     intro:
@@ -176,7 +176,7 @@ const locales = {
       ],
       [
         "Les élèves doivent-ils créer un compte ?",
-        "Non. La pratique fonctionne sans connexion. Les comptes enseignants servent aux devoirs et rapports.",
+        "Non. La pratique fonctionne sans connexion. Les comptes pour enseignants et parents servent aux devoirs et aux rapports.",
       ],
       [
         "Puis-je partager une liste ?",
@@ -205,11 +205,11 @@ const locales = {
     dir: "id",
     language: "Bahasa",
     home: "Beranda",
-    teacher: "Untuk guru",
+    teacher: "Ruang kerja",
     title: "Pertanyaan umum | My Spelling Game",
     heading: "Pertanyaan umum",
     intro:
-      "Jawaban tentang daftar kata, mode latihan, link, akun, dan tugas guru.",
+      "Jawaban tentang daftar kata, mode latihan, link, akun, tugas, dan laporan.",
     questions: [
       [
         "Bisa memakai kata sendiri?",
@@ -225,7 +225,7 @@ const locales = {
       ],
       [
         "Apakah siswa perlu akun?",
-        "Tidak. Latihan berjalan di browser tanpa login. Akun guru diperlukan untuk tugas dan laporan.",
+        "Tidak. Latihan berjalan di browser tanpa login. Akun untuk guru dan orang tua hanya diperlukan untuk tugas dan laporan.",
       ],
       [
         "Bisa membagikan daftar?",
@@ -254,10 +254,10 @@ const locales = {
     dir: "zh",
     language: "语言",
     home: "首页",
-    teacher: "教师工作台",
+    teacher: "工作台",
     title: "常见问题 | My Spelling Game",
     heading: "常见问题",
-    intro: "集中说明单词表、练习模式、分享链接、账号和教师作业功能。",
+    intro: "集中说明单词表、练习模式、分享链接、账号、作业和学习报告。",
     questions: [
       [
         "可以使用自己的单词吗？",
@@ -273,16 +273,13 @@ const locales = {
       ],
       [
         "学生需要注册账号吗？",
-        "不需要。学生直接在浏览器中练习即可，教师账号只用于发布作业和查看报告。",
+        "不需要。学生直接在浏览器中练习即可，教师或家长只需在布置作业和查看报告时使用工作台账号。",
       ],
       [
         "可以把单词表分享给学生吗？",
         "可以。复制练习链接，学生无需创建账号就能打开同一份单词表。",
       ],
-      [
-        "订阅会自动续费吗？",
-        "会。付费教师方案会自动续费，直到在账单门户中取消。",
-      ],
+      ["订阅会自动续费吗？", "会。付费方案会自动续费，直到在账单门户中取消。"],
       [
         "如何练习本周单词表？",
         "在主页粘贴本周单词，选择拼写测试或单词雨，然后立即开始练习。",

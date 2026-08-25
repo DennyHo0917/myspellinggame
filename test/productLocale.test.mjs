@@ -16,3 +16,19 @@ test("every product locale keeps the brand and has a distinct student-limit mess
     assert.ok(copy.checkAgain);
   }
 });
+
+test("workspace titles stay role-neutral in every product locale", () => {
+  const expected = {
+    en: "Workspace",
+    es: "Espacio de trabajo",
+    "pt-BR": "Espaço de trabalho",
+    fr: "Espace de travail",
+    id: "Ruang kerja",
+    zh: "工作台",
+  };
+  for (const [locale] of PRODUCT_LOCALES) {
+    const copy = productMessages(locale);
+    assert.equal(copy.signInTitle, expected[locale]);
+    assert.equal(copy.dashboardTitle, expected[locale]);
+  }
+});

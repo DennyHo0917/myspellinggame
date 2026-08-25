@@ -177,6 +177,94 @@ for (const viewport of [
     await mockSignedOut(page);
     await page.goto("/teacher?lang=en");
     await expect(page.locator("#teacher-sign-in")).toBeVisible();
+    const selector = page.locator(
+      ".teacher-pricing .plan-selector:not(.pricing-card-spacer)",
+    );
+    const proCard = page.locator(".teacher-pricing .pricing-card").nth(1);
+    await expect(selector).toBeVisible();
+    const selectorBox = await selector.boundingBox();
+    const proCardBox = await proCard.boundingBox();
+    expect(selectorBox.width).toBeLessThan(proCardBox.width - 40);
+    if (viewport.name === "desktop") {
+      const freeHeadingBox = await page
+        .locator(".teacher-pricing .pricing-card")
+        .nth(0)
+        .locator(".pricing-card-heading")
+        .boundingBox();
+      const proHeadingBox = await proCard
+        .locator(".pricing-card-heading")
+        .boundingBox();
+      const proTitleBox = await proCard.locator("h2").boundingBox();
+      const freePriceBox = await page
+        .locator(".pricing-card")
+        .nth(0)
+        .locator(".price")
+        .boundingBox();
+      const proPriceBox = await page
+        .locator(".pricing-card")
+        .nth(1)
+        .locator(".price")
+        .boundingBox();
+      const freeListBox = await page
+        .locator(".pricing-card")
+        .nth(0)
+        .locator("ul")
+        .boundingBox();
+      const proListBox = await page
+        .locator(".pricing-card")
+        .nth(1)
+        .locator("ul")
+        .boundingBox();
+      const proDescriptionBox = await proCard
+        .locator("#selected-plan-description")
+        .boundingBox();
+      const freeDescriptionBox = await page
+        .locator(".teacher-pricing .pricing-card")
+        .nth(0)
+        .locator(".plan-description")
+        .boundingBox();
+      const freeCtaBox = await page
+        .locator("[data-free-teacher-cta]")
+        .boundingBox();
+      const proCtaBox = await page
+        .locator("[data-confirm-checkout]")
+        .boundingBox();
+      expect(
+        Math.abs(
+          selectorBox.y +
+            selectorBox.height / 2 -
+            (proTitleBox.y + proTitleBox.height / 2),
+        ),
+      ).toBeLessThanOrEqual(1);
+      expect(
+        Math.abs(
+          selectorBox.x +
+            selectorBox.width -
+            (proHeadingBox.x + proHeadingBox.width),
+        ),
+      ).toBeLessThanOrEqual(1);
+      expect(
+        freePriceBox.y - (freeHeadingBox.y + freeHeadingBox.height),
+      ).toBeLessThanOrEqual(4);
+      expect(
+        proPriceBox.y - (proHeadingBox.y + proHeadingBox.height),
+      ).toBeLessThanOrEqual(4);
+      expect(
+        freeListBox.y - (freeDescriptionBox.y + freeDescriptionBox.height),
+      ).toBeLessThanOrEqual(24);
+      expect(
+        proListBox.y - (proDescriptionBox.y + proDescriptionBox.height),
+      ).toBeLessThanOrEqual(32);
+      expect(Math.abs(freeHeadingBox.y - proHeadingBox.y)).toBeLessThanOrEqual(
+        1,
+      );
+      expect(Math.abs(freePriceBox.y - proPriceBox.y)).toBeLessThanOrEqual(1);
+      expect(
+        Math.abs(freeDescriptionBox.y - proDescriptionBox.y),
+      ).toBeLessThanOrEqual(1);
+      expect(Math.abs(freeListBox.y - proListBox.y)).toBeLessThanOrEqual(1);
+      expect(Math.abs(freeCtaBox.y - proCtaBox.y)).toBeLessThanOrEqual(1);
+    }
     await page.evaluate(() => {
       window.teacherPageMarker = "still-here";
     });
@@ -192,6 +280,58 @@ for (const viewport of [
     );
   });
 }
+
+test("localized pricing cards stay aligned without crowding", async ({
+  page,
+}) => {
+  test.setTimeout(60_000);
+  await mockSignedOut(page);
+  const locales = ["en", "es", "pt-BR", "fr", "id", "zh"];
+
+  for (const viewport of [
+    { width: 1280, height: 900, desktop: true },
+    { width: 390, height: 844, desktop: false },
+  ]) {
+    await page.setViewportSize(viewport);
+    for (const locale of locales) {
+      await page.goto(`/teacher?lang=${encodeURIComponent(locale)}`);
+      const layout = await page.locator(".teacher-pricing").evaluate((root) => {
+        const cards = [...root.querySelectorAll(".pricing-card")];
+        const bounds = (card, selector) =>
+          card.querySelector(selector).getBoundingClientRect();
+        const freeHeading = bounds(cards[0], ".pricing-card-heading");
+        const proHeading = bounds(cards[1], ".pricing-card-heading");
+        const freePrice = bounds(cards[0], ".price");
+        const proPrice = bounds(cards[1], ".price");
+        const freeDescription = bounds(cards[0], ".plan-description");
+        const proDescription = bounds(cards[1], ".plan-description");
+        const freeList = bounds(cards[0], "ul");
+        const proList = bounds(cards[1], "ul");
+        const selector = bounds(cards[1], ".plan-selector");
+        return {
+          cardHeight: cards[0].getBoundingClientRect().height,
+          descriptionOffset: Math.abs(freeDescription.y - proDescription.y),
+          headingOffset: Math.abs(freeHeading.y - proHeading.y),
+          listOffset: Math.abs(freeList.y - proList.y),
+          overflow: cards.some(
+            (card) => card.scrollWidth > card.clientWidth + 1,
+          ),
+          priceOffset: Math.abs(freePrice.y - proPrice.y),
+          selectorPriceGap: proPrice.top - selector.bottom,
+        };
+      });
+      expect(layout.overflow, locale).toBe(false);
+      expect(layout.selectorPriceGap, locale).toBeGreaterThanOrEqual(0);
+      if (viewport.desktop) {
+        expect(layout.cardHeight, locale).toBeGreaterThanOrEqual(500);
+        expect(layout.headingOffset, locale).toBeLessThanOrEqual(1);
+        expect(layout.priceOffset, locale).toBeLessThanOrEqual(1);
+        expect(layout.descriptionOffset, locale).toBeLessThanOrEqual(1);
+        expect(layout.listOffset, locale).toBeLessThanOrEqual(1);
+      }
+    }
+  }
+});
 
 test("standalone Free CTA opens the matching teacher sign-in area", async ({
   page,
@@ -226,4 +366,84 @@ test("signed-in Free pricing marks the current plan without a link", async ({
   await expect(currentPlan).toHaveText("Current plan");
   await expect(currentPlan).toBeDisabled();
   await expect(page.locator("a[data-free-teacher-cta]")).toHaveCount(0);
+  const pricingLayout = await page
+    .locator(".teacher-pricing")
+    .evaluate((root) => {
+      const cards = root.querySelectorAll(".pricing-card");
+      const freePrice = cards[0]
+        .querySelector(".price")
+        .getBoundingClientRect();
+      const proPrice = cards[1].querySelector(".price").getBoundingClientRect();
+      const freeList = cards[0].querySelector("ul").getBoundingClientRect();
+      const proList = cards[1].querySelector("ul").getBoundingClientRect();
+      const freeDescription = cards[0]
+        .querySelector(".plan-description")
+        .getBoundingClientRect();
+      const freeHeading = cards[0]
+        .querySelector(".pricing-card-heading")
+        .getBoundingClientRect();
+      const proHeading = cards[1]
+        .querySelector(".pricing-card-heading")
+        .getBoundingClientRect();
+      const proDescription = cards[1]
+        .querySelector("#selected-plan-description")
+        .getBoundingClientRect();
+      const selector = cards[1]
+        .querySelector(".plan-selector")
+        .getBoundingClientRect();
+      const proTitle = cards[1].querySelector("h2").getBoundingClientRect();
+      return {
+        cardDisplay: getComputedStyle(cards[0]).display,
+        freeHeadingGap: freePrice.top - freeHeading.bottom,
+        freeListGap: freeList.top - freeDescription.bottom,
+        proHeadingGap: proPrice.top - proHeading.bottom,
+        proListGap: proList.top - proDescription.bottom,
+        headingOffset: Math.abs(freeHeading.y - proHeading.y),
+        priceOffset: Math.abs(freePrice.y - proPrice.y),
+        descriptionOffset: Math.abs(freeDescription.y - proDescription.y),
+        listOffset: Math.abs(freeList.y - proList.y),
+        selectorTitleCenterOffset: Math.abs(
+          selector.y + selector.height / 2 - (proTitle.y + proTitle.height / 2),
+        ),
+        selectorRightOffset: Math.abs(selector.right - proHeading.right),
+      };
+    });
+  expect(pricingLayout.cardDisplay).toBe("flex");
+  expect(pricingLayout.freeHeadingGap).toBeLessThanOrEqual(4);
+  expect(pricingLayout.freeListGap).toBeLessThanOrEqual(24);
+  expect(pricingLayout.proHeadingGap).toBeLessThanOrEqual(4);
+  expect(pricingLayout.proListGap).toBeLessThanOrEqual(32);
+  expect(pricingLayout.headingOffset).toBeLessThanOrEqual(1);
+  expect(pricingLayout.priceOffset).toBeLessThanOrEqual(1);
+  expect(pricingLayout.descriptionOffset).toBeLessThanOrEqual(1);
+  expect(pricingLayout.listOffset).toBeLessThanOrEqual(1);
+  expect(pricingLayout.selectorTitleCenterOffset).toBeLessThanOrEqual(1);
+  expect(pricingLayout.selectorRightOffset).toBeLessThanOrEqual(1);
+  await expect(page.getByRole("link", { name: "Practice" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Pricing" })).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: "Home", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Privacy" })).toHaveAttribute(
+    "href",
+    "/privacy",
+  );
+  const footerStyle = await page
+    .locator(".product-footer")
+    .evaluate((footer) => {
+      const links = footer.querySelector(".footer-links");
+      const privacy = footer.querySelector('a[href="/privacy"]');
+      return {
+        borderTopStyle: getComputedStyle(footer).borderTopStyle,
+        linksDisplay: getComputedStyle(links).display,
+        linkColor: getComputedStyle(privacy).color,
+        linkWeight: getComputedStyle(privacy).fontWeight,
+      };
+    });
+  expect(footerStyle).toEqual({
+    borderTopStyle: "solid",
+    linksDisplay: "block",
+    linkColor: "rgb(47, 111, 115)",
+    linkWeight: "700",
+  });
 });

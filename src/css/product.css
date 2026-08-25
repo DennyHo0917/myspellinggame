@@ -1,3 +1,5 @@
+@import url("./footer.css");
+
 :root {
   color-scheme: light;
   font-family:
@@ -221,33 +223,6 @@ a {
   min-width: 0;
 }
 
-.product-footer {
-  margin: 0 auto;
-  padding: 24px 20px 28px;
-  max-width: 1180px;
-  color: var(--muted, #64748b);
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-.product-footer p {
-  margin: 0;
-}
-
-.product-footer .footer-links {
-  display: inline;
-}
-
-.product-footer a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.product-footer a:hover,
-.product-footer a:focus-visible {
-  color: var(--ink, #172033);
-  text-decoration: underline;
-}
 .product-card {
   min-width: 0;
   background: var(--card);
@@ -304,6 +279,21 @@ a {
   border-radius: 7px;
   background: #f4f7f6;
 }
+.pricing-card-heading {
+  position: relative;
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.pricing-card-heading h2 {
+  margin: 0;
+}
+.pricing-card-heading .plan-selector {
+  margin: 0;
+}
 .plan-option {
   min-height: 32px;
   padding: 0 0.7rem;
@@ -313,25 +303,44 @@ a {
   color: var(--muted);
   font-size: 0.8rem;
   font-weight: 750;
+  white-space: nowrap;
 }
 .plan-option[aria-pressed="true"] {
   background: white;
   color: var(--brand-dark);
   box-shadow: 0 1px 4px rgba(39, 62, 70, 0.12);
 }
+.pricing-card-heading + .price,
+.selected-plan .price {
+  margin-top: 0;
+}
 .selected-plan {
-  min-height: 7rem;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 0.6rem;
+  align-items: baseline;
 }
 .selected-plan .price {
-  margin-bottom: 0.25rem;
+  grid-column: 1 / -1;
 }
-.selected-plan p:last-child {
+.pricing-card-heading + .price {
+  margin-bottom: 0;
+}
+.selected-plan .price {
+  margin-bottom: 0;
+}
+.selected-plan .price + p {
+  margin: 0;
+}
+.selected-plan .plan-description {
+  grid-column: 1;
   color: var(--muted);
   font-weight: 700;
 }
 .selected-plan .plan-savings {
+  grid-column: 2;
   display: inline-flex;
-  margin: 0.35rem 0 0;
+  margin: 0;
   padding: 0.2rem 0.5rem;
   border-radius: 999px;
   background: #e8f5ee;
@@ -687,6 +696,10 @@ th {
   justify-self: end;
 }
 
+.teacher-product-nav {
+  grid-template-columns: 1fr auto;
+}
+
 .product-main {
   width: min(1240px, 100%);
   margin-left: auto;
@@ -866,23 +879,31 @@ th {
   margin-top: 0.85rem;
 }
 
-.teacher-login-main .pricing-grid {
+.teacher-pricing .pricing-grid {
   gap: 1rem;
 }
 
-.teacher-login-main .pricing-card {
-  min-height: 0;
+.teacher-pricing .pricing-card {
+  min-height: 500px;
   display: flex;
   flex-direction: column;
   padding: clamp(1rem, 2.5vw, 1.35rem);
 }
 
-.teacher-login-main .pricing-card > .button-link,
-.teacher-login-main .pricing-card > .actions {
+.teacher-pricing .pricing-card-spacer {
+  visibility: hidden;
+}
+
+.teacher-pricing .pricing-card > .button-link,
+.teacher-pricing .pricing-card > .actions {
   margin-top: auto;
 }
 
 @media (max-width: 700px) {
+  .teacher-pricing .pricing-card {
+    min-height: 0;
+  }
+
   .teacher-login-shell .product-brand span:last-child {
     display: inline;
     font-size: 0.95rem;

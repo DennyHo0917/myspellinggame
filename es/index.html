@@ -93,7 +93,7 @@
                 <a class="lang-option" href="/zh/" hreflang="zh-CN">中文</a>
             </div>
         </details>
-        <a class="teacher-nav-link" href="/teacher?lang=es">Para docentes</a>
+        <a class="teacher-nav-link" href="/teacher?lang=es">Espacio de trabajo</a>
         <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Sonido</button>
     </header>
 
@@ -180,7 +180,8 @@
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">Lista de ejemplo</button>
                                 <button type="button" onclick="copyPracticeLink()">Copiar enlace de práctica</button>
-                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Asignar a estudiantes</button>
+                                <button type="button" onclick="showPrivacyPolicyLegacy()">Privacidad</button>
+                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Asignar tarea</button>
                             </div>
                             <button type="button" class="copy-assignment-hint" id="copy-assignment-hint" onclick="openTeacherAssignment()" hidden>¿Quieres ver los resultados de tus alumnos? Crea una tarea gratis.</button>
                         </div>
@@ -229,7 +230,7 @@
                         <h4>Almacenamiento local</h4>
                     <p>Tu lista de palabras y tus preferencias se guardan localmente en este navegador.</p>
                     <p>Los enlaces nuevos guardan la lista en el fragmento de la URL, que el navegador procesa sin enviarlo al servidor.</p>
-                    <p>Las tareas que un docente publica de forma explícita y sus resultados se guardan en Cloudflare D1 durante 30 días en Gratis o 365 días en Pro. No recopilamos email, IP ni User-Agent del estudiante.</p>
+                    <p>Las tareas que un docente o familiar publica de forma explícita y sus resultados se guardan en Cloudflare D1 durante 30 días en Gratis o 365 días en Pro. No recopilamos email, IP ni User-Agent del estudiante.</p>
                     <p>Puedes borrar estos datos desde el navegador o desde este panel.</p>
 
                         <h4>Analítica</h4>

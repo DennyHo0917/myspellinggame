@@ -523,7 +523,13 @@ test("signed-out teacher pricing switches plans and preserves Checkout intent", 
   );
 
   await yearly.click();
+  const navigated = page.waitForEvent(
+    "framenavigated",
+    (frame) => frame === page.mainFrame(),
+  );
   await confirm.click();
+  await navigated;
+  await page.waitForLoadState("domcontentloaded");
   await expect(page).toHaveURL(/\/teacher\?lang=en$/);
   expect(checkoutBody).toEqual({ interval: "year", locale: "en" });
   expect(
@@ -531,6 +537,9 @@ test("signed-out teacher pricing switches plans and preserves Checkout intent", 
       sessionStorage.getItem("pendingCheckoutInterval"),
     ),
   ).toBe("year");
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("pendingCheckoutLocale")),
+  ).toBe("en");
 
   await page.locator("[data-free-teacher-cta]").click();
   await expect(page).toHaveURL(/#teacher-sign-in$/);

@@ -895,6 +895,7 @@ th {
 }
 
 .teacher-pricing .pricing-card > .button-link,
+.teacher-pricing .pricing-card > .current-plan-cta,
 .teacher-pricing .pricing-card > .actions {
   margin-top: auto;
 }

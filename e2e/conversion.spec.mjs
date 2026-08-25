@@ -392,8 +392,15 @@ test("signed-in Free pricing marks the current plan without a link", async ({
         .querySelector(".plan-selector")
         .getBoundingClientRect();
       const proTitle = cards[1].querySelector("h2").getBoundingClientRect();
+      const freeCta = cards[0]
+        .querySelector("[data-free-teacher-cta]")
+        .getBoundingClientRect();
+      const proCta = cards[1]
+        .querySelector("[data-confirm-checkout]")
+        .getBoundingClientRect();
       return {
         cardDisplay: getComputedStyle(cards[0]).display,
+        ctaOffset: Math.abs(freeCta.y - proCta.y),
         freeHeadingGap: freePrice.top - freeHeading.bottom,
         freeListGap: freeList.top - freeDescription.bottom,
         proHeadingGap: proPrice.top - proHeading.bottom,
@@ -409,6 +416,7 @@ test("signed-in Free pricing marks the current plan without a link", async ({
       };
     });
   expect(pricingLayout.cardDisplay).toBe("flex");
+  expect(pricingLayout.ctaOffset).toBeLessThanOrEqual(1);
   expect(pricingLayout.freeHeadingGap).toBeLessThanOrEqual(4);
   expect(pricingLayout.freeListGap).toBeLessThanOrEqual(24);
   expect(pricingLayout.proHeadingGap).toBeLessThanOrEqual(4);

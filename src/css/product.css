@@ -340,6 +340,7 @@ a {
 }
 .selected-plan .plan-savings {
   grid-column: 2;
+  justify-self: start;
   display: inline-flex;
   margin: 0;
   padding: 0.2rem 0.5rem;

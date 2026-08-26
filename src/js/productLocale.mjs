@@ -82,6 +82,8 @@ const PACKS = {
     commonMisses: "Most commonly missed words",
     proStatsLocked:
       "Upgrade to Pro for assignment-wide missed-word statistics and CSV export.",
+    missedWordsPreview:
+      "{count} words have been missed in this assignment. Upgrade to Pro to see which words are missed most often.",
     copied: "Learner link copied.",
     assignmentLoading: "Loading assignment…",
     nicknameHelp:
@@ -183,6 +185,8 @@ const PACKS = {
     smartReviewValue:
       "Turn missed words across assignments into a focused review list in one click.",
     smartReviewUpgrade: "Upgrade to Pro to create smart review assignments.",
+    smartReviewPreview:
+      "{count} words currently need review. Upgrade to Pro to turn them into a focused review assignment.",
     createReview: "Create review assignment",
     noReviewWords: "There are no missed words that need review yet.",
     reviewDraftTitle: "Review: {name}",
@@ -302,6 +306,8 @@ const PACKS = {
     commonMisses: "Palabras con más errores",
     proStatsLocked:
       "Pasa a Pro para ver estadísticas de errores de toda la tarea y exportar CSV.",
+    missedWordsPreview:
+      "En esta tarea se han fallado {count} palabras. Pásate a Pro para ver cuáles se fallan con más frecuencia.",
     copied: "Enlace para aprendices copiado.",
     assignmentLoading: "Cargando tarea…",
     nicknameHelp:
@@ -404,6 +410,8 @@ const PACKS = {
     smartReviewValue:
       "Convierte en un clic los errores de varias tareas en una lista de repaso específica.",
     smartReviewUpgrade: "Pásate a Pro para crear tareas de repaso inteligente.",
+    smartReviewPreview:
+      "Ahora mismo hay {count} palabras que necesitan repaso. Pásate a Pro para convertirlas en una tarea de repaso específica.",
     createReview: "Crear tarea de repaso",
     noReviewWords: "Todavía no hay palabras falladas que necesiten repaso.",
     reviewDraftTitle: "Repaso: {name}",
@@ -523,6 +531,8 @@ const PACKS = {
     commonMisses: "Palavras mais erradas",
     proStatsLocked:
       "Assine o Pro para ver erros de toda a tarefa e exportar CSV.",
+    missedWordsPreview:
+      "Nesta tarefa, {count} palavras foram erradas. Passe para o Pro para ver quais aparecem mais nos erros.",
     copied: "Link para aprendizes copiado.",
     assignmentLoading: "Carregando tarefa…",
     nicknameHelp:
@@ -625,6 +635,8 @@ const PACKS = {
       "Transforme em um clique os erros de várias tarefas em uma lista de revisão focada.",
     smartReviewUpgrade:
       "Passe para o Pro para criar tarefas de revisão inteligente.",
+    smartReviewPreview:
+      "Atualmente, {count} palavras precisam de revisão. Passe para o Pro para transformá-las em uma tarefa de revisão focada.",
     createReview: "Criar tarefa de revisão",
     noReviewWords: "Ainda não há palavras erradas que precisem de revisão.",
     reviewDraftTitle: "Revisão: {name}",
@@ -743,6 +755,8 @@ const PACKS = {
     commonMisses: "Mots les plus souvent manqués",
     proStatsLocked:
       "Passez à Pro pour les statistiques de l’ensemble du devoir et l’export CSV.",
+    missedWordsPreview:
+      "{count} mots ont été manqués dans ce devoir. Passez à Pro pour voir lesquels sont le plus souvent manqués.",
     copied: "Lien pour les apprenants copié.",
     assignmentLoading: "Chargement du devoir…",
     nicknameHelp:
@@ -847,6 +861,8 @@ const PACKS = {
       "Transformez en un clic les erreurs de plusieurs devoirs en une liste de révision ciblée.",
     smartReviewUpgrade:
       "Passez à Pro pour créer des devoirs de révision intelligente.",
+    smartReviewPreview:
+      "{count} mots nécessitent actuellement une révision. Passez à Pro pour en faire un devoir de révision ciblé.",
     createReview: "Créer un devoir de révision",
     noReviewWords: "Aucun mot manqué ne nécessite encore de révision.",
     reviewDraftTitle: "Révision : {name}",
@@ -965,6 +981,8 @@ const PACKS = {
     commonMisses: "Kata yang paling sering salah",
     proStatsLocked:
       "Naik ke Pro untuk statistik kesalahan seluruh tugas dan ekspor CSV.",
+    missedWordsPreview:
+      "{count} kata telah salah dalam tugas ini. Pilih Pro untuk melihat kata mana yang paling sering salah.",
     copied: "Link untuk pelajar disalin.",
     assignmentLoading: "Memuat tugas…",
     nicknameHelp:
@@ -1067,6 +1085,8 @@ const PACKS = {
     smartReviewValue:
       "Ubah kata yang salah dari berbagai tugas menjadi daftar latihan terarah dalam satu klik.",
     smartReviewUpgrade: "Pilih Pro untuk membuat tugas ulasan pintar.",
+    smartReviewPreview:
+      "Saat ini ada {count} kata yang perlu diulas. Pilih Pro untuk mengubahnya menjadi tugas ulasan terarah.",
     createReview: "Buat tugas ulasan",
     noReviewWords: "Belum ada kata salah yang perlu diulang.",
     reviewDraftTitle: "Ulasan: {name}",
@@ -1179,6 +1199,8 @@ const PACKS = {
     deleteResultFailed: "删除结果失败，请重试。",
     commonMisses: "整份作业最容易拼错的单词",
     proStatsLocked: "升级 Pro 后可查看整份作业的错词统计并导出 CSV。",
+    missedWordsPreview:
+      "这份作业中已有 {count} 个不同单词被拼错。升级 Pro 可查看全班最常拼错的单词。",
     copied: "学习者链接已复制。",
     assignmentLoading: "正在加载作业…",
     nicknameHelp:
@@ -1272,6 +1294,8 @@ const PACKS = {
     smartReview: "智能错词复习",
     smartReviewValue: "一键汇总多次作业中的错词，生成针对性的复习词表。",
     smartReviewUpgrade: "升级 Pro 后可创建智能错词复习作业。",
+    smartReviewPreview:
+      "当前有 {count} 个单词需要复习。升级 Pro 可一键生成针对性复习作业。",
     createReview: "创建复习作业",
     noReviewWords: "目前没有需要复习的错词。",
     reviewDraftTitle: "复习：{name}",

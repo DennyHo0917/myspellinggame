@@ -1081,9 +1081,14 @@ async function renderDetail(me, id) {
   missesTitle.textContent = copy.commonMisses;
   misses.append(missesTitle);
   if (data.missedWordStats === null) {
+    const distinctMissedWordCount = new Set(
+      data.attempts.flatMap((attempt) => attempt.missed_words || []),
+    ).size;
     const locked = document.createElement("p");
-    locked.textContent = copy.proStatsLocked;
-    misses.append(locked);
+    locked.textContent = distinctMissedWordCount
+      ? m("missedWordsPreview", { count: distinctMissedWordCount })
+      : copy.proStatsLocked;
+    misses.append(locked, upgradeLink("assignment_missed_word_stats"));
   } else {
     const list = document.createElement("div");
     list.className = "word-list";
@@ -1186,7 +1191,9 @@ async function renderLearner(me, id) {
     });
   } else {
     const locked = document.createElement("p");
-    locked.textContent = copy.smartReviewUpgrade;
+    locked.textContent = data.summary.needsReview
+      ? m("smartReviewPreview", { count: data.summary.needsReview })
+      : copy.smartReviewUpgrade;
     review.append(locked, upgradeLink("smart_review"));
   }
   main.append(review);

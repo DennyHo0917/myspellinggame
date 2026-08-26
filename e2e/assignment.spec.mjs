@@ -757,7 +757,7 @@ test("workspace P0 flow keeps empty smart review actions retryable", async ({
         accuracy: 0,
         mastered: 0,
         learning: 0,
-        needsReview: 0,
+        needsReview: 4,
       },
       words: [],
     }),
@@ -795,6 +795,9 @@ test("workspace P0 flow keeps empty smart review actions retryable", async ({
   await expect(
     page.getByRole("heading", { name: "Mastery overview" }),
   ).toBeVisible();
+  await expect(
+    page.getByText("4 words currently need review.", { exact: false }),
+  ).toHaveCount(0);
   const learnerReview = page.getByRole("button", {
     name: "Create review assignment",
   });
@@ -864,7 +867,7 @@ test("a Pro dashboard never requests or displays upgrade pricing", async ({
   expect(pricingRequests).toBe(0);
 });
 
-test("teacher results render assignment and nickname as inert text", async ({
+test("free teacher results preview distinct missed words as inert text", async ({
   page,
 }) => {
   const assignmentId = "33333333-3333-4333-8333-333333333333";
@@ -907,8 +910,19 @@ test("teacher results render assignment and nickname as inert text", async ({
             correct_count: 1,
             incorrect_count: 1,
             accuracy: 50,
-            missed_words: ["banana"],
+            missed_words: ["because", "friend"],
             duration_seconds: 42,
+            completed_at: new Date().toISOString(),
+          },
+          {
+            id: "77777777-7777-4777-8777-777777777777",
+            nickname: "Student 02",
+            attempt_number: 1,
+            correct_count: 1,
+            incorrect_count: 1,
+            accuracy: 50,
+            missed_words: ["because"],
+            duration_seconds: 35,
             completed_at: new Date().toISOString(),
           },
         ],
@@ -923,11 +937,99 @@ test("teacher results render assignment and nickname as inert text", async ({
   expect(navigation.headers()["x-robots-tag"]).toContain("noindex");
   await expect(page.getByRole("heading", { name: hostileTitle })).toBeVisible();
   await expect(page.getByRole("cell", { name: hostileNickname })).toBeVisible();
+  const misses = page.locator("section").filter({
+    has: page.getByRole("heading", { name: "Most commonly missed words" }),
+  });
+  await expect(misses).toContainText(
+    "2 words have been missed in this assignment.",
+  );
+  await expect(
+    misses.getByRole("link", { name: "Upgrade to Pro" }),
+  ).toBeVisible();
   expect(await page.evaluate(() => globalThis.pwned)).toBeUndefined();
   expect(await analyticsEvents(page, "assignment_results_viewed")).toEqual([
     { mode: "typing", word_count: 2 },
   ]);
   expect(await analyticsEvents(page, "teacher_auth_completed")).toEqual([]);
+});
+
+test("free assignment and learner previews avoid zero-value urgency", async ({
+  page,
+}) => {
+  const assignmentId = "12121212-1212-4212-8212-121212121212";
+  const learnerId = "13131313-1313-4313-8313-131313131313";
+  let needsReview = 4;
+  const json = (route, body) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(body),
+    });
+  await page.route("**/api/me", (route) =>
+    json(route, {
+      user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
+      plan: "free",
+      limits: {
+        activeAssignments: 2,
+        monthlyAttempts: 30,
+        learnerProfiles: 3,
+      },
+    }),
+  );
+  await page.route(`**/api/assignments/${assignmentId}`, (route) =>
+    json(route, {
+      id: assignmentId,
+      public_id: publicId,
+      title: "Perfect week",
+      mode: "typing",
+      status: "published",
+      words,
+      summary: { students: 0, attempts: 0, averageAccuracy: 0 },
+      attempts: [],
+      missedWordStats: null,
+    }),
+  );
+  await page.route(`**/api/learners/${learnerId}`, (route) =>
+    json(route, {
+      learner: { id: learnerId, name: "Learner 01", archived: false },
+      historyDays: 30,
+      smartReview: false,
+      summary: {
+        completedAttempts: 3,
+        accuracy: 70,
+        mastered: 2,
+        learning: 1,
+        needsReview,
+      },
+      words: [],
+    }),
+  );
+
+  await page.goto(`/teacher/assignments/${assignmentId}?lang=en`);
+  const misses = page.locator("section").filter({
+    has: page.getByRole("heading", { name: "Most commonly missed words" }),
+  });
+  await expect(misses).toContainText(
+    "Upgrade to Pro for assignment-wide missed-word statistics",
+  );
+  await expect(misses).not.toContainText("0 words");
+
+  await page.goto(`/teacher/learners/${learnerId}?lang=en`);
+  const review = page.locator("section").filter({
+    has: page.getByRole("heading", { name: "Smart missed-word review" }),
+  });
+  await expect(review).toContainText(
+    "4 words currently need review. Upgrade to Pro to turn them into a focused review assignment.",
+  );
+  await expect(
+    review.getByRole("link", { name: "Upgrade to Pro" }),
+  ).toHaveCount(1);
+
+  needsReview = 0;
+  await page.reload();
+  await expect(review).toContainText(
+    "Upgrade to Pro to create smart review assignments.",
+  );
+  await expect(review).not.toContainText("0 words");
 });
 
 test("deleting a result refreshes teacher summaries and reports failures", async ({
@@ -1007,6 +1109,11 @@ test("deleting a result refreshes teacher summaries and reports failures", async
   );
 
   await page.goto(`/teacher/assignments/${assignmentId}?lang=en`);
+  const misses = page.locator("section").filter({
+    has: page.getByRole("heading", { name: "Most commonly missed words" }),
+  });
+  await expect(misses).toContainText("banana · 1");
+  await expect(misses).not.toContainText("words have been missed");
   const deleteButton = page.getByRole("button", { name: "Delete result" });
   await deleteButton.click();
   await expect(page.getByRole("alert")).toHaveText(

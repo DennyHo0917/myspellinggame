@@ -39,6 +39,8 @@ test("paid workspace features are localized in every product locale", () => {
     "learnerUsage",
     "masteryHistoryUpgrade",
     "smartReviewValue",
+    "missedWordsPreview",
+    "smartReviewPreview",
     "savedListLimit",
     "learnerLimit",
     "proActive",

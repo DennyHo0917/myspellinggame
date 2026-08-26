@@ -207,6 +207,7 @@ test("magic learner links use the server identity and hide nickname entry", asyn
   );
 
   await page.goto(`/l/${learnerPublicId}?lang=en`);
+  await expect(page).toHaveTitle("Student home");
   await expect(page.getByRole("heading", { name: "Hi, Emily" })).toBeVisible();
   const startLink = page.getByRole("link", { name: "Start assignment" });
   await expect(startLink).toHaveAttribute(
@@ -712,7 +713,7 @@ test("mobile conversion pages keep their key actions usable", async ({
   await expect(
     page.getByRole("link", { name: "Create free account" }),
   ).toHaveAttribute("href", "/teacher?lang=en#teacher-sign-in");
-  await expect(page.getByText("Unlimited learner submissions")).toBeVisible();
+  await expect(page.getByText("Unlimited student submissions")).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Monthly plan", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
@@ -825,7 +826,12 @@ test("workspace P0 flow keeps empty smart review actions retryable", async ({
   });
   await page.route(`**/api/learners/${learnerId}`, (route) =>
     json(route, {
-      learner: { id: learnerId, name: "Learner 01", archived: false },
+      learner: {
+        id: learnerId,
+        name: "Student 01",
+        public_id: "studentToken1234567890",
+        archived: false,
+      },
       historyDays: 365,
       smartReview: true,
       summary: {
@@ -865,11 +871,15 @@ test("workspace P0 flow keeps empty smart review actions retryable", async ({
   await page.getByRole("button", { name: "Save list" }).click();
   await expect(page.getByRole("heading", { name: "Week one" })).toBeVisible();
 
-  await page.getByLabel("Learner nickname or number").fill("Learner 01");
-  await page.getByRole("button", { name: "Add learner" }).click();
+  await page.getByLabel("Student nickname or number").fill("Student 01");
+  await page.getByRole("button", { name: "Add student" }).click();
+  await expect(page.getByRole("heading", { name: "Students" })).toBeVisible();
   await page.getByRole("link", { name: "View progress" }).click();
   await expect(
     page.getByRole("heading", { name: "Mastery overview" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Copy student link" }),
   ).toBeVisible();
   await expect(
     page.getByText("4 words currently need review.", { exact: false }),
@@ -885,6 +895,12 @@ test("workspace P0 flow keeps empty smart review actions retryable", async ({
   await expect(learnerReview).toBeEnabled();
 
   await page.goto(`/teacher/assignments/${assignmentId}?lang=en`);
+  await expect(
+    page.getByRole("heading", { name: "Student assignment link" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Copy student link" }),
+  ).toBeVisible();
   const assignmentReview = page.getByRole("button", {
     name: "Create review assignment",
   });
@@ -1025,6 +1041,9 @@ test("free teacher results preview distinct missed words as inert text", async (
     `/teacher/assignments/${assignmentId}?lang=en`,
   );
   expect(navigation.headers()["x-robots-tag"]).toContain("noindex");
+  await expect(
+    page.getByRole("heading", { name: "Student results" }),
+  ).toBeVisible();
   await expect(page.getByRole("heading", { name: hostileTitle })).toBeVisible();
   await expect(page.getByRole("cell", { name: hostileNickname })).toBeVisible();
   const misses = page.locator("section").filter({
@@ -1083,7 +1102,7 @@ test("free assignment and learner previews avoid zero-value urgency", async ({
   );
   await page.route(`**/api/learners/${learnerId}`, (route) =>
     json(route, {
-      learner: { id: learnerId, name: "Learner 01", archived: false },
+      learner: { id: learnerId, name: "Student 01", archived: false },
       historyDays: 30,
       smartReview: false,
       summary: {
@@ -1217,12 +1236,12 @@ test("deleting a result refreshes teacher summaries and reports failures", async
   await deleteButton.click();
   await expect(deleteButton).toBeDisabled();
   await expect(
-    page.getByText("No learner has completed this assignment yet."),
+    page.getByText("No student has completed this assignment yet."),
   ).toBeVisible();
   await expect(
     page
       .locator(".stat-card")
-      .filter({ hasText: "Learners" })
+      .filter({ hasText: "Students" })
       .locator(".stat-value"),
   ).toHaveText("0");
   expect(await analyticsEvents(page, "assignment_results_viewed")).toHaveLength(

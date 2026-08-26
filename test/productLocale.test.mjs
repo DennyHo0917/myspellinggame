@@ -58,3 +58,40 @@ test("paid workspace features are localized in every product locale", () => {
     for (const key of keys) assert.ok(copy[key], `${locale}: ${key}`);
   }
 });
+
+test("student terminology is used in learner-facing copy", () => {
+  const keys = [
+    "noAssignments",
+    "students",
+    "studentLink",
+    "copyLink",
+    "deleteConfirm",
+    "summaryStudents",
+    "results",
+    "noResults",
+    "copied",
+    "learnerHome",
+    "copyLearnerLink",
+    "learnerLinkCopied",
+    "learners",
+    "learnersCopy",
+    "learnerUsage",
+    "learnerName",
+    "learnerNamePlaceholder",
+    "addLearner",
+    "learnerNamePrompt",
+    "learnerNotFound",
+    "learnerExists",
+    "learnerLimit",
+  ];
+  for (const [locale] of PRODUCT_LOCALES) {
+    const copy = productMessages(locale);
+    for (const key of keys) {
+      assert.doesNotMatch(
+        String(copy[key]),
+        /learner|learners|aprendiz|apprenant|pelajar|学习者/i,
+        `${locale}: ${key}`,
+      );
+    }
+  }
+});

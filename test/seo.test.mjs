@@ -134,3 +134,14 @@ test('pricing explains the complete 30-day trial in every locale', () => {
     for (const term of terms) assert.ok(pricing.includes(term), `${locale || 'en'}: ${term}`);
   }
 });
+
+test('pricing pages use student terminology in every locale', () => {
+  for (const locale of locales) {
+    const pricing = fs.readFileSync(path.join(root, locale, 'pricing.html'), 'utf8');
+    assert.doesNotMatch(
+      pricing,
+      /learner|learners|aprendiz|apprenant|pelajar|学习者/i,
+      locale || 'en',
+    );
+  }
+});

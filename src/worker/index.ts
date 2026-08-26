@@ -89,6 +89,7 @@ type LearnerRow = {
   owner_user_id: string;
   name: string;
   name_key: string;
+  public_id: string;
   archived: number;
   created_at: string;
   updated_at: string;
@@ -611,37 +612,31 @@ async function listLearners(db: D1Database, ownerUserId: string, plan: Plan) {
   return learners.results;
 }
 
-async function associateLearnerAttempts(db: D1Database, learner: LearnerRow) {
-  await db
-    .prepare(
-      `UPDATE attempts SET learner_id = ?
-       WHERE learner_id IS NULL AND nickname_key = ?
-         AND assignment_id IN (SELECT id FROM assignments WHERE owner_user_id = ?)`,
-    )
-    .bind(learner.id, learner.name_key, learner.owner_user_id)
-    .run();
-}
-
 async function createLearner(env: Env, request: Request, ownerUserId: string) {
   const body = await readJson(request);
-  const { nickname: name, nicknameKey: nameKey } = validateNickname(body.name);
-  const existing = await env.DB.prepare(
-    "SELECT 1 FROM learners WHERE owner_user_id = ? AND name_key = ?",
-  )
-    .bind(ownerUserId, nameKey)
-    .first();
-  if (existing)
-    throw new HttpError(409, "learner_exists", "That learner already exists.");
+  const { nickname: name } = validateNickname(body.name);
   const plan = await getPlan(env, ownerUserId);
   const limit = PLAN_LIMITS[plan].learnerProfiles;
   const id = crypto.randomUUID();
+  const publicId = randomPublicId();
+  const nameKey = `learner:${id}`;
   const now = new Date().toISOString();
   const inserted = await env.DB.prepare(
-    `INSERT INTO learners (id, owner_user_id, name, name_key, archived, created_at, updated_at)
-     SELECT ?, ?, ?, ?, 0, ?, ?
+    `INSERT INTO learners (id, owner_user_id, name, name_key, public_id, archived, created_at, updated_at)
+     SELECT ?, ?, ?, ?, ?, 0, ?, ?
      WHERE (SELECT COUNT(*) FROM learners WHERE owner_user_id = ?) < ?`,
   )
-    .bind(id, ownerUserId, name, nameKey, now, now, ownerUserId, limit)
+    .bind(
+      id,
+      ownerUserId,
+      name,
+      nameKey,
+      publicId,
+      now,
+      now,
+      ownerUserId,
+      limit,
+    )
     .run();
   if (!inserted.meta.changes)
     throw new HttpError(
@@ -654,11 +649,11 @@ async function createLearner(env: Env, request: Request, ownerUserId: string) {
     owner_user_id: ownerUserId,
     name,
     name_key: nameKey,
+    public_id: publicId,
     archived: 0,
     created_at: now,
     updated_at: now,
   } satisfies LearnerRow;
-  await associateLearnerAttempts(env.DB, learner);
   return learner;
 }
 
@@ -669,42 +664,26 @@ async function updateLearner(
 ) {
   const body = await readJson(request);
   let name = learner.name;
-  let nameKey = learner.name_key;
   if (body.name !== undefined) {
     const validated = validateNickname(body.name);
     name = validated.nickname;
-    nameKey = validated.nicknameKey;
-    const conflict = await db
-      .prepare(
-        "SELECT 1 FROM learners WHERE owner_user_id = ? AND name_key = ? AND id != ?",
-      )
-      .bind(learner.owner_user_id, nameKey, learner.id)
-      .first();
-    if (conflict)
-      throw new HttpError(
-        409,
-        "learner_exists",
-        "That learner already exists.",
-      );
   }
   const archived =
     body.archived === undefined ? learner.archived : body.archived ? 1 : 0;
   const updatedAt = new Date().toISOString();
   await db
     .prepare(
-      `UPDATE learners SET name = ?, name_key = ?, archived = ?, updated_at = ?
+      `UPDATE learners SET name = ?, archived = ?, updated_at = ?
        WHERE id = ? AND owner_user_id = ?`,
     )
-    .bind(name, nameKey, archived, updatedAt, learner.id, learner.owner_user_id)
+    .bind(name, archived, updatedAt, learner.id, learner.owner_user_id)
     .run();
   const updated = {
     ...learner,
     name,
-    name_key: nameKey,
     archived,
     updated_at: updatedAt,
   };
-  await associateLearnerAttempts(db, updated);
   return updated;
 }
 
@@ -973,7 +952,11 @@ async function updateAssignment(
   return { status: body.status };
 }
 
-async function publicAssignment(db: D1Database, publicId: string) {
+async function publicAssignment(
+  db: D1Database,
+  publicId: string,
+  learnerPublicId?: string,
+) {
   const assignment = await db
     .prepare(
       `SELECT id, public_id, owner_user_id, title, mode, status, max_attempts, created_at, expires_at
@@ -996,13 +979,28 @@ async function publicAssignment(db: D1Database, publicId: string) {
       "This assignment has expired.",
     );
   }
+  let learner: Pick<LearnerRow, "id" | "public_id" | "name"> | undefined;
+  if (learnerPublicId !== undefined) {
+    if (!/^[A-Za-z0-9_-]{24}$/.test(learnerPublicId))
+      throw new HttpError(404, "learner_not_found", "Learner not found.");
+    learner =
+      (await db
+        .prepare(
+          `SELECT id, public_id, name FROM learners
+         WHERE public_id = ? AND owner_user_id = ? AND archived = 0`,
+        )
+        .bind(learnerPublicId, assignment.owner_user_id)
+        .first<Pick<LearnerRow, "id" | "public_id" | "name">>()) ?? undefined;
+    if (!learner)
+      throw new HttpError(404, "learner_not_found", "Learner not found.");
+  }
   const words = await db
     .prepare(
       "SELECT id, position, word FROM assignment_words WHERE assignment_id = ? ORDER BY position",
     )
     .bind(assignment.id)
     .all<AssignmentWord>();
-  return { ...assignment, words: words.results };
+  return { ...assignment, words: words.results, learner };
 }
 
 async function loadAttemptResult(
@@ -1041,10 +1039,22 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
     );
   const body = await readJson(request);
   const attemptId = validateAttemptId(body.attemptId);
+  const hasLearnerToken = Object.hasOwn(body, "learnerPublicId");
+  if (hasLearnerToken && typeof body.learnerPublicId !== "string")
+    throw new HttpError(404, "learner_not_found", "Learner not found.");
+  const learnerPublicId = hasLearnerToken
+    ? (body.learnerPublicId as string)
+    : undefined;
+  const assignment = await publicAssignment(env.DB, publicId, learnerPublicId);
   const existing = await loadAttemptResult(env.DB, attemptId, publicId);
   if (existing) return existing;
-  const assignment = await publicAssignment(env.DB, publicId);
-  const { nickname, nicknameKey } = validateNickname(body.nickname);
+  const learner = assignment.learner;
+  const { nickname, nicknameKey } = learner
+    ? {
+        nickname: learner.name,
+        nicknameKey: `learner:${learner.id}`,
+      }
+    : validateNickname(body.nickname);
   const durationSeconds = validateDuration(body.durationSeconds);
   const words = assignment.words;
   const completed = body.completed !== false;
@@ -1055,11 +1065,6 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
   const completedAt = now.toISOString();
   const retentionExpiresAt = addDays(completedAt, limits.retentionDays);
   const monthKey = monthStart(now);
-  const learner = await env.DB.prepare(
-    "SELECT id FROM learners WHERE owner_user_id = ? AND name_key = ?",
-  )
-    .bind(assignment.owner_user_id, nicknameKey)
-    .first<{ id: string }>();
   const monthlyLimit = completed
     ? (limits.monthlyAttempts ?? 2_147_483_647)
     : 2_147_483_647;
@@ -1296,13 +1301,23 @@ export async function handleRequest(
     /^\/api\/public\/assignments\/([A-Za-z0-9_-]{24})$/,
   );
   if (publicMatch && method === "GET") {
-    const assignment = await publicAssignment(env.DB, publicMatch[1]);
+    const learnerPublicId = url.searchParams.has("learner")
+      ? (url.searchParams.get("learner") ?? "")
+      : undefined;
+    const assignment = await publicAssignment(
+      env.DB,
+      publicMatch[1],
+      learnerPublicId,
+    );
     return json({
       title: assignment.title,
       mode: assignment.mode,
       max_attempts: assignment.max_attempts,
       expires_at: assignment.expires_at,
       words: assignment.words,
+      ...(assignment.learner
+        ? { learner: { name: assignment.learner.name } }
+        : {}),
     });
   }
   const submitMatch = url.pathname.match(
@@ -1311,6 +1326,34 @@ export async function handleRequest(
   if (submitMatch && method === "POST") {
     requireSameOrigin(request);
     return json(await submitAttempt(env, request, submitMatch[1]), 201);
+  }
+
+  const publicLearnerMatch = url.pathname.match(
+    /^\/api\/public\/learners\/([A-Za-z0-9_-]{24})$/,
+  );
+  if (publicLearnerMatch && method === "GET") {
+    const learner = await env.DB.prepare(
+      `SELECT id, name, owner_user_id FROM learners
+       WHERE public_id = ? AND archived = 0`,
+    )
+      .bind(publicLearnerMatch[1])
+      .first<{ id: string; name: string; owner_user_id: string }>();
+    if (!learner)
+      throw new HttpError(404, "learner_not_found", "Learner not found.");
+    const assignments = await env.DB.prepare(
+      `SELECT public_id, title, mode, expires_at
+       FROM assignments
+       WHERE owner_user_id = ? AND status = 'published' AND expires_at > ?
+       ORDER BY expires_at ASC, created_at DESC`,
+    )
+      .bind(learner.owner_user_id, new Date().toISOString())
+      .all<
+        Pick<AssignmentRow, "public_id" | "title" | "mode" | "expires_at">
+      >();
+    return json({
+      learner: { name: learner.name },
+      assignments: assignments.results,
+    });
   }
 
   if (url.pathname === "/api/me" && method === "GET") {
@@ -1565,6 +1608,9 @@ export async function handleRequest(
   }
   if (/^\/a\/[A-Za-z0-9_-]{24}$/.test(url.pathname)) {
     return serveShell(env, request, "/src/pages/assignment.html", true);
+  }
+  if (/^\/l\/[A-Za-z0-9_-]{24}$/.test(url.pathname)) {
+    return serveShell(env, request, "/src/pages/learner.html", true);
   }
   return env.ASSETS.fetch(request);
 }

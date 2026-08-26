@@ -151,6 +151,82 @@ test("other review words separate first and second retries", async ({
   ).toBeVisible();
 });
 
+test("magic learner links use the server identity and hide nickname entry", async ({
+  page,
+}) => {
+  const learnerPublicId = "learnerToken123456789012";
+  let submittedBody;
+  await page.route(`**/api/public/learners/${learnerPublicId}`, (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        learner: { name: "Emily" },
+        assignments: [
+          {
+            public_id: publicId,
+            title: "Week 3 Spelling",
+            mode: "typing",
+            expires_at: new Date(Date.now() + 86_400_000).toISOString(),
+          },
+        ],
+      }),
+    }),
+  );
+  await page.route(
+    `**/api/public/assignments/${publicId}?learner=${learnerPublicId}`,
+    (route) =>
+      route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          public_id: publicId,
+          title: "Week 3 Spelling",
+          mode: "typing",
+          max_attempts: 3,
+          expires_at: new Date(Date.now() + 86_400_000).toISOString(),
+          learner: { name: "Emily" },
+          words: [words[0]],
+        }),
+      }),
+  );
+  await page.route(
+    `**/api/public/assignments/${publicId}/attempts`,
+    async (route) => {
+      submittedBody = route.request().postDataJSON();
+      await route.fulfill({
+        status: 201,
+        contentType: "application/json",
+        body: JSON.stringify({
+          ...submittedBody,
+          correct_count: 1,
+          incorrect_count: 0,
+          accuracy: 100,
+          missedWords: [],
+        }),
+      });
+    },
+  );
+
+  await page.goto(`/l/${learnerPublicId}?lang=en`);
+  await expect(page.getByRole("heading", { name: "Hi, Emily" })).toBeVisible();
+  const startLink = page.getByRole("link", { name: "Start assignment" });
+  await expect(startLink).toHaveAttribute(
+    "href",
+    `/a/${publicId}?learner=${learnerPublicId}&lang=en`,
+  );
+  await startLink.click();
+  await expect(page.getByText("Practicing as Emily")).toBeVisible();
+  await expect(page.getByLabel("Nickname")).toHaveCount(0);
+  await page.getByRole("button", { name: "Start assignment" }).click();
+  await page.locator(".answer-form input").fill("apple");
+  await page.getByRole("button", { name: "Check answer" }).click();
+  await page.getByRole("button", { name: "Next word" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Your result" }),
+  ).toBeVisible();
+  expect(submittedBody).toMatchObject({ learnerPublicId });
+  expect(submittedBody).not.toHaveProperty("nickname");
+});
+
 const analyticsEvents = (page, name) =>
   page.evaluate(
     (eventName) =>

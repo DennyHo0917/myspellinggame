@@ -44,6 +44,14 @@ test("paid workspace features are localized in every product locale", () => {
     "savedListLimit",
     "learnerLimit",
     "proActive",
+    "learnerHome",
+    "learnerGreeting",
+    "practicingAs",
+    "yourAssignments",
+    "noActiveAssignments",
+    "startAssignment",
+    "copyLearnerLink",
+    "learnerLinkCopied",
   ];
   for (const [locale] of PRODUCT_LOCALES) {
     const copy = productMessages(locale);

@@ -12,7 +12,12 @@ const locale = productLocale();
 const copy = productMessages(locale);
 const publicId =
   location.pathname.match(/^\/a\/([A-Za-z0-9_-]{24})$/)?.[1] || "";
-const storageKey = `mySpellingAssignment:${publicId}`;
+const learnerParam = new URLSearchParams(location.search).get("learner");
+const learnerPublicId = learnerParam ?? "";
+const learnerLink = learnerParam !== null;
+const storageKey = learnerLink
+  ? `mySpellingAssignment:${publicId}:${learnerPublicId}`
+  : `mySpellingAssignment:${publicId}`;
 const MAX_RETRIES_PER_WORD = 2;
 const RETRY_GAP = 2;
 let assignment;
@@ -45,6 +50,7 @@ const ERROR_KEYS = {
   invalid_answers: "invalidSubmission",
   invalid_duration: "invalidSubmission",
   invalid_attempt_id: "invalidSubmission",
+  learner_not_found: "learnerNotFound",
   rate_limited: "rateLimited",
 };
 
@@ -155,6 +161,23 @@ function renderIntro() {
   meta.textContent = `${assignment.mode === "dictation" ? copy.dictation : copy.typing} · ${m("due", { date: new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(assignment.expires_at)) })}`;
   const form = document.createElement("form");
   form.className = "product-form";
+  if (learnerLink) {
+    const identity = document.createElement("p");
+    identity.className = "muted";
+    identity.textContent = m("practicingAs", {
+      name: assignment.learner?.name || "",
+    });
+    const start = document.createElement("button");
+    start.type = "submit";
+    start.textContent = copy.start;
+    form.append(identity, start);
+    section.append(meta, form);
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      beginAssignment();
+    });
+    return;
+  }
   const field = document.createElement("div");
   field.className = "field";
   const label = document.createElement("label");
@@ -186,16 +209,21 @@ function renderIntro() {
       status.className = "status error";
       return;
     }
-    attemptId = crypto.randomUUID();
-    index = 0;
-    originalAnswers = [];
-    retryQueue = [];
-    promptStep = 0;
-    lastPromptWordId = "";
-    startedAt = Date.now();
-    saveState({ attemptId, nickname });
-    renderWord();
+    beginAssignment();
   });
+}
+
+function beginAssignment() {
+  nickname = assignment.learner?.name || nickname;
+  attemptId = crypto.randomUUID();
+  index = 0;
+  originalAnswers = [];
+  retryQueue = [];
+  promptStep = 0;
+  lastPromptWordId = "";
+  startedAt = Date.now();
+  saveState({ attemptId, nickname });
+  renderWord();
 }
 
 function speak(word) {
@@ -374,7 +402,7 @@ async function leaveAssignment() {
       method: "POST",
       body: JSON.stringify({
         attemptId,
-        nickname,
+        ...(learnerLink ? { learnerPublicId } : { nickname }),
         answers: originalAnswers,
         durationSeconds: Math.max(
           1,
@@ -420,7 +448,7 @@ async function saveResult() {
   );
   const body = JSON.stringify({
     attemptId,
-    nickname,
+    ...(learnerLink ? { learnerPublicId } : { nickname }),
     answers: originalAnswers,
     durationSeconds,
   });
@@ -506,18 +534,23 @@ function renderResult(result) {
 async function init() {
   root.textContent = copy.assignmentLoading;
   try {
-    assignment = await request(`/api/public/assignments/${publicId}`);
+    assignment = await request(
+      `/api/public/assignments/${publicId}${learnerLink ? `?learner=${encodeURIComponent(learnerPublicId)}` : ""}`,
+    );
+    if (learnerLink && !assignment.learner)
+      throw new Error(copy.learnerNotFound);
     trackEvent("assignment_opened", {
       mode: assignment.mode,
       word_count: assignment.words.length,
     });
     const saved = readSaved();
     if (saved?.result) {
-      nickname = saved.nickname || "";
+      nickname = saved.nickname || assignment.learner?.name || "";
       renderResult(saved.result);
       return;
     }
     if (saved?.nickname) nickname = saved.nickname;
+    if (learnerLink) nickname = assignment.learner.name;
     renderIntro();
   } catch (error) {
     const section = card(error.message);

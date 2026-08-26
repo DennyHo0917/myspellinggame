@@ -85,6 +85,14 @@ const PACKS = {
     missedWordsPreview:
       "{count} words have been missed in this assignment. Upgrade to Pro to see which words are missed most often.",
     copied: "Learner link copied.",
+    learnerHome: "Learner home",
+    learnerGreeting: "Hi, {name}",
+    practicingAs: "Practicing as {name}",
+    yourAssignments: "Your spelling assignments",
+    noActiveAssignments: "No active assignments right now.",
+    startAssignment: "Start assignment",
+    copyLearnerLink: "Copy learner link",
+    learnerLinkCopied: "Learner link copied.",
     assignmentLoading: "Loading assignment…",
     nicknameHelp:
       "Use a nickname or classroom number. Do not enter a real full name, email address, or other personal information.",
@@ -309,6 +317,14 @@ const PACKS = {
     missedWordsPreview:
       "En esta tarea se han fallado {count} palabras. Pásate a Pro para ver cuáles se fallan con más frecuencia.",
     copied: "Enlace para aprendices copiado.",
+    learnerHome: "Inicio del aprendiz",
+    learnerGreeting: "Hola, {name}",
+    practicingAs: "Practicando como {name}",
+    yourAssignments: "Tus tareas de ortografía",
+    noActiveAssignments: "No hay tareas activas ahora mismo.",
+    startAssignment: "Empezar tarea",
+    copyLearnerLink: "Copiar enlace del aprendiz",
+    learnerLinkCopied: "Enlace del aprendiz copiado.",
     assignmentLoading: "Cargando tarea…",
     nicknameHelp:
       "Usa un apodo o número de clase. No escribas tu nombre completo real, correo ni otros datos personales.",
@@ -534,6 +550,14 @@ const PACKS = {
     missedWordsPreview:
       "Nesta tarefa, {count} palavras foram erradas. Passe para o Pro para ver quais aparecem mais nos erros.",
     copied: "Link para aprendizes copiado.",
+    learnerHome: "Página do aprendiz",
+    learnerGreeting: "Olá, {name}",
+    practicingAs: "Praticando como {name}",
+    yourAssignments: "Suas tarefas de ortografia",
+    noActiveAssignments: "Não há tarefas ativas no momento.",
+    startAssignment: "Começar tarefa",
+    copyLearnerLink: "Copiar link do aprendiz",
+    learnerLinkCopied: "Link do aprendiz copiado.",
     assignmentLoading: "Carregando tarefa…",
     nicknameHelp:
       "Use um apelido ou número de sala. Não informe nome completo, email ou outros dados pessoais.",
@@ -758,6 +782,14 @@ const PACKS = {
     missedWordsPreview:
       "{count} mots ont été manqués dans ce devoir. Passez à Pro pour voir lesquels sont le plus souvent manqués.",
     copied: "Lien pour les apprenants copié.",
+    learnerHome: "Espace de l’apprenant",
+    learnerGreeting: "Bonjour, {name}",
+    practicingAs: "Vous pratiquez en tant que {name}",
+    yourAssignments: "Vos exercices d’orthographe",
+    noActiveAssignments: "Aucun devoir actif pour le moment.",
+    startAssignment: "Commencer le devoir",
+    copyLearnerLink: "Copier le lien de l’apprenant",
+    learnerLinkCopied: "Lien de l’apprenant copié.",
     assignmentLoading: "Chargement du devoir…",
     nicknameHelp:
       "Utilisez un pseudonyme ou un numéro de classe. N’indiquez pas votre nom complet, votre adresse email ni d’autres informations personnelles.",
@@ -984,6 +1016,14 @@ const PACKS = {
     missedWordsPreview:
       "{count} kata telah salah dalam tugas ini. Pilih Pro untuk melihat kata mana yang paling sering salah.",
     copied: "Link untuk pelajar disalin.",
+    learnerHome: "Beranda pelajar",
+    learnerGreeting: "Hai, {name}",
+    practicingAs: "Berlatih sebagai {name}",
+    yourAssignments: "Tugas ejaan Anda",
+    noActiveAssignments: "Belum ada tugas aktif saat ini.",
+    startAssignment: "Mulai tugas",
+    copyLearnerLink: "Salin link pelajar",
+    learnerLinkCopied: "Link pelajar disalin.",
     assignmentLoading: "Memuat tugas…",
     nicknameHelp:
       "Gunakan nama panggilan atau nomor kelas. Jangan masukkan nama lengkap, email, atau informasi pribadi lainnya.",
@@ -1202,6 +1242,14 @@ const PACKS = {
     missedWordsPreview:
       "这份作业中已有 {count} 个不同单词被拼错。升级 Pro 可查看全班最常拼错的单词。",
     copied: "学习者链接已复制。",
+    learnerHome: "学习者主页",
+    learnerGreeting: "你好，{name}",
+    practicingAs: "当前练习：{name}",
+    yourAssignments: "你的拼写作业",
+    noActiveAssignments: "目前没有正在进行的作业。",
+    startAssignment: "开始作业",
+    copyLearnerLink: "复制学习者链接",
+    learnerLinkCopied: "学习者链接已复制。",
     assignmentLoading: "正在加载作业…",
     nicknameHelp:
       "请使用昵称或课堂编号，不要填写真实全名、邮箱或其他个人信息。",

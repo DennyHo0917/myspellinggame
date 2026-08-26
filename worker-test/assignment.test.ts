@@ -187,6 +187,7 @@ async function submit(
   options: {
     attemptId?: string;
     nickname?: string;
+    learnerPublicId?: string;
     answers?: string[];
     completed?: boolean;
   } = {},
@@ -197,7 +198,9 @@ async function submit(
       method: "POST",
       body: JSON.stringify({
         attemptId: options.attemptId ?? crypto.randomUUID(),
-        nickname: options.nickname ?? "Student 01",
+        ...(options.learnerPublicId
+          ? { learnerPublicId: options.learnerPublicId }
+          : { nickname: options.nickname ?? "Student 01" }),
         durationSeconds: 42,
         answers: words.map((word, index) => ({
           wordId: word.id,
@@ -439,7 +442,7 @@ describe("saved lists and learner profiles", () => {
     expect((await createSavedList("Five")).response.status).toBe(403);
   });
 
-  it("normalizes nickname matching without crossing owners", async () => {
+  it("does not guess a learner from a matching nickname", async () => {
     const created = await createAssignment();
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
@@ -450,15 +453,144 @@ describe("saved lists and learner profiles", () => {
         })
       ).status,
     ).toBe(201);
-    const learnerA = await createLearner("learner 01");
+    await createLearner("learner 01");
     const learnerB = await createLearner("Learner 01", teacherB);
     const linked = await bindings.DB.prepare(
       "SELECT learner_id FROM attempts WHERE assignment_id = ?",
     )
       .bind(created.body.id)
       .first("learner_id");
-    expect(linked).toBe(learnerA.body.id);
+    expect(linked).toBeNull();
     expect(linked).not.toBe(learnerB.body.id);
+  });
+
+  it("allows duplicate learner names with distinct public identities", async () => {
+    const first = await createLearner("Emily");
+    const second = await createLearner("Emily");
+    expect(first.response.status).toBe(201);
+    expect(second.response.status).toBe(201);
+    expect(first.body.id).not.toBe(second.body.id);
+    expect(first.body.public_id).toMatch(/^[A-Za-z0-9_-]{24}$/);
+    expect(second.body.public_id).toMatch(/^[A-Za-z0-9_-]{24}$/);
+    expect(first.body.public_id).not.toBe(second.body.public_id);
+  });
+
+  it("keeps a learner public ID and internal key stable when renamed", async () => {
+    const learner = await createLearner("Emily");
+    const before = await bindings.DB.prepare(
+      "SELECT public_id, name_key FROM learners WHERE id = ?",
+    )
+      .bind(learner.body.id)
+      .first<{ public_id: string; name_key: string }>();
+    const renamed = (await (
+      await call(`/api/learners/${learner.body.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ name: "Emma" }),
+      })
+    ).json()) as Record<string, unknown>;
+    expect(renamed.public_id).toBe(before?.public_id);
+    expect(renamed.name_key).toBe(before?.name_key);
+  });
+
+  it("isolates duplicate-name magic learners and rejects cross-owner tokens", async () => {
+    const learnerA = await createLearner("Emily");
+    const learnerB = await createLearner("Emily");
+    const assignment = await createAssignment(teacherA);
+    const publicId = String(assignment.body.publicId);
+    const tokenA = String(learnerA.body.public_id);
+    const tokenB = String(learnerB.body.public_id);
+    const words = await publicWords(publicId);
+
+    for (const token of [tokenA, tokenB]) {
+      const response = await call(
+        `/api/public/assignments/${publicId}?learner=${token}`,
+        {},
+        null,
+      );
+      expect(response.status).toBe(200);
+      const body = (await response.json()) as Record<string, unknown>;
+      expect(body).toMatchObject({ learner: { name: "Emily" } });
+    }
+    const generic = await submit(publicId, words.words, { nickname: "Emily" });
+    expect(generic.status).toBe(201);
+    for (const token of [tokenA, tokenB]) {
+      expect(
+        (
+          await submit(publicId, words.words, {
+            learnerPublicId: token,
+            answers: ["wrong", "banana"],
+          })
+        ).status,
+      ).toBe(201);
+    }
+    const rows = await bindings.DB.prepare(
+      `SELECT learner_id, nickname_key, attempt_number
+       FROM attempts WHERE assignment_id = ? ORDER BY nickname_key`,
+    )
+      .bind(assignment.body.id)
+      .all<{
+        learner_id: string | null;
+        nickname_key: string;
+        attempt_number: number;
+      }>();
+    expect(rows.results).toHaveLength(3);
+    expect(rows.results.filter((row) => row.learner_id === null)).toHaveLength(
+      1,
+    );
+    expect(
+      rows.results.filter((row) => row.learner_id === learnerA.body.id)[0],
+    ).toMatchObject({
+      nickname_key: `learner:${learnerA.body.id}`,
+      attempt_number: 1,
+    });
+    expect(
+      rows.results.filter((row) => row.learner_id === learnerB.body.id)[0],
+    ).toMatchObject({
+      nickname_key: `learner:${learnerB.body.id}`,
+      attempt_number: 1,
+    });
+
+    const otherTeacherAssignment = await createAssignment(teacherB);
+    expect(
+      (
+        await call(
+          `/api/public/assignments/${otherTeacherAssignment.body.publicId}?learner=${tokenA}`,
+          {},
+          null,
+        )
+      ).status,
+    ).toBe(404);
+
+    const publicLearner = await call(
+      `/api/public/learners/${tokenA}`,
+      {},
+      null,
+    );
+    const publicBody = (await publicLearner.json()) as Record<string, unknown>;
+    expect(publicBody).toMatchObject({ learner: { name: "Emily" } });
+    expect(publicBody).not.toHaveProperty("owner_user_id");
+    expect(publicBody).not.toHaveProperty("learner.id");
+    expect(publicBody).not.toHaveProperty("teacher");
+
+    await call(`/api/learners/${learnerA.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ archived: true }),
+    });
+    expect(
+      (await call(`/api/public/learners/${tokenA}`, {}, null)).status,
+    ).toBe(404);
+    expect(
+      (
+        await call(
+          `/api/public/assignments/${publicId}?learner=${tokenA}`,
+          {},
+          null,
+        )
+      ).status,
+    ).toBe(404);
+    expect(
+      (await call(`/api/public/learners/${"0".repeat(24)}`, {}, null)).status,
+    ).toBe(404);
   });
 });
 
@@ -471,6 +603,8 @@ describe("cross-assignment mastery", () => {
 
   it("aggregates completed attempts and builds a focused Pro review", async () => {
     await insertSubscription({ plan: "pro", status: "active" });
+    const learner = await createLearner("Learner 01");
+    const learnerPublicId = String(learner.body.public_id);
     const first = await createAssignment(teacherA, {
       words: ["apple", "banana"],
       maxAttempts: 4,
@@ -485,7 +619,7 @@ describe("cross-assignment mastery", () => {
       expect(
         (
           await submit(String(first.body.publicId), firstWords.words, {
-            nickname: "Learner 01",
+            learnerPublicId,
             answers,
           })
         ).status,
@@ -497,9 +631,8 @@ describe("cross-assignment mastery", () => {
     });
     const secondWords = await publicWords(String(second.body.publicId));
     await submit(String(second.body.publicId), secondWords.words, {
-      nickname: "learner 01",
+      learnerPublicId,
     });
-    const learner = await createLearner("Learner 01");
     const detail = (await (
       await call(`/api/learners/${learner.body.id}`)
     ).json()) as {
@@ -534,10 +667,11 @@ describe("cross-assignment mastery", () => {
 
   it("shows 30 days on Free, 365 days on Pro, and locks smart review", async () => {
     const learner = await createLearner("Learner 01");
+    const learnerPublicId = String(learner.body.public_id);
     const created = await createAssignment();
     const words = await publicWords(String(created.body.publicId));
     await submit(String(created.body.publicId), words.words, {
-      nickname: "Learner 01",
+      learnerPublicId,
       answers: ["wrong", "banana"],
     });
     const oldDate = new Date(Date.now() - 45 * 86_400_000).toISOString();

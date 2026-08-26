@@ -6,7 +6,14 @@
   "assets": {
     "directory": ".",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/*", "/teacher", "/teacher/*", "/admin", "/a/*"]
+    "run_worker_first": [
+      "/api/*",
+      "/teacher",
+      "/teacher/*",
+      "/admin",
+      "/a/*",
+      "/l/*"
+    ]
   },
   "d1_databases": [
     {

@@ -124,7 +124,7 @@ test('pricing explains the complete 30-day trial in every locale', () => {
   const expected = {
     '': ['30', '$0', 'Card required', '$5.99/month', '$49.99/year', 'automatically', 'cancel'],
     es: ['30', '$0', 'tarjeta', '$5.99', '$49,99', 'automáticamente', 'canceles'],
-    'pt-br': ['30', '$0', 'cartão', '$5.99', '$49,99', 'automática', 'cancele'],
+    'pt-br': ['30', '$0', 'cartão', '$5.99', '$49,99', 'automática', 'cancelar'],
     fr: ['30', '0 $', 'carte requise', '5,99 $', '49,99 $', 'automatiquement', 'résiliation'],
     id: ['30', '$0', 'kartu wajib', '$5.99', '$49.99', 'otomatis', 'dibatalkan'],
     zh: ['30 天', '$0', '付款方式', '$5.99', '$49.99', '自动', '取消'],

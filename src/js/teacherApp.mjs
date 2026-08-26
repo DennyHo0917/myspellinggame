@@ -1127,7 +1127,26 @@ async function renderLearner(me, id) {
   back.className = "button-link button-secondary";
   back.href = `/teacher?lang=${encodeURIComponent(locale)}`;
   back.textContent = copy.backToDashboard;
-  headingRow.append(titleRow, back);
+  const headingActions = document.createElement("div");
+  headingActions.className = "actions compact-actions";
+  if (data.learner.public_id) {
+    const learnerLink = `${location.origin}/l/${data.learner.public_id}?lang=${encodeURIComponent(locale)}`;
+    const copyLearnerLink = document.createElement("button");
+    copyLearnerLink.type = "button";
+    copyLearnerLink.className = "button-secondary";
+    copyLearnerLink.textContent = copy.copyLearnerLink;
+    copyLearnerLink.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(learnerLink);
+        copyLearnerLink.textContent = copy.learnerLinkCopied;
+      } catch {
+        copyLearnerLink.textContent = copy.learnerLinkCopied;
+      }
+    });
+    headingActions.append(copyLearnerLink);
+  }
+  headingActions.append(back);
+  headingRow.append(titleRow, headingActions);
   const history = document.createElement("p");
   history.textContent = m("historyWindow", { days: data.historyDays });
   card.append(headingRow, history);

@@ -4,3 +4,6 @@ client-key.txt
 .wrangler/
 playwright-report/
 test-results/
+data/word_sentences.csv
+data/word_sentences_seed.sql
+documents/myspellinggame_english_sentence_library_cleaned.csv

@@ -336,7 +336,8 @@ a {
 .selected-plan .plan-description {
   grid-column: 1 / -1;
   color: var(--muted);
-  font-weight: 700;
+  font-weight: 400;
+  font-style: italic;
 }
 .selected-plan .plan-savings {
   grid-column: 1 / -1;

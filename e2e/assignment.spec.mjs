@@ -35,6 +35,10 @@ async function completeAssignment(page) {
     await page.getByRole("button", { name: "Check answer" }).click();
     await page.getByRole("button", { name: "Next word" }).click();
   }
+  await expect(page.getByText("Review word")).toBeVisible();
+  await page.locator(".answer-form input").fill("banana");
+  await page.getByRole("button", { name: "Check answer" }).click();
+  await page.getByRole("button", { name: "Next word" }).click();
 }
 
 const analyticsEvents = (page, name) =>

@@ -13,11 +13,15 @@ const copy = productMessages(locale);
 const publicId =
   location.pathname.match(/^\/a\/([A-Za-z0-9_-]{24})$/)?.[1] || "";
 const storageKey = `mySpellingAssignment:${publicId}`;
+const MAX_RETRIES_PER_WORD = 2;
+const RETRY_GAP = 2;
 let assignment;
 let nickname = "";
 let attemptId = "";
 let index = 0;
-let answers = [];
+let originalAnswers = [];
+let retryQueue = [];
+let promptStep = 0;
 let startedAt = 0;
 let leaving = false;
 
@@ -183,7 +187,9 @@ function renderIntro() {
     }
     attemptId = crypto.randomUUID();
     index = 0;
-    answers = [];
+    originalAnswers = [];
+    retryQueue = [];
+    promptStep = 0;
     startedAt = Date.now();
     saveState({ attemptId, nickname });
     renderWord();
@@ -198,20 +204,51 @@ function speak(word) {
   speechSynthesis.speak(utterance);
 }
 
+function nextPrompt() {
+  const retryIndex = retryQueue.findIndex(
+    (item) => item.availableAt <= promptStep + 1,
+  );
+  if (retryIndex >= 0) {
+    return { ...retryQueue.splice(retryIndex, 1)[0], kind: "retry" };
+  }
+  if (index < assignment.words.length) {
+    const word = assignment.words[index];
+    const prompt = { word, kind: "original", originalIndex: index };
+    index += 1;
+    return prompt;
+  }
+  // ponytail: once originals are done, process any remaining retries directly.
+  if (retryQueue.length) {
+    return { ...retryQueue.shift(), kind: "retry" };
+  }
+  return null;
+}
+
 function renderWord() {
-  const word = assignment.words[index];
-  if (!word) return saveResult();
+  const prompt = nextPrompt();
+  if (!prompt) return saveResult();
+  const { word } = prompt;
   const section = card(assignment.title);
   const progress = document.createElement("p");
   progress.className = "player-progress";
   progress.textContent = m("wordProgress", {
-    current: index + 1,
+    current:
+      prompt.kind === "original"
+        ? prompt.originalIndex + 1
+        : Math.min(index, assignment.words.length),
     total: assignment.words.length,
   });
   const instruction = document.createElement("p");
   instruction.textContent =
     assignment.mode === "dictation" ? copy.typeHeard : copy.typeShown;
-  section.append(progress, instruction);
+  section.append(progress);
+  if (prompt.kind === "retry") {
+    const review = document.createElement("p");
+    review.className = "muted";
+    review.textContent = copy.reviewWord;
+    section.append(review);
+  }
+  section.append(instruction);
   if (assignment.mode === "dictation") {
     const listen = document.createElement("button");
     listen.type = "button";
@@ -254,10 +291,26 @@ function renderWord() {
     event.preventDefault();
     const answer = input.value.trim();
     if (!answer) return;
-    answers.push({ wordId: word.id, answer });
     input.disabled = true;
     check.remove();
     const correct = answer.toLowerCase() === word.word.toLowerCase();
+    promptStep += 1;
+    if (prompt.kind === "original") {
+      originalAnswers.push({ wordId: word.id, answer });
+      if (!correct) {
+        retryQueue.push({
+          word,
+          retries: 0,
+          availableAt: promptStep + RETRY_GAP + 1,
+        });
+      }
+    } else if (!correct && prompt.retries < MAX_RETRIES_PER_WORD - 1) {
+      retryQueue.push({
+        word,
+        retries: prompt.retries + 1,
+        availableAt: promptStep + RETRY_GAP + 1,
+      });
+    }
     feedback.textContent = correct
       ? copy.correct
       : m("incorrect", { word: word.word });
@@ -266,7 +319,6 @@ function renderWord() {
     next.type = "button";
     next.textContent = copy.nextWord;
     next.addEventListener("click", () => {
-      index += 1;
       renderWord();
     });
     form.append(next);
@@ -286,7 +338,7 @@ async function leaveAssignment() {
       body: JSON.stringify({
         attemptId,
         nickname,
-        answers,
+        answers: originalAnswers,
         durationSeconds: Math.max(
           1,
           Math.round((Date.now() - startedAt) / 1000),
@@ -302,7 +354,9 @@ async function leaveAssignment() {
       sessionStorage.removeItem(storageKey);
     } catch {}
     attemptId = "";
-    answers = [];
+    originalAnswers = [];
+    retryQueue = [];
+    promptStep = 0;
     index = 0;
     leaving = false;
     renderIntro();
@@ -329,7 +383,7 @@ async function saveResult() {
   const body = JSON.stringify({
     attemptId,
     nickname,
-    answers,
+    answers: originalAnswers,
     durationSeconds,
   });
   const submit = async () => {

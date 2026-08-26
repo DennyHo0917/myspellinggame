@@ -116,7 +116,7 @@
 
             <div class="top-bar">
                 <div class="game-title">Rodada de prática</div>
-                <button type="button" class="return-menu-btn" onclick="returnToMainMenu()">Voltar para a lista</button>
+                <button type="button" class="return-menu-btn" id="return-menu-btn" onclick="returnToMainMenu()">Voltar ao menu principal</button>
                 <div class="combo-display" id="combo-display">
                     Sequência <span id="combo-count">0</span>
                 </div>
@@ -170,8 +170,17 @@
                             </label>
                         </fieldset>
                         <div class="spelling-builder">
-                            <label for="custom-word-list">Suas palavras em inglês</label>
-                            <textarea id="custom-word-list" rows="7" spellcheck="false" placeholder="because&#10;friend&#10;beautiful&#10;answer"></textarea>
+                            <div class="word-entry-grid">
+                                <div class="word-entry-field">
+                                    <label for="custom-word-list">Suas palavras em inglês</label>
+                                    <textarea id="custom-word-list" rows="7" spellcheck="false" placeholder="because&#10;friend&#10;beautiful&#10;answer"></textarea>
+                                </div>
+                                <div class="word-entry-field dictation-option">
+                                    <label for="custom-example-sentences">Frases de exemplo (opcional)</label>
+                                    <textarea id="custom-example-sentences" rows="7" maxlength="30000" spellcheck="true" placeholder="I stayed inside because it was raining.&#10;My friend helped me with my homework."></textarea>
+                                    <small class="spelling-help">Uma frase por linha, na mesma ordem das palavras. Deixe uma linha em branco quando não precisar.</small>
+                                </div>
+                            </div>
                             <div class="spelling-options">
                                 <label class="read-toggle typing-option"><input type="checkbox" id="hear-words-toggle"> Ouvir cada palavra antes de digitar</label>
                                 <label class="read-toggle typing-option"><input type="checkbox" id="easy-mode-toggle"> Modo fácil</label>
@@ -341,7 +350,7 @@
 
     <footer>
         <p>
-            <span class="footer-links"><a href="/pt-br/sight-word-typing-game">Palavras frequentes</a> &middot; <a href="/pt-br/homeschool-spelling-practice">Em casa</a> &middot; <a href="/pt-br/vocabulary-typing-game">Vocabulário</a> &middot; <a href="/pt-br/faq">Perguntas frequentes</a> &middot; <a href="/pt-br/privacy">Privacidade</a> &middot; <a href="/pt-br/about">Sobre</a> &middot; <a href="/pt-br/contact">Contato</a></span><br>
+            <span class="footer-links"><a href="/sight-word-typing-game">Palavras frequentes</a> &middot; <a href="/homeschool-spelling-practice">Em casa</a> &middot; <a href="/vocabulary-typing-game">Vocabulário</a> &middot; <a href="/pt-br/faq">Perguntas frequentes</a> &middot; <a href="/pt-br/privacy">Privacidade</a> &middot; <a href="/pt-br/about">Sobre</a> &middot; <a href="/pt-br/contact">Contato</a></span><br>
             &copy; 2026 My Spelling Game Todos os direitos reservados.
         </p>
     </footer>

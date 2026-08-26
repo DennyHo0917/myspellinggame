@@ -32,7 +32,7 @@ const MESSAGES = {
     dictationMissed: "{count} words to practice again",
     dictationPerfect: "Perfect score. No missed words.",
     roundTitle: "Practice round",
-    returnMenu: "Return to word list",
+    returnMenu: "Return to main menu",
     clearConfirm:
       "Clear the spelling list and practice preferences saved in this browser?",
     clearSuccess: "Your local spelling practice data has been cleared.",
@@ -62,7 +62,7 @@ const MESSAGES = {
     dictationMissed: "{count} palabras para volver a practicar",
     dictationPerfect: "Puntuación perfecta. No hay palabras falladas.",
     roundTitle: "Ronda de práctica",
-    returnMenu: "Volver a la lista",
+    returnMenu: "Volver al menú principal",
     clearConfirm:
       "¿Borrar la lista de palabras y las preferencias guardadas en este navegador?",
     clearSuccess: "Se borraron los datos locales de práctica.",
@@ -92,7 +92,7 @@ const MESSAGES = {
     dictationMissed: "{count} palavras para praticar novamente",
     dictationPerfect: "Pontuação perfeita. Nenhuma palavra errada.",
     roundTitle: "Rodada de prática",
-    returnMenu: "Voltar para a lista",
+    returnMenu: "Voltar ao menu principal",
     clearConfirm:
       "Apagar a lista de palavras e as preferências salvas neste navegador?",
     clearSuccess: "Os dados locais de prática foram apagados.",
@@ -122,7 +122,7 @@ const MESSAGES = {
     dictationMissed: "{count} mots à retravailler",
     dictationPerfect: "Score parfait. Aucun mot manqué.",
     roundTitle: "Partie de pratique",
-    returnMenu: "Retourner à la liste",
+    returnMenu: "Retour au menu principal",
     clearConfirm:
       "Effacer la liste de mots et les préférences enregistrées dans ce navigateur ?",
     clearSuccess: "Les données locales d’entraînement ont été effacées.",
@@ -152,7 +152,7 @@ const MESSAGES = {
     dictationMissed: "{count} kata untuk dilatih lagi",
     dictationPerfect: "Nilai sempurna. Tidak ada kata yang salah.",
     roundTitle: "Ronde latihan",
-    returnMenu: "Kembali ke daftar",
+    returnMenu: "Kembali ke menu utama",
     clearConfirm:
       "Hapus daftar kata dan pilihan latihan yang tersimpan di browser ini?",
     clearSuccess: "Data latihan lokal sudah dihapus.",
@@ -182,7 +182,7 @@ const MESSAGES = {
     dictationMissed: "有 {count} 个单词需要再练习",
     dictationPerfect: "全部正确，没有错词。",
     roundTitle: "练习回合",
-    returnMenu: "返回单词表",
+    returnMenu: "返回主菜单",
     clearConfirm: "要清除这个浏览器里保存的单词表和练习设置吗？",
     clearSuccess: "本地练习数据已清除。",
     dateLocale: "zh-CN",

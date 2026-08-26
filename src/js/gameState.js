@@ -34,6 +34,7 @@ function createInitialState() {
     practiceMode: 'dictation',
     spellingMode: false,
     customWords: [],
+    exampleSentences: {},
     customWordCursor: 0,
     missedWordList: [],
     hearWords: false,

@@ -242,12 +242,177 @@ test("practice records a valid list and start separately", async ({ page }) => {
   await page.goto("/");
   await page.locator("#custom-word-list").fill("because\nfriend");
   await page.locator('input[name="practice-mode"][value="typing"]').check();
+  await expect(page.locator("#custom-example-sentences")).toBeHidden();
   await page.getByRole("button", { name: "Start Typing Rain" }).click();
+  await expect(
+    page.getByRole("button", { name: "Return to main menu" }),
+  ).toBeVisible();
 
   await expect
     .poll(() => analyticsEvents(page, "practice_started"))
     .toEqual([{ mode: "typing", word_count: 2 }]);
   expect(await analyticsEvents(page, "word_list_created")).toHaveLength(1);
+});
+
+test("free practice accepts optional example sentences and replays the full prompt", async ({
+  page,
+}) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("#custom-example-sentences")).toBeVisible();
+  await page.locator("#custom-word-list").fill("because\nfriend");
+  await page
+    .locator("#custom-example-sentences")
+    .fill("I stayed inside because it was raining.\n");
+  await page.getByRole("button", { name: "Start Spelling Test" }).click();
+
+  await expect(page.locator("#dictation-screen")).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => window.gameState.exampleSentences))
+    .toEqual({
+      because: "I stayed inside because it was raining.",
+      friend: "",
+    });
+  await page.getByRole("button", { name: "Return to main menu" }).click();
+  await expect(
+    page.getByRole("button", { name: "Start Spelling Test" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Return to main menu" }),
+  ).toBeHidden();
+});
+
+test("dictation receives optional example sentence data and speaks the full prompt", async ({
+  page,
+}) => {
+  const sentenceWords = [
+    {
+      ...words[0],
+      example_sentence: "I ate an apple after school.",
+    },
+  ];
+  await page.addInitScript(() => {
+    const calls = [];
+    Object.defineProperty(window, "speechSynthesis", {
+      configurable: true,
+      value: {
+        cancel() {},
+        speak(utterance) {
+          calls.push(utterance.text);
+        },
+      },
+    });
+    window.__speechCalls = calls;
+  });
+  await mockAssignment(
+    page,
+    "dictation",
+    (route) =>
+      route.fulfill({
+        status: 201,
+        contentType: "application/json",
+        body: JSON.stringify({
+          correct_count: 1,
+          incorrect_count: 0,
+          accuracy: 100,
+          missedWords: [],
+        }),
+      }),
+    sentenceWords,
+  );
+  await page.goto(`/a/${publicId}?lang=en`);
+  await page.getByLabel("Nickname").fill("Student 01");
+  await page.getByRole("button", { name: "Start assignment" }).click();
+  await expect
+    .poll(() => page.evaluate(() => window.__speechCalls))
+    .toContain("apple. I ate an apple after school. apple.");
+  await page.getByRole("button", { name: "Play word" }).click();
+  await expect
+    .poll(() => page.evaluate(() => window.__speechCalls.length))
+    .toBe(2);
+  await page.locator(".answer-form input").fill("wrong");
+  await page.getByRole("button", { name: "Check answer" }).click();
+  await page.getByRole("button", { name: "Next word" }).click();
+  await expect(page.getByText("Review word")).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => window.__speechCalls.at(-1)))
+    .toBe("apple. I ate an apple after school. apple.");
+});
+
+test("teacher creates an assignment with an example sentence and the student player loads it", async ({
+  page,
+}) => {
+  const assignmentId = "33333333-3333-4333-8333-333333333333";
+  const sentence = "I stayed inside because it was raining.";
+  let createdBody;
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
+        plan: "free",
+      }),
+    }),
+  );
+  await page.route("**/api/assignments", async (route) => {
+    if (route.request().method() !== "POST") return route.fallback();
+    createdBody = route.request().postDataJSON();
+    await route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({ id: assignmentId, publicId }),
+    });
+  });
+  await page.route(`**/api/assignments/${assignmentId}`, (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        id: assignmentId,
+        public_id: publicId,
+        title: "Sentence practice",
+        mode: "dictation",
+        status: "published",
+        words: [{ ...words[0], word: "because", example_sentence: sentence }],
+        summary: { students: 0, attempts: 0, averageAccuracy: 0 },
+        attempts: [],
+        missedWordStats: null,
+      }),
+    }),
+  );
+  await page.route(`**/api/public/assignments/${publicId}`, (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        public_id: publicId,
+        title: "Sentence practice",
+        mode: "dictation",
+        status: "published",
+        max_attempts: 3,
+        expires_at: new Date(Date.now() + 86_400_000).toISOString(),
+        words: [{ ...words[0], word: "because", example_sentence: sentence }],
+      }),
+    }),
+  );
+
+  await page.goto("/teacher/assignments/new?lang=en");
+  await page.getByLabel("Assignment title").fill("Sentence practice");
+  await page.getByLabel("Spelling words").fill("because");
+  await page.getByLabel("Example sentences (optional)").fill(sentence);
+  await page.getByRole("button", { name: "Create and publish" }).click();
+  await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
+  expect(createdBody).toMatchObject({
+    title: "Sentence practice",
+    words: "because",
+    exampleSentences: sentence,
+    mode: "dictation",
+  });
+
+  await page.goto(`/a/${publicId}?lang=en`);
+  await expect(
+    page.getByRole("heading", { name: "Sentence practice" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Start assignment" }),
+  ).toBeVisible();
 });
 
 for (const mode of ["dictation", "typing"]) {

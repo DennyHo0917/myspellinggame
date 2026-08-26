@@ -13,6 +13,7 @@ import { entryPage, pageLocale, trackEvent } from './analytics.mjs';
 import { buildShareHash, readShareState } from './shareState.mjs';
 
 const STORAGE_KEY = 'mySpellingGameSpellingWords';
+const SENTENCES_STORAGE_KEY = 'mySpellingGameExampleSentences';
 const HEAR_KEY = 'mySpellingGameHearWords';
 const LEGACY_READ_KEY = 'mySpellingGameReadWords';
 const EASY_KEY = 'mySpellingGameEasyMode';
@@ -23,6 +24,10 @@ function textarea() {
   return document.getElementById('custom-word-list');
 }
 
+function sentenceTextarea() {
+  return document.getElementById('custom-example-sentences');
+}
+
 function status(text) {
   const el = document.getElementById('spelling-status');
   if (el) el.textContent = text;
@@ -30,6 +35,13 @@ function status(text) {
 
 function currentWords() {
   return configuredWords(textarea()?.value || '');
+}
+
+function currentExampleSentences(words = currentWords()) {
+  const lines = (sentenceTextarea()?.value || '').split(/\r?\n/);
+  return Object.fromEntries(
+    words.map((word, index) => [word, (lines[index] || '').trim().slice(0, 300)]),
+  );
 }
 
 export function track(name, params = {}) {
@@ -54,6 +66,10 @@ function syncModeUI() {
   document.querySelectorAll('.typing-option').forEach((element) => {
     element.hidden = mode !== 'typing';
   });
+  document.querySelectorAll('.dictation-option').forEach((element) => {
+    element.hidden = mode !== 'dictation';
+  });
+  document.querySelector('.word-entry-grid')?.classList.toggle('single-column', mode !== 'dictation');
   const button = document.getElementById('start-practice-btn');
   if (button) button.textContent = t(mode === 'dictation' ? 'startDictation' : 'startTyping');
 }
@@ -65,6 +81,8 @@ export function initSpellingMode() {
   const fromUrl = loadWordsFromUrl();
   const saved = parseWords(localStorage.getItem(STORAGE_KEY) || '');
   input.value = (fromUrl.length ? fromUrl : saved.length ? saved : SAMPLE_WORDS).join('\n');
+  const sentenceInput = sentenceTextarea();
+  if (sentenceInput) sentenceInput.value = localStorage.getItem(SENTENCES_STORAGE_KEY) || '';
 
   const mode = selectedModeFromUrl();
   const modeInput = document.querySelector(`input[name="practice-mode"][value="${mode}"]`);
@@ -91,6 +109,7 @@ export function loadSampleWords() {
   const input = textarea();
   if (!input) return;
   input.value = SAMPLE_WORDS.join('\n');
+  if (sentenceTextarea()) sentenceTextarea().value = '';
   status(t('sampleLoaded', { count: SAMPLE_WORDS.length }));
 }
 
@@ -102,6 +121,7 @@ export function prepareSession() {
   gameState.practiceMode = practiceMode;
   gameState.mode = practiceMode === 'dictation' ? 'dictation' : 'spelling';
   gameState.customWords = words;
+  gameState.exampleSentences = currentExampleSentences(words);
   gameState.customWordCursor = 0;
   gameState.missedWordList = [];
   gameState.spellingRoundComplete = false;
@@ -117,6 +137,7 @@ export function prepareSession() {
   const easyToggle = document.getElementById('easy-mode-toggle');
   gameState.easyMode = !!easyToggle?.checked;
   localStorage.setItem(STORAGE_KEY, words.join('\n'));
+  localStorage.setItem(SENTENCES_STORAGE_KEY, sentenceTextarea()?.value || '');
   localStorage.setItem(HEAR_KEY, gameState.hearWords ? '1' : '0');
   localStorage.removeItem(LEGACY_READ_KEY);
   localStorage.setItem(EASY_KEY, gameState.easyMode ? '1' : '0');
@@ -243,6 +264,7 @@ export function openTeacherAssignment() {
   });
   try {
     sessionStorage.setItem('mySpellingTeacherDraftWords', currentWords().join('\n'));
+    sessionStorage.setItem('mySpellingTeacherDraftSentences', sentenceTextarea()?.value || '');
     sessionStorage.setItem('mySpellingTeacherDraftMode', selectedMode());
   } catch (_) {
     // The teacher form still works when browser storage is unavailable.

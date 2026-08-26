@@ -116,7 +116,7 @@
 
             <div class="top-bar">
                 <div class="game-title">Practice Round</div>
-                <button type="button" class="return-menu-btn" onclick="returnToMainMenu()">Return to word list</button>
+                <button type="button" class="return-menu-btn" id="return-menu-btn" onclick="returnToMainMenu()">Return to main menu</button>
                 <div class="combo-display" id="combo-display">
                     Streak <span id="combo-count">0</span>
                 </div>
@@ -170,8 +170,17 @@
                             </label>
                         </fieldset>
                         <div class="spelling-builder">
-                            <label for="custom-word-list">Your spelling words</label>
-                            <textarea id="custom-word-list" rows="7" spellcheck="false" placeholder="because&#10;friend&#10;beautiful&#10;answer"></textarea>
+                            <div class="word-entry-grid">
+                                <div class="word-entry-field">
+                                    <label for="custom-word-list">Your spelling words</label>
+                                    <textarea id="custom-word-list" rows="7" spellcheck="false" placeholder="because&#10;friend&#10;beautiful&#10;answer"></textarea>
+                                </div>
+                                <div class="word-entry-field dictation-option">
+                                    <label for="custom-example-sentences">Example sentences (optional)</label>
+                                    <textarea id="custom-example-sentences" rows="7" maxlength="30000" spellcheck="true" placeholder="I stayed inside because it was raining.&#10;My friend helped me with my homework."></textarea>
+                                    <small class="spelling-help">One sentence per line, in the same order as the words. Leave a blank line when a word does not need one.</small>
+                                </div>
+                            </div>
                             <div class="spelling-options">
                                 <label class="read-toggle typing-option"><input type="checkbox" id="hear-words-toggle"> Hear each word before typing</label>
                                 <label class="read-toggle typing-option"><input type="checkbox" id="easy-mode-toggle"> Easy mode</label>

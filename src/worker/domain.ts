@@ -76,6 +76,86 @@ function cleanText(value: unknown): string {
     .trim();
 }
 
+export function validateExampleSentence(value: unknown): string | null {
+  if (value === null || value === undefined) return null;
+  if (typeof value !== "string") {
+    throw new HttpError(
+      400,
+      "invalid_example_sentence",
+      "Example sentences must be plain text.",
+    );
+  }
+  const sentence = cleanText(value);
+  if (sentence.length > 300) {
+    throw new HttpError(
+      400,
+      "invalid_example_sentence",
+      "Example sentences must be 300 characters or fewer.",
+    );
+  }
+  return sentence || null;
+}
+
+type WordEntryInput = {
+  word: unknown;
+  example_sentence?: unknown;
+  exampleSentence?: unknown;
+};
+export type WordEntry = { word: string; example_sentence: string | null };
+
+function isWordEntry(value: unknown): value is WordEntryInput {
+  return Boolean(
+    value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    "word" in value,
+  );
+}
+
+export function parseWordEntries(
+  value: unknown,
+  exampleSentences?: unknown,
+): WordEntry[] {
+  const source =
+    Array.isArray(value) && value.every(isWordEntry) ? value : null;
+  const words = parseWordList(
+    source ? source.map((entry) => entry.word) : value,
+  );
+  const sentences = new Map<string, string | null>();
+  if (source) {
+    for (const entry of source) {
+      sentences.set(
+        normalizeWord(entry.word),
+        validateExampleSentence(
+          entry.example_sentence ?? entry.exampleSentence,
+        ),
+      );
+    }
+  }
+  const orderedSentences =
+    typeof exampleSentences === "string"
+      ? exampleSentences.split(/\r?\n/)
+      : Array.isArray(exampleSentences)
+        ? exampleSentences
+        : null;
+  if (orderedSentences) {
+    orderedSentences.forEach((sentence, index) => {
+      if (index < words.length)
+        sentences.set(words[index], validateExampleSentence(sentence));
+    });
+  } else if (exampleSentences && typeof exampleSentences === "object") {
+    for (const [word, sentence] of Object.entries(exampleSentences)) {
+      sentences.set(normalizeWord(word), validateExampleSentence(sentence));
+    }
+  } else if (exampleSentences !== undefined) {
+    validateExampleSentence(exampleSentences);
+  }
+  return words.map((word) => ({
+    word,
+    example_sentence: sentences.get(word) ?? null,
+  }));
+}
+
 export function validateTitle(value: unknown): string {
   const title = cleanText(value);
   if (title.length < 1 || title.length > 80) {
@@ -186,7 +266,12 @@ export function validateDuration(value: unknown): number {
   return duration;
 }
 
-export type AssignmentWord = { id: string; word: string; position: number };
+export type AssignmentWord = {
+  id: string;
+  word: string;
+  position: number;
+  example_sentence: string | null;
+};
 export type SubmittedAnswer = { wordId: string; answer: string };
 
 export function scoreAnswers(

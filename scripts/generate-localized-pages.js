@@ -98,6 +98,8 @@ const pages = {
       chips: ["Corrección inmediata", "Palabra oculta", "Repite los fallos"],
       noLogin: "Sin crear una cuenta",
       wordsLabel: "Tus palabras en inglés",
+      sentencesLabel: "Frases de ejemplo (opcional)",
+      sentencesHelp: "Una frase por línea, en el mismo orden que las palabras. Deja una línea en blanco si no la necesitas.",
       hear: "Escuchar cada palabra antes de escribir",
       easy: "Modo fácil",
       ready: "8 palabras listas",
@@ -109,7 +111,7 @@ const pages = {
         "¿Quieres ver los resultados de tus alumnos? Crea una tarea gratis.",
       start: "Empezar práctica",
       complete: "Práctica terminada",
-      returnMenu: "Volver a la lista",
+      returnMenu: "Volver al menú principal",
       finalScore: "Puntos finales",
       finalRound: "Ronda alcanzada",
       finalSpeed: "Mejor velocidad",
@@ -255,6 +257,8 @@ const pages = {
       chips: ["Correção imediata", "Palavra escondida", "Revise os erros"],
       noLogin: "Sem criar uma conta",
       wordsLabel: "Suas palavras em inglês",
+      sentencesLabel: "Frases de exemplo (opcional)",
+      sentencesHelp: "Uma frase por linha, na mesma ordem das palavras. Deixe uma linha em branco quando não precisar.",
       hear: "Ouvir cada palavra antes de digitar",
       easy: "Modo fácil",
       ready: "8 palavras prontas",
@@ -266,7 +270,7 @@ const pages = {
         "Quer ver os resultados dos alunos? Crie uma tarefa grátis.",
       start: "Começar prática",
       complete: "Prática concluída",
-      returnMenu: "Voltar para a lista",
+      returnMenu: "Voltar ao menu principal",
       finalScore: "Pontuação final",
       finalRound: "Rodada alcançada",
       finalSpeed: "Melhor velocidade",
@@ -412,6 +416,8 @@ const pages = {
       chips: ["Correction immédiate", "Mot caché", "Reprendre les erreurs"],
       noLogin: "Sans créer de compte",
       wordsLabel: "Vos mots anglais",
+      sentencesLabel: "Phrases d’exemple (facultatif)",
+      sentencesHelp: "Une phrase par ligne, dans le même ordre que les mots. Laissez une ligne vide si besoin.",
       hear: "Écouter chaque mot avant de taper",
       easy: "Mode facile",
       ready: "8 mots prêts",
@@ -423,7 +429,7 @@ const pages = {
         "Vous voulez les résultats des élèves ? Créez un devoir gratuit.",
       start: "Commencer",
       complete: "Entraînement terminé",
-      returnMenu: "Retourner à la liste",
+      returnMenu: "Retour au menu principal",
       finalScore: "Score final",
       finalRound: "Partie atteinte",
       finalSpeed: "Meilleure vitesse",
@@ -569,6 +575,8 @@ const pages = {
       chips: ["Hasil langsung", "Kata disembunyikan", "Ulangi yang salah"],
       noLogin: "Tanpa membuat akun",
       wordsLabel: "Daftar kata bahasa Inggris",
+      sentencesLabel: "Kalimat contoh (opsional)",
+      sentencesHelp: "Satu kalimat per baris, sesuai urutan kata. Biarkan baris kosong jika tidak perlu.",
       hear: "Dengarkan kata sebelum mengetik",
       easy: "Mode mudah",
       ready: "8 kata siap",
@@ -579,7 +587,7 @@ const pages = {
       copyAssignmentHint: "Ingin melihat hasil siswa? Buat tugas gratis.",
       start: "Mulai latihan",
       complete: "Latihan selesai",
-      returnMenu: "Kembali ke daftar",
+      returnMenu: "Kembali ke menu utama",
       finalScore: "Skor akhir",
       finalRound: "Ronde",
       finalSpeed: "Kecepatan terbaik",
@@ -717,6 +725,8 @@ const pages = {
       chips: ["即时批改", "作答前隐藏单词", "错词重练"],
       noLogin: "无需创建账号",
       wordsLabel: "你的英语单词",
+      sentencesLabel: "例句（可选）",
+      sentencesHelp: "每行填写一个例句，顺序与上面的单词对应。不需要的单词留空行即可。",
       hear: "输入前朗读每个单词",
       easy: "简单模式",
       ready: "已准备 8 个单词",
@@ -727,7 +737,7 @@ const pages = {
       copyAssignmentHint: "想查看学生成绩？免费创建一份作业。",
       start: "开始练习",
       complete: "练习完成",
-      returnMenu: "返回单词表",
+      returnMenu: "返回主菜单",
       finalScore: "最终得分",
       finalRound: "回合",
       finalSpeed: "最高速度",
@@ -1107,7 +1117,7 @@ ${page.hero.flow.map((step) => `            <li>${step}</li>`).join("\n")}
 
             <div class="top-bar">
                 <div class="game-title">${game.round}</div>
-                <button type="button" class="return-menu-btn" onclick="returnToMainMenu()">${game.returnMenu}</button>
+                <button type="button" class="return-menu-btn" id="return-menu-btn" onclick="returnToMainMenu()">${game.returnMenu}</button>
                 <div class="combo-display" id="combo-display">
                     ${comboLabels[page.pageLocale]} <span id="combo-count">0</span>
                 </div>
@@ -1159,8 +1169,17 @@ ${game.chips.map((chip) => `                            <span>${chip}</span>`).j
                             </label>
                         </fieldset>
                         <div class="spelling-builder">
-                            <label for="custom-word-list">${game.wordsLabel}</label>
-                            <textarea id="custom-word-list" rows="7" spellcheck="false" placeholder="because&#10;friend&#10;beautiful&#10;answer"></textarea>
+                            <div class="word-entry-grid">
+                                <div class="word-entry-field">
+                                    <label for="custom-word-list">${game.wordsLabel}</label>
+                                    <textarea id="custom-word-list" rows="7" spellcheck="false" placeholder="because&#10;friend&#10;beautiful&#10;answer"></textarea>
+                                </div>
+                                <div class="word-entry-field dictation-option">
+                                    <label for="custom-example-sentences">${game.sentencesLabel}</label>
+                                    <textarea id="custom-example-sentences" rows="7" maxlength="30000" spellcheck="true" placeholder="I stayed inside because it was raining.&#10;My friend helped me with my homework."></textarea>
+                                    <small class="spelling-help">${game.sentencesHelp}</small>
+                                </div>
+                            </div>
                             <div class="spelling-options">
                                 <label class="read-toggle typing-option"><input type="checkbox" id="hear-words-toggle"> ${game.hear}</label>
                                 <label class="read-toggle typing-option"><input type="checkbox" id="easy-mode-toggle"> ${game.easy}</label>

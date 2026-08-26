@@ -226,10 +226,13 @@ function beginAssignment() {
   renderWord();
 }
 
-function speak(word) {
+function speakWord(word) {
   if (!("speechSynthesis" in window)) return;
   speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(word);
+  const sentence = word.example_sentence?.trim().replace(/[.!?]+$/, "");
+  const utterance = new SpeechSynthesisUtterance(
+    sentence ? `${word.word}. ${sentence}. ${word.word}.` : word.word,
+  );
   utterance.lang = "en-US";
   speechSynthesis.speak(utterance);
 }
@@ -319,9 +322,9 @@ function renderWord() {
     listen.type = "button";
     listen.className = "button-secondary";
     listen.textContent = copy.listen;
-    listen.addEventListener("click", () => speak(word.word));
+    listen.addEventListener("click", () => speakWord(word));
     section.append(listen);
-    queueMicrotask(() => speak(word.word));
+    queueMicrotask(() => speakWord(word));
   } else {
     const shown = document.createElement("div");
     shown.className = "player-word falling";

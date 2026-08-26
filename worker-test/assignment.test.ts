@@ -154,11 +154,15 @@ async function createAssignment(
 async function createSavedList(
   title: string,
   teacher: Teacher = teacherA,
-  words: string[] = ["apple", "banana"],
+  words: unknown = ["apple", "banana"],
+  exampleSentences?: unknown,
 ) {
   const response = await call(
     "/api/saved-lists",
-    { method: "POST", body: JSON.stringify({ title, words }) },
+    {
+      method: "POST",
+      body: JSON.stringify({ title, words, exampleSentences }),
+    },
     teacher,
   );
   return { response, body: (await response.json()) as Record<string, unknown> };
@@ -176,7 +180,11 @@ async function createLearner(name: string, teacher: Teacher = teacherA) {
 async function publicWords(publicId: string) {
   const response = await call(`/api/public/assignments/${publicId}`, {}, null);
   return (await response.json()) as {
-    words: Array<{ id: string; word: string }>;
+    words: Array<{
+      id: string;
+      word: string;
+      example_sentence: string | null;
+    }>;
     [key: string]: unknown;
   };
 }
@@ -282,6 +290,92 @@ describe("teacher authorization and quotas", () => {
     const third = await createAssignment(teacherA, { title: "Three" });
     expect(third.response.status).toBe(403);
     expect(third.body.error).toBe("active_assignment_limit");
+  });
+
+  it("stores optional example sentences and returns null for old-style words", async () => {
+    const created = await createAssignment(teacherA, {
+      words: ["because", "friend"],
+      exampleSentences: ["I stayed inside because it was raining.", ""],
+    });
+    expect(created.response.status).toBe(201);
+    const assignment = await publicWords(String(created.body.publicId));
+    expect(assignment.words).toMatchObject([
+      {
+        word: "because",
+        example_sentence: "I stayed inside because it was raining.",
+      },
+      { word: "friend", example_sentence: null },
+    ]);
+
+    const legacy = await createAssignment(teacherA, {
+      title: "Legacy words",
+      words: ["beautiful"],
+    });
+    const legacyAssignment = await publicWords(String(legacy.body.publicId));
+    expect(legacyAssignment.words[0]).toMatchObject({
+      word: "beautiful",
+      example_sentence: null,
+    });
+  });
+
+  it("rejects example sentences over 300 characters", async () => {
+    const created = await createAssignment(teacherA, {
+      words: ["because"],
+      exampleSentences: ["x".repeat(301)],
+    });
+    expect(created.response.status).toBe(400);
+    expect(created.body.error).toBe("invalid_example_sentence");
+  });
+
+  it("edits example sentences before attempts and preserves them in teacher detail", async () => {
+    const created = await createAssignment(teacherA, {
+      words: ["because", "friend"],
+    });
+    const updated = await call(`/api/assignments/${created.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        title: "Updated assignment",
+        words: ["because", "friend"],
+        exampleSentences: ["I stayed inside because it was raining.", ""],
+      }),
+    });
+    expect(updated.status).toBe(200);
+    const detail = (await updated.json()) as {
+      title: string;
+      words: Array<{ word: string; example_sentence: string | null }>;
+    };
+    expect(detail.title).toBe("Updated assignment");
+    expect(detail.words).toMatchObject([
+      {
+        word: "because",
+        example_sentence: "I stayed inside because it was raining.",
+      },
+      { word: "friend", example_sentence: null },
+    ]);
+  });
+
+  it("does not replace assignment words after a student attempt exists", async () => {
+    const created = await createAssignment();
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    expect((await submit(publicId, assignment.words)).status).toBe(201);
+    const updated = await call(`/api/assignments/${created.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        title: "Changed",
+        words: ["cherry"],
+        exampleSentences: ["I ate a cherry."],
+      }),
+    });
+    expect(updated.status).toBe(409);
+    expect(((await updated.json()) as { error: string }).error).toBe(
+      "assignment_has_results",
+    );
+    const unchanged = await publicWords(publicId);
+    expect(unchanged.words.map((word) => word.word)).toEqual([
+      "apple",
+      "banana",
+    ]);
   });
 
   it("enforces the free monthly submission limit on the server", async () => {
@@ -420,6 +514,49 @@ describe("saved lists and learner profiles", () => {
     expect((await call(`/api/saved-lists/${savedList.body.id}`)).status).toBe(
       404,
     );
+  });
+
+  it("keeps example sentences through saved-list reuse, copy, and edit", async () => {
+    const sentence = "My friend helped me with my homework.";
+    const savedList = await createSavedList(
+      "Sentence list",
+      teacherA,
+      ["friend", "beautiful"],
+      [sentence, ""],
+    );
+    expect(savedList.response.status).toBe(201);
+    expect(savedList.body.word_details).toEqual([
+      { word: "friend", example_sentence: sentence },
+      { word: "beautiful", example_sentence: null },
+    ]);
+
+    const assignment = await createAssignment(teacherA, {
+      title: savedList.body.title,
+      words: savedList.body.word_details,
+    });
+    const publicAssignment = await publicWords(
+      String(assignment.body.publicId),
+    );
+    expect(publicAssignment.words).toMatchObject([
+      { word: "friend", example_sentence: sentence },
+      { word: "beautiful", example_sentence: null },
+    ]);
+
+    const updated = (await (
+      await call(`/api/saved-lists/${savedList.body.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          title: "Updated sentence list",
+          words: ["friend", "beautiful"],
+          exampleSentences: ["A friend waited for me.", ""],
+        }),
+      })
+    ).json()) as { word_details: Array<Record<string, unknown>> };
+    expect(updated.word_details[0]).toMatchObject({
+      word: "friend",
+      example_sentence: "A friend waited for me.",
+    });
+    expect(publicAssignment.words[0].example_sentence).toBe(sentence);
   });
 
   it("retains over-limit data after downgrade but blocks new records", async () => {

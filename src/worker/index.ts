@@ -12,7 +12,6 @@ import {
   masteryStatus,
   monthStart,
   normalizeWord,
-  parseWordList,
   randomPublicId,
   scoreAnswers,
   validateAttemptId,
@@ -23,6 +22,7 @@ import {
   validateNickname,
   validateSavedListTitle,
   validateTitle,
+  parseWordEntries,
   type AssignmentWord,
   type Plan,
 } from "./domain";
@@ -412,7 +412,7 @@ async function assignmentDetail(
   const [wordRows, attemptRows, average] = await Promise.all([
     db
       .prepare(
-        "SELECT id, position, word FROM assignment_words WHERE assignment_id = ? ORDER BY position",
+        "SELECT id, position, word, example_sentence FROM assignment_words WHERE assignment_id = ? ORDER BY position",
       )
       .bind(assignment.id)
       .all<AssignmentWord>(),
@@ -492,11 +492,22 @@ async function getOwnedSavedList(
 async function savedListDetail(db: D1Database, savedList: SavedListRow) {
   const words = await db
     .prepare(
-      "SELECT word FROM saved_list_words WHERE saved_list_id = ? ORDER BY position",
+      "SELECT word, example_sentence FROM saved_list_words WHERE saved_list_id = ? ORDER BY position",
     )
     .bind(savedList.id)
-    .all<{ word: string }>();
-  return { ...savedList, words: words.results.map((row) => row.word) };
+    .all<{ word: string; example_sentence: string | null }>();
+  const wordDetails = words.results.map((row) => ({
+    word: row.word,
+    example_sentence: row.example_sentence ?? null,
+  }));
+  return {
+    ...savedList,
+    words: wordDetails.map((row) => row.word),
+    word_details: wordDetails,
+    example_sentences: Object.fromEntries(
+      wordDetails.map((row) => [row.word, row.example_sentence]),
+    ),
+  };
 }
 
 async function listSavedLists(db: D1Database, ownerUserId: string) {
@@ -518,7 +529,10 @@ async function createSavedList(
 ) {
   const body = await readJson(request);
   const title = validateSavedListTitle(body.title);
-  const words = parseWordList(body.words);
+  const words = parseWordEntries(
+    body.words,
+    body.exampleSentences ?? body.example_sentences ?? body.sentences,
+  );
   const plan = await getPlan(env, ownerUserId);
   const limit = PLAN_LIMITS[plan].savedLists ?? 2_147_483_647;
   const id = crypto.randomUUID();
@@ -529,11 +543,18 @@ async function createSavedList(
        SELECT ?, ?, ?, ?, ?
        WHERE (SELECT COUNT(*) FROM saved_lists WHERE owner_user_id = ?) < ?`,
     ).bind(id, ownerUserId, title, now, now, ownerUserId, limit),
-    ...words.map((word, position) =>
+    ...words.map((entry, position) =>
       env.DB.prepare(
-        `INSERT INTO saved_list_words (id, saved_list_id, position, word)
-         SELECT ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM saved_lists WHERE id = ?)`,
-      ).bind(crypto.randomUUID(), id, position, word, id),
+        `INSERT INTO saved_list_words (id, saved_list_id, position, word, example_sentence)
+         SELECT ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM saved_lists WHERE id = ?)`,
+      ).bind(
+        crypto.randomUUID(),
+        id,
+        position,
+        entry.word,
+        entry.example_sentence,
+        id,
+      ),
     ),
   ]);
   const savedList = await env.DB.prepare(
@@ -557,7 +578,10 @@ async function updateSavedList(
 ) {
   const body = await readJson(request);
   const title = validateSavedListTitle(body.title);
-  const words = parseWordList(body.words);
+  const words = parseWordEntries(
+    body.words,
+    body.exampleSentences ?? body.example_sentences ?? body.sentences,
+  );
   const updatedAt = new Date().toISOString();
   await db.batch([
     db
@@ -568,12 +592,18 @@ async function updateSavedList(
     db
       .prepare("DELETE FROM saved_list_words WHERE saved_list_id = ?")
       .bind(savedList.id),
-    ...words.map((word, position) =>
+    ...words.map((entry, position) =>
       db
         .prepare(
-          "INSERT INTO saved_list_words (id, saved_list_id, position, word) VALUES (?, ?, ?, ?)",
+          "INSERT INTO saved_list_words (id, saved_list_id, position, word, example_sentence) VALUES (?, ?, ?, ?, ?)",
         )
-        .bind(crypto.randomUUID(), savedList.id, position, word),
+        .bind(
+          crypto.randomUUID(),
+          savedList.id,
+          position,
+          entry.word,
+          entry.example_sentence,
+        ),
     ),
   ]);
   return savedListDetail(db, { ...savedList, title, updated_at: updatedAt });
@@ -833,7 +863,10 @@ async function createAssignment(env: Env, request: Request, userId: string) {
     );
   const body = await readJson(request);
   const title = validateTitle(body.title);
-  const words = parseWordList(body.words);
+  const words = parseWordEntries(
+    body.words,
+    body.exampleSentences ?? body.example_sentences ?? body.sentences,
+  );
   const mode = validateMode(body.mode);
   const maxAttempts = validateMaxAttempts(body.maxAttempts);
   const expiresAt = validateDeadline(body.expiresAt);
@@ -870,11 +903,18 @@ async function createAssignment(env: Env, request: Request, userId: string) {
       createdAt,
       PLAN_LIMITS[plan].activeAssignments,
     ),
-    ...words.map((word, position) =>
+    ...words.map((entry, position) =>
       env.DB.prepare(
-        `INSERT INTO assignment_words (id, assignment_id, position, word)
-           SELECT ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM assignments WHERE id = ?)`,
-      ).bind(crypto.randomUUID(), id, position, word, id),
+        `INSERT INTO assignment_words (id, assignment_id, position, word, example_sentence)
+           SELECT ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM assignments WHERE id = ?)`,
+      ).bind(
+        crypto.randomUUID(),
+        id,
+        position,
+        entry.word,
+        entry.example_sentence,
+        id,
+      ),
     ),
   ];
   await env.DB.batch(statements);
@@ -897,6 +937,49 @@ async function updateAssignment(
   userId: string,
 ) {
   const body = await readJson(request);
+  if (Object.hasOwn(body, "words")) {
+    const title = validateTitle(body.title ?? assignment.title);
+    const words = parseWordEntries(
+      body.words,
+      body.exampleSentences ?? body.example_sentences ?? body.sentences,
+    );
+    const attempt = await env.DB.prepare(
+      "SELECT 1 FROM attempts WHERE assignment_id = ? LIMIT 1",
+    )
+      .bind(assignment.id)
+      .first();
+    if (attempt) {
+      throw new HttpError(
+        409,
+        "assignment_has_results",
+        "Assignments with student attempts cannot change their word list.",
+      );
+    }
+    await env.DB.batch([
+      env.DB.prepare(
+        "UPDATE assignments SET title = ? WHERE id = ? AND owner_user_id = ?",
+      ).bind(title, assignment.id, userId),
+      env.DB.prepare(
+        "DELETE FROM assignment_words WHERE assignment_id = ?",
+      ).bind(assignment.id),
+      ...words.map((entry, position) =>
+        env.DB.prepare(
+          "INSERT INTO assignment_words (id, assignment_id, position, word, example_sentence) VALUES (?, ?, ?, ?, ?)",
+        ).bind(
+          crypto.randomUUID(),
+          assignment.id,
+          position,
+          entry.word,
+          entry.example_sentence,
+        ),
+      ),
+    ]);
+    return assignmentDetail(
+      env.DB,
+      { ...assignment, title },
+      await getPlan(env, userId),
+    );
+  }
   if (body.status !== "published" && body.status !== "closed") {
     throw new HttpError(
       400,
@@ -996,7 +1079,7 @@ async function publicAssignment(
   }
   const words = await db
     .prepare(
-      "SELECT id, position, word FROM assignment_words WHERE assignment_id = ? ORDER BY position",
+      "SELECT id, position, word, example_sentence FROM assignment_words WHERE assignment_id = ? ORDER BY position",
     )
     .bind(assignment.id)
     .all<AssignmentWord>();

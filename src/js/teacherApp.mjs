@@ -45,6 +45,8 @@ const ERROR_KEYS = {
   already_subscribed: "alreadySubscribed",
   invalid_title: "invalidTitle",
   invalid_words: "invalidWords",
+  invalid_example_sentence: "invalidExampleSentence",
+  assignment_has_results: "assignmentHasResults",
   invalid_deadline: "invalidDeadline",
   invalid_max_attempts: "invalidMaxAttempts",
   invalid_list_title: "invalidListTitle",
@@ -169,9 +171,20 @@ function upgradeLink(ctaLocation) {
   return link;
 }
 
-function saveAssignmentDraft(words, title = "") {
+function saveAssignmentDraft(words, title = "", exampleSentences = "") {
   try {
-    sessionStorage.setItem("mySpellingTeacherDraftWords", words.join("\n"));
+    sessionStorage.setItem(
+      "mySpellingTeacherDraftWords",
+      words
+        .map((word) => (typeof word === "string" ? word : word.word))
+        .join("\n"),
+    );
+    sessionStorage.setItem(
+      "mySpellingTeacherDraftSentences",
+      typeof exampleSentences === "string"
+        ? exampleSentences
+        : exampleSentences.map((sentence) => sentence || "").join("\n"),
+    );
     sessionStorage.setItem("mySpellingTeacherDraftTitle", title.slice(0, 80));
     sessionStorage.setItem("mySpellingTeacherDraftMode", "dictation");
   } catch {}
@@ -372,6 +385,7 @@ function renderSavedLists(me, savedLists) {
   form.innerHTML = `
     <div class="field"><label for="saved-list-title">${copy.listTitle}</label><input id="saved-list-title" maxlength="80" required placeholder="${copy.listTitlePlaceholder}"></div>
     <div class="field"><label for="saved-list-words">${copy.words}</label><textarea id="saved-list-words" required spellcheck="false" placeholder="${copy.wordsHelp}"></textarea></div>
+    <div class="field"><label for="saved-list-sentences">${copy.exampleSentences}</label><textarea id="saved-list-sentences" maxlength="30000" spellcheck="true" placeholder="${copy.exampleSentencesHelp}"></textarea></div>
     <div class="actions"><button type="submit">${copy.saveList}</button></div>`;
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -383,6 +397,7 @@ function renderSavedLists(me, savedLists) {
         body: JSON.stringify({
           title: form.querySelector("#saved-list-title").value,
           words: form.querySelector("#saved-list-words").value,
+          exampleSentences: form.querySelector("#saved-list-sentences").value,
         }),
       });
       await renderDashboard(me);
@@ -414,7 +429,11 @@ function renderSavedLists(me, savedLists) {
     use.type = "button";
     use.textContent = copy.useList;
     use.addEventListener("click", () =>
-      saveAssignmentDraft(savedList.words, savedList.title),
+      saveAssignmentDraft(
+        savedList.words,
+        savedList.title,
+        (savedList.word_details || []).map((word) => word.example_sentence),
+      ),
     );
     const edit = document.createElement("button");
     edit.type = "button";
@@ -428,10 +447,21 @@ function renderSavedLists(me, savedLists) {
         savedList.words.join("\n"),
       );
       if (wordsValue === null) return;
+      const sentencesValue = prompt(
+        copy.exampleSentencesPrompt,
+        (savedList.word_details || [])
+          .map((word) => word.example_sentence || "")
+          .join("\n"),
+      );
+      if (sentencesValue === null) return;
       try {
         await api(`/api/saved-lists/${savedList.id}`, {
           method: "PATCH",
-          body: JSON.stringify({ title: titleValue, words: wordsValue }),
+          body: JSON.stringify({
+            title: titleValue,
+            words: wordsValue,
+            exampleSentences: sentencesValue,
+          }),
         });
         await renderDashboard(me);
       } catch (error) {
@@ -449,6 +479,9 @@ function renderSavedLists(me, savedLists) {
           body: JSON.stringify({
             title: m("copyListTitle", { title: savedList.title }).slice(0, 80),
             words: savedList.words,
+            exampleSentences: (savedList.word_details || []).map(
+              (word) => word.example_sentence,
+            ),
           }),
         });
         await renderDashboard(me);
@@ -752,20 +785,25 @@ async function renderNew() {
   defaultDeadline.setSeconds(0, 0);
   let draftWords = "";
   let draftTitle = "";
+  let draftSentences = "";
   let draftMode = "dictation";
   try {
     draftWords = sessionStorage.getItem("mySpellingTeacherDraftWords") || "";
     draftTitle = sessionStorage.getItem("mySpellingTeacherDraftTitle") || "";
+    draftSentences =
+      sessionStorage.getItem("mySpellingTeacherDraftSentences") || "";
     draftMode =
       sessionStorage.getItem("mySpellingTeacherDraftMode") || "dictation";
   } catch {}
   form.innerHTML = `
     <div class="field"><label for="assignment-title">${copy.assignmentTitle}</label><input id="assignment-title" maxlength="80" required placeholder="${copy.titlePlaceholder}"></div>
     <div class="field"><label for="assignment-words">${copy.words}</label><textarea id="assignment-words" required spellcheck="false"></textarea><small>${copy.wordsHelp}</small></div>
+    <div class="field"><label for="assignment-sentences">${copy.exampleSentences}</label><textarea id="assignment-sentences" maxlength="30000" spellcheck="true" placeholder="${copy.exampleSentencesHelp}"></textarea></div>
     <fieldset><legend>${copy.mode}</legend><div class="radio-row"><label><input type="radio" name="mode" value="dictation"> ${copy.dictation}</label><label><input type="radio" name="mode" value="typing"> ${copy.typing}</label></div></fieldset>
     <div class="grid"><div class="field"><label for="assignment-deadline">${copy.deadline}</label><input id="assignment-deadline" type="datetime-local" required></div><div class="field"><label for="assignment-max">${copy.maxAttempts}</label><select id="assignment-max">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<option>${n}</option>`).join("")}</select></div></div>
     <div class="actions"><button type="submit">${copy.publish}</button></div>`;
   form.querySelector("#assignment-words").value = draftWords;
+  form.querySelector("#assignment-sentences").value = draftSentences;
   form.querySelector("#assignment-title").value = draftTitle;
   form.querySelector(
     `input[name="mode"][value="${draftMode === "typing" ? "typing" : "dictation"}"]`,
@@ -789,6 +827,7 @@ async function renderNew() {
         body: JSON.stringify({
           title: form.querySelector("#assignment-title").value,
           words: form.querySelector("#assignment-words").value,
+          exampleSentences: form.querySelector("#assignment-sentences").value,
           mode,
           expiresAt: new Date(
             form.querySelector("#assignment-deadline").value,
@@ -798,6 +837,7 @@ async function renderNew() {
       });
       try {
         sessionStorage.removeItem("mySpellingTeacherDraftWords");
+        sessionStorage.removeItem("mySpellingTeacherDraftSentences");
         sessionStorage.removeItem("mySpellingTeacherDraftTitle");
         sessionStorage.removeItem("mySpellingTeacherDraftMode");
       } catch {}
@@ -879,6 +919,10 @@ async function renderDetail(me, id) {
   saveList.type = "button";
   saveList.className = "button-secondary";
   saveList.textContent = copy.saveAssignmentAsList;
+  const edit = document.createElement("button");
+  edit.type = "button";
+  edit.className = "button-secondary";
+  edit.textContent = copy.editAssignment;
   copyButton.addEventListener("click", async () => {
     await navigator.clipboard.writeText(studentUrl);
     copyButton.textContent = copy.copied;
@@ -908,6 +952,7 @@ async function renderDetail(me, id) {
         body: JSON.stringify({
           title: data.title,
           words: data.words.map((word) => word.word),
+          exampleSentences: data.words.map((word) => word.example_sentence),
         }),
       });
       saveList.disabled = true;
@@ -920,7 +965,30 @@ async function renderDetail(me, id) {
       );
     }
   });
-  actions.append(copyButton, saveList, toggle);
+  edit.addEventListener("click", async () => {
+    const title = prompt(copy.assignmentTitle, data.title);
+    if (title === null) return;
+    const words = prompt(
+      copy.listWordsPrompt,
+      data.words.map((word) => word.word).join("\n"),
+    );
+    if (words === null) return;
+    const exampleSentences = prompt(
+      copy.exampleSentencesPrompt,
+      data.words.map((word) => word.example_sentence || "").join("\n"),
+    );
+    if (exampleSentences === null) return;
+    try {
+      await api(`/api/assignments/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ title, words, exampleSentences }),
+      });
+      location.reload();
+    } catch (error) {
+      showSectionError(card, error);
+    }
+  });
+  actions.append(copyButton, edit, saveList, toggle);
   if (me.plan === "pro") {
     const exportLink = document.createElement("a");
     exportLink.className = "button-link button-secondary";

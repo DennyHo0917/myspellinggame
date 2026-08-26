@@ -26,7 +26,9 @@ function announceSpeechSupport() {
 
 function playCurrentWord() {
   const word = currentDictationWord(session);
-  if (!word || !speakWord(word)) announceSpeechSupport();
+  const sentence = gameState.exampleSentences?.[word];
+  const prompt = sentence ? `${word}. ${sentence} ${word}.` : word;
+  if (!word || !speakWord(prompt)) announceSpeechSupport();
 }
 
 function renderQuestion() {

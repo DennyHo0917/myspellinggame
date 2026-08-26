@@ -47,6 +47,10 @@ const PACKS = {
     words: "Spelling words",
     wordsHelp:
       "Enter one word per line. Only a published assignment uploads this list.",
+    exampleSentences: "Example sentences (optional)",
+    exampleSentencesHelp:
+      "Optional: enter one sentence per line in the same order as the words. Leave a line blank to skip one.",
+    exampleSentencesPrompt: "Edit the example sentences, one per line",
     mode: "Practice mode",
     dictation: "Dictation",
     typing: "Typing",
@@ -145,6 +149,8 @@ const PACKS = {
     checkAgain: "Check again",
     invalidTitle: "Use an assignment title with 1–80 characters.",
     invalidWords: "Use 1–80 words, each 2–24 characters long.",
+    invalidExampleSentence:
+      "Example sentences must be 300 characters or fewer.",
     invalidDeadline: "Choose a future deadline within the next year.",
     invalidMaxAttempts: "Choose between 1 and 10 attempts.",
     assignments: "Assignments",
@@ -167,6 +173,9 @@ const PACKS = {
     listWordsPrompt: "Edit the words, one per line",
     listSaved: "List saved",
     saveAssignmentAsList: "Save as list",
+    editAssignment: "Edit assignment",
+    assignmentHasResults:
+      "This assignment already has student attempts, so its word list cannot be changed.",
     wordCount: "{count} words",
     learners: "Students",
     learnersCopy: "Create a profile to follow one student across assignments.",
@@ -279,6 +288,10 @@ const PACKS = {
     words: "Palabras",
     wordsHelp:
       "Escribe una palabra por línea. La lista solo se sube al publicar una tarea.",
+    exampleSentences: "Frases de ejemplo (opcional)",
+    exampleSentencesHelp:
+      "Opcional: escribe una frase por línea, en el mismo orden que las palabras. Deja una línea vacía para omitirla.",
+    exampleSentencesPrompt: "Edita las frases de ejemplo, una por línea",
     mode: "Modo de práctica",
     dictation: "Dictado",
     typing: "Escritura",
@@ -378,6 +391,8 @@ const PACKS = {
     checkAgain: "Comprobar de nuevo",
     invalidTitle: "Usa un título de entre 1 y 80 caracteres.",
     invalidWords: "Usa entre 1 y 80 palabras, de 2 a 24 caracteres cada una.",
+    invalidExampleSentence:
+      "Las frases de ejemplo deben tener 300 caracteres o menos.",
     invalidDeadline: "Elige una fecha futura dentro del próximo año.",
     invalidMaxAttempts: "Elige entre 1 y 10 intentos.",
     assignments: "Tareas",
@@ -399,6 +414,9 @@ const PACKS = {
     listWordsPrompt: "Edita las palabras, una por línea",
     listSaved: "Lista guardada",
     saveAssignmentAsList: "Guardar como lista",
+    editAssignment: "Editar tarea",
+    assignmentHasResults:
+      "Esta tarea ya tiene intentos de estudiantes, así que no se puede cambiar la lista de palabras.",
     wordCount: "{count} palabras",
     learners: "Estudiantes",
     learnersCopy:
@@ -511,6 +529,10 @@ const PACKS = {
     words: "Palavras",
     wordsHelp:
       "Digite uma palavra por linha. A lista só é enviada ao publicar uma tarefa.",
+    exampleSentences: "Frases de exemplo (opcional)",
+    exampleSentencesHelp:
+      "Opcional: digite uma frase por linha, na mesma ordem das palavras. Deixe uma linha vazia para pular.",
+    exampleSentencesPrompt: "Edite as frases de exemplo, uma por linha",
     mode: "Modo de prática",
     dictation: "Ditado",
     typing: "Digitação",
@@ -610,6 +632,8 @@ const PACKS = {
     checkAgain: "Verificar novamente",
     invalidTitle: "Use um título com 1 a 80 caracteres.",
     invalidWords: "Use de 1 a 80 palavras, cada uma com 2 a 24 caracteres.",
+    invalidExampleSentence:
+      "As frases de exemplo devem ter no máximo 300 caracteres.",
     invalidDeadline: "Escolha um prazo futuro dentro do próximo ano.",
     invalidMaxAttempts: "Escolha entre 1 e 10 tentativas.",
     assignments: "Tarefas",
@@ -631,6 +655,9 @@ const PACKS = {
     listWordsPrompt: "Edite as palavras, uma por linha",
     listSaved: "Lista salva",
     saveAssignmentAsList: "Salvar como lista",
+    editAssignment: "Editar tarefa",
+    assignmentHasResults:
+      "Esta tarefa já tem tentativas de alunos, por isso a lista de palavras não pode ser alterada.",
     wordCount: "{count} palavras",
     learners: "Alunos",
     learnersCopy: "Crie um perfil para acompanhar um aluno em várias tarefas.",
@@ -742,6 +769,10 @@ const PACKS = {
     words: "Mots à travailler",
     wordsHelp:
       "Saisissez un mot par ligne. La liste n’est envoyée qu’au moment de publier un devoir.",
+    exampleSentences: "Phrases d’exemple (facultatif)",
+    exampleSentencesHelp:
+      "Facultatif : saisissez une phrase par ligne, dans le même ordre que les mots. Laissez une ligne vide pour ignorer.",
+    exampleSentencesPrompt: "Modifiez les phrases d’exemple, une par ligne",
     mode: "Mode d’entraînement",
     dictation: "Dictée",
     typing: "Frappe",
@@ -842,6 +873,8 @@ const PACKS = {
     checkAgain: "Vérifier à nouveau",
     invalidTitle: "Utilisez un titre de 1 à 80 caractères.",
     invalidWords: "Utilisez 1 à 80 mots de 2 à 24 caractères chacun.",
+    invalidExampleSentence:
+      "Les phrases d’exemple doivent contenir au plus 300 caractères.",
     invalidDeadline: "Choisissez une échéance future dans l’année à venir.",
     invalidMaxAttempts: "Choisissez entre 1 et 10 essais.",
     assignments: "Devoirs",
@@ -864,6 +897,9 @@ const PACKS = {
     listWordsPrompt: "Modifiez les mots, un par ligne",
     listSaved: "Liste enregistrée",
     saveAssignmentAsList: "Enregistrer comme liste",
+    editAssignment: "Modifier le devoir",
+    assignmentHasResults:
+      "Ce devoir contient déjà des essais d’élèves. Sa liste de mots ne peut plus être modifiée.",
     wordCount: "{count} mots",
     learners: "Élèves",
     learnersCopy: "Créez un profil pour suivre un élève d’un devoir à l’autre.",
@@ -975,6 +1011,10 @@ const PACKS = {
     words: "Daftar kata",
     wordsHelp:
       "Masukkan satu kata per baris. Daftar hanya diunggah saat tugas diterbitkan.",
+    exampleSentences: "Kalimat contoh (opsional)",
+    exampleSentencesHelp:
+      "Opsional: masukkan satu kalimat per baris dalam urutan kata yang sama. Biarkan baris kosong untuk melewati.",
+    exampleSentencesPrompt: "Edit kalimat contoh, satu per baris",
     mode: "Mode latihan",
     dictation: "Dikte",
     typing: "Mengetik",
@@ -1072,6 +1112,8 @@ const PACKS = {
     checkAgain: "Periksa lagi",
     invalidTitle: "Gunakan judul sepanjang 1–80 karakter.",
     invalidWords: "Gunakan 1–80 kata, masing-masing sepanjang 2–24 karakter.",
+    invalidExampleSentence:
+      "Kalimat contoh harus terdiri dari paling banyak 300 karakter.",
     invalidDeadline:
       "Pilih tenggat pada masa mendatang dalam satu tahun ke depan.",
     invalidMaxAttempts: "Pilih antara 1 dan 10 percobaan.",
@@ -1095,6 +1137,9 @@ const PACKS = {
     listWordsPrompt: "Edit kata, satu kata per baris",
     listSaved: "Daftar disimpan",
     saveAssignmentAsList: "Simpan sebagai daftar",
+    editAssignment: "Edit tugas",
+    assignmentHasResults:
+      "Tugas ini sudah memiliki percobaan siswa, jadi daftar katanya tidak dapat diubah.",
     wordCount: "{count} kata",
     learners: "Siswa",
     learnersCopy:
@@ -1203,6 +1248,10 @@ const PACKS = {
     titlePlaceholder: "第 3 周拼写练习",
     words: "拼写单词",
     wordsHelp: "每行输入一个单词。只有明确发布作业时，这份词表才会上传。",
+    exampleSentences: "例句（可选）",
+    exampleSentencesHelp:
+      "可选：按单词顺序每行填写一个例句；不需要例句的单词留空即可。",
+    exampleSentencesPrompt: "编辑例句，每行一个",
     mode: "练习模式",
     dictation: "听写",
     typing: "打字",
@@ -1294,6 +1343,7 @@ const PACKS = {
     checkAgain: "再次检查",
     invalidTitle: "作业标题需为 1～80 个字符。",
     invalidWords: "请输入 1～80 个单词，每个单词 2～24 个字符。",
+    invalidExampleSentence: "例句长度不能超过 300 个字符。",
     invalidDeadline: "请选择未来一年内的截止时间。",
     invalidMaxAttempts: "最多尝试次数需为 1～10 次。",
     assignments: "作业",
@@ -1314,6 +1364,8 @@ const PACKS = {
     listWordsPrompt: "编辑单词，每行一个",
     listSaved: "词表已保存",
     saveAssignmentAsList: "保存为词表",
+    editAssignment: "编辑作业",
+    assignmentHasResults: "已有学生尝试过这份作业，不能再修改词表。",
     wordCount: "{count} 个单词",
     learners: "学生",
     learnersCopy: "创建学生档案，跨作业查看同一人的学习进度。",

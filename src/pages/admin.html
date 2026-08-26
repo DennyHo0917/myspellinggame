@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="strict-origin" />
+    <title>MySpellingGame Admin</title>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="stylesheet" href="/src/css/product.css?v=admin1" />
+  </head>
+  <body class="product-page">
+    <div class="product-shell">
+      <nav class="product-nav teacher-product-nav">
+        <a class="product-brand" href="/">
+          <img
+            class="brand-logo"
+            src="/images/icon-64.png"
+            width="32"
+            height="32"
+            alt=""
+          />
+          <span>My Spelling Game</span>
+        </a>
+        <div class="product-nav-actions">
+          <a class="button-link button-secondary" href="/teacher"
+            >Teacher Workspace</a
+          >
+          <a class="button-link button-secondary" href="/">Home</a>
+          <button class="button-secondary" id="sign-out" type="button" hidden>
+            Sign out
+          </button>
+        </div>
+      </nav>
+
+      <main class="product-main admin-main">
+        <section class="product-card" id="admin-status" aria-live="polite">
+          <h1>MySpellingGame Admin</h1>
+          <p class="status">Loading…</p>
+        </section>
+
+        <section class="product-card auth-card" id="admin-login" hidden>
+          <h1>MySpellingGame Admin</h1>
+          <p>Sign in with the authorized Google account to continue.</p>
+          <button class="google-sign-in" id="admin-sign-in" type="button">
+            Sign in with Google
+          </button>
+          <p class="status" id="admin-login-status" role="status"></p>
+        </section>
+
+        <section class="product-card error-card" id="admin-denied" hidden>
+          <h1>No access</h1>
+          <p>This account is not authorized to view the Admin Dashboard.</p>
+        </section>
+
+        <div id="admin-dashboard" hidden>
+          <section class="product-card">
+            <div class="admin-heading">
+              <div>
+                <h1>MySpellingGame Admin</h1>
+                <p class="muted">Read-only user and subscription overview.</p>
+              </div>
+              <button class="button-secondary" id="admin-refresh" type="button">
+                Refresh
+              </button>
+            </div>
+            <div class="grid admin-stats" id="admin-stats"></div>
+          </section>
+
+          <section class="product-card">
+            <form class="inline-form admin-search" id="admin-search">
+              <div class="field">
+                <label for="admin-query">Search users</label>
+                <input
+                  id="admin-query"
+                  name="q"
+                  type="search"
+                  maxlength="200"
+                  placeholder="Email, name, or user ID"
+                />
+              </div>
+              <button type="submit">Search</button>
+            </form>
+            <p class="status" id="admin-users-status" role="status"></p>
+            <div class="table-wrap admin-table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Login Provider</th>
+                    <th>Plan</th>
+                    <th>Subscription Status</th>
+                    <th>Billing Interval</th>
+                    <th>Trial Used</th>
+                    <th>Current Period End</th>
+                    <th>Created At</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-users"></tbody>
+              </table>
+            </div>
+            <div class="admin-pagination">
+              <button
+                class="button-secondary"
+                id="admin-previous"
+                type="button"
+              >
+                Previous
+              </button>
+              <span id="admin-page"></span>
+              <button class="button-secondary" id="admin-next" type="button">
+                Next
+              </button>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="product-footer">
+        <p>
+          <span class="footer-links">
+            <a href="/sight-word-typing-game">Sight Words</a> ·
+            <a href="/homeschool-spelling-practice">At Home</a> ·
+            <a href="/vocabulary-typing-game">Vocabulary</a> ·
+            <a href="/faq">FAQ</a> · <a href="/privacy">Privacy</a> ·
+            <a href="/about">About</a> · <a href="/contact">Contact</a>
+          </span>
+          <br />© 2026 My Spelling Game All rights reserved.
+        </p>
+      </footer>
+    </div>
+    <script type="module" src="/src/js/adminApp.mjs"></script>
+  </body>
+</html>

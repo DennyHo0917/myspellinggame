@@ -34,6 +34,10 @@ Create a Google OAuth web client and configure:
 
 Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a high-entropy `BETTER_AUTH_SECRET` of at least 32 characters.
 
+## Admin dashboard
+
+Set `ADMIN_EMAIL` in the Cloudflare Worker variables (or with `wrangler secret put ADMIN_EMAIL`) to the Google login email allowed to open `/admin`. Do not commit the real email. If this variable is missing, all Admin API requests are denied.
+
 ## Stripe
 
 1. Create one recurring monthly Price at USD 5.99 and one recurring yearly Price at USD 49.99.

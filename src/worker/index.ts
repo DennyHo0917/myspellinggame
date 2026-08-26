@@ -43,6 +43,7 @@ export interface Env extends AuthEnv, StripeEnv {
   ASSETS: Fetcher;
   CREATE_LIMITER: RateLimiter;
   SUBMIT_LIMITER: RateLimiter;
+  ADMIN_EMAIL?: string;
 }
 
 type TeacherSession = Awaited<ReturnType<typeof getTeacherSession>>;
@@ -152,6 +153,148 @@ async function requireTeacher(
       "Sign in as a teacher to continue.",
     );
   return session.user;
+}
+
+async function requireAdmin(
+  env: Env,
+  request: Request,
+  getSession: SessionGetter,
+) {
+  const user = await requireTeacher(env, request, getSession);
+  if (!env.ADMIN_EMAIL || user.email !== env.ADMIN_EMAIL)
+    throw new HttpError(403, "admin_forbidden", "You do not have access.");
+  return user;
+}
+
+async function adminStats(env: Env, now = new Date()) {
+  const today = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+  ).toISOString();
+  const last7Days = new Date(now.getTime() - 7 * 86_400_000).toISOString();
+  const summary = await env.DB.prepare(
+    `SELECT
+       (SELECT COUNT(*) FROM user) AS totalUsers,
+       (SELECT COUNT(DISTINCT userId) FROM account WHERE providerId = 'google') AS googleUsers,
+       (SELECT COUNT(*) FROM user WHERE createdAt >= ?) AS todayUsers,
+       (SELECT COUNT(*) FROM user WHERE createdAt >= ?) AS last7DaysUsers`,
+  )
+    .bind(today, last7Days)
+    .first<{
+      totalUsers: number;
+      googleUsers: number;
+      todayUsers: number;
+      last7DaysUsers: number;
+    }>();
+  const subscriptions = await env.DB.prepare(
+    `SELECT status, billing_interval, current_period_end, stripe_price_id
+     FROM subscriptions`,
+  ).all<{
+    status: string;
+    billing_interval: "month" | "year" | null;
+    current_period_end: string | null;
+    stripe_price_id: string | null;
+  }>();
+  let proUsers = 0;
+  let trialingUsers = 0;
+  let activePaidUsers = 0;
+  let monthlyUsers = 0;
+  let yearlyUsers = 0;
+  for (const subscription of subscriptions.results) {
+    if (!hasActiveSubscription(subscription, env, now)) continue;
+    proUsers += 1;
+    if (subscription.status === "trialing") trialingUsers += 1;
+    if (subscription.status === "active") activePaidUsers += 1;
+    if (subscription.billing_interval === "month") monthlyUsers += 1;
+    if (subscription.billing_interval === "year") yearlyUsers += 1;
+  }
+  return {
+    totalUsers: Number(summary?.totalUsers ?? 0),
+    googleUsers: Number(summary?.googleUsers ?? 0),
+    proUsers,
+    trialingUsers,
+    activePaidUsers,
+    monthlyUsers,
+    yearlyUsers,
+    todayUsers: Number(summary?.todayUsers ?? 0),
+    last7DaysUsers: Number(summary?.last7DaysUsers ?? 0),
+  };
+}
+
+async function adminUsers(env: Env, url: URL) {
+  const rawPage = url.searchParams.get("page") ?? "1";
+  if (
+    !/^\d+$/.test(rawPage) ||
+    Number(rawPage) < 1 ||
+    Number(rawPage) > 100_000
+  )
+    throw new HttpError(400, "invalid_page", "Page must be a positive number.");
+  const page = Number(rawPage);
+  const pageSize = 50;
+  const query = (url.searchParams.get("q") ?? "").trim().slice(0, 200);
+  const search = `%${query.toLowerCase()}%`;
+  const where = query
+    ? "WHERE lower(u.email) LIKE ? OR lower(u.name) LIKE ? OR lower(u.id) LIKE ?"
+    : "";
+  const count = await env.DB.prepare(
+    `SELECT COUNT(*) AS count FROM user u ${where}`,
+  )
+    .bind(...(query ? [search, search, search] : []))
+    .first<{ count: number }>();
+  const rows = await env.DB.prepare(
+    `SELECT u.id, u.name, u.email, u.createdAt,
+            (SELECT GROUP_CONCAT(DISTINCT a.providerId)
+             FROM account a WHERE a.userId = u.id) AS loginProvider,
+            s.status, s.billing_interval, s.current_period_end,
+            s.stripe_price_id, s.trial_used_at
+     FROM user u
+     LEFT JOIN subscriptions s ON s.user_id = u.id
+     ${where}
+     ORDER BY u.createdAt DESC
+     LIMIT ? OFFSET ?`,
+  )
+    .bind(
+      ...(query ? [search, search, search] : []),
+      pageSize,
+      (page - 1) * pageSize,
+    )
+    .all<{
+      id: string;
+      name: string;
+      email: string;
+      createdAt: string;
+      loginProvider: string | null;
+      status: string | null;
+      billing_interval: "month" | "year" | null;
+      current_period_end: string | null;
+      stripe_price_id: string | null;
+      trial_used_at: string | null;
+    }>();
+  return {
+    users: rows.results.map((row) => ({
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      loginProvider: row.loginProvider,
+      plan: hasActiveSubscription(
+        {
+          status: row.status ?? "",
+          current_period_end: row.current_period_end,
+          stripe_price_id: row.stripe_price_id,
+        },
+        env,
+      )
+        ? "pro"
+        : "free",
+      subscriptionStatus: row.status,
+      billingInterval: row.billing_interval,
+      trialUsed: Boolean(row.trial_used_at),
+      currentPeriodEnd: row.current_period_end,
+      createdAt: row.createdAt,
+    })),
+    page,
+    pageSize,
+    total: Number(count?.count ?? 0),
+  };
 }
 
 async function getPlan(
@@ -1135,6 +1278,16 @@ export async function handleRequest(
     });
   }
 
+  if (url.pathname.startsWith("/api/admin/")) {
+    await requireAdmin(env, request, getSession);
+    if (method !== "GET")
+      throw new HttpError(405, "method_not_allowed", "Only GET is allowed.");
+    if (url.pathname === "/api/admin/stats") return json(await adminStats(env));
+    if (url.pathname === "/api/admin/users")
+      return json(await adminUsers(env, url));
+    throw new HttpError(404, "admin_not_found", "Admin endpoint not found.");
+  }
+
   const publicMatch = url.pathname.match(
     /^\/api\/public\/assignments\/([A-Za-z0-9_-]{24})$/,
   );
@@ -1402,6 +1555,9 @@ export async function handleRequest(
 
   if (url.pathname === "/teacher" || url.pathname.startsWith("/teacher/")) {
     return serveShell(env, request, "/src/pages/teacher.html", true);
+  }
+  if (url.pathname === "/admin") {
+    return serveShell(env, request, "/src/pages/admin.html", true);
   }
   if (/^\/a\/[A-Za-z0-9_-]{24}$/.test(url.pathname)) {
     return serveShell(env, request, "/src/pages/assignment.html", true);

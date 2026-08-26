@@ -16,7 +16,8 @@ export function safeTeacherCallbackURL(value: unknown, origin: string) {
     );
     if (
       callback.origin === origin &&
-      /^\/teacher(?:\/|$)/.test(callback.pathname)
+      (/^\/teacher(?:\/|$)/.test(callback.pathname) ||
+        callback.pathname === "/admin")
     ) {
       return `${callback.pathname}${callback.search}`;
     }

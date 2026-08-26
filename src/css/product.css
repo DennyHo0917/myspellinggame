@@ -685,6 +685,57 @@ th {
   }
 }
 
+.admin-main {
+  width: min(1500px, 100%);
+}
+
+#admin-dashboard {
+  display: grid;
+  gap: 18px;
+}
+
+#admin-dashboard[hidden] {
+  display: none;
+}
+
+.admin-heading,
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.admin-heading h1,
+.admin-heading p {
+  margin-bottom: 0;
+}
+
+.admin-stats {
+  margin-top: 1.25rem;
+}
+
+.admin-search {
+  margin-bottom: 1rem;
+}
+
+.admin-table-wrap table {
+  min-width: 1180px;
+}
+
+.admin-pagination {
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+@media (max-width: 700px) {
+  .admin-heading,
+  .admin-pagination {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
 /* Teacher pages share the homepage header line, while their work area stays focused. */
 .product-shell {
   width: 100%;

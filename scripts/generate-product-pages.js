@@ -114,9 +114,9 @@ const copy = {
     monthly: "Monthly plan",
     yearly: "Yearly plan",
     monthlyBilling:
-      "First 30 days free for new subscribers. $0 today. Card required. Then $5.99/month automatically unless canceled before the trial ends.",
+      "First 30 days free for new subscribers. $0 today. Card required. Then $5.99/month automatically. You can cancel before the trial ends and you won't be charged.",
     yearlyBilling:
-      "First 30 days free for new subscribers. $0 today. Card required. Then $49.99/year automatically unless canceled before the trial ends.",
+      "First 30 days free for new subscribers. $0 today. Card required. Then $49.99/year automatically. You can cancel before the trial ends and you won't be charged.",
     monthlyBillingImmediate:
       "$5.99 charged today, then monthly until canceled.",
     yearlyBillingImmediate: "$49.99 charged today, then yearly until canceled.",
@@ -169,9 +169,9 @@ const copy = {
     monthly: "Plan mensual",
     yearly: "Plan anual",
     monthlyBilling:
-      "Los primeros 30 días son gratis para nuevos suscriptores. Hoy pagas $0 y debes registrar una tarjeta. Después se cobrarán automáticamente $5.99 al mes, salvo que canceles antes de que termine la prueba.",
+      "Los primeros 30 días son gratis para nuevos suscriptores. Hoy pagas $0 y debes registrar una tarjeta. Después se cobrarán automáticamente $5.99 al mes. Puedes cancelar antes de que termine la prueba y no se te cobrará nada.",
     yearlyBilling:
-      "Los primeros 30 días son gratis para nuevos suscriptores. Hoy pagas $0 y debes registrar una tarjeta. Después se cobrarán automáticamente $49,99 al año, salvo que canceles antes de que termine la prueba.",
+      "Los primeros 30 días son gratis para nuevos suscriptores. Hoy pagas $0 y debes registrar una tarjeta. Después se cobrarán automáticamente $49,99 al año. Puedes cancelar antes de que termine la prueba y no se te cobrará nada.",
     monthlyBillingImmediate:
       "$5.99 cobrados hoy y después cada mes hasta que canceles.",
     yearlyBillingImmediate:
@@ -225,9 +225,9 @@ const copy = {
     monthly: "Plano mensal",
     yearly: "Plano anual",
     monthlyBilling:
-      "Os primeiros 30 dias são grátis para novos assinantes. Hoje você paga $0 e precisa cadastrar um cartão. Depois, a cobrança automática será de $5.99 por mês, a menos que você cancele antes do fim do teste.",
+      "Os primeiros 30 dias são grátis para novos assinantes. Hoje você paga $0 e precisa cadastrar um cartão. Depois, a cobrança automática será de $5.99 por mês. Você pode cancelar antes do fim do teste e não haverá cobrança.",
     yearlyBilling:
-      "Os primeiros 30 dias são grátis para novos assinantes. Hoje você paga $0 e precisa cadastrar um cartão. Depois, a cobrança automática será de $49,99 por ano, a menos que você cancele antes do fim do teste.",
+      "Os primeiros 30 dias são grátis para novos assinantes. Hoje você paga $0 e precisa cadastrar um cartão. Depois, a cobrança automática será de $49,99 por ano. Você pode cancelar antes do fim do teste e não haverá cobrança.",
     monthlyBillingImmediate:
       "$5.99 cobrados hoje e depois mensalmente até o cancelamento.",
     yearlyBillingImmediate:
@@ -281,9 +281,9 @@ const copy = {
     monthly: "Offre mensuelle",
     yearly: "Offre annuelle",
     monthlyBilling:
-      "Les 30 premiers jours sont gratuits pour les nouveaux abonnés. 0 $ aujourd’hui, carte requise. Ensuite, 5,99 $ seront prélevés automatiquement chaque mois, sauf résiliation avant la fin de l’essai.",
+      "Les 30 premiers jours sont gratuits pour les nouveaux abonnés. 0 $ aujourd’hui, carte requise. Ensuite, 5,99 $ seront prélevés automatiquement chaque mois. Vous pouvez résilier avant la fin de l’essai et aucun montant ne vous sera facturé.",
     yearlyBilling:
-      "Les 30 premiers jours sont gratuits pour les nouveaux abonnés. 0 $ aujourd’hui, carte requise. Ensuite, 49,99 $ seront prélevés automatiquement chaque année, sauf résiliation avant la fin de l’essai.",
+      "Les 30 premiers jours sont gratuits pour les nouveaux abonnés. 0 $ aujourd’hui, carte requise. Ensuite, 49,99 $ seront prélevés automatiquement chaque année. Vous pouvez résilier avant la fin de l’essai et aucun montant ne vous sera facturé.",
     monthlyBillingImmediate:
       "5,99 $ prélevés aujourd’hui, puis chaque mois jusqu’à résiliation.",
     yearlyBillingImmediate:
@@ -337,9 +337,9 @@ const copy = {
     monthly: "Paket bulanan",
     yearly: "Paket tahunan",
     monthlyBilling:
-      "30 hari pertama gratis untuk pelanggan baru. Bayar $0 hari ini dan kartu wajib didaftarkan. Setelah itu, $5.99 ditagih otomatis setiap bulan kecuali dibatalkan sebelum masa uji coba berakhir.",
+      "30 hari pertama gratis untuk pelanggan baru. Bayar $0 hari ini dan kartu wajib didaftarkan. Setelah itu, $5.99 ditagih otomatis setiap bulan. Anda dapat membatalkan sebelum masa uji coba berakhir tanpa dikenai biaya.",
     yearlyBilling:
-      "30 hari pertama gratis untuk pelanggan baru. Bayar $0 hari ini dan kartu wajib didaftarkan. Setelah itu, $49.99 ditagih otomatis setiap tahun kecuali dibatalkan sebelum masa uji coba berakhir.",
+      "30 hari pertama gratis untuk pelanggan baru. Bayar $0 hari ini dan kartu wajib didaftarkan. Setelah itu, $49.99 ditagih otomatis setiap tahun. Anda dapat membatalkan sebelum masa uji coba berakhir tanpa dikenai biaya.",
     monthlyBillingImmediate:
       "$5.99 ditagih hari ini, lalu setiap bulan sampai dibatalkan.",
     yearlyBillingImmediate:
@@ -391,9 +391,9 @@ const copy = {
     monthly: "月付方案",
     yearly: "年付方案",
     monthlyBilling:
-      "新订阅用户首 30 天免费。今天支付 $0，需绑定付款方式。30 天后自动扣取每月 $5.99，除非在试用结束前取消。",
+      "新订阅用户首 30 天免费。今天支付 $0，需绑定付款方式。30 天后自动扣取每月 $5.99。您可以在试用结束前取消，这将不会产生费用。",
     yearlyBilling:
-      "新订阅用户首 30 天免费。今天支付 $0，需绑定付款方式。30 天后自动扣取每年 $49.99，除非在试用结束前取消。",
+      "新订阅用户首 30 天免费。今天支付 $0，需绑定付款方式。30 天后自动扣取每年 $49.99。您可以在试用结束前取消，这将不会产生费用。",
     monthlyBillingImmediate: "今天扣取 $5.99，之后按月自动续费，直至取消。",
     yearlyBillingImmediate: "今天扣取 $49.99，之后按年自动续费，直至取消。",
     yearlySavings: "立省 30%",

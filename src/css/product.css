@@ -963,6 +963,13 @@ th {
   padding: clamp(1rem, 2.5vw, 1.35rem);
 }
 
+@media (min-width: 701px) {
+  .teacher-pricing .selected-plan .plan-description {
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+}
+
 .teacher-pricing .pricing-card-spacer {
   visibility: hidden;
 }

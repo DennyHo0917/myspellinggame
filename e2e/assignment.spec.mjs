@@ -907,6 +907,7 @@ test("free teacher results preview distinct missed words as inert text", async (
             id: "44444444-4444-4444-8444-444444444444",
             nickname: hostileNickname,
             attempt_number: 1,
+            status: "completed",
             correct_count: 1,
             incorrect_count: 1,
             accuracy: 50,
@@ -918,11 +919,24 @@ test("free teacher results preview distinct missed words as inert text", async (
             id: "77777777-7777-4777-8777-777777777777",
             nickname: "Student 02",
             attempt_number: 1,
+            status: "completed",
             correct_count: 1,
             incorrect_count: 1,
             accuracy: 50,
             missed_words: ["because"],
             duration_seconds: 35,
+            completed_at: new Date().toISOString(),
+          },
+          {
+            id: "88888888-8888-4888-8888-888888888888",
+            nickname: "Student 03",
+            attempt_number: 1,
+            status: "incomplete",
+            correct_count: 0,
+            incorrect_count: 1,
+            accuracy: 0,
+            missed_words: ["beautiful"],
+            duration_seconds: 20,
             completed_at: new Date().toISOString(),
           },
         ],
@@ -942,6 +956,9 @@ test("free teacher results preview distinct missed words as inert text", async (
   });
   await expect(misses).toContainText(
     "2 words have been missed in this assignment.",
+  );
+  await expect(misses).not.toContainText(
+    "3 words have been missed in this assignment.",
   );
   await expect(
     misses.getByRole("link", { name: "Upgrade to Pro" }),

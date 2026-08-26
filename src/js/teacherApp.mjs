@@ -1082,7 +1082,9 @@ async function renderDetail(me, id) {
   misses.append(missesTitle);
   if (data.missedWordStats === null) {
     const distinctMissedWordCount = new Set(
-      data.attempts.flatMap((attempt) => attempt.missed_words || []),
+      data.attempts
+        .filter((attempt) => attempt.status === "completed")
+        .flatMap((attempt) => attempt.missed_words || []),
     ).size;
     const locked = document.createElement("p");
     locked.textContent = distinctMissedWordCount

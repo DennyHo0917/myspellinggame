@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow, noarchive" />
     <meta name="referrer" content="strict-origin" />
-    <title>MySpellingGame Admin</title>
+    <title>MySpellingGame 管理后台</title>
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="stylesheet" href="/src/css/product.css?v=admin1" />
   </head>
@@ -23,45 +23,43 @@
           <span>My Spelling Game</span>
         </a>
         <div class="product-nav-actions">
-          <a class="button-link button-secondary" href="/teacher"
-            >Teacher Workspace</a
-          >
-          <a class="button-link button-secondary" href="/">Home</a>
+          <a class="button-link button-secondary" href="/teacher">教师工作台</a>
+          <a class="button-link button-secondary" href="/">首页</a>
           <button class="button-secondary" id="sign-out" type="button" hidden>
-            Sign out
+            退出登录
           </button>
         </div>
       </nav>
 
       <main class="product-main admin-main">
         <section class="product-card" id="admin-status" aria-live="polite">
-          <h1>MySpellingGame Admin</h1>
-          <p class="status">Loading…</p>
+          <h1>MySpellingGame 管理后台</h1>
+          <p class="status">正在加载……</p>
         </section>
 
         <section class="product-card auth-card" id="admin-login" hidden>
-          <h1>MySpellingGame Admin</h1>
-          <p>Sign in with the authorized Google account to continue.</p>
+          <h1>MySpellingGame 管理后台</h1>
+          <p>请使用已授权的 Google 账号继续。</p>
           <button class="google-sign-in" id="admin-sign-in" type="button">
-            Sign in with Google
+            使用 Google 登录
           </button>
           <p class="status" id="admin-login-status" role="status"></p>
         </section>
 
         <section class="product-card error-card" id="admin-denied" hidden>
-          <h1>No access</h1>
-          <p>This account is not authorized to view the Admin Dashboard.</p>
+          <h1>无权访问</h1>
+          <p>当前账号没有查看管理后台的权限。</p>
         </section>
 
         <div id="admin-dashboard" hidden>
           <section class="product-card">
             <div class="admin-heading">
               <div>
-                <h1>MySpellingGame Admin</h1>
-                <p class="muted">Read-only user and subscription overview.</p>
+                <h1>MySpellingGame 管理后台</h1>
+                <p class="muted">用户与订阅数据概览（只读）。</p>
               </div>
               <button class="button-secondary" id="admin-refresh" type="button">
-                Refresh
+                刷新
               </button>
             </div>
             <div class="grid admin-stats" id="admin-stats"></div>
@@ -70,31 +68,31 @@
           <section class="product-card">
             <form class="inline-form admin-search" id="admin-search">
               <div class="field">
-                <label for="admin-query">Search users</label>
+                <label for="admin-query">搜索用户</label>
                 <input
                   id="admin-query"
                   name="q"
                   type="search"
                   maxlength="200"
-                  placeholder="Email, name, or user ID"
+                  placeholder="邮箱、姓名或用户 ID"
                 />
               </div>
-              <button type="submit">Search</button>
+              <button type="submit">搜索</button>
             </form>
             <p class="status" id="admin-users-status" role="status"></p>
             <div class="table-wrap admin-table-wrap">
               <table>
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Login Provider</th>
-                    <th>Plan</th>
-                    <th>Subscription Status</th>
-                    <th>Billing Interval</th>
-                    <th>Trial Used</th>
-                    <th>Current Period End</th>
-                    <th>Created At</th>
+                    <th>姓名</th>
+                    <th>邮箱</th>
+                    <th>登录方式</th>
+                    <th>套餐</th>
+                    <th>订阅状态</th>
+                    <th>计费周期</th>
+                    <th>试用使用情况</th>
+                    <th>当前周期结束时间</th>
+                    <th>注册时间</th>
                   </tr>
                 </thead>
                 <tbody id="admin-users"></tbody>
@@ -106,11 +104,11 @@
                 id="admin-previous"
                 type="button"
               >
-                Previous
+                上一页
               </button>
               <span id="admin-page"></span>
               <button class="button-secondary" id="admin-next" type="button">
-                Next
+                下一页
               </button>
             </div>
           </section>
@@ -120,13 +118,13 @@
       <footer class="product-footer">
         <p>
           <span class="footer-links">
-            <a href="/sight-word-typing-game">Sight Words</a> ·
-            <a href="/homeschool-spelling-practice">At Home</a> ·
-            <a href="/vocabulary-typing-game">Vocabulary</a> ·
-            <a href="/faq">FAQ</a> · <a href="/privacy">Privacy</a> ·
-            <a href="/about">About</a> · <a href="/contact">Contact</a>
+            <a href="/sight-word-typing-game">常见词</a> ·
+            <a href="/homeschool-spelling-practice">家庭学习</a> ·
+            <a href="/vocabulary-typing-game">词汇</a> ·
+            <a href="/faq">常见问题</a> · <a href="/privacy">隐私</a> ·
+            <a href="/about">关于我们</a> · <a href="/contact">联系我们</a>
           </span>
-          <br />© 2026 My Spelling Game All rights reserved.
+          <br />© 2026 My Spelling Game 版权所有。
         </p>
       </footer>
     </div>

@@ -162,7 +162,11 @@ async function requireAdmin(
 ) {
   const user = await requireTeacher(env, request, getSession);
   if (!env.ADMIN_EMAIL || user.email !== env.ADMIN_EMAIL)
-    throw new HttpError(403, "admin_forbidden", "You do not have access.");
+    throw new HttpError(
+      403,
+      "admin_forbidden",
+      "当前账号没有管理后台访问权限。",
+    );
   return user;
 }
 

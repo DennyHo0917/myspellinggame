@@ -7,6 +7,7 @@ These instructions apply to the entire repository.
 - Any user-facing copy change must be applied to every supported language at the same time.
 - Do not translate mechanically or word for word. Write natural phrasing that matches each locale's language habits, tone, and product context.
 - When localized pages are generated, update the generation source first and regenerate the output pages.
+- The `/admin` page is a Chinese-only internal page; all visible Admin copy and Admin-specific status/error messages must use natural Simplified Chinese.
 
 ## Shared Page Layout
 

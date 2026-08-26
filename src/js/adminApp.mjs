@@ -22,7 +22,7 @@ async function api(path, options = {}) {
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const error = new Error(data.message || "Something went wrong.");
+    const error = new Error(data.message || "操作失败，请稍后重试。");
     error.status = response.status;
     throw error;
   }
@@ -35,20 +35,50 @@ function show(element) {
 }
 
 function formatDate(value) {
-  return value ? new Date(value).toLocaleString() : "-";
+  return value
+    ? new Date(value).toLocaleString("zh-CN", { hour12: false })
+    : "-";
+}
+
+function formatProvider(value) {
+  return value
+    ? value
+        .split(",")
+        .map((provider) => (provider === "google" ? "Google" : provider))
+        .join("、")
+    : "-";
+}
+
+function formatSubscriptionStatus(value) {
+  return (
+    {
+      active: "生效",
+      trialing: "试用中",
+      canceled: "已取消",
+      incomplete: "未完成",
+      past_due: "已逾期",
+      unpaid: "未付款",
+    }[value] ||
+    value ||
+    "-"
+  );
+}
+
+function formatBillingInterval(value) {
+  return { month: "月付", year: "年付" }[value] || value || "-";
 }
 
 function renderStats(stats) {
   const labels = [
-    ["Total users", stats.totalUsers],
-    ["Google users", stats.googleUsers],
-    ["Current Pro", stats.proUsers],
-    ["Trialing", stats.trialingUsers],
-    ["Active paid", stats.activePaidUsers],
-    ["Monthly", stats.monthlyUsers],
-    ["Yearly", stats.yearlyUsers],
-    ["New today", stats.todayUsers],
-    ["New in 7 days", stats.last7DaysUsers],
+    ["注册用户总数", stats.totalUsers],
+    ["Google 用户", stats.googleUsers],
+    ["当前 Pro 用户", stats.proUsers],
+    ["试用中", stats.trialingUsers],
+    ["正式付费", stats.activePaidUsers],
+    ["月付用户", stats.monthlyUsers],
+    ["年付用户", stats.yearlyUsers],
+    ["今日新增", stats.todayUsers],
+    ["近 7 日新增", stats.last7DaysUsers],
   ];
   const grid = document.getElementById("admin-stats");
   grid.replaceChildren(
@@ -65,7 +95,7 @@ function renderStats(stats) {
 }
 
 async function loadUsers() {
-  usersStatus.textContent = "Loading users…";
+  usersStatus.textContent = "正在加载用户……";
   const params = new URLSearchParams({ page: String(page), q: query });
   const data = await api(`/api/admin/users?${params}`);
   usersBody.replaceChildren(
@@ -74,11 +104,11 @@ async function loadUsers() {
       for (const value of [
         user.name,
         user.email,
-        user.loginProvider || "-",
-        user.plan === "pro" ? "Pro" : "Free",
-        user.subscriptionStatus || "-",
-        user.billingInterval || "-",
-        user.trialUsed ? "Yes" : "No",
+        formatProvider(user.loginProvider),
+        user.plan === "pro" ? "Pro" : "免费",
+        formatSubscriptionStatus(user.subscriptionStatus),
+        formatBillingInterval(user.billingInterval),
+        user.trialUsed ? "是" : "否",
         formatDate(user.currentPeriodEnd),
         formatDate(user.createdAt),
       ]) {
@@ -90,10 +120,10 @@ async function loadUsers() {
     }),
   );
   const pages = Math.max(1, Math.ceil(data.total / data.pageSize));
-  pageLabel.textContent = `Page ${data.page} of ${pages} · ${data.total} users`;
+  pageLabel.textContent = `第 ${data.page} / ${pages} 页 · 共 ${data.total} 位用户`;
   previous.disabled = data.page <= 1;
   next.disabled = data.page >= pages;
-  usersStatus.textContent = data.users.length ? "" : "No users found.";
+  usersStatus.textContent = data.users.length ? "" : "没有找到用户。";
 }
 
 async function loadDashboard() {
@@ -135,16 +165,15 @@ document.getElementById("admin-sign-in").addEventListener("click", async () => {
   const button = document.getElementById("admin-sign-in");
   const status = document.getElementById("admin-login-status");
   button.disabled = true;
-  status.textContent = "Opening Google sign-in…";
+  status.textContent = "正在打开 Google 登录……";
   try {
     const config = await api("/api/config");
-    if (!config.googleAuthConfigured)
-      throw new Error("Google sign-in is not configured.");
+    if (!config.googleAuthConfigured) throw new Error("Google 登录尚未配置。");
     const result = await api("/api/auth/sign-in/social", {
       method: "POST",
       body: JSON.stringify({ provider: "google", callbackURL: "/admin" }),
     });
-    if (!result.url) throw new Error("Google sign-in is unavailable.");
+    if (!result.url) throw new Error("Google 登录暂不可用。");
     location.href = result.url;
   } catch (error) {
     status.textContent = error.message;

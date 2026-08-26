@@ -6,7 +6,12 @@ const words = [
   { id: "22222222-2222-4222-8222-222222222222", position: 1, word: "banana" },
 ];
 
-async function mockAssignment(page, mode, submitHandler) {
+async function mockAssignment(
+  page,
+  mode,
+  submitHandler,
+  assignmentWords = words,
+) {
   await page.route(`**/api/public/assignments/${publicId}`, async (route) => {
     await route.fulfill({
       contentType: "application/json",
@@ -17,7 +22,7 @@ async function mockAssignment(page, mode, submitHandler) {
         status: "published",
         max_attempts: 3,
         expires_at: new Date(Date.now() + 86_400_000).toISOString(),
-        words,
+        words: assignmentWords,
       }),
     });
   });
@@ -40,6 +45,111 @@ async function completeAssignment(page) {
   await page.getByRole("button", { name: "Check answer" }).click();
   await page.getByRole("button", { name: "Next word" }).click();
 }
+
+test("a lone second retry does not immediately repeat the same word", async ({
+  page,
+}) => {
+  const banana = [words[1]];
+  let submittedBody;
+  await mockAssignment(
+    page,
+    "typing",
+    async (route) => {
+      submittedBody = route.request().postDataJSON();
+      await route.fulfill({
+        status: 201,
+        contentType: "application/json",
+        body: JSON.stringify({
+          ...submittedBody,
+          correct_count: 0,
+          incorrect_count: 1,
+          accuracy: 0,
+          missedWords: ["banana"],
+        }),
+      });
+    },
+    banana,
+  );
+
+  await page.goto(`/a/${publicId}?lang=en`);
+  await page.getByLabel("Nickname").fill("Student 01");
+  await page.getByRole("button", { name: "Start assignment" }).click();
+  await page.locator(".answer-form input").fill("wrong");
+  await page.getByRole("button", { name: "Check answer" }).click();
+  await page.getByRole("button", { name: "Next word" }).click();
+
+  await page.locator(".answer-form input").fill("wrong again");
+  await page.getByRole("button", { name: "Check answer" }).click();
+  await page.getByRole("button", { name: "Next word" }).click();
+  await expect(page.locator(".answer-form")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Next word" }).click();
+  await expect(page.locator(".player-word")).toHaveText("banana");
+  await page.locator(".answer-form input").fill("banana");
+  await page.getByRole("button", { name: "Check answer" }).click();
+  await page.getByRole("button", { name: "Next word" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Your result" }),
+  ).toBeVisible();
+  expect(submittedBody.answers).toEqual([
+    { wordId: words[1].id, answer: "wrong" },
+  ]);
+});
+
+test("other review words separate first and second retries", async ({
+  page,
+}) => {
+  const reviewWords = [
+    { ...words[1], position: 0 },
+    { ...words[0], position: 1 },
+    {
+      id: "33333333-3333-4333-8333-333333333333",
+      position: 2,
+      word: "friend",
+    },
+  ];
+  await mockAssignment(
+    page,
+    "typing",
+    (route) =>
+      route.fulfill({
+        status: 201,
+        contentType: "application/json",
+        body: JSON.stringify({
+          correct_count: 0,
+          incorrect_count: 3,
+          accuracy: 0,
+          missedWords: reviewWords.map((word) => word.word),
+        }),
+      }),
+    reviewWords,
+  );
+
+  await page.goto(`/a/${publicId}?lang=en`);
+  await page.getByLabel("Nickname").fill("Student 01");
+  await page.getByRole("button", { name: "Start assignment" }).click();
+  for (const word of reviewWords) {
+    await expect(page.locator(".player-word")).toHaveText(word.word);
+    await page.locator(".answer-form input").fill("wrong");
+    await page.getByRole("button", { name: "Check answer" }).click();
+    await page.getByRole("button", { name: "Next word" }).click();
+  }
+
+  for (const [word, answer] of [
+    ["banana", "wrong again"],
+    ["apple", "apple"],
+    ["friend", "friend"],
+    ["banana", "banana"],
+  ]) {
+    await expect(page.locator(".player-word")).toHaveText(word);
+    await page.locator(".answer-form input").fill(answer);
+    await page.getByRole("button", { name: "Check answer" }).click();
+    await page.getByRole("button", { name: "Next word" }).click();
+  }
+  await expect(
+    page.getByRole("heading", { name: "Your result" }),
+  ).toBeVisible();
+});
 
 const analyticsEvents = (page, name) =>
   page.evaluate(

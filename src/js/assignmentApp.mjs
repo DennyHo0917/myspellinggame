@@ -22,6 +22,7 @@ let index = 0;
 let originalAnswers = [];
 let retryQueue = [];
 let promptStep = 0;
+let lastPromptWordId = "";
 let startedAt = 0;
 let leaving = false;
 
@@ -190,6 +191,7 @@ function renderIntro() {
     originalAnswers = [];
     retryQueue = [];
     promptStep = 0;
+    lastPromptWordId = "";
     startedAt = Date.now();
     saveState({ attemptId, nickname });
     renderWord();
@@ -206,20 +208,37 @@ function speak(word) {
 
 function nextPrompt() {
   const retryIndex = retryQueue.findIndex(
-    (item) => item.availableAt <= promptStep + 1,
+    (item) =>
+      item.availableAt <= promptStep + 1 && item.word.id !== lastPromptWordId,
   );
   if (retryIndex >= 0) {
-    return { ...retryQueue.splice(retryIndex, 1)[0], kind: "retry" };
+    const prompt = retryQueue.splice(retryIndex, 1)[0];
+    lastPromptWordId = prompt.word.id;
+    return { ...prompt, kind: "retry" };
   }
   if (index < assignment.words.length) {
     const word = assignment.words[index];
     const prompt = { word, kind: "original", originalIndex: index };
     index += 1;
+    lastPromptWordId = word.id;
     return prompt;
   }
-  // ponytail: once originals are done, process any remaining retries directly.
   if (retryQueue.length) {
-    return { ...retryQueue.shift(), kind: "retry" };
+    const otherRetryIndex = retryQueue.findIndex(
+      (item) => item.word.id !== lastPromptWordId,
+    );
+    if (otherRetryIndex >= 0 || retryQueue[0].retries === 0) {
+      const prompt = retryQueue.splice(
+        otherRetryIndex >= 0 ? otherRetryIndex : 0,
+        1,
+      )[0];
+      lastPromptWordId = prompt.word.id;
+      return { ...prompt, kind: "retry" };
+    }
+    // ponytail: one transition prevents an immediate lone Retry #2 repeat.
+    promptStep = Math.max(promptStep, retryQueue[0].availableAt - 1);
+    lastPromptWordId = "";
+    return { kind: "review-wait" };
   }
   return null;
 }
@@ -227,6 +246,24 @@ function nextPrompt() {
 function renderWord() {
   const prompt = nextPrompt();
   if (!prompt) return saveResult();
+  if (prompt.kind === "review-wait") {
+    const section = card(assignment.title);
+    const review = document.createElement("p");
+    review.className = "muted";
+    review.textContent = copy.reviewWord;
+    const next = document.createElement("button");
+    next.type = "button";
+    next.textContent = copy.nextWord;
+    next.addEventListener("click", renderWord);
+    const leave = document.createElement("button");
+    leave.type = "button";
+    leave.className = "button-secondary assignment-return";
+    leave.textContent = copy.returnMenu;
+    leave.addEventListener("click", leaveAssignment);
+    section.append(review, next, leave);
+    next.focus();
+    return;
+  }
   const { word } = prompt;
   const section = card(assignment.title);
   const progress = document.createElement("p");
@@ -357,6 +394,7 @@ async function leaveAssignment() {
     originalAnswers = [];
     retryQueue = [];
     promptStep = 0;
+    lastPromptWordId = "";
     index = 0;
     leaving = false;
     renderIntro();

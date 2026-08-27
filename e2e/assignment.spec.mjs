@@ -257,6 +257,9 @@ test("practice records a valid list and start separately", async ({ page }) => {
 test("typing result offers Workspace CTA and keeps the practice draft", async ({
   page,
 }) => {
+  await page.route("**/api/me", (route) =>
+    route.fulfill({ status: 401, contentType: "application/json", body: "{}" }),
+  );
   await page.goto("/");
   await page.locator("#custom-word-list").fill("because\nfriend");
   await page
@@ -314,7 +317,73 @@ test("typing result offers Workspace CTA and keeps the practice draft", async ({
   ]);
 });
 
+test("signed-in result keeps the CTA without signup copy or signup analytics", async ({
+  page,
+}) => {
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ user: { id: "teacher-1" }, plan: "free" }),
+    }),
+  );
+  await page.goto("/");
+  await page.locator("#custom-word-list").fill("because");
+  await page.locator("#custom-example-sentences").fill("It rained.");
+  await page.getByRole("button", { name: "Start Spelling Test" }).click();
+  await page.evaluate(() => {
+    window.gameState.dictationSummary = {
+      total: 1,
+      correct: 0,
+      incorrect: 1,
+      accuracy: 0,
+      missedWords: ["because"],
+    };
+    window.endGame();
+  });
+
+  await expect(
+    page.getByRole("button", { name: "Continue in Workspace" }),
+  ).toBeVisible();
+  await expect(page.getByText("Free account · Google sign-in")).toBeHidden();
+  expect(await analyticsEvents(page, "signup_cta_viewed")).toEqual([]);
+
+  await page.evaluate(() => {
+    addEventListener("beforeunload", () => {
+      const events = window.dataLayer
+        .map((entry) => Array.from(entry))
+        .filter((entry) => entry[0] === "event");
+      sessionStorage.setItem("eventsBeforeNavigation", JSON.stringify(events));
+    });
+  });
+  await page.getByRole("button", { name: "Continue in Workspace" }).click();
+  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
+  expect(
+    await page.evaluate(() => ({
+      words: sessionStorage.getItem("mySpellingTeacherDraftWords"),
+      sentences: sessionStorage.getItem("mySpellingTeacherDraftSentences"),
+      mode: sessionStorage.getItem("mySpellingTeacherDraftMode"),
+    })),
+  ).toEqual({
+    words: "because",
+    sentences: "It rained.",
+    mode: "dictation",
+  });
+  expect(
+    await page.evaluate(() =>
+      JSON.parse(sessionStorage.getItem("eventsBeforeNavigation") || "[]")
+        .filter((entry) => entry[1] === "assignment_entry_clicked")
+        .map((entry) => entry[2]),
+    ),
+  ).toEqual([
+    { mode: "dictation", word_count: 1, entry_point: "practice_result" },
+  ]);
+});
+
 test("dictation result uses the same Workspace CTA", async ({ page }) => {
+  await page.route("**/api/me", (route) =>
+    route.fulfill({ status: 401, contentType: "application/json", body: "{}" }),
+  );
   await page.goto("/");
   await page.locator("#custom-word-list").fill("because");
   await page.getByRole("button", { name: "Start Spelling Test" }).click();

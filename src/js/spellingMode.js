@@ -18,6 +18,7 @@ const HEAR_KEY = 'mySpellingGameHearWords';
 const LEGACY_READ_KEY = 'mySpellingGameReadWords';
 const EASY_KEY = 'mySpellingGameEasyMode';
 let signupCtaViewTracked = false;
+let signedInPromise;
 
 export { parseWords };
 
@@ -295,7 +296,9 @@ export function renderResultWorkspaceCta({ mode, wordCount, missedCount }) {
   block.append(message, benefits, button, footnote);
   summary.appendChild(block);
 
-  if (!signupCtaViewTracked) {
+  void isTeacherSignedIn().then((signedIn) => {
+    footnote.hidden = signedIn;
+    if (signedIn || signupCtaViewTracked) return;
     signupCtaViewTracked = true;
     track('signup_cta_viewed', {
       mode,
@@ -304,7 +307,16 @@ export function renderResultWorkspaceCta({ mode, wordCount, missedCount }) {
       replay_round: gameState.replayRound,
       cta_location: 'practice_result',
     });
+  });
+}
+
+function isTeacherSignedIn() {
+  if (!signedInPromise) {
+    signedInPromise = fetch('/api/me', { credentials: 'same-origin' })
+      .then((response) => response.ok)
+      .catch(() => false);
   }
+  return signedInPromise;
 }
 
 export function openTeacherAssignment(entryPoint = 'practice') {

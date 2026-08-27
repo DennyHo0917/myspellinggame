@@ -5,6 +5,7 @@ const EVENT_PARAMS = {
   word_list_created: ['mode', 'word_count', 'locale', 'shared_link', 'entry_page'],
   practice_started: ['mode', 'word_count'],
   game_completed: ['mode', 'word_count', 'correct_count', 'missed_count', 'accuracy', 'duration_seconds', 'replay_round'],
+  signup_cta_viewed: ['mode', 'word_count', 'missed_count', 'replay_round', 'cta_location'],
   practice_link_copied: ['mode', 'word_count', 'locale'],
   missed_words_replayed: ['mode', 'word_count', 'locale'],
   word_completed: ['mode', 'word_length', 'correct'],

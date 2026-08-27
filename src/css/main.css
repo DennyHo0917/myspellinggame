@@ -985,6 +985,42 @@ textarea:focus-visible,
   justify-content: center;
 }
 
+.result-conversion {
+  width: min(100%, 460px);
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-soft);
+  text-align: left;
+}
+
+.result-conversion-message {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.result-conversion-benefits {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+}
+
+.result-conversion-button {
+  width: 100%;
+}
+
+.result-conversion small {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  text-align: center;
+}
+
 .restart-btn,
 .share-score-btn,
 .close-privacy-btn {

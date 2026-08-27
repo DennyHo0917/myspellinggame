@@ -17,6 +17,7 @@ const SENTENCES_STORAGE_KEY = 'mySpellingGameExampleSentences';
 const HEAR_KEY = 'mySpellingGameHearWords';
 const LEGACY_READ_KEY = 'mySpellingGameReadWords';
 const EASY_KEY = 'mySpellingGameEasyMode';
+let signupCtaViewTracked = false;
 
 export { parseWords };
 
@@ -225,6 +226,11 @@ export function renderSummary() {
     duration_seconds: Math.max(0, Math.round((Date.now() - gameState.startTime) / 1000)),
     replay_round: gameState.replayRound,
   });
+  renderResultWorkspaceCta({
+    mode: 'typing',
+    wordCount: stats.word_count,
+    missedCount: stats.missed_count,
+  });
 }
 
 export function replayMissedWords() {
@@ -256,11 +262,56 @@ export async function copyPracticeLink() {
   track('practice_link_copied', { word_count: words.length, mode: selectedMode(), locale: pageLocale() });
 }
 
-export function openTeacherAssignment() {
+export function renderResultWorkspaceCta({ mode, wordCount, missedCount }) {
+  const summary = document.getElementById('spelling-summary');
+  if (!summary) return;
+  summary.querySelector('.result-conversion')?.remove();
+
+  const block = document.createElement('section');
+  block.className = 'result-conversion';
+  const message = document.createElement('p');
+  message.className = 'result-conversion-message';
+  message.textContent = missedCount
+    ? t('workspaceCtaMissed', { count: missedCount })
+    : t('workspaceCtaClean');
+  const benefits = document.createElement('ul');
+  benefits.className = 'result-conversion-benefits';
+  [
+    t('workspaceCtaKeep'),
+    t('workspaceCtaTrack'),
+    t('workspaceCtaCreate'),
+  ].forEach((label) => {
+    const item = document.createElement('li');
+    item.textContent = `✓ ${label}`;
+    benefits.appendChild(item);
+  });
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'share-score-btn result-conversion-button';
+  button.textContent = t('workspaceCtaButton');
+  button.addEventListener('click', () => openTeacherAssignment('practice_result'));
+  const footnote = document.createElement('small');
+  footnote.textContent = t('workspaceCtaFootnote');
+  block.append(message, benefits, button, footnote);
+  summary.appendChild(block);
+
+  if (!signupCtaViewTracked) {
+    signupCtaViewTracked = true;
+    track('signup_cta_viewed', {
+      mode,
+      word_count: wordCount,
+      missed_count: missedCount,
+      replay_round: gameState.replayRound,
+      cta_location: 'practice_result',
+    });
+  }
+}
+
+export function openTeacherAssignment(entryPoint = 'practice') {
   track('assignment_entry_clicked', {
     word_count: currentWords().length,
     mode: selectedMode(),
-    entry_point: 'practice',
+    entry_point: entryPoint,
   });
   try {
     sessionStorage.setItem('mySpellingTeacherDraftWords', currentWords().join('\n'));
@@ -285,6 +336,7 @@ if (typeof window !== 'undefined') {
     renderSummary,
     replayMissedWords,
     copyPracticeLink,
+    renderResultWorkspaceCta,
     openTeacherAssignment,
   };
   window.spellingMode = api;

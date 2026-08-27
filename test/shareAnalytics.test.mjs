@@ -54,6 +54,23 @@ test('analytics allowlists omit raw words and typed answers', () => {
   }), { mode: 'dictation', word_length: 7, correct: true });
 });
 
+test('signup CTA analytics keep only conversion funnel fields', () => {
+  assert.deepEqual(sanitizeEventParams('signup_cta_viewed', {
+    mode: 'dictation',
+    word_count: 10,
+    missed_count: 3,
+    replay_round: false,
+    cta_location: 'practice_result',
+    words: ['because'],
+  }), {
+    mode: 'dictation',
+    word_count: 10,
+    missed_count: 3,
+    replay_round: false,
+    cta_location: 'practice_result',
+  });
+});
+
 test('teacher analytics omit student, assignment, and Stripe identifiers', () => {
   const privateValues = {
     nickname: 'Student 01',

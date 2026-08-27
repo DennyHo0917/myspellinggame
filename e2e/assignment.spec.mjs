@@ -254,6 +254,94 @@ test("practice records a valid list and start separately", async ({ page }) => {
   expect(await analyticsEvents(page, "word_list_created")).toHaveLength(1);
 });
 
+test("typing result offers Workspace CTA and keeps the practice draft", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.locator("#custom-word-list").fill("because\nfriend");
+  await page
+    .locator("#custom-example-sentences")
+    .fill("It rained.\nA friend helped.");
+  await page.locator('input[name="practice-mode"][value="typing"]').check();
+  await page.getByRole("button", { name: "Start Typing Rain" }).click();
+  await page.evaluate(() => {
+    window.gameState.spellingWordsProcessed = 2;
+    window.gameState.missedWordList = ["friend"];
+    window.endGame();
+  });
+
+  await expect(
+    page.getByRole("button", { name: "Continue in Workspace" }),
+  ).toBeVisible();
+  expect(await analyticsEvents(page, "signup_cta_viewed")).toEqual([
+    {
+      mode: "typing",
+      word_count: 2,
+      missed_count: 1,
+      replay_round: false,
+      cta_location: "practice_result",
+    },
+  ]);
+  await page.evaluate(() => {
+    addEventListener("beforeunload", () => {
+      const events = window.dataLayer
+        .map((entry) => Array.from(entry))
+        .filter((entry) => entry[0] === "event");
+      sessionStorage.setItem("eventsBeforeNavigation", JSON.stringify(events));
+    });
+  });
+  await page.getByRole("button", { name: "Continue in Workspace" }).click();
+  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
+  expect(
+    await page.evaluate(() => ({
+      words: sessionStorage.getItem("mySpellingTeacherDraftWords"),
+      sentences: sessionStorage.getItem("mySpellingTeacherDraftSentences"),
+      mode: sessionStorage.getItem("mySpellingTeacherDraftMode"),
+    })),
+  ).toEqual({
+    words: "because\nfriend",
+    sentences: "It rained.\nA friend helped.",
+    mode: "typing",
+  });
+  expect(
+    await page.evaluate(() =>
+      JSON.parse(sessionStorage.getItem("eventsBeforeNavigation") || "[]")
+        .filter((entry) => entry[1] === "assignment_entry_clicked")
+        .map((entry) => entry[2]),
+    ),
+  ).toEqual([
+    { mode: "typing", word_count: 2, entry_point: "practice_result" },
+  ]);
+});
+
+test("dictation result uses the same Workspace CTA", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#custom-word-list").fill("because");
+  await page.getByRole("button", { name: "Start Spelling Test" }).click();
+  await page.evaluate(() => {
+    window.gameState.dictationSummary = {
+      total: 1,
+      correct: 1,
+      incorrect: 0,
+      accuracy: 100,
+      missedWords: [],
+    };
+    window.endGame();
+  });
+  await expect(
+    page.getByRole("button", { name: "Continue in Workspace" }),
+  ).toBeVisible();
+  expect(await analyticsEvents(page, "signup_cta_viewed")).toEqual([
+    {
+      mode: "dictation",
+      word_count: 1,
+      missed_count: 0,
+      replay_round: false,
+      cta_location: "practice_result",
+    },
+  ]);
+});
+
 test("free practice accepts optional example sentences and replays the full prompt", async ({
   page,
 }) => {

@@ -10,7 +10,7 @@ import {
   submitDictationAnswer,
 } from './spellingCore.mjs';
 import { speechSupported, speakWord } from './speech.js';
-import { track } from './spellingMode.js';
+import { renderResultWorkspaceCta, track } from './spellingMode.js';
 import { pageLocale } from './analytics.mjs';
 
 let session = null;
@@ -132,6 +132,11 @@ export function renderDictationSummary() {
     accuracy: summary.accuracy,
     duration_seconds: Math.max(0, Math.round((Date.now() - gameState.startTime) / 1000)),
     replay_round: gameState.replayRound,
+  });
+  renderResultWorkspaceCta({
+    mode: 'dictation',
+    wordCount: summary.total,
+    missedCount: summary.incorrect,
   });
 }
 

@@ -108,6 +108,7 @@ const copy = {
       "Smart missed-word review across assignments",
       "CSV export",
       "Group-wide missed-word statistics",
+      "Curated example sentence library",
     ],
     proValue:
       "Save setup time and always know what each student should practice next.",
@@ -163,6 +164,7 @@ const copy = {
       "Repaso inteligente de errores entre tareas",
       "Exportación CSV",
       "Estadísticas de errores de todo el grupo",
+      "Biblioteca de frases de ejemplo seleccionadas",
     ],
     proValue:
       "Ahorra tiempo de preparación y sabe siempre qué debe practicar cada estudiante.",
@@ -219,6 +221,7 @@ const copy = {
       "Revisão inteligente de erros entre tarefas",
       "Exportação CSV",
       "Estatísticas de erros do grupo",
+      "Biblioteca de frases de exemplo selecionadas",
     ],
     proValue:
       "Economize tempo de preparação e saiba sempre o que cada aluno deve praticar em seguida.",
@@ -275,6 +278,7 @@ const copy = {
       "Révision intelligente des erreurs entre devoirs",
       "Export CSV",
       "Statistiques des mots manqués du groupe",
+      "Bibliothèque de phrases d’exemple sélectionnées",
     ],
     proValue:
       "Gagnez du temps de préparation et sachez toujours ce que chaque élève doit réviser ensuite.",
@@ -331,6 +335,7 @@ const copy = {
       "Ulasan pintar kata yang salah dari berbagai tugas",
       "Ekspor CSV",
       "Statistik kata yang salah untuk seluruh kelompok",
+      "Pustaka kalimat contoh pilihan",
     ],
     proValue:
       "Hemat waktu persiapan dan selalu ketahui apa yang perlu dilatih setiap siswa berikutnya.",
@@ -386,6 +391,7 @@ const copy = {
       "跨作业智能错词复习",
       "导出 CSV",
       "查看群组错词统计",
+      "使用精选例句库",
     ],
     proValue: "节省每次准备词表的时间，并随时知道每位学生接下来该练什么。",
     monthly: "月付方案",
@@ -422,7 +428,21 @@ function escape(value) {
 }
 
 function render(locale) {
-  const c = copy[locale.code];
+  const source = copy[locale.code];
+  const c = Object.fromEntries(
+    Object.entries(source).map(([key, value]) => [
+      key,
+      typeof value === "string"
+        ? value.replace(/\bPro\b/g, "Plus")
+        : Array.isArray(value)
+          ? value.map((item) =>
+              typeof item === "string"
+                ? item.replace(/\bPro\b/g, "Plus")
+                : item,
+            )
+          : value,
+    ]),
+  );
   const prefix = locale.dir ? `/${locale.dir}` : "";
   const links = [
     `<a href="${prefix}/sight-word-typing-game">${footerLinks[locale.code][0]}</a>`,

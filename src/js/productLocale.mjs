@@ -1443,6 +1443,65 @@ const URL_LOCALES = {
 
 export const PENDING_CHECKOUT_LOCALE_KEY = "pendingCheckoutLocale";
 
+const SENTENCE_LIBRARY_COPY = {
+  en: {
+    sentenceLevel: "Sentence level",
+    sentenceSimple: "Simple",
+    sentenceDifficult: "Difficult",
+    fillSentenceLibrary: "Fill from sentence library",
+    fillSentenceLibraryPlus: "Auto-fill example sentences — Plus",
+    sentenceLibraryRequired: "Sentence library is available on Plus.",
+    invalidSentenceLevel: "Choose simple or difficult sentences.",
+  },
+  es: {
+    sentenceLevel: "Nivel de frase",
+    sentenceSimple: "Sencilla",
+    sentenceDifficult: "Difícil",
+    fillSentenceLibrary: "Completar desde la biblioteca",
+    fillSentenceLibraryPlus: "Autocompletar frases — Plus",
+    sentenceLibraryRequired:
+      "La biblioteca de frases está disponible con Plus.",
+    invalidSentenceLevel: "Elige frases sencillas o difíciles.",
+  },
+  "pt-BR": {
+    sentenceLevel: "Nível da frase",
+    sentenceSimple: "Simples",
+    sentenceDifficult: "Difícil",
+    fillSentenceLibrary: "Preencher pela biblioteca",
+    fillSentenceLibraryPlus: "Preencher frases automaticamente — Plus",
+    sentenceLibraryRequired: "A biblioteca de frases está disponível no Plus.",
+    invalidSentenceLevel: "Escolha frases simples ou difíceis.",
+  },
+  fr: {
+    sentenceLevel: "Niveau de phrase",
+    sentenceSimple: "Simple",
+    sentenceDifficult: "Difficile",
+    fillSentenceLibrary: "Remplir depuis la bibliothèque",
+    fillSentenceLibraryPlus: "Remplir automatiquement — Plus",
+    sentenceLibraryRequired:
+      "La bibliothèque de phrases est disponible avec Plus.",
+    invalidSentenceLevel: "Choisissez des phrases simples ou difficiles.",
+  },
+  id: {
+    sentenceLevel: "Tingkat kalimat",
+    sentenceSimple: "Sederhana",
+    sentenceDifficult: "Sulit",
+    fillSentenceLibrary: "Isi dari pustaka kalimat",
+    fillSentenceLibraryPlus: "Isi otomatis kalimat — Plus",
+    sentenceLibraryRequired: "Pustaka kalimat tersedia di Plus.",
+    invalidSentenceLevel: "Pilih kalimat sederhana atau sulit.",
+  },
+  zh: {
+    sentenceLevel: "例句难度",
+    sentenceSimple: "简单",
+    sentenceDifficult: "进阶",
+    fillSentenceLibrary: "从例句库填充",
+    fillSentenceLibraryPlus: "自动填充例句 — Plus",
+    sentenceLibraryRequired: "例句库仅 Plus 可用。",
+    invalidSentenceLevel: "请选择简单或进阶例句。",
+  },
+};
+
 function productUrlLocale(value) {
   const key = String(value || "").toLowerCase();
   return Object.hasOwn(URL_LOCALES, key) ? URL_LOCALES[key] : "";
@@ -1493,7 +1552,16 @@ export function productLocale() {
 }
 
 export function productMessages(locale = productLocale()) {
-  return PACKS[locale] || PACKS.en;
+  const pack = {
+    ...(PACKS[locale] || PACKS.en),
+    ...(SENTENCE_LIBRARY_COPY[locale] || SENTENCE_LIBRARY_COPY.en),
+  };
+  return Object.fromEntries(
+    Object.entries(pack).map(([key, value]) => [
+      key,
+      typeof value === "string" ? value.replace(/\bPro\b/g, "Plus") : value,
+    ]),
+  );
 }
 
 export function productMessage(key, vars = {}, locale = productLocale()) {

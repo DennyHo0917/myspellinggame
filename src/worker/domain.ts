@@ -9,8 +9,9 @@ export const PLAN_LIMITS = {
     smartReview: false,
     csvExport: false,
     missedWordStats: false,
+    sentenceLibrary: false,
   },
-  pro: {
+  plus: {
     activeAssignments: 20,
     monthlyAttempts: null,
     savedLists: null,
@@ -20,6 +21,7 @@ export const PLAN_LIMITS = {
     smartReview: true,
     csvExport: true,
     missedWordStats: true,
+    sentenceLibrary: true,
   },
 } as const;
 

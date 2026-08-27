@@ -19,6 +19,10 @@ These instructions apply to the entire repository.
 - After completing any modification, report the changes, checks performed, and anything not yet verified, then stop and wait for user confirmation.
 - Do not commit, push, deploy, or create a pull request unless the user explicitly asks for that action.
 
+## Database Migrations
+
+- Whenever a change adds or modifies a database migration, execute the remote D1 migrations with `npm run db:migrate:remote` before reporting the work complete.
+
 ## Push Destination
 
 - When the user explicitly asks to push, do not use the `gh` CLI or a pull-request workflow.

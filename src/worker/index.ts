@@ -23,6 +23,7 @@ import {
   validateSavedListTitle,
   validateTitle,
   parseWordEntries,
+  parseWordList,
   type AssignmentWord,
   type Plan,
 } from "./domain";
@@ -288,7 +289,7 @@ async function adminUsers(env: Env, url: URL) {
         },
         env,
       )
-        ? "pro"
+        ? "plus"
         : "free",
       subscriptionStatus: row.status,
       billingInterval: row.billing_interval,
@@ -317,7 +318,37 @@ async function getPlan(
       current_period_end: string | null;
       stripe_price_id: string | null;
     }>();
-  return hasActiveSubscription(subscription ?? null, env, now) ? "pro" : "free";
+  return hasActiveSubscription(subscription ?? null, env, now)
+    ? "plus"
+    : "free";
+}
+
+async function matchSentenceLibrary(
+  db: D1Database,
+  words: string[],
+  difficulty: "simple" | "difficult",
+) {
+  const placeholders = words.map(() => "?").join(",");
+  const rows = await db
+    .prepare(
+      `SELECT word, simple_sentence, difficult_sentence FROM word_sentences
+       WHERE lower(word) IN (${placeholders})`,
+    )
+    .bind(...words)
+    .all<{
+      word: string;
+      simple_sentence: string;
+      difficult_sentence: string;
+    }>();
+  const found = new Map(
+    rows.results.map((row) => [
+      normalizeWord(row.word),
+      difficulty === "simple" ? row.simple_sentence : row.difficult_sentence,
+    ]),
+  );
+  return Object.fromEntries(
+    words.map((word) => [word, found.get(word) ?? null]),
+  );
 }
 
 function historyCutoff(plan: Plan, now = new Date()) {
@@ -811,7 +842,7 @@ function requireSmartReview(plan: Plan) {
     throw new HttpError(
       403,
       "smart_review_required",
-      "Smart review is available on Pro.",
+      "Smart review is available on Plus.",
     );
 }
 
@@ -1262,7 +1293,7 @@ async function exportCsv(
   plan: Plan,
 ) {
   if (!PLAN_LIMITS[plan].csvExport)
-    throw new HttpError(403, "pro_required", "CSV export requires Pro.");
+    throw new HttpError(403, "pro_required", "CSV export requires Plus.");
   const detail = await assignmentDetail(db, assignment, plan);
   const lines = [
     [
@@ -1457,7 +1488,7 @@ export async function handleRequest(
         trial_used_at: string | null;
       }>();
     const plan = hasActiveSubscription(subscription ?? null, env)
-      ? "pro"
+      ? "plus"
       : "free";
     return json({
       user: { id: user.id, name: user.name, email: user.email },
@@ -1480,6 +1511,31 @@ export async function handleRequest(
       requireSameOrigin(request);
       return json(await createSavedList(env, request, user.id), 201);
     }
+  }
+
+  if (url.pathname === "/api/sentence-library/match" && method === "POST") {
+    requireSameOrigin(request);
+    const user = await requireTeacher(env, request, getSession);
+    const plan = await getPlan(env, user.id);
+    if (!PLAN_LIMITS[plan].sentenceLibrary)
+      throw new HttpError(
+        403,
+        "sentence_library_required",
+        "Sentence library is available on Plus.",
+      );
+    const body = await readJson(request);
+    const words = parseWordList(body.words);
+    const difficulty =
+      body.difficulty === undefined ? "simple" : body.difficulty;
+    if (difficulty !== "simple" && difficulty !== "difficult")
+      throw new HttpError(
+        400,
+        "invalid_sentence_level",
+        "Choose simple or difficult sentences.",
+      );
+    return json({
+      matches: await matchSentenceLibrary(env.DB, words, difficulty),
+    });
   }
 
   const savedListMatch = url.pathname.match(

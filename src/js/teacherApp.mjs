@@ -56,6 +56,8 @@ const ERROR_KEYS = {
   learner_exists: "learnerExists",
   learner_limit: "learnerLimit",
   smart_review_required: "smartReviewRequired",
+  sentence_library_required: "sentenceLibraryRequired",
+  invalid_sentence_level: "invalidSentenceLevel",
   rate_limited: "rateLimited",
 };
 
@@ -77,6 +79,82 @@ async function api(path, options = {}) {
     throw error;
   }
   return data;
+}
+
+function isPlusPlan(me) {
+  return me.plan === "plus" || me.plan === "pro";
+}
+
+function attachSentenceLibraryControls(
+  form,
+  me,
+  wordsSelector,
+  sentencesSelector,
+  modeSelector = null,
+) {
+  const sentenceField = form
+    .querySelector(sentencesSelector)
+    ?.closest(".field");
+  if (!sentenceField) return;
+  const level = document.createElement("select");
+  level.id = `${sentencesSelector.slice(1)}-level`;
+  level.innerHTML = `<option value="simple">${copy.sentenceSimple}</option><option value="difficult">${copy.sentenceDifficult}</option>`;
+  const levelLabel = document.createElement("label");
+  levelLabel.htmlFor = level.id;
+  levelLabel.textContent = copy.sentenceLevel;
+  const fill = document.createElement("button");
+  fill.type = "button";
+  fill.className = "button-secondary sentence-library-fill";
+  fill.textContent = isPlusPlan(me)
+    ? copy.fillSentenceLibrary
+    : copy.fillSentenceLibraryPlus;
+  fill.addEventListener("click", async () => {
+    if (!isPlusPlan(me)) {
+      location.href = `${productPagePath("pricing", locale)}#pricing`;
+      return;
+    }
+    const words = form.querySelector(wordsSelector).value;
+    fill.disabled = true;
+    try {
+      const { matches } = await api("/api/sentence-library/match", {
+        method: "POST",
+        body: JSON.stringify({ words, difficulty: level.value }),
+      });
+      const lines = words
+        .split(/\r?\n/)
+        .map((word) => word.trim())
+        .filter(Boolean);
+      const existing = form
+        .querySelector(sentencesSelector)
+        .value.split(/\r?\n/);
+      form.querySelector(sentencesSelector).value = lines
+        .map(
+          (word, index) =>
+            existing[index]?.trim() || matches[word.toLowerCase()] || "",
+        )
+        .join("\n");
+    } catch (error) {
+      showSectionError(
+        form.closest("section") || form,
+        error,
+        error.code === "sentence_library_required" ? "sentence_library" : null,
+      );
+    } finally {
+      fill.disabled = false;
+    }
+  });
+  const controls = document.createElement("div");
+  controls.className = "sentence-library-controls";
+  controls.append(levelLabel, level, fill);
+  sentenceField.append(controls);
+  if (modeSelector) {
+    const update = () => {
+      const mode = form.querySelector(`${modeSelector}:checked`)?.value;
+      sentenceField.hidden = mode === "word-rain";
+    };
+    form.addEventListener("change", update);
+    update();
+  }
 }
 
 function nav({ signedIn = true } = {}) {
@@ -387,6 +465,12 @@ function renderSavedLists(me, savedLists) {
     <div class="field"><label for="saved-list-words">${copy.words}</label><textarea id="saved-list-words" required spellcheck="false" placeholder="${copy.wordsHelp}"></textarea></div>
     <div class="field"><label for="saved-list-sentences">${copy.exampleSentences}</label><textarea id="saved-list-sentences" maxlength="30000" spellcheck="true" placeholder="${copy.exampleSentencesHelp}"></textarea></div>
     <div class="actions"><button type="submit">${copy.saveList}</button></div>`;
+  attachSentenceLibraryControls(
+    form,
+    me,
+    "#saved-list-words",
+    "#saved-list-sentences",
+  );
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const button = form.querySelector('button[type="submit"]');
@@ -454,13 +538,35 @@ function renderSavedLists(me, savedLists) {
           .join("\n"),
       );
       if (sentencesValue === null) return;
+      let editedSentences = sentencesValue;
+      if (isPlusPlan(me) && confirm(copy.fillSentenceLibrary)) {
+        try {
+          const matches = await api("/api/sentence-library/match", {
+            method: "POST",
+            body: JSON.stringify({ words: wordsValue, difficulty: "simple" }),
+          });
+          const existing = editedSentences.split(/\r?\n/);
+          editedSentences = wordsValue
+            .split(/\r?\n/)
+            .map(
+              (word, index) =>
+                existing[index]?.trim() ||
+                matches.matches[word.trim().toLowerCase()] ||
+                "",
+            )
+            .join("\n");
+        } catch (error) {
+          showSectionError(section, error);
+          return;
+        }
+      }
       try {
         await api(`/api/saved-lists/${savedList.id}`, {
           method: "PATCH",
           body: JSON.stringify({
             title: titleValue,
             words: wordsValue,
-            exampleSentences: sentencesValue,
+            exampleSentences: editedSentences,
           }),
         });
         await renderDashboard(me);
@@ -620,16 +726,16 @@ async function renderDashboard(me) {
   const greeting = document.createElement("p");
   greeting.textContent = m("greeting", { name: me.user.name });
   const plan = document.createElement("span");
-  plan.className = `badge teacher-plan-badge ${me.plan === "pro" ? "pro" : ""}`;
-  plan.textContent = m("plan", { plan: me.plan === "pro" ? "Pro" : "Free" });
+  plan.className = `badge teacher-plan-badge ${isPlusPlan(me) ? "pro" : ""}`;
+  plan.textContent = m("plan", { plan: isPlusPlan(me) ? "Plus" : "Free" });
   const actions = document.createElement("div");
   actions.className = "actions";
   const create = document.createElement("a");
   create.className = "button-link";
   create.href = `/teacher/assignments/new?lang=${encodeURIComponent(locale)}`;
   create.textContent = copy.newAssignment;
-  const billing = document.createElement(me.plan === "pro" ? "button" : "a");
-  if (me.plan === "pro") {
+  const billing = document.createElement(isPlusPlan(me) ? "button" : "a");
+  if (isPlusPlan(me)) {
     billing.type = "button";
     billing.className = "button-secondary";
     billing.textContent = copy.manageBilling;
@@ -697,7 +803,7 @@ async function renderDashboard(me) {
     renderSavedLists(me, data.savedLists || []),
     renderLearners(me, data.learners || []),
   );
-  if (me.plan !== "pro")
+  if (!isPlusPlan(me))
     await appendPricing(main, {
       currentPlan: true,
       trialEligible: me.trialEligible,
@@ -766,7 +872,7 @@ function showCheckoutRetry(interval, error) {
   main.prepend(notice);
 }
 
-async function renderNew() {
+async function renderNew(me) {
   const main = shell();
   const card = document.createElement("section");
   card.className = "product-card";
@@ -802,6 +908,13 @@ async function renderNew() {
     <fieldset><legend>${copy.mode}</legend><div class="radio-row"><label><input type="radio" name="mode" value="dictation"> ${copy.dictation}</label><label><input type="radio" name="mode" value="typing"> ${copy.typing}</label></div></fieldset>
     <div class="grid"><div class="field"><label for="assignment-deadline">${copy.deadline}</label><input id="assignment-deadline" type="datetime-local" required></div><div class="field"><label for="assignment-max">${copy.maxAttempts}</label><select id="assignment-max">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<option>${n}</option>`).join("")}</select></div></div>
     <div class="actions"><button type="submit">${copy.publish}</button></div>`;
+  attachSentenceLibraryControls(
+    form,
+    me,
+    "#assignment-words",
+    "#assignment-sentences",
+    'input[name="mode"]',
+  );
   form.querySelector("#assignment-words").value = draftWords;
   form.querySelector("#assignment-sentences").value = draftSentences;
   form.querySelector("#assignment-title").value = draftTitle;
@@ -978,10 +1091,36 @@ async function renderDetail(me, id) {
       data.words.map((word) => word.example_sentence || "").join("\n"),
     );
     if (exampleSentences === null) return;
+    let editedSentences = exampleSentences;
+    if (isPlusPlan(me) && confirm(copy.fillSentenceLibrary)) {
+      try {
+        const matches = await api("/api/sentence-library/match", {
+          method: "POST",
+          body: JSON.stringify({ words, difficulty: "simple" }),
+        });
+        const existing = editedSentences.split(/\r?\n/);
+        editedSentences = words
+          .split(/\r?\n/)
+          .map(
+            (word, index) =>
+              existing[index]?.trim() ||
+              matches.matches[word.trim().toLowerCase()] ||
+              "",
+          )
+          .join("\n");
+      } catch (error) {
+        showSectionError(card, error);
+        return;
+      }
+    }
     try {
       await api(`/api/assignments/${id}`, {
         method: "PATCH",
-        body: JSON.stringify({ title, words, exampleSentences }),
+        body: JSON.stringify({
+          title,
+          words,
+          exampleSentences: editedSentences,
+        }),
       });
       location.reload();
     } catch (error) {
@@ -989,7 +1128,7 @@ async function renderDetail(me, id) {
     }
   });
   actions.append(copyButton, edit, saveList, toggle);
-  if (me.plan === "pro") {
+  if (isPlusPlan(me)) {
     const exportLink = document.createElement("a");
     exportLink.className = "button-link button-secondary";
     exportLink.href = `/api/assignments/${id}/export.csv`;
@@ -1019,7 +1158,7 @@ async function renderDetail(me, id) {
   const reviewCopy = document.createElement("p");
   reviewCopy.textContent = copy.smartReviewValue;
   review.append(reviewTitle, reviewCopy);
-  if (me.plan === "pro") {
+  if (isPlusPlan(me)) {
     const createReview = document.createElement("button");
     createReview.type = "button";
     createReview.textContent = copy.createReview;
@@ -1218,7 +1357,7 @@ async function renderLearner(me, id) {
   const history = document.createElement("p");
   history.textContent = m("historyWindow", { days: data.historyDays });
   card.append(headingRow, history);
-  if (me.plan !== "pro") {
+  if (!isPlusPlan(me)) {
     const historyUpgrade = document.createElement("div");
     historyUpgrade.className = "notice";
     const message = document.createElement("p");
@@ -1364,7 +1503,7 @@ async function pollForPro() {
     await new Promise((resolve) => setTimeout(resolve, 1_000));
     try {
       const me = await api("/api/me");
-      if (me.plan === "pro") return me;
+      if (isPlusPlan(me)) return me;
     } catch {
       // Keep the activation status visible and retry within the bounded window.
     }
@@ -1417,7 +1556,7 @@ async function renderTeacherRoute(me) {
     /^\/teacher\/learners\/([0-9a-f-]{36})$/i,
   );
   try {
-    if (location.pathname === "/teacher/assignments/new") await renderNew();
+    if (location.pathname === "/teacher/assignments/new") await renderNew(me);
     else if (detail) await renderDetail(me, detail[1]);
     else if (learner) await renderLearner(me, learner[1]);
     else await renderDashboard(me);
@@ -1500,7 +1639,7 @@ async function init() {
   }
   const params = new URLSearchParams(location.search);
   if (params.get("checkout") === "success") {
-    if (me.plan !== "pro") {
+    if (!isPlusPlan(me)) {
       activationCard(copy.activatingPro);
       me = await pollForPro();
       if (!me) {

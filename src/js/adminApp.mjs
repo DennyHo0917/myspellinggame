@@ -72,7 +72,7 @@ function renderStats(stats) {
   const labels = [
     ["注册用户总数", stats.totalUsers],
     ["Google 用户", stats.googleUsers],
-    ["当前 Pro 用户", stats.proUsers],
+    ["当前 Plus 用户", stats.proUsers],
     ["试用中", stats.trialingUsers],
     ["正式付费", stats.activePaidUsers],
     ["月付用户", stats.monthlyUsers],
@@ -105,7 +105,7 @@ async function loadUsers() {
         user.name,
         user.email,
         formatProvider(user.loginProvider),
-        user.plan === "pro" ? "Pro" : "免费",
+        user.plan === "plus" || user.plan === "pro" ? "Plus" : "免费",
         formatSubscriptionStatus(user.subscriptionStatus),
         formatBillingInterval(user.billingInterval),
         user.trialUsed ? "是" : "否",

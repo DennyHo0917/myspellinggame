@@ -71,6 +71,27 @@ test('signup CTA analytics keep only conversion funnel fields', () => {
   });
 });
 
+test('practice share analytics keep only chooser and anonymous-share fields', () => {
+  assert.deepEqual(sanitizeEventParams('practice_share_options_viewed', {
+    mode: 'typing',
+    word_count: 8,
+    locale: 'en',
+    words: ['because'],
+  }), { mode: 'typing', word_count: 8, locale: 'en' });
+  assert.deepEqual(sanitizeEventParams('practice_link_copied', {
+    mode: 'typing',
+    word_count: 8,
+    locale: 'en',
+    share_type: 'practice_only',
+    words: ['because'],
+  }), {
+    mode: 'typing',
+    word_count: 8,
+    locale: 'en',
+    share_type: 'practice_only',
+  });
+});
+
 test('teacher analytics omit student, assignment, and Stripe identifiers', () => {
   const privateValues = {
     nickname: 'Student 01',

@@ -188,11 +188,10 @@
                             </div>
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">Contoh daftar</button>
-                                <button type="button" onclick="copyPracticeLink()">Salin link latihan</button>
+                                <button type="button" id="copy-practice-link-btn" aria-haspopup="true" aria-controls="practice-share-options" aria-expanded="false" onclick="copyPracticeLink()">Salin link latihan</button>
                                 <button type="button" onclick="showPrivacyPolicyLegacy()">Privasi</button>
-                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Berikan tugas</button>
+                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment('assign_homework')">Berikan tugas</button>
                             </div>
-                            <button type="button" class="copy-assignment-hint" id="copy-assignment-hint" onclick="openTeacherAssignment()" hidden>Ingin melihat hasil siswa? Buat tugas gratis.</button>
                         </div>
                         <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Mulai tes ejaan</button>
                     </div>

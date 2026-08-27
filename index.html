@@ -188,11 +188,10 @@
                             </div>
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">Sample list</button>
-                                <button type="button" onclick="copyPracticeLink()">Copy practice link</button>
+                                <button type="button" id="copy-practice-link-btn" aria-haspopup="true" aria-controls="practice-share-options" aria-expanded="false" onclick="copyPracticeLink()">Copy practice link</button>
                                 <button type="button" onclick="showPrivacyPolicyLegacy()">Privacy</button>
-                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Assign homework</button>
+                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment('assign_homework')">Assign homework</button>
                             </div>
-                            <button type="button" class="copy-assignment-hint" id="copy-assignment-hint" onclick="openTeacherAssignment()" hidden>Want student results? Create a free assignment.</button>
                         </div>
                         <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Start Spelling Test</button>
                     </div>

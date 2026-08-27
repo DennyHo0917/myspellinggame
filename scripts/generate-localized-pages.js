@@ -141,8 +141,6 @@ const pages = {
       copy: "Copiar enlace de práctica",
       assign: "Asignar tarea",
       assignComplete: "Asignar esta lista a estudiantes",
-      copyAssignmentHint:
-        "¿Quieres ver los resultados de tus alumnos? Crea una tarea gratis.",
       start: "Empezar práctica",
       complete: "Práctica terminada",
       returnMenu: "Volver al menú principal",
@@ -301,8 +299,6 @@ const pages = {
       copy: "Copiar link de prática",
       assign: "Criar tarefa",
       assignComplete: "Criar tarefa para alunos com esta lista",
-      copyAssignmentHint:
-        "Quer ver os resultados dos alunos? Crie uma tarefa grátis.",
       start: "Começar prática",
       complete: "Prática concluída",
       returnMenu: "Voltar ao menu principal",
@@ -461,8 +457,6 @@ const pages = {
       copy: "Copier le lien",
       assign: "Donner un devoir",
       assignComplete: "Donner cette liste aux élèves",
-      copyAssignmentHint:
-        "Vous voulez les résultats des élèves ? Créez un devoir gratuit.",
       start: "Commencer",
       complete: "Entraînement terminé",
       returnMenu: "Retour au menu principal",
@@ -621,7 +615,6 @@ const pages = {
       copy: "Salin link latihan",
       assign: "Berikan tugas",
       assignComplete: "Berikan daftar ini ke siswa",
-      copyAssignmentHint: "Ingin melihat hasil siswa? Buat tugas gratis.",
       start: "Mulai latihan",
       complete: "Latihan selesai",
       returnMenu: "Kembali ke menu utama",
@@ -772,7 +765,6 @@ const pages = {
       copy: "复制练习链接",
       assign: "教师&家长：布置作业",
       assignComplete: "用这份词表给学生布置作业",
-      copyAssignmentHint: "想查看学生成绩？免费创建一份作业。",
       start: "开始练习",
       complete: "练习完成",
       returnMenu: "返回主菜单",
@@ -1225,11 +1217,10 @@ ${game.chips.map((chip) => `                            <span>${chip}</span>`).j
                             </div>
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">${game.sample}</button>
-                                <button type="button" onclick="copyPracticeLink()">${game.copy}</button>
+                                <button type="button" id="copy-practice-link-btn" aria-haspopup="true" aria-controls="practice-share-options" aria-expanded="false" onclick="copyPracticeLink()">${game.copy}</button>
                                 <button type="button" onclick="showPrivacyPolicyLegacy()">${nav.privacy}</button>
-                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">${escapeAttr(game.assign)}</button>
+                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment('assign_homework')">${escapeAttr(game.assign)}</button>
                             </div>
-                            <button type="button" class="copy-assignment-hint" id="copy-assignment-hint" onclick="openTeacherAssignment()" hidden>${game.copyAssignmentHint}</button>
                         </div>
                         <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">${mode.start}</button>
                     </div>

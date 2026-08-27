@@ -188,11 +188,10 @@
                             </div>
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">示例单词表</button>
-                                <button type="button" onclick="copyPracticeLink()">复制练习链接</button>
+                                <button type="button" id="copy-practice-link-btn" aria-haspopup="true" aria-controls="practice-share-options" aria-expanded="false" onclick="copyPracticeLink()">复制练习链接</button>
                                 <button type="button" onclick="showPrivacyPolicyLegacy()">隐私</button>
-                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">教师&amp;家长：布置作业</button>
+                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment('assign_homework')">教师&amp;家长：布置作业</button>
                             </div>
-                            <button type="button" class="copy-assignment-hint" id="copy-assignment-hint" onclick="openTeacherAssignment()" hidden>想查看学生成绩？免费创建一份作业。</button>
                         </div>
                         <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">开始听写测试</button>
                     </div>

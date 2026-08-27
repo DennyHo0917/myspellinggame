@@ -188,11 +188,10 @@
                             </div>
                             <div class="spelling-actions">
                                 <button type="button" onclick="loadSampleWords()">Liste exemple</button>
-                                <button type="button" onclick="copyPracticeLink()">Copier le lien</button>
+                                <button type="button" id="copy-practice-link-btn" aria-haspopup="true" aria-controls="practice-share-options" aria-expanded="false" onclick="copyPracticeLink()">Copier le lien</button>
                                 <button type="button" onclick="showPrivacyPolicyLegacy()">Confidentialité</button>
-                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment()">Donner un devoir</button>
+                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment('assign_homework')">Donner un devoir</button>
                             </div>
-                            <button type="button" class="copy-assignment-hint" id="copy-assignment-hint" onclick="openTeacherAssignment()" hidden>Vous voulez les résultats des élèves ? Créez un devoir gratuit.</button>
                         </div>
                         <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Commencer le test d’orthographe</button>
                     </div>

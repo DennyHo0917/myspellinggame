@@ -254,6 +254,202 @@ test("practice records a valid list and start separately", async ({ page }) => {
   expect(await analyticsEvents(page, "word_list_created")).toHaveLength(1);
 });
 
+test("Copy practice link chooses anonymous practice before copying", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText(value) {
+          window.copiedPracticeUrl = value;
+          return Promise.resolve();
+        },
+      },
+    });
+  });
+  await page.goto("/");
+  await page.locator("#custom-word-list").fill("because\nfriend");
+  await page.locator('input[name="practice-mode"][value="typing"]').check();
+
+  const trigger = page.getByRole("button", { name: "Copy practice link" });
+  await trigger.click();
+  const chooser = page.locator("#practice-share-options");
+  await expect(chooser).toBeVisible();
+  await expect(chooser.getByText("Share this practice")).toBeVisible();
+  await expect(chooser.locator(".practice-share-option")).toHaveCount(2);
+  await expect(chooser).toContainText("Practice only");
+  await expect(chooser).toContainText("Track results");
+  expect(await page.evaluate(() => window.copiedPracticeUrl)).toBeUndefined();
+  expect(await analyticsEvents(page, "practice_link_copied")).toEqual([]);
+
+  await trigger.click();
+  await expect(chooser).toHaveCount(0);
+  await trigger.click();
+  expect(await analyticsEvents(page, "practice_share_options_viewed")).toEqual(
+    [{ mode: "typing", word_count: 2, locale: "en" }],
+  );
+
+  await page
+    .locator(".practice-share-option", { hasText: "Practice only" })
+    .click();
+  expect(await page.evaluate(() => window.copiedPracticeUrl)).toMatch(
+    /\/#words=/,
+  );
+  await expect(page).toHaveURL("/");
+  await expect(chooser).toHaveCount(0);
+  await expect(
+    page.getByText("Want student results? Create a free assignment."),
+  ).toHaveCount(0);
+  expect(await analyticsEvents(page, "practice_link_copied")).toEqual([
+    {
+      mode: "typing",
+      word_count: 2,
+      locale: "en",
+      share_type: "practice_only",
+    },
+  ]);
+});
+
+test("Practice only keeps the existing prompt fallback", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText: () => Promise.reject(new Error("unavailable")) },
+    });
+    window.prompt = (_message, value) => {
+      window.promptedPracticeUrl = value;
+      return value;
+    };
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Copy practice link" }).click();
+  await page
+    .locator(".practice-share-option", { hasText: "Practice only" })
+    .click();
+  expect(await page.evaluate(() => window.promptedPracticeUrl)).toMatch(
+    /\/#words=/,
+  );
+  await expect(page.locator("#practice-share-options")).toHaveCount(0);
+  await expect(page.locator("#spelling-status")).toHaveText(
+    "Practice link ready",
+  );
+});
+
+test("share choices are localized without raw message keys", async ({ page }) => {
+  for (const path of ["/es/", "/pt-br/", "/fr/", "/id/", "/zh/"]) {
+    await page.goto(path);
+    await page.locator("#copy-practice-link-btn").click();
+    const chooser = page.locator("#practice-share-options");
+    await expect(chooser).toBeVisible();
+    await expect(chooser.locator(".practice-share-option")).toHaveCount(2);
+    await expect(chooser).not.toContainText(
+      /sharePracticeTitle|practiceOnlyTitle|trackResultsTitle/,
+    );
+  }
+});
+
+test("Track results skips anonymous copying and opens the existing assignment flow", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText() {
+          sessionStorage.setItem(
+            "clipboardWrites",
+            String(Number(sessionStorage.getItem("clipboardWrites")) + 1),
+          );
+          return Promise.resolve();
+        },
+      },
+    });
+  });
+  await page.route("**/api/config", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ googleAuthConfigured: true }),
+    }),
+  );
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      status: 401,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "sign_in_required" }),
+    }),
+  );
+  await page.goto("/");
+  await page.locator("#custom-word-list").fill("because\nfriend");
+  await page
+    .locator("#custom-example-sentences")
+    .fill("It rained.\nA friend helped.");
+  await page.locator('input[name="practice-mode"][value="typing"]').check();
+  await page.evaluate(() => {
+    addEventListener("beforeunload", () => {
+      sessionStorage.setItem(
+        "eventsBeforeNavigation",
+        JSON.stringify(window.dataLayer.map((entry) => Array.from(entry))),
+      );
+    });
+  });
+
+  await page.getByRole("button", { name: "Copy practice link" }).click();
+  await page
+    .locator(".practice-share-option", { hasText: "Track results" })
+    .click();
+  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
+  await expect(
+    page.getByRole("button", { name: "Continue with Google" }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() => ({
+      words: sessionStorage.getItem("mySpellingTeacherDraftWords"),
+      sentences: sessionStorage.getItem("mySpellingTeacherDraftSentences"),
+      mode: sessionStorage.getItem("mySpellingTeacherDraftMode"),
+      event: JSON.parse(
+        sessionStorage.getItem("eventsBeforeNavigation") || "[]",
+      )
+        .filter((item) => item[1] === "assignment_entry_clicked")
+        .at(-1)?.[2],
+    })),
+  ).toEqual({
+    words: "because\nfriend",
+    sentences: "It rained.\nA friend helped.",
+    mode: "typing",
+    event: { mode: "typing", word_count: 2, entry_point: "copy_track" },
+  });
+  expect(
+    await page.evaluate(() =>
+      Number(sessionStorage.getItem("clipboardWrites") || 0),
+    ),
+  ).toBe(0);
+});
+
+test("signed-in Track results opens the existing assignment form directly", async ({
+  page,
+}) => {
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
+        plan: "free",
+      }),
+    }),
+  );
+  await page.goto("/");
+  await page.getByRole("button", { name: "Copy practice link" }).click();
+  await page
+    .locator(".practice-share-option", { hasText: "Track results" })
+    .click();
+  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
+  await expect(page.getByLabel("Assignment title")).toBeVisible();
+  await expect(page.getByLabel("Spelling words")).toHaveValue(
+    "because\nfriend\nbeautiful\nanswer\nenough\nfavorite\nlibrary\nthrough",
+  );
+});
+
 test("typing result offers Workspace CTA and keeps the practice draft", async ({
   page,
 }) => {
@@ -757,6 +953,7 @@ test("Google sign-in returns to a prefilled new teacher assignment", async ({
   const assign = page.getByRole("button", {
     name: "Assign homework",
   });
+  await expect(page.locator("#practice-share-options")).toHaveCount(0);
   const alignment = await Promise.all([
     assign.boundingBox(),
     page.locator(".spelling-actions").boundingBox(),
@@ -778,7 +975,7 @@ test("Google sign-in returns to a prefilled new teacher assignment", async ({
     [
       "event",
       "assignment_entry_clicked",
-      { mode: "typing", word_count: 2, entry_point: "practice" },
+      { mode: "typing", word_count: 2, entry_point: "assign_homework" },
     ],
   ]);
   await page.getByRole("button", { name: "Continue with Google" }).click();

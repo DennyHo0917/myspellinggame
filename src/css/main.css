@@ -608,24 +608,37 @@ a {
   background: #e2f0ec;
 }
 
-.copy-assignment-hint {
-  align-self: flex-start;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--primary);
+.practice-share-options {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgba(47, 111, 115, 0.25);
+  border-radius: var(--radius);
+  background: #f3f9f7;
+}
+
+.practice-share-option {
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
   cursor: pointer;
-  font-size: 0.84rem;
-  font-weight: 750;
   text-align: left;
 }
 
-.copy-assignment-hint:hover {
-  text-decoration: underline;
+.practice-share-option:hover,
+.practice-share-option:focus-visible {
+  border-color: rgba(47, 111, 115, 0.45);
+  background: #fff;
 }
 
-.copy-assignment-hint[hidden] {
-  display: none;
+.practice-share-option span,
+.practice-share-option small {
+  color: var(--muted);
+  line-height: 1.35;
 }
 
 .spelling-actions button,

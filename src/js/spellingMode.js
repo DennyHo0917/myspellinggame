@@ -18,6 +18,7 @@ const HEAR_KEY = 'mySpellingGameHearWords';
 const LEGACY_READ_KEY = 'mySpellingGameReadWords';
 const EASY_KEY = 'mySpellingGameEasyMode';
 let signupCtaViewTracked = false;
+let shareOptionsViewTracked = false;
 let signedInPromise;
 
 export { parseWords };
@@ -248,7 +249,28 @@ export function replayMissedWords() {
   window.restartGame?.(true);
 }
 
-export async function copyPracticeLink() {
+function closePracticeShareOptions({ restoreFocus = false } = {}) {
+  const panel = document.getElementById('practice-share-options');
+  if (!panel) return;
+  panel.remove();
+  const trigger = document.getElementById('copy-practice-link-btn');
+  trigger?.setAttribute('aria-expanded', 'false');
+  document.removeEventListener('click', dismissPracticeShareOptions);
+  document.removeEventListener('keydown', dismissPracticeShareOptions);
+  if (restoreFocus) trigger?.focus();
+}
+
+function dismissPracticeShareOptions(event) {
+  const panel = document.getElementById('practice-share-options');
+  const trigger = document.getElementById('copy-practice-link-btn');
+  if (event.type === 'keydown') {
+    if (event.key === 'Escape') closePracticeShareOptions({ restoreFocus: true });
+    return;
+  }
+  if (panel && !panel.contains(event.target) && event.target !== trigger) closePracticeShareOptions();
+}
+
+async function copyAnonymousPracticeLink() {
   const words = currentWords();
   const url = new URL(window.location.origin + window.location.pathname);
   url.hash = buildShareHash(words, selectedMode()).slice(1);
@@ -259,8 +281,65 @@ export async function copyPracticeLink() {
     window.prompt(t('copyPrompt'), url.toString());
     status(t('linkReady'));
   }
-  document.getElementById('copy-assignment-hint')?.removeAttribute('hidden');
-  track('practice_link_copied', { word_count: words.length, mode: selectedMode(), locale: pageLocale() });
+  track('practice_link_copied', {
+    word_count: words.length,
+    mode: selectedMode(),
+    locale: pageLocale(),
+    share_type: 'practice_only',
+  });
+  closePracticeShareOptions({ restoreFocus: true });
+}
+
+function shareOption(titleKey, copyKey, metaKey, onClick) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'practice-share-option';
+  const title = document.createElement('strong');
+  title.textContent = t(titleKey);
+  const description = document.createElement('span');
+  description.textContent = t(copyKey);
+  const meta = document.createElement('small');
+  meta.textContent = t(metaKey);
+  button.append(title, description, meta);
+  button.addEventListener('click', onClick);
+  return button;
+}
+
+export function copyPracticeLink() {
+  const existing = document.getElementById('practice-share-options');
+  if (existing) {
+    closePracticeShareOptions();
+    return;
+  }
+  const trigger = document.getElementById('copy-practice-link-btn');
+  const panel = document.createElement('section');
+  panel.id = 'practice-share-options';
+  panel.className = 'practice-share-options';
+  panel.setAttribute('aria-labelledby', 'practice-share-options-title');
+  const heading = document.createElement('strong');
+  heading.id = 'practice-share-options-title';
+  heading.textContent = t('sharePracticeTitle');
+  panel.append(
+    heading,
+    shareOption('practiceOnlyTitle', 'practiceOnlyCopy', 'practiceOnlyMeta', copyAnonymousPracticeLink),
+    shareOption('trackResultsTitle', 'trackResultsCopy', 'trackResultsMeta', () => {
+      closePracticeShareOptions();
+      openTeacherAssignment('copy_track');
+    }),
+  );
+  trigger?.closest('.spelling-actions')?.after(panel);
+  trigger?.setAttribute('aria-expanded', 'true');
+  document.addEventListener('click', dismissPracticeShareOptions);
+  document.addEventListener('keydown', dismissPracticeShareOptions);
+  panel.querySelector('button')?.focus();
+  if (!shareOptionsViewTracked) {
+    shareOptionsViewTracked = true;
+    track('practice_share_options_viewed', {
+      word_count: currentWords().length,
+      mode: selectedMode(),
+      locale: pageLocale(),
+    });
+  }
 }
 
 export function renderResultWorkspaceCta({ mode, wordCount, missedCount }) {

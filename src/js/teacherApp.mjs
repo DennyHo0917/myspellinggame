@@ -1,4 +1,10 @@
-import { trackEvent, trackUsageLimit } from "./analytics.mjs";
+import {
+  clearAssignmentEntryPoint,
+  getAssignmentEntryPoint,
+  setAssignmentEntryPoint,
+  trackEvent,
+  trackUsageLimit,
+} from "./analytics.mjs";
 import {
   PENDING_CHECKOUT_LOCALE_KEY,
   PRODUCT_LOCALES,
@@ -365,7 +371,11 @@ async function renderLogin() {
     status.className = "status error";
   }
   button.addEventListener("click", async () => {
-    trackEvent("teacher_auth_started");
+    const entryPoint = getAssignmentEntryPoint();
+    trackEvent(
+      "teacher_auth_started",
+      entryPoint ? { entry_point: entryPoint } : {},
+    );
     button.disabled = true;
     status.textContent = copy.loading;
     try {
@@ -734,6 +744,7 @@ async function renderDashboard(me) {
   create.className = "button-link";
   create.href = `/teacher/assignments/new?lang=${encodeURIComponent(locale)}`;
   create.textContent = copy.newAssignment;
+  create.addEventListener("click", () => setAssignmentEntryPoint("workspace"));
   const billing = document.createElement(isPlusPlan(me) ? "button" : "a");
   if (isPlusPlan(me)) {
     billing.type = "button";
@@ -954,12 +965,15 @@ async function renderNew(me) {
         sessionStorage.removeItem("mySpellingTeacherDraftTitle");
         sessionStorage.removeItem("mySpellingTeacherDraftMode");
       } catch {}
+      const entryPoint = getAssignmentEntryPoint();
       trackEvent("assignment_created", {
         mode,
         word_count: String(form.querySelector("#assignment-words").value)
           .split(/\s+/)
           .filter(Boolean).length,
+        ...(entryPoint ? { entry_point: entryPoint } : {}),
       });
+      clearAssignmentEntryPoint();
       location.href = `/teacher/assignments/${result.id}?lang=${encodeURIComponent(locale)}`;
     } catch (error) {
       status.textContent = error.message;
@@ -1660,7 +1674,11 @@ async function init() {
   }
   try {
     if (sessionStorage.getItem(AUTH_PENDING_KEY) === "1") {
-      trackEvent("teacher_auth_completed");
+      const entryPoint = getAssignmentEntryPoint();
+      trackEvent(
+        "teacher_auth_completed",
+        entryPoint ? { entry_point: entryPoint } : {},
+      );
       sessionStorage.removeItem(AUTH_PENDING_KEY);
     }
   } catch {}

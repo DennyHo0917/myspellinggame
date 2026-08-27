@@ -1,7 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { cleanPageLocation, initReturnVisit, sanitizeEventParams, trackUsageLimit } from '../src/js/analytics.mjs';
+import {
+  cleanPageLocation,
+  getAssignmentEntryPoint,
+  initReturnVisit,
+  sanitizeEventParams,
+  setAssignmentEntryPoint,
+  trackUsageLimit,
+} from '../src/js/analytics.mjs';
 import { launcherUrl } from '../src/js/landingLauncher.mjs';
 import { buildShareHash, readShareState } from '../src/js/shareState.mjs';
 
@@ -124,8 +131,22 @@ test('teacher analytics omit student, assignment, and Stripe identifiers', () =>
     ...privateValues,
     mode: 'typing',
     word_count: 8,
-    entry_point: 'practice',
-  }), { mode: 'typing', word_count: 8, entry_point: 'practice' });
+    entry_point: 'copy_track',
+  }), { mode: 'typing', word_count: 8, entry_point: 'copy_track' });
+  assert.deepEqual(sanitizeEventParams('teacher_auth_started', {
+    ...privateValues,
+    entry_point: 'copy_track',
+  }), { entry_point: 'copy_track' });
+  assert.deepEqual(sanitizeEventParams('teacher_auth_completed', {
+    ...privateValues,
+    entry_point: 'copy_track',
+  }), { entry_point: 'copy_track' });
+  assert.deepEqual(sanitizeEventParams('assignment_created', {
+    ...privateValues,
+    mode: 'typing',
+    word_count: 8,
+    entry_point: 'copy_track',
+  }), { mode: 'typing', word_count: 8, entry_point: 'copy_track' });
   assert.deepEqual(sanitizeEventParams('usage_limit_reached', {
     ...privateValues,
     limit_type: 'monthly_submissions',
@@ -150,6 +171,36 @@ test('teacher analytics omit student, assignment, and Stripe identifiers', () =>
     trial_days: 30,
   }), { billing_interval: 'month', trial_days: 30 });
   assert.deepEqual(sanitizeEventParams('teacher_auth_completed', privateValues), {});
+});
+
+test('assignment entry points accept only the fixed funnel sources', () => {
+  const values = new Map();
+  globalThis.sessionStorage = {
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, value),
+    removeItem: (key) => values.delete(key),
+  };
+  try {
+    for (const source of ['copy_track', 'assign_homework', 'practice_result', 'workspace']) {
+      assert.equal(setAssignmentEntryPoint(source), true);
+      assert.equal(getAssignmentEntryPoint(), source);
+    }
+    assert.equal(setAssignmentEntryPoint('email@example.test'), false);
+    values.set('mySpellingAssignmentEntryPoint', 'email@example.test');
+    assert.equal(getAssignmentEntryPoint(), null);
+    globalThis.sessionStorage = {
+      getItem: () => {
+        throw new Error('blocked');
+      },
+      setItem: () => {
+        throw new Error('blocked');
+      },
+    };
+    assert.equal(setAssignmentEntryPoint('workspace'), false);
+    assert.equal(getAssignmentEntryPoint(), null);
+  } finally {
+    delete globalThis.sessionStorage;
+  }
 });
 
 test('usage limits report a known type at most once per page', () => {

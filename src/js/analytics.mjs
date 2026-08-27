@@ -1,5 +1,7 @@
 const VISIT_KEY = 'mySpellingGameVisitHistory';
 const SESSION_KEY = 'mySpellingGameReturnVisitSent';
+const ASSIGNMENT_ENTRY_POINT_KEY = 'mySpellingAssignmentEntryPoint';
+const ASSIGNMENT_ENTRY_POINTS = new Set(['copy_track', 'assign_homework', 'practice_result', 'workspace']);
 
 const EVENT_PARAMS = {
   word_list_created: ['mode', 'word_count', 'locale', 'shared_link', 'entry_page'],
@@ -12,10 +14,10 @@ const EVENT_PARAMS = {
   word_completed: ['mode', 'word_length', 'correct'],
   word_missed: ['mode', 'word_length', 'correct'],
   return_visit: ['days_since_last_visit', 'visit_count_range'],
-  teacher_auth_started: [],
-  teacher_auth_completed: [],
+  teacher_auth_started: ['entry_point'],
+  teacher_auth_completed: ['entry_point'],
   assignment_entry_clicked: ['mode', 'word_count', 'entry_point'],
-  assignment_created: ['mode', 'word_count'],
+  assignment_created: ['mode', 'word_count', 'entry_point'],
   assignment_results_viewed: ['mode', 'word_count'],
   assignment_link_copied: ['mode', 'word_count'],
   assignment_opened: ['mode', 'word_count'],
@@ -56,6 +58,31 @@ export function sanitizeEventParams(name, params = {}) {
   return Object.fromEntries(allowed
     .filter((key) => params[key] !== undefined)
     .map((key) => [key, params[key]]));
+}
+
+export function getAssignmentEntryPoint() {
+  try {
+    const value = sessionStorage.getItem(ASSIGNMENT_ENTRY_POINT_KEY);
+    return ASSIGNMENT_ENTRY_POINTS.has(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setAssignmentEntryPoint(value) {
+  if (!ASSIGNMENT_ENTRY_POINTS.has(value)) return false;
+  try {
+    sessionStorage.setItem(ASSIGNMENT_ENTRY_POINT_KEY, value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function clearAssignmentEntryPoint() {
+  try {
+    sessionStorage.removeItem(ASSIGNMENT_ENTRY_POINT_KEY);
+  } catch {}
 }
 
 export function pageLocale() {

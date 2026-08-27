@@ -309,6 +309,11 @@ test("Copy practice link chooses anonymous practice before copying", async ({
       share_type: "practice_only",
     },
   ]);
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("mySpellingAssignmentEntryPoint"),
+    ),
+  ).toBeNull();
 });
 
 test("Practice only keeps the existing prompt fallback", async ({ page }) => {
@@ -352,6 +357,8 @@ test("share choices are localized without raw message keys", async ({ page }) =>
 test("Track results skips anonymous copying and opens the existing assignment flow", async ({
   page,
 }) => {
+  const assignmentId = "44444444-4444-4444-8444-444444444444";
+  let signedIn = false;
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
@@ -374,9 +381,47 @@ test("Track results skips anonymous copying and opens the existing assignment fl
   );
   await page.route("**/api/me", (route) =>
     route.fulfill({
-      status: 401,
+      status: signedIn ? 200 : 401,
       contentType: "application/json",
-      body: JSON.stringify({ error: "sign_in_required" }),
+      body: JSON.stringify(
+        signedIn
+          ? {
+              user: { id: "teacher-a", name: "Teacher A" },
+              plan: "free",
+            }
+          : { error: "sign_in_required" },
+      ),
+    }),
+  );
+  await page.route("**/api/auth/sign-in/social", async (route) => {
+    signedIn = true;
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ url: route.request().postDataJSON().callbackURL }),
+    });
+  });
+  await page.route("**/api/assignments", async (route) => {
+    if (route.request().method() !== "POST") return route.fallback();
+    await route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({ id: assignmentId, publicId }),
+    });
+  });
+  await page.route(`**/api/assignments/${assignmentId}`, (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        id: assignmentId,
+        public_id: publicId,
+        title: "Tracked practice",
+        mode: "typing",
+        status: "published",
+        words: [],
+        summary: { students: 0, attempts: 0, averageAccuracy: 0 },
+        attempts: [],
+        missedWordStats: null,
+      }),
     }),
   );
   await page.goto("/");
@@ -407,6 +452,7 @@ test("Track results skips anonymous copying and opens the existing assignment fl
       words: sessionStorage.getItem("mySpellingTeacherDraftWords"),
       sentences: sessionStorage.getItem("mySpellingTeacherDraftSentences"),
       mode: sessionStorage.getItem("mySpellingTeacherDraftMode"),
+      source: sessionStorage.getItem("mySpellingAssignmentEntryPoint"),
       event: JSON.parse(
         sessionStorage.getItem("eventsBeforeNavigation") || "[]",
       )
@@ -417,6 +463,7 @@ test("Track results skips anonymous copying and opens the existing assignment fl
     words: "because\nfriend",
     sentences: "It rained.\nA friend helped.",
     mode: "typing",
+    source: "copy_track",
     event: { mode: "typing", word_count: 2, entry_point: "copy_track" },
   });
   expect(
@@ -424,6 +471,49 @@ test("Track results skips anonymous copying and opens the existing assignment fl
       Number(sessionStorage.getItem("clipboardWrites") || 0),
     ),
   ).toBe(0);
+  await page.evaluate(() => {
+    addEventListener("beforeunload", () => {
+      sessionStorage.setItem(
+        "trackAuthEvents",
+        JSON.stringify(window.dataLayer.map((entry) => Array.from(entry))),
+      );
+    });
+  });
+  await page.getByRole("button", { name: "Continue with Google" }).click();
+  await expect(page.getByLabel("Assignment title")).toBeVisible();
+  expect(
+    await page.evaluate(() =>
+      JSON.parse(sessionStorage.getItem("trackAuthEvents") || "[]")
+        .filter((entry) => entry[1] === "teacher_auth_started")
+        .map((entry) => entry[2]),
+    ),
+  ).toEqual([{ entry_point: "copy_track" }]);
+  expect(await analyticsEvents(page, "teacher_auth_completed")).toEqual([
+    { entry_point: "copy_track" },
+  ]);
+  await page.getByLabel("Assignment title").fill("Tracked practice");
+  await page.evaluate(() => {
+    addEventListener("beforeunload", () => {
+      sessionStorage.setItem(
+        "trackCreateEvents",
+        JSON.stringify(window.dataLayer.map((entry) => Array.from(entry))),
+      );
+    });
+  });
+  await page.getByRole("button", { name: "Create and publish" }).click();
+  await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
+  expect(
+    await page.evaluate(() =>
+      JSON.parse(sessionStorage.getItem("trackCreateEvents") || "[]")
+        .filter((entry) => entry[1] === "assignment_created")
+        .map((entry) => entry[2]),
+    ),
+  ).toEqual([{ mode: "typing", word_count: 2, entry_point: "copy_track" }]);
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("mySpellingAssignmentEntryPoint"),
+    ),
+  ).toBeNull();
 });
 
 test("signed-in Track results opens the existing assignment form directly", async ({
@@ -448,6 +538,11 @@ test("signed-in Track results opens the existing assignment form directly", asyn
   await expect(page.getByLabel("Spelling words")).toHaveValue(
     "because\nfriend\nbeautiful\nanswer\nenough\nfavorite\nlibrary\nthrough",
   );
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("mySpellingAssignmentEntryPoint"),
+    ),
+  ).toBe("copy_track");
 });
 
 test("typing result offers Workspace CTA and keeps the practice draft", async ({
@@ -496,11 +591,13 @@ test("typing result offers Workspace CTA and keeps the practice draft", async ({
       words: sessionStorage.getItem("mySpellingTeacherDraftWords"),
       sentences: sessionStorage.getItem("mySpellingTeacherDraftSentences"),
       mode: sessionStorage.getItem("mySpellingTeacherDraftMode"),
+      source: sessionStorage.getItem("mySpellingAssignmentEntryPoint"),
     })),
   ).toEqual({
     words: "because\nfriend",
     sentences: "It rained.\nA friend helped.",
     mode: "typing",
+    source: "practice_result",
   });
   expect(
     await page.evaluate(() =>
@@ -697,6 +794,7 @@ test("teacher creates an assignment with an example sentence and the student pla
   const assignmentId = "33333333-3333-4333-8333-333333333333";
   const sentence = "I stayed inside because it was raining.";
   let createdBody;
+  let createCalls = 0;
   await page.route("**/api/me", (route) =>
     route.fulfill({
       contentType: "application/json",
@@ -707,8 +805,29 @@ test("teacher creates an assignment with an example sentence and the student pla
     }),
   );
   await page.route("**/api/assignments", async (route) => {
-    if (route.request().method() !== "POST") return route.fallback();
+    if (route.request().method() !== "POST") {
+      return route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          assignments: [],
+          usage: {
+            activeAssignments: 0,
+            monthlyAttempts: 0,
+            studentNicknames: 0,
+            limits: { activeAssignments: 2, monthlyAttempts: 30 },
+          },
+        }),
+      });
+    }
+    createCalls += 1;
     createdBody = route.request().postDataJSON();
+    if (createCalls === 1) {
+      return route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "internal_error" }),
+      });
+    }
     await route.fulfill({
       status: 201,
       contentType: "application/json",
@@ -746,10 +865,36 @@ test("teacher creates an assignment with an example sentence and the student pla
     }),
   );
 
-  await page.goto("/teacher/assignments/new?lang=en");
+  await page.goto("/teacher?lang=en");
+  await page.evaluate(() =>
+    sessionStorage.setItem("mySpellingAssignmentEntryPoint", "copy_track"),
+  );
+  await page.getByRole("link", { name: "Create assignment" }).click();
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("mySpellingAssignmentEntryPoint"),
+    ),
+  ).toBe("workspace");
   await page.getByLabel("Assignment title").fill("Sentence practice");
   await page.getByLabel("Spelling words").fill("because");
   await page.getByLabel("Example sentences (optional)").fill(sentence);
+  await page.getByRole("button", { name: "Create and publish" }).click();
+  await expect(
+    page.getByRole("button", { name: "Create and publish" }),
+  ).toBeEnabled();
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("mySpellingAssignmentEntryPoint"),
+    ),
+  ).toBe("workspace");
+  await page.evaluate(() => {
+    addEventListener("beforeunload", () => {
+      sessionStorage.setItem(
+        "createEventsBeforeNavigation",
+        JSON.stringify(window.dataLayer.map((entry) => Array.from(entry))),
+      );
+    });
+  });
   await page.getByRole("button", { name: "Create and publish" }).click();
   await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
   expect(createdBody).toMatchObject({
@@ -758,6 +903,20 @@ test("teacher creates an assignment with an example sentence and the student pla
     exampleSentences: sentence,
     mode: "dictation",
   });
+  expect(
+    await page.evaluate(() =>
+      JSON.parse(
+        sessionStorage.getItem("createEventsBeforeNavigation") || "[]",
+      )
+        .filter((entry) => entry[1] === "assignment_created")
+        .map((entry) => entry[2]),
+    ),
+  ).toEqual([{ mode: "dictation", word_count: 1, entry_point: "workspace" }]);
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("mySpellingAssignmentEntryPoint"),
+    ),
+  ).toBeNull();
 
   await page.goto(`/a/${publicId}?lang=en`);
   await expect(
@@ -978,6 +1137,19 @@ test("Google sign-in returns to a prefilled new teacher assignment", async ({
       { mode: "typing", word_count: 2, entry_point: "assign_homework" },
     ],
   ]);
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("mySpellingAssignmentEntryPoint"),
+    ),
+  ).toBe("assign_homework");
+  await page.evaluate(() => {
+    addEventListener("beforeunload", () => {
+      sessionStorage.setItem(
+        "authEventsBeforeNavigation",
+        JSON.stringify(window.dataLayer.map((entry) => Array.from(entry))),
+      );
+    });
+  });
   await page.getByRole("button", { name: "Continue with Google" }).click();
 
   await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
@@ -986,7 +1158,18 @@ test("Google sign-in returns to a prefilled new teacher assignment", async ({
     "because\nfriend",
   );
   await expect(page.getByLabel("Typing", { exact: true })).toBeChecked();
-  expect(await analyticsEvents(page, "teacher_auth_completed")).toEqual([{}]);
+  expect(
+    await page.evaluate(() =>
+      JSON.parse(
+        sessionStorage.getItem("authEventsBeforeNavigation") || "[]",
+      )
+        .filter((entry) => entry[1] === "teacher_auth_started")
+        .map((entry) => entry[2]),
+    ),
+  ).toEqual([{ entry_point: "assign_homework" }]);
+  expect(await analyticsEvents(page, "teacher_auth_completed")).toEqual([
+    { entry_point: "assign_homework" },
+  ]);
 });
 
 test("Checkout analytics separate creation attempts from Stripe redirects", async ({

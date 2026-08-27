@@ -9,7 +9,7 @@ import {
   typingCompletionStats,
 } from './spellingCore.mjs';
 import { speakWord as speak } from './speech.js';
-import { entryPage, pageLocale, trackEvent } from './analytics.mjs';
+import { entryPage, pageLocale, setAssignmentEntryPoint, trackEvent } from './analytics.mjs';
 import { buildShareHash, readShareState } from './shareState.mjs';
 
 const STORAGE_KEY = 'mySpellingGameSpellingWords';
@@ -398,12 +398,16 @@ function isTeacherSignedIn() {
   return signedInPromise;
 }
 
-export function openTeacherAssignment(entryPoint = 'practice') {
+export function openTeacherAssignment(entryPoint = 'practice_result') {
+  const source = ['copy_track', 'assign_homework', 'practice_result'].includes(entryPoint)
+    ? entryPoint
+    : 'practice_result';
   track('assignment_entry_clicked', {
     word_count: currentWords().length,
     mode: selectedMode(),
-    entry_point: entryPoint,
+    entry_point: source,
   });
+  setAssignmentEntryPoint(source);
   try {
     sessionStorage.setItem('mySpellingTeacherDraftWords', currentWords().join('\n'));
     sessionStorage.setItem('mySpellingTeacherDraftSentences', sentenceTextarea()?.value || '');

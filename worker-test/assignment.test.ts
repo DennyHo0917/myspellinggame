@@ -737,10 +737,48 @@ describe("saved lists and learner profiles", () => {
 });
 
 describe("cross-assignment mastery", () => {
-  it("uses the last three results and keeps earlier misses until corrected", () => {
-    expect(masteryStatus([true])).toBe("learning");
-    expect(masteryStatus([false, true, true])).toBe("needs_review");
-    expect(masteryStatus([false, true, true, true])).toBe("mastered");
+  const result = (correct: boolean, day: number) => ({
+    correct,
+    practicedAt: `2026-08-${String(day).padStart(2, "0")}T12:00:00.000Z`,
+  });
+
+  it("requires three consecutive correct results across two UTC days", () => {
+    expect(masteryStatus([result(true, 27)])).toBe("learning");
+    expect(
+      masteryStatus([result(true, 27), result(true, 27), result(true, 27)]),
+    ).toBe("learning");
+    expect(
+      masteryStatus([result(true, 26), result(true, 26), result(true, 27)]),
+    ).toBe("mastered");
+    expect(
+      masteryStatus([result(true, 26), result(true, 27), result(false, 27)]),
+    ).toBe("needs_review");
+  });
+
+  it("tracks recovery and resets evidence after a new miss", () => {
+    expect(masteryStatus([result(false, 26), result(true, 26)])).toBe(
+      "learning",
+    );
+    expect(
+      masteryStatus([result(false, 26), result(true, 26), result(true, 26)]),
+    ).toBe("learning");
+    expect(
+      masteryStatus([
+        result(false, 26),
+        result(true, 26),
+        result(true, 26),
+        result(true, 27),
+      ]),
+    ).toBe("mastered");
+    expect(
+      masteryStatus([
+        result(false, 26),
+        result(true, 26),
+        result(true, 27),
+        result(true, 27),
+        result(false, 28),
+      ]),
+    ).toBe("needs_review");
   });
 
   it("aggregates completed attempts and builds a focused Pro review", async () => {
@@ -779,13 +817,25 @@ describe("cross-assignment mastery", () => {
       await call(`/api/learners/${learner.body.id}`)
     ).json()) as {
       summary: { completedAttempts: number };
-      words: Array<{ word: string; status: string }>;
+      words: Array<{
+        word: string;
+        status: string;
+        consecutiveCorrect: number;
+        practiceDays: number;
+        crossDayConfirmed: boolean;
+      }>;
     };
     expect(detail.summary.completedAttempts).toBe(5);
     expect(detail.words).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ word: "apple", status: "mastered" }),
-        expect.objectContaining({ word: "banana", status: "needs_review" }),
+        expect.objectContaining({
+          word: "apple",
+          status: "learning",
+          consecutiveCorrect: 3,
+          practiceDays: 1,
+          crossDayConfirmed: false,
+        }),
+        expect.objectContaining({ word: "banana", status: "learning" }),
         expect.objectContaining({ word: "cherry", status: "learning" }),
       ]),
     );
@@ -795,7 +845,7 @@ describe("cross-assignment mastery", () => {
         body: "{}",
       })
     ).json()) as { words: string[] };
-    expect(review.words).toEqual(["banana"]);
+    expect(review.words).toEqual(expect.arrayContaining(["apple", "banana"]));
     const assignmentReview = (await (
       await call(`/api/assignments/${first.body.id}/review`, {
         method: "POST",
@@ -869,13 +919,24 @@ describe("today's review state", () => {
     ).toBe(false);
     expect(
       calculateReviewState(
-        [result(false, 4), result(true, 4), result(true, 4)],
+        [result(false, 1), result(true, 1), result(true, 1)],
         now,
       )?.due,
-    ).toBe(true);
+    ).toBe(false);
     expect(
       calculateReviewState(
         [result(false, 4), result(true, 4), result(true, 4), result(true, 4)],
+        now,
+      ),
+    ).toEqual(
+      expect.objectContaining({
+        due: true,
+        dueAt: "2026-08-26T00:00:00.000Z",
+      }),
+    );
+    expect(
+      calculateReviewState(
+        [result(false, 4), result(true, 4), result(true, 4), result(true, 3)],
         now,
       ),
     ).toBeNull();

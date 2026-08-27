@@ -10,7 +10,7 @@ import {
   addDays,
   calculateReviewState,
   csvCell,
-  masteryStatus,
+  masteryEvidence,
   monthStart,
   normalizeWord,
   randomPublicId,
@@ -818,12 +818,18 @@ async function learnerMastery(db: D1Database, learner: LearnerRow, plan: Plan) {
     grouped.set(key, current);
   }
   const words = [...grouped.values()].map(
-    ({ results, reviewResults, ...word }) => ({
-      ...word,
-      status: masteryStatus(results),
-      lastResult: results.at(-1) ? "correct" : "incorrect",
-      reviewState: calculateReviewState(reviewResults),
-    }),
+    ({ results, reviewResults, ...word }) => {
+      const evidence = masteryEvidence(reviewResults);
+      return {
+        ...word,
+        status: evidence.status,
+        lastResult: results.at(-1) ? "correct" : "incorrect",
+        consecutiveCorrect: evidence.consecutiveCorrect,
+        practiceDays: evidence.practiceDays,
+        crossDayConfirmed: evidence.crossDayConfirmed,
+        reviewState: calculateReviewState(reviewResults),
+      };
+    },
   );
   const reviewWords = words
     .filter((word) => word.reviewState?.due)

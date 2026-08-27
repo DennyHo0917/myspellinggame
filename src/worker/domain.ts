@@ -358,22 +358,32 @@ export function addDays(iso: string, days: number): string {
 
 export type MasteryStatus = "mastered" | "learning" | "needs_review";
 
-export function masteryStatus(results: boolean[]): MasteryStatus {
-  if (results.length >= 3 && results.slice(-3).every(Boolean))
-    return "mastered";
-  if (results.includes(false)) return "needs_review";
-  return "learning";
-}
-
 export type ReviewResult = {
   correct: boolean;
   practicedAt: string;
 };
 
-export function calculateReviewState(
-  results: ReviewResult[],
-  now = new Date(),
-) {
+export type MasteryResult = ReviewResult;
+
+export type MasteryEvidence = {
+  status: MasteryStatus;
+  consecutiveCorrect: number;
+  practiceDays: number;
+  crossDayConfirmed: boolean;
+  lastPracticedAt: string | null;
+  lastMissAt: string | null;
+};
+
+export function masteryEvidence(results: MasteryResult[]): MasteryEvidence {
+  if (!results.length)
+    return {
+      status: "learning",
+      consecutiveCorrect: 0,
+      practiceDays: 0,
+      crossDayConfirmed: false,
+      lastPracticedAt: null,
+      lastMissAt: null,
+    };
   let lastMiss = -1;
   for (let index = results.length - 1; index >= 0; index -= 1) {
     if (!results[index].correct) {
@@ -381,18 +391,62 @@ export function calculateReviewState(
       break;
     }
   }
-  if (lastMiss < 0) return null;
   const consecutiveCorrectAfterLastMiss = results.length - lastMiss - 1;
-  if (consecutiveCorrectAfterLastMiss >= 3) return null;
-  const lastPracticedAt = results.at(-1)!.practicedAt;
-  const delayDays = [0, 1, 3][consecutiveCorrectAfterLastMiss];
+  const qualifyingResults = results.slice(lastMiss + 1);
+  const practiceDays = new Set(
+    qualifyingResults.map((result) => result.practicedAt.slice(0, 10)),
+  ).size;
+  const crossDayConfirmed =
+    consecutiveCorrectAfterLastMiss >= 3 && practiceDays >= 2;
+  const status =
+    results.at(-1)!.correct === false
+      ? "needs_review"
+      : crossDayConfirmed
+        ? "mastered"
+        : "learning";
+  return {
+    status,
+    consecutiveCorrect: consecutiveCorrectAfterLastMiss,
+    practiceDays,
+    crossDayConfirmed,
+    lastPracticedAt: results.at(-1)!.practicedAt,
+    lastMissAt: lastMiss >= 0 ? results[lastMiss].practicedAt : null,
+  };
+}
+
+export function masteryStatus(results: MasteryResult[]): MasteryStatus;
+export function masteryStatus(results: boolean[]): MasteryStatus;
+export function masteryStatus(
+  results: MasteryResult[] | boolean[],
+): MasteryStatus {
+  if (!results.length) return "learning";
+  if (typeof results[0] === "boolean") {
+    const legacy = results as boolean[];
+    if (legacy.length >= 3 && legacy.slice(-3).every(Boolean))
+      return "mastered";
+    if (legacy.includes(false)) return "needs_review";
+    return "learning";
+  }
+  return masteryEvidence(results as MasteryResult[]).status;
+}
+
+export function calculateReviewState(
+  results: ReviewResult[],
+  now = new Date(),
+) {
+  const evidence = masteryEvidence(results);
+  if (!evidence.lastMissAt || evidence.status === "mastered") return null;
+  const delayDays =
+    evidence.consecutiveCorrect >= 3
+      ? 3
+      : [0, 1, 3][evidence.consecutiveCorrect];
   const dueAt = delayDays
-    ? addDays(lastPracticedAt, delayDays)
+    ? addDays(evidence.lastPracticedAt!, delayDays)
     : now.toISOString();
   return {
-    lastPracticedAt,
+    lastPracticedAt: evidence.lastPracticedAt!,
     recentMissCount: results.filter((result) => !result.correct).length,
-    consecutiveCorrectAfterLastMiss,
+    consecutiveCorrectAfterLastMiss: evidence.consecutiveCorrect,
     dueAt,
     due: new Date(dueAt).getTime() <= now.getTime(),
   };

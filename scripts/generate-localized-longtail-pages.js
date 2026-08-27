@@ -2320,31 +2320,37 @@ const customLauncher = {
     label: "Words for Typing Rain",
     button: "Start Typing Rain",
     invalid: "Enter at least one word.",
+    limit: "No-login practice supports up to 20 words per list.",
   },
   es: {
     label: "Palabras para Typing Rain",
     button: "Empezar Typing Rain",
     invalid: "Escribe al menos una palabra.",
+    limit: "La práctica sin cuenta admite hasta 20 palabras por lista.",
   },
   "pt-BR": {
     label: "Palavras para o Typing Rain",
     button: "Começar Typing Rain",
     invalid: "Digite pelo menos uma palavra.",
+    limit: "A prática sem conta aceita até 20 palavras por lista.",
   },
   fr: {
     label: "Mots pour Typing Rain",
     button: "Lancer Typing Rain",
     invalid: "Saisissez au moins un mot.",
+    limit: "L’entraînement sans compte accepte jusqu’à 20 mots par liste.",
   },
   id: {
     label: "Kata untuk Typing Rain",
     button: "Mulai Typing Rain",
     invalid: "Masukkan setidaknya satu kata.",
+    limit: "Latihan tanpa akun mendukung hingga 20 kata per daftar.",
   },
   zh: {
     label: "Typing Rain 单词表",
     button: "开始 Typing Rain",
     invalid: "请至少输入一个英语单词。",
+    limit: "无需登录的练习每份词表最多 20 个单词。",
   },
 };
 
@@ -2571,7 +2577,7 @@ ${languageMenu(langCode, slug)}
             <p>${localizeLegacyTerms(page.intro, langCode)}</p>
 ${
   slug === "custom-spelling-words-game"
-    ? `            <form class="landing-launcher" action="${dirPath(lang)}" data-mode="typing" data-invalid="${escapeAttr(launcher.invalid)}">
+    ? `            <form class="landing-launcher" action="${dirPath(lang)}" data-mode="typing" data-invalid="${escapeAttr(launcher.invalid)}" data-limit="${escapeAttr(launcher.limit)}">
                 <label for="custom-words-${langCode}">${localizeLegacyTerms(launcher.label, langCode)}</label>
                 <textarea id="custom-words-${langCode}" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">${localizeLegacyTerms(launcher.button, langCode)}</button>

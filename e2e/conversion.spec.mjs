@@ -20,8 +20,8 @@ async function mockAssignments(page, plan = "pro") {
           monthlyAttempts: 0,
           studentNicknames: 0,
           limits: {
-            activeAssignments: plan === "pro" ? 20 : 2,
-            monthlyAttempts: plan === "pro" ? null : 30,
+            activeAssignments: plan === "pro" ? 20 : 1,
+            monthlyAttempts: plan === "pro" ? null : 15,
           },
         },
       }),
@@ -158,7 +158,7 @@ test("Checkout trial activation records no purchase and shows renewal details", 
 
   await page.goto("/teacher?lang=en&checkout=success");
 
-  await expect(page.getByText(/30-day Pro trial is active/)).toContainText(
+  await expect(page.getByText(/14-day Plus trial is active/)).toContainText(
     "$49.99/year",
   );
   await expect(
@@ -172,7 +172,7 @@ test("Checkout trial activation records no purchase and shows renewal details", 
         .find((item) => item[0] === "event" && item[1] === "trial_started");
       return entry?.[2];
     }),
-  ).toEqual({ billing_interval: "year", trial_days: 30 });
+  ).toEqual({ billing_interval: "year", trial_days: 14 });
 });
 
 test("an arbitrary Checkout success URL does not record a purchase", async ({
@@ -577,13 +577,13 @@ test("signed-out teacher pricing switches plans and preserves Checkout intent", 
   await expect(description).toContainText("$49.99/year automatically");
   await expect(savings).toHaveText("Save 30%");
   await expect(savings).toBeVisible();
-  await expect(confirm).toHaveText("Start 30-day free trial · Yearly");
+  await expect(confirm).toHaveText("Start 14-day free trial · Yearly");
 
   await monthly.click();
   await expect(price).toHaveText("$5.99 / month");
   await expect(description).toContainText("$5.99/month automatically");
   await expect(savings).toBeHidden();
-  await expect(confirm).toHaveText("Start 30-day free trial · Monthly");
+  await expect(confirm).toHaveText("Start 14-day free trial · Monthly");
 
   await yearly.click();
   const navigated = page.waitForEvent(
@@ -740,6 +740,6 @@ test("a signed-in account without trial eligibility sees immediate billing", asy
   );
   await expect(page.locator("[data-confirm-checkout]")).toHaveText("Subscribe");
   await expect(page.locator(".teacher-pricing")).not.toContainText(
-    "Start 30-day free trial",
+    "Start 14-day free trial",
   );
 });

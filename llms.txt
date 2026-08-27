@@ -93,16 +93,34 @@ Students still do not need their own accounts.
 
 Free includes anonymous spelling practice and a limited teacher or parent workspace.
 
-Free workspace features include limited saved lists, student profiles, assignments, submissions, and 30 days of progress history.
+Free accounts support up to 40 words per list.
+
+### Anonymous practice
+
+Anonymous practice does not require an account and supports up to 20 words per practice list.
+
+Practice rounds are not limited. Anonymous practice results are not stored as tracked workspace results.
+
+Free workspace includes:
+
+- 1 active assignment
+- 15 student submissions per month
+- 1 saved list
+- 1 student profile
+- 14 days of progress and mastery history
+
+Anonymous spelling practice remains available without an account.
 
 ### Plus
+
+Plus supports up to 80 words per list.
 
 Plus is currently:
 
 - $5.99 per month
 - $49.99 per year
 
-New eligible subscribers receive a 30-day free trial with a payment method required at signup. Billing starts automatically after the trial unless canceled.
+New eligible subscribers receive a 14-day free trial with a payment method required at signup. Billing starts automatically after the trial unless canceled.
 
 Plus includes:
 

@@ -168,8 +168,8 @@ test('teacher analytics omit student, assignment, and Stripe identifiers', () =>
   assert.deepEqual(sanitizeEventParams('trial_started', {
     ...privateValues,
     billing_interval: 'month',
-    trial_days: 30,
-  }), { billing_interval: 'month', trial_days: 30 });
+    trial_days: 14,
+  }), { billing_interval: 'month', trial_days: 14 });
   assert.deepEqual(sanitizeEventParams('teacher_auth_completed', privateValues), {});
 });
 

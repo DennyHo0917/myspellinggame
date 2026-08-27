@@ -10,6 +10,7 @@ import {
   addDays,
   calculateReviewState,
   csvCell,
+  enforcePlanWordLimit,
   masteryEvidence,
   monthStart,
   normalizeWord,
@@ -566,6 +567,7 @@ async function createSavedList(
     body.exampleSentences ?? body.example_sentences ?? body.sentences,
   );
   const plan = await getPlan(env, ownerUserId);
+  enforcePlanWordLimit(words, plan);
   const limit = PLAN_LIMITS[plan].savedLists ?? 2_147_483_647;
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
@@ -604,7 +606,7 @@ async function createSavedList(
 }
 
 async function updateSavedList(
-  db: D1Database,
+  env: Env,
   request: Request,
   savedList: SavedListRow,
 ) {
@@ -614,31 +616,33 @@ async function updateSavedList(
     body.words,
     body.exampleSentences ?? body.example_sentences ?? body.sentences,
   );
+  const plan = await getPlan(env, savedList.owner_user_id);
+  enforcePlanWordLimit(words, plan);
   const updatedAt = new Date().toISOString();
-  await db.batch([
-    db
-      .prepare(
-        "UPDATE saved_lists SET title = ?, updated_at = ? WHERE id = ? AND owner_user_id = ?",
-      )
-      .bind(title, updatedAt, savedList.id, savedList.owner_user_id),
-    db
-      .prepare("DELETE FROM saved_list_words WHERE saved_list_id = ?")
-      .bind(savedList.id),
+  await env.DB.batch([
+    env.DB.prepare(
+      "UPDATE saved_lists SET title = ?, updated_at = ? WHERE id = ? AND owner_user_id = ?",
+    ).bind(title, updatedAt, savedList.id, savedList.owner_user_id),
+    env.DB.prepare("DELETE FROM saved_list_words WHERE saved_list_id = ?").bind(
+      savedList.id,
+    ),
     ...words.map((entry, position) =>
-      db
-        .prepare(
-          "INSERT INTO saved_list_words (id, saved_list_id, position, word, example_sentence) VALUES (?, ?, ?, ?, ?)",
-        )
-        .bind(
-          crypto.randomUUID(),
-          savedList.id,
-          position,
-          entry.word,
-          entry.example_sentence,
-        ),
+      env.DB.prepare(
+        "INSERT INTO saved_list_words (id, saved_list_id, position, word, example_sentence) VALUES (?, ?, ?, ?, ?)",
+      ).bind(
+        crypto.randomUUID(),
+        savedList.id,
+        position,
+        entry.word,
+        entry.example_sentence,
+      ),
     ),
   ]);
-  return savedListDetail(db, { ...savedList, title, updated_at: updatedAt });
+  return savedListDetail(env.DB, {
+    ...savedList,
+    title,
+    updated_at: updatedAt,
+  });
 }
 
 async function getOwnedLearner(
@@ -947,6 +951,7 @@ async function createAssignment(env: Env, request: Request, userId: string) {
   const maxAttempts = validateMaxAttempts(body.maxAttempts);
   const expiresAt = validateDeadline(body.expiresAt);
   const plan = await getPlan(env, userId);
+  enforcePlanWordLimit(words, plan);
   const currentUsage = await usage(env.DB, userId, plan);
   if (currentUsage.activeAssignments >= PLAN_LIMITS[plan].activeAssignments) {
     throw new HttpError(
@@ -1031,6 +1036,7 @@ async function updateAssignment(
         "Assignments with student attempts cannot change their word list.",
       );
     }
+    enforcePlanWordLimit(words, await getPlan(env, userId));
     await env.DB.batch([
       env.DB.prepare(
         "UPDATE assignments SET title = ? WHERE id = ? AND owner_user_id = ?",
@@ -1596,7 +1602,7 @@ export async function handleRequest(
     if (method === "GET") return json(await savedListDetail(env.DB, savedList));
     if (method === "PATCH") {
       requireSameOrigin(request);
-      return json(await updateSavedList(env.DB, request, savedList));
+      return json(await updateSavedList(env, request, savedList));
     }
     if (method === "DELETE") {
       requireSameOrigin(request);

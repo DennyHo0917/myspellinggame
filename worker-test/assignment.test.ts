@@ -8,7 +8,10 @@ import {
   HttpError,
   masteryStatus,
   monthStart,
+  parseWordList,
   PLAN_LIMITS,
+  enforcePlanWordLimit,
+  planWordLimit,
 } from "../src/worker/domain";
 import {
   restrictTeacherAuthCallback,
@@ -34,6 +37,14 @@ const teacherA: Teacher = {
   name: "Teacher A",
   email: "a@example.test",
 };
+
+function testWords(count: number) {
+  return Array.from(
+    { length: count },
+    (_, index) =>
+      `word${String.fromCharCode(97 + Math.floor(index / 26))}${String.fromCharCode(97 + (index % 26))}`,
+  );
+}
 const teacherB: Teacher = {
   id: "teacher-b",
   name: "Teacher B",
@@ -298,6 +309,75 @@ describe("teacher authorization and quotas", () => {
     });
   });
 
+  it("enforces 40-word Free and 80-word Plus list limits", () => {
+    expect(planWordLimit("free")).toBe(40);
+    expect(planWordLimit("plus")).toBe(80);
+    expect(() =>
+      enforcePlanWordLimit(Array.from({ length: 40 }), "free"),
+    ).not.toThrow();
+    expect(() =>
+      enforcePlanWordLimit(Array.from({ length: 41 }), "free"),
+    ).toThrow(HttpError);
+    expect(() =>
+      enforcePlanWordLimit(Array.from({ length: 80 }), "plus"),
+    ).not.toThrow();
+    expect(() =>
+      enforcePlanWordLimit(Array.from({ length: 81 }), "plus"),
+    ).toThrow(HttpError);
+    expect(parseWordList(testWords(80))).toHaveLength(80);
+    expect(() => parseWordList(testWords(81))).toThrowError(
+      expect.objectContaining({ code: "invalid_words" }),
+    );
+  });
+
+  it("enforces word limits on assignment writes", async () => {
+    const freeBoundary = await createAssignment(teacherA, {
+      words: testWords(40),
+    });
+    expect(freeBoundary.response.status).toBe(201);
+    const free = await createAssignment(teacherA, { words: testWords(41) });
+    expect(free.response.status).toBe(403);
+    expect(free.body.error).toBe("word_limit");
+    await insertSubscription({ plan: "pro", status: "trialing" });
+    const plus = await createAssignment(teacherA, { words: testWords(80) });
+    expect(plus.response.status).toBe(201);
+    const technicalLimit = await createAssignment(teacherA, {
+      words: testWords(81),
+    });
+    expect(technicalLimit.response.status).toBe(400);
+    expect(technicalLimit.body.error).toBe("invalid_words");
+  });
+
+  it("enforces word limits on assignment updates", async () => {
+    const created = await createAssignment();
+    const rejected = await call(`/api/assignments/${created.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ title: "Too long", words: testWords(41) }),
+    });
+    expect(rejected.status).toBe(403);
+    expect(((await rejected.json()) as { error: string }).error).toBe(
+      "word_limit",
+    );
+    const unchanged = await publicWords(String(created.body.publicId));
+    expect(unchanged.words).toHaveLength(2);
+  });
+
+  it("keeps a legacy over-limit assignment readable after Free downgrade", async () => {
+    await insertSubscription({ plan: "pro", status: "active" });
+    const created = await createAssignment(teacherA, { words: testWords(60) });
+    expect(created.response.status).toBe(201);
+    await bindings.DB.prepare(
+      "UPDATE subscriptions SET status = 'canceled', stripe_price_id = NULL WHERE user_id = ?",
+    )
+      .bind(teacherA.id)
+      .run();
+    const detail = await call(`/api/assignments/${created.body.id}`);
+    expect(detail.status).toBe(200);
+    expect(((await detail.json()) as { words: unknown[] }).words).toHaveLength(
+      60,
+    );
+  });
+
   it("rejects an unauthenticated teacher request", async () => {
     const response = await call("/api/assignments", {}, null);
     expect(response.status).toBe(401);
@@ -424,6 +504,22 @@ describe("teacher authorization and quotas", () => {
     ]);
   });
 
+  it("keeps the existing-result lock ahead of the plan word limit", async () => {
+    const created = await createAssignment();
+    const assignment = await publicWords(String(created.body.publicId));
+    expect(
+      (await submit(String(created.body.publicId), assignment.words)).status,
+    ).toBe(201);
+    const updated = await call(`/api/assignments/${created.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ words: testWords(41) }),
+    });
+    expect(updated.status).toBe(409);
+    expect(((await updated.json()) as { error: string }).error).toBe(
+      "assignment_has_results",
+    );
+  });
+
   it("enforces the free monthly submission limit on the server", async () => {
     const created = await createAssignment();
     const publicId = String(created.body.publicId);
@@ -469,6 +565,47 @@ describe("teacher authorization and quotas", () => {
 });
 
 describe("saved lists and learner profiles", () => {
+  it("enforces Free and Plus saved-list word limits", async () => {
+    const freeBoundary = await createSavedList(
+      "Free boundary",
+      teacherA,
+      testWords(40),
+    );
+    expect(freeBoundary.response.status).toBe(201);
+    const freeRejected = await createSavedList(
+      "Free too long",
+      teacherA,
+      testWords(41),
+    );
+    expect(freeRejected.response.status).toBe(403);
+    expect(freeRejected.body.error).toBe("word_limit");
+
+    await insertSubscription({ plan: "pro", status: "active" });
+    const plusBoundary = await createSavedList(
+      "Plus boundary",
+      teacherA,
+      testWords(80),
+    );
+    expect(plusBoundary.response.status).toBe(201);
+  });
+
+  it("rejects over-limit saved-list updates without changing the list", async () => {
+    const saved = await createSavedList("Editable list");
+    const rejected = await call(`/api/saved-lists/${saved.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ title: "Too long", words: testWords(41) }),
+    });
+    expect(rejected.status).toBe(403);
+    expect(((await rejected.json()) as { error: string }).error).toBe(
+      "word_limit",
+    );
+    const unchanged = await call(`/api/saved-lists/${saved.body.id}`);
+    expect(((await unchanged.json()) as { words: unknown[] }).words).toEqual([
+      "apple",
+      "banana",
+    ]);
+  });
+
   it("enforces Free saved-list limits and leaves Pro lists unlimited", async () => {
     expect((await createSavedList("One")).response.status).toBe(201);
     const limited = await createSavedList("Two");
@@ -1432,7 +1569,7 @@ describe("Stripe checkout", () => {
     ["month", "price_monthly"],
     ["year", "price_yearly"],
   ] as const)(
-    "grants one 30-day %s trial and always collects a payment method",
+    "grants one 14-day %s trial and always collects a payment method",
     async (interval, priceId) => {
       let sent: Stripe.Checkout.SessionCreateParams | null = null;
       await createCheckout(
@@ -1456,7 +1593,7 @@ describe("Stripe checkout", () => {
         line_items: [{ price: priceId, quantity: 1 }],
         metadata: { trial_granted: "true" },
         subscription_data: {
-          trial_period_days: 30,
+          trial_period_days: 14,
           metadata: { trial_granted: "true" },
         },
       });

@@ -70,6 +70,13 @@ test('empty input falls back and duplicate words are removed', () => {
   assert.deepEqual(configuredWords('', ['sample']), ['sample']);
 });
 
+test('word parsing keeps values above the plan limit for explicit validation', () => {
+  const words = Array.from({ length: 81 }, (_, index) =>
+    `word${index.toString(2).padStart(7, 'a').replaceAll('0', 'a').replaceAll('1', 'b')}`,
+  );
+  assert.equal(parseWords(words.join('\n')).length, 81);
+});
+
 test('answer comparison ignores surrounding whitespace and case', () => {
   assert.equal(normalizeAnswer('  BeAuTiFuL  '), 'beautiful');
   const session = createDictationSession(['beautiful']);

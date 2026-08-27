@@ -129,14 +129,14 @@ test('workspace navigation and assignment pricing stay role-inclusive in every l
   }
 });
 
-test('pricing shows the current Free workspace limits in every locale', () => {
+test('pricing shows the current word and workspace limits in every locale', () => {
   const expected = {
-    '': ['1 active assignment', '15 student submissions per month', '14-day mastery history', '1 saved list', '1 student profile'],
-    es: ['1 tarea activa', '15 entregas de estudiantes al mes', '14 días de historial de dominio', '1 lista guardada', '1 perfil de estudiante'],
-    'pt-br': ['1 tarefa ativa', '15 envios de alunos por mês', '14 dias de histórico de domínio', '1 lista salva', '1 perfil de aluno'],
-    fr: ['1 devoir actif', '15 remises d’élèves par mois', '14 jours d’historique de maîtrise', '1 liste enregistrée', '1 profil d’élève'],
-    id: ['1 tugas aktif', '15 kiriman siswa per bulan', 'Riwayat penguasaan 14 hari', '1 daftar tersimpan', '1 profil siswa'],
-    zh: ['最多 1 个活跃作业', '每月 15 份学生提交', '14 天掌握度历史', '保存 1 个词表', '创建 1 个学生档案'],
+    '': ['Up to 40 words per list', '1 active assignment', '15 student submissions per month', '14-day mastery history', '1 saved list', '1 student profile', 'Up to 80 words per list'],
+    es: ['Hasta 40 palabras por lista', '1 tarea activa', '15 entregas de estudiantes al mes', '14 días de historial de dominio', '1 lista guardada', '1 perfil de estudiante', 'Hasta 80 palabras por lista'],
+    'pt-br': ['Até 40 palavras por lista', '1 tarefa ativa', '15 envios de alunos por mês', '14 dias de histórico de domínio', '1 lista salva', '1 perfil de aluno', 'Até 80 palavras por lista'],
+    fr: ['Jusqu’à 40 mots par liste', '1 devoir actif', '15 remises d’élèves par mois', '14 jours d’historique de maîtrise', '1 liste enregistrée', '1 profil d’élève', 'Jusqu’à 80 mots par liste'],
+    id: ['Hingga 40 kata per daftar', '1 tugas aktif', '15 kiriman siswa per bulan', 'Riwayat penguasaan 14 hari', '1 daftar tersimpan', '1 profil siswa', 'Hingga 80 kata per daftar'],
+    zh: ['每份词表最多 40 个单词', '最多 1 个活跃作业', '每月 15 份学生提交', '14 天掌握度历史', '保存 1 个词表', '创建 1 个学生档案', '每份词表最多 80 个单词'],
   };
   const old = {
     '': ['2 active assignments', '30 student submissions per month', '30-day mastery history', '3 saved lists', '3 student profiles'],
@@ -153,14 +153,14 @@ test('pricing shows the current Free workspace limits in every locale', () => {
   }
 });
 
-test('pricing explains the complete 30-day trial in every locale', () => {
+test('pricing explains the complete 14-day trial in every locale', () => {
   const expected = {
-    '': ['30', '$0', 'Card required', '$5.99/month', '$49.99/year', 'automatically', 'cancel'],
-    es: ['30', '$0', 'tarjeta', '$5.99', '$49,99', 'automáticamente', 'canceles'],
-    'pt-br': ['30', '$0', 'cartão', '$5.99', '$49,99', 'automática', 'cancelar'],
-    fr: ['30', '0 $', 'carte requise', '5,99 $', '49,99 $', 'automatiquement', 'résiliation'],
-    id: ['30', '$0', 'kartu wajib', '$5.99', '$49.99', 'otomatis', 'dibatalkan'],
-    zh: ['30 天', '$0', '付款方式', '$5.99', '$49.99', '自动', '取消'],
+    '': ['14', '$0', 'Card required', '$5.99/month', '$49.99/year', 'automatically', 'cancel'],
+    es: ['14', '$0', 'tarjeta', '$5.99', '$49,99', 'automáticamente', 'canceles'],
+    'pt-br': ['14', '$0', 'cartão', '$5.99', '$49,99', 'automática', 'cancelar'],
+    fr: ['14', '0 $', 'carte requise', '5,99 $', '49,99 $', 'automatiquement', 'résiliation'],
+    id: ['14', '$0', 'kartu wajib', '$5.99', '$49.99', 'otomatis', 'dibatalkan'],
+    zh: ['14 天', '$0', '付款方式', '$5.99', '$49.99', '自动', '取消'],
   };
   for (const [locale, terms] of Object.entries(expected)) {
     const pricing = fs.readFileSync(path.join(root, locale, 'pricing.html'), 'utf8');
@@ -231,6 +231,11 @@ test('llms.txt publishes the current product summary and canonical sources', () 
     "## Today's Review",
     '## Mastery',
     '## Free and Plus',
+    '1 active assignment',
+    '15 student submissions per month',
+    '1 saved list',
+    '1 student profile',
+    '14 days of progress and mastery history',
     '## Primary Pages',
     'https://myspellinggame.com/',
     'https://myspellinggame.com/faq',
@@ -238,5 +243,11 @@ test('llms.txt publishes the current product summary and canonical sources', () 
     'https://myspellinggame.com/about',
     'https://myspellinggame.com/privacy',
   ]) assert.ok(content.includes(text), text);
+  assert.ok(content.includes('14-day free trial'));
+  assert.ok(content.includes('up to 20 words'));
+  assert.ok(content.includes('up to 40 words'));
+  assert.ok(content.includes('up to 80 words'));
+  assert.ok(!content.includes('30-day free trial'));
+  assert.ok(!content.includes('30 days of progress history'));
   assert.doesNotMatch(content, /workers\.dev|localhost|\.html/);
 });

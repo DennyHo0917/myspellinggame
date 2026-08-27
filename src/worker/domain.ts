@@ -28,6 +28,21 @@ export const PLAN_LIMITS = {
 export type Plan = keyof typeof PLAN_LIMITS;
 export type Mode = "dictation" | "typing";
 
+export function planWordLimit(plan: Plan): number {
+  return plan === "plus" ? 80 : 40;
+}
+
+export function enforcePlanWordLimit(words: readonly unknown[], plan: Plan) {
+  const limit = planWordLimit(plan);
+  if (words.length > limit) {
+    throw new HttpError(
+      403,
+      "word_limit",
+      `${plan === "plus" ? "Plus" : "Free accounts"} support up to ${limit} words per list.`,
+    );
+  }
+}
+
 export class HttpError extends Error {
   constructor(
     public status: number,

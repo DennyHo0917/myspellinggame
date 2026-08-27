@@ -549,6 +549,78 @@ for (const [code, update] of Object.entries(faqUpdates)) {
   item.questions.push(...update.additions);
 }
 
+const planQuestions = {
+  en: [
+    [
+      "How many spelling words can I practice?",
+      "Without an account, you can practice up to 20 words per list. A Free account supports up to 40 words, and Plus supports up to 80.",
+    ],
+    [
+      "How long is the Plus free trial?",
+      "The Plus free trial lasts 14 days. A payment method is required, and billing starts automatically after the trial unless canceled.",
+    ],
+  ],
+  es: [
+    [
+      "¿Cuántas palabras puedo practicar?",
+      "Sin cuenta puedes practicar hasta 20 palabras por lista. Una cuenta Gratis admite hasta 40 y Plus hasta 80.",
+    ],
+    [
+      "¿Cuánto dura la prueba gratis de Plus?",
+      "La prueba gratis de Plus dura 14 días. Se requiere una tarjeta y la facturación comienza automáticamente después, salvo que canceles.",
+    ],
+  ],
+  "pt-br": [
+    [
+      "Quantas palavras posso praticar?",
+      "Sem conta, você pode praticar até 20 palavras por lista. Uma conta Grátis aceita até 40, e o Plus até 80.",
+    ],
+    [
+      "Quanto dura o teste grátis do Plus?",
+      "O teste grátis do Plus dura 14 dias. É preciso cadastrar um cartão, e a cobrança começa automaticamente depois, salvo cancelamento.",
+    ],
+  ],
+  fr: [
+    [
+      "Combien de mots puis-je pratiquer ?",
+      "Sans compte, vous pouvez pratiquer jusqu’à 20 mots par liste. Un compte gratuit accepte jusqu’à 40 mots et Plus jusqu’à 80.",
+    ],
+    [
+      "Quelle est la durée de l’essai gratuit Plus ?",
+      "L’essai gratuit Plus dure 14 jours. Une carte est requise et la facturation commence automatiquement après l’essai, sauf résiliation.",
+    ],
+  ],
+  id: [
+    [
+      "Berapa banyak kata yang bisa dilatih?",
+      "Tanpa akun, Anda dapat berlatih hingga 20 kata per daftar. Akun Gratis mendukung hingga 40 kata, sedangkan Plus hingga 80.",
+    ],
+    [
+      "Berapa lama uji coba gratis Plus?",
+      "Uji coba gratis Plus berlangsung 14 hari. Kartu pembayaran wajib dan penagihan dimulai otomatis setelah uji coba kecuali dibatalkan.",
+    ],
+  ],
+  zh: [
+    [
+      "可以练习多少个单词？",
+      "无需账号时，每份词表最多练习 20 个单词。免费账号支持最多 40 个，Plus 支持最多 80 个。",
+    ],
+    [
+      "Plus 免费试用多长时间？",
+      "Plus 免费试用为 14 天。需要绑定付款方式，试用结束后会自动扣费，提前取消则不会扣费。",
+    ],
+  ],
+};
+for (const [code, questions] of Object.entries(planQuestions)) {
+  for (const [question, answer] of questions) {
+    const existing = locales[code].questions.findIndex(
+      ([current]) => current === question,
+    );
+    if (existing >= 0) locales[code].questions[existing][1] = answer;
+    else locales[code].questions.push([question, answer]);
+  }
+}
+
 const all = Object.entries(locales).map(([code, item]) => ({ code, ...item }));
 const labels = {
   en: "English",

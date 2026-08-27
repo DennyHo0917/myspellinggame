@@ -89,6 +89,7 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Free forever",
     freeItems: [
+      "Up to 40 words per list",
       "1 active assignment",
       "15 student submissions per month",
       "14-day mastery history",
@@ -96,10 +97,11 @@ const copy = {
       "1 student profile",
       "Basic progress",
     ],
-    pro: "Pro",
+    pro: "Plus",
     month: "$5.99 / month",
     year: "$4.17 / month",
     proItems: [
+      "Up to 80 words per list",
       "20 active assignments",
       "Unlimited student submissions",
       "Unlimited saved lists",
@@ -115,16 +117,16 @@ const copy = {
     monthly: "Monthly plan",
     yearly: "Yearly plan",
     monthlyBilling:
-      "First 30 days free for new subscribers. $0 today. Card required. Then $5.99/month automatically. You can cancel before the trial ends and you won't be charged.",
+      "First 14 days free for new subscribers. $0 today. Card required. Then $5.99/month automatically. You can cancel before the trial ends and you won't be charged.",
     yearlyBilling:
-      "First 30 days free for new subscribers. $0 today. Card required. Then $49.99/year automatically. You can cancel before the trial ends and you won't be charged.",
+      "First 14 days free for new subscribers. $0 today. Card required. Then $49.99/year automatically. You can cancel before the trial ends and you won't be charged.",
     monthlyBillingImmediate:
       "$5.99 charged today, then monthly until canceled.",
     yearlyBillingImmediate: "$49.99 charged today, then yearly until canceled.",
     yearlySavings: "Save 30%",
     billingPeriod: "Billing period",
-    confirmMonthly: "Start 30-day free trial · Monthly",
-    confirmYearly: "Start 30-day free trial · Yearly",
+    confirmMonthly: "Start 14-day free trial · Monthly",
+    confirmYearly: "Start 14-day free trial · Yearly",
     subscribe: "Subscribe",
     signIn: "Workspace sign in",
     practice: "Free practice",
@@ -145,6 +147,7 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Gratis para siempre",
     freeItems: [
+      "Hasta 40 palabras por lista",
       "1 tarea activa",
       "15 entregas de estudiantes al mes",
       "14 días de historial de dominio",
@@ -152,10 +155,11 @@ const copy = {
       "1 perfil de estudiante",
       "Progreso básico",
     ],
-    pro: "Pro",
+    pro: "Plus",
     month: "$5.99 al mes",
     year: "$4,17 al mes",
     proItems: [
+      "Hasta 80 palabras por lista",
       "20 tareas activas",
       "Entregas de estudiantes ilimitadas",
       "Listas guardadas ilimitadas",
@@ -171,17 +175,17 @@ const copy = {
     monthly: "Plan mensual",
     yearly: "Plan anual",
     monthlyBilling:
-      "Los primeros 30 días son gratis para nuevos suscriptores. Hoy pagas $0 y debes registrar una tarjeta. Después se cobrarán automáticamente $5.99 al mes. Puedes cancelar antes de que termine la prueba y no se te cobrará nada.",
+      "Los primeros 14 días son gratis para nuevos suscriptores. Hoy pagas $0 y debes registrar una tarjeta. Después se cobrarán automáticamente $5.99 al mes. Puedes cancelar antes de que termine la prueba y no se te cobrará nada.",
     yearlyBilling:
-      "Los primeros 30 días son gratis para nuevos suscriptores. Hoy pagas $0 y debes registrar una tarjeta. Después se cobrarán automáticamente $49,99 al año. Puedes cancelar antes de que termine la prueba y no se te cobrará nada.",
+      "Los primeros 14 días son gratis para nuevos suscriptores. Hoy pagas $0 y debes registrar una tarjeta. Después se cobrarán automáticamente $49,99 al año. Puedes cancelar antes de que termine la prueba y no se te cobrará nada.",
     monthlyBillingImmediate:
       "$5.99 cobrados hoy y después cada mes hasta que canceles.",
     yearlyBillingImmediate:
       "$49,99 cobrados hoy y después cada año hasta que canceles.",
     yearlySavings: "Ahorra un 30 %",
     billingPeriod: "Periodo de facturación",
-    confirmMonthly: "Iniciar prueba gratis de 30 días · Mensual",
-    confirmYearly: "Iniciar prueba gratis de 30 días · Anual",
+    confirmMonthly: "Iniciar prueba gratis de 14 días · Mensual",
+    confirmYearly: "Iniciar prueba gratis de 14 días · Anual",
     subscribe: "Suscribirse",
     signIn: "Acceder al espacio de trabajo",
     practice: "Práctica gratuita",
@@ -202,6 +206,7 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Grátis para sempre",
     freeItems: [
+      "Até 40 palavras por lista",
       "1 tarefa ativa",
       "15 envios de alunos por mês",
       "14 dias de histórico de domínio",
@@ -209,10 +214,11 @@ const copy = {
       "1 perfil de aluno",
       "Progresso básico",
     ],
-    pro: "Pro",
+    pro: "Plus",
     month: "$5.99 por mês",
     year: "$4,17 por mês",
     proItems: [
+      "Até 80 palavras por lista",
       "20 tarefas ativas",
       "Envios de alunos ilimitados",
       "Listas salvas ilimitadas",
@@ -228,17 +234,17 @@ const copy = {
     monthly: "Plano mensal",
     yearly: "Plano anual",
     monthlyBilling:
-      "Os primeiros 30 dias são grátis para novos assinantes. Hoje você paga $0 e precisa cadastrar um cartão. Depois, a cobrança automática será de $5.99 por mês. Você pode cancelar antes do fim do teste e não haverá cobrança.",
+      "Os primeiros 14 dias são grátis para novos assinantes. Hoje você paga $0 e precisa cadastrar um cartão. Depois, a cobrança automática será de $5.99 por mês. Você pode cancelar antes do fim do teste e não haverá cobrança.",
     yearlyBilling:
-      "Os primeiros 30 dias são grátis para novos assinantes. Hoje você paga $0 e precisa cadastrar um cartão. Depois, a cobrança automática será de $49,99 por ano. Você pode cancelar antes do fim do teste e não haverá cobrança.",
+      "Os primeiros 14 dias são grátis para novos assinantes. Hoje você paga $0 e precisa cadastrar um cartão. Depois, a cobrança automática será de $49,99 por ano. Você pode cancelar antes do fim do teste e não haverá cobrança.",
     monthlyBillingImmediate:
       "$5.99 cobrados hoje e depois mensalmente até o cancelamento.",
     yearlyBillingImmediate:
       "$49,99 cobrados hoje e depois anualmente até o cancelamento.",
     yearlySavings: "Economize 30%",
     billingPeriod: "Periodicidade",
-    confirmMonthly: "Iniciar teste grátis de 30 dias · Mensal",
-    confirmYearly: "Iniciar teste grátis de 30 dias · Anual",
+    confirmMonthly: "Iniciar teste grátis de 14 dias · Mensal",
+    confirmYearly: "Iniciar teste grátis de 14 dias · Anual",
     subscribe: "Assinar",
     signIn: "Acessar espaço de trabalho",
     practice: "Prática grátis",
@@ -259,6 +265,7 @@ const copy = {
     freePrice: "0 $",
     freeBilling: "Gratuit pour toujours",
     freeItems: [
+      "Jusqu’à 40 mots par liste",
       "1 devoir actif",
       "15 remises d’élèves par mois",
       "14 jours d’historique de maîtrise",
@@ -266,10 +273,11 @@ const copy = {
       "1 profil d’élève",
       "Progression essentielle",
     ],
-    pro: "Pro",
+    pro: "Plus",
     month: "5,99 $ par mois",
     year: "4,17 $ par mois",
     proItems: [
+      "Jusqu’à 80 mots par liste",
       "20 devoirs actifs",
       "Remises d’élèves illimitées",
       "Listes enregistrées illimitées",
@@ -285,17 +293,17 @@ const copy = {
     monthly: "Offre mensuelle",
     yearly: "Offre annuelle",
     monthlyBilling:
-      "Les 30 premiers jours sont gratuits pour les nouveaux abonnés. 0 $ aujourd’hui, carte requise. Ensuite, 5,99 $ seront prélevés automatiquement chaque mois. Vous pouvez résilier avant la fin de l’essai et aucun montant ne vous sera facturé.",
+      "Les 14 premiers jours sont gratuits pour les nouveaux abonnés. 0 $ aujourd’hui, carte requise. Ensuite, 5,99 $ seront prélevés automatiquement chaque mois. Vous pouvez résilier avant la fin de l’essai et aucun montant ne vous sera facturé.",
     yearlyBilling:
-      "Les 30 premiers jours sont gratuits pour les nouveaux abonnés. 0 $ aujourd’hui, carte requise. Ensuite, 49,99 $ seront prélevés automatiquement chaque année. Vous pouvez résilier avant la fin de l’essai et aucun montant ne vous sera facturé.",
+      "Les 14 premiers jours sont gratuits pour les nouveaux abonnés. 0 $ aujourd’hui, carte requise. Ensuite, 49,99 $ seront prélevés automatiquement chaque année. Vous pouvez résilier avant la fin de l’essai et aucun montant ne vous sera facturé.",
     monthlyBillingImmediate:
       "5,99 $ prélevés aujourd’hui, puis chaque mois jusqu’à résiliation.",
     yearlyBillingImmediate:
       "49,99 $ prélevés aujourd’hui, puis chaque année jusqu’à résiliation.",
     yearlySavings: "Économisez 30 %",
     billingPeriod: "Période de facturation",
-    confirmMonthly: "Démarrer l’essai gratuit de 30 jours · Mensuel",
-    confirmYearly: "Démarrer l’essai gratuit de 30 jours · Annuel",
+    confirmMonthly: "Démarrer l’essai gratuit de 14 jours · Mensuel",
+    confirmYearly: "Démarrer l’essai gratuit de 14 jours · Annuel",
     subscribe: "S’abonner",
     signIn: "Ouvrir l’espace de travail",
     practice: "Entraînement gratuit",
@@ -316,6 +324,7 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Gratis selamanya",
     freeItems: [
+      "Hingga 40 kata per daftar",
       "1 tugas aktif",
       "15 kiriman siswa per bulan",
       "Riwayat penguasaan 14 hari",
@@ -323,10 +332,11 @@ const copy = {
       "1 profil siswa",
       "Perkembangan dasar",
     ],
-    pro: "Pro",
+    pro: "Plus",
     month: "$5.99 per bulan",
     year: "$4.17 per bulan",
     proItems: [
+      "Hingga 80 kata per daftar",
       "20 tugas aktif",
       "Kiriman siswa tanpa batas",
       "Daftar tersimpan tanpa batas",
@@ -342,17 +352,17 @@ const copy = {
     monthly: "Paket bulanan",
     yearly: "Paket tahunan",
     monthlyBilling:
-      "30 hari pertama gratis untuk pelanggan baru. Bayar $0 hari ini dan kartu wajib didaftarkan. Setelah itu, $5.99 ditagih otomatis setiap bulan. Anda dapat membatalkan sebelum masa uji coba berakhir tanpa dikenai biaya.",
+      "14 hari pertama gratis untuk pelanggan baru. Bayar $0 hari ini dan kartu wajib didaftarkan. Setelah itu, $5.99 ditagih otomatis setiap bulan. Anda dapat membatalkan sebelum masa uji coba berakhir tanpa dikenai biaya.",
     yearlyBilling:
-      "30 hari pertama gratis untuk pelanggan baru. Bayar $0 hari ini dan kartu wajib didaftarkan. Setelah itu, $49.99 ditagih otomatis setiap tahun. Anda dapat membatalkan sebelum masa uji coba berakhir tanpa dikenai biaya.",
+      "14 hari pertama gratis untuk pelanggan baru. Bayar $0 hari ini dan kartu wajib didaftarkan. Setelah itu, $49.99 ditagih otomatis setiap tahun. Anda dapat membatalkan sebelum masa uji coba berakhir tanpa dikenai biaya.",
     monthlyBillingImmediate:
       "$5.99 ditagih hari ini, lalu setiap bulan sampai dibatalkan.",
     yearlyBillingImmediate:
       "$49.99 ditagih hari ini, lalu setiap tahun sampai dibatalkan.",
     yearlySavings: "Hemat 30%",
     billingPeriod: "Periode tagihan",
-    confirmMonthly: "Mulai uji coba gratis 30 hari · Bulanan",
-    confirmYearly: "Mulai uji coba gratis 30 hari · Tahunan",
+    confirmMonthly: "Mulai uji coba gratis 14 hari · Bulanan",
+    confirmYearly: "Mulai uji coba gratis 14 hari · Tahunan",
     subscribe: "Berlangganan",
     signIn: "Masuk ke ruang kerja",
     practice: "Latihan gratis",
@@ -372,6 +382,7 @@ const copy = {
     freePrice: "$0",
     freeBilling: "永久免费",
     freeItems: [
+      "每份词表最多 40 个单词",
       "最多 1 个活跃作业",
       "每月 15 份学生提交",
       "14 天掌握度历史",
@@ -379,10 +390,11 @@ const copy = {
       "创建 1 个学生档案",
       "查看基础进度",
     ],
-    pro: "Pro",
+    pro: "Plus",
     month: "每月 $5.99",
     year: "折合每月 $4.17",
     proItems: [
+      "每份词表最多 80 个单词",
       "最多 20 个活跃作业",
       "学生提交不限量",
       "保存词表不限量",
@@ -397,15 +409,15 @@ const copy = {
     monthly: "月付方案",
     yearly: "年付方案",
     monthlyBilling:
-      "新订阅用户首 30 天免费。今天支付 $0，需绑定付款方式。30 天后自动扣取每月 $5.99。您可以在试用结束前取消，这将不会产生费用。",
+      "新订阅用户首 14 天免费。今天支付 $0，需绑定付款方式。14 天后自动扣取每月 $5.99。您可以在试用结束前取消，这将不会产生费用。",
     yearlyBilling:
-      "新订阅用户首 30 天免费。今天支付 $0，需绑定付款方式。30 天后自动扣取每年 $49.99。您可以在试用结束前取消，这将不会产生费用。",
+      "新订阅用户首 14 天免费。今天支付 $0，需绑定付款方式。14 天后自动扣取每年 $49.99。您可以在试用结束前取消，这将不会产生费用。",
     monthlyBillingImmediate: "今天扣取 $5.99，之后按月自动续费，直至取消。",
     yearlyBillingImmediate: "今天扣取 $49.99，之后按年自动续费，直至取消。",
     yearlySavings: "立省 30%",
     billingPeriod: "计费周期",
-    confirmMonthly: "开始 30 天免费试用 · 月付",
-    confirmYearly: "开始 30 天免费试用 · 年付",
+    confirmMonthly: "开始 14 天免费试用 · 月付",
+    confirmYearly: "开始 14 天免费试用 · 年付",
     subscribe: "订阅",
     signIn: "登录工作台",
     practice: "免费练习",

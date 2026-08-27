@@ -259,7 +259,7 @@ export async function createCheckout(
           trial_granted: String(trialGranted),
         },
         subscription_data: {
-          ...(trialGranted ? { trial_period_days: 30 } : {}),
+          ...(trialGranted ? { trial_period_days: 14 } : {}),
           metadata: {
             owner_user_id: user.id,
             billing_interval: interval,

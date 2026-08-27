@@ -51,6 +51,7 @@ const ERROR_KEYS = {
   already_subscribed: "alreadySubscribed",
   invalid_title: "invalidTitle",
   invalid_words: "invalidWords",
+  word_limit: "wordLimit",
   invalid_example_sentence: "invalidExampleSentence",
   assignment_has_results: "assignmentHasResults",
   invalid_deadline: "invalidDeadline",
@@ -1580,7 +1581,7 @@ function recordPurchase(me) {
   if (me.subscriptionStatus === "trialing") {
     trackEvent("trial_started", {
       billing_interval: billingInterval,
-      trial_days: 30,
+      trial_days: 14,
     });
     return;
   }

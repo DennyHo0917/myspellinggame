@@ -1,11 +1,12 @@
 export const SAMPLE_WORDS = ['because', 'friend', 'beautiful', 'answer', 'enough', 'favorite', 'library', 'through'];
+export const ANONYMOUS_WORD_LIMIT = 20;
 
 export function parseWords(text) {
   return [...new Set((text || '')
     .toLowerCase()
     .split(/[^a-z'-]+/)
     .map((word) => word.trim())
-    .filter((word) => word.length > 1 && word.length <= 24))].slice(0, 80);
+    .filter((word) => word.length > 1 && word.length <= 24))];
 }
 
 export function configuredWords(text, fallback = SAMPLE_WORDS) {

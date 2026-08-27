@@ -1,6 +1,7 @@
 import { gameState } from './gameState.js';
 import { t } from './pageLocale.js';
 import {
+  ANONYMOUS_WORD_LIMIT,
   configuredWords,
   customTypingRoundComplete,
   parseWords,
@@ -19,7 +20,7 @@ const LEGACY_READ_KEY = 'mySpellingGameReadWords';
 const EASY_KEY = 'mySpellingGameEasyMode';
 let signupCtaViewTracked = false;
 let shareOptionsViewTracked = false;
-let signedInPromise;
+let accountPromise;
 
 export { parseWords };
 
@@ -34,6 +35,72 @@ function sentenceTextarea() {
 function status(text) {
   const el = document.getElementById('spelling-status');
   if (el) el.textContent = text;
+  document.getElementById('spelling-limit-cta')?.remove();
+}
+
+function isPlusAccount(account) {
+  return account?.plan === 'plus' || account?.plan === 'pro';
+}
+
+function practiceLimit(account, anonymousOnly = false) {
+  if (anonymousOnly || !account) return ANONYMOUS_WORD_LIMIT;
+  return isPlusAccount(account) ? 80 : 40;
+}
+
+function showLimitCta(key, href, ctaKey) {
+  status(t(key));
+  const host = document.querySelector('.spelling-options');
+  if (!host) return;
+  const link = document.createElement('a');
+  link.id = 'spelling-limit-cta';
+  link.className = 'button-link button-secondary';
+  link.href = href;
+  link.textContent = t(ctaKey);
+  host.append(link);
+}
+
+async function getAccount() {
+  if (!accountPromise) {
+    accountPromise = fetch('/api/me', { credentials: 'same-origin' })
+      .then(async (response) => {
+        if (!response.ok) return null;
+        const account = await response.json();
+        return {
+          ...account,
+          plan:
+            account.plan ||
+            (account.limits?.activeAssignments === 20 ? 'plus' : 'free'),
+        };
+      })
+      .catch(() => null);
+  }
+  return accountPromise;
+}
+
+export async function canStartPractice({ anonymousOnly = false } = {}) {
+  const words = currentWords();
+  const sharedLink = readShareState(window.location).sharedLink;
+  const anonymous = anonymousOnly || sharedLink;
+  const account = anonymous ? null : await getAccount();
+  const limit = practiceLimit(account, anonymous);
+  if (words.length <= limit && words.length <= 80) return true;
+  if (words.length > 80) {
+    status(t('invalidWords'));
+    return false;
+  }
+  const lang = encodeURIComponent(pageLocale());
+  if (anonymous || !account) {
+    showLimitCta('anonymousWordLimit', `/teacher?lang=${lang}#teacher-sign-in`, 'signInFree');
+  } else {
+    showLimitCta('freeWordLimit', `/pricing?lang=${lang}#pricing`, 'upgradePlus');
+  }
+  track('word_limit_hit', {
+    limit,
+    account_tier: isPlusAccount(account) ? 'plus' : account ? 'free' : 'anonymous',
+    word_count_range: words.length > 80 ? '81+' : `${limit + 1}-80`,
+    action: anonymous ? 'practice_link' : selectedMode() === 'typing' ? 'typing_rain' : 'spelling_test',
+  });
+  return false;
 }
 
 function currentWords() {
@@ -105,6 +172,7 @@ export function initSpellingMode() {
   status(t('wordsReady', { count: currentWords().length }));
   input.addEventListener('input', () => status(t('wordsReady', { count: currentWords().length })));
   syncModeUI();
+  void getAccount();
   if (readShareState(window.location).autoStart) queueMicrotask(() => window.startGame?.());
 }
 
@@ -271,6 +339,7 @@ function dismissPracticeShareOptions(event) {
 }
 
 async function copyAnonymousPracticeLink() {
+  if (!(await canStartPractice({ anonymousOnly: true }))) return;
   const words = currentWords();
   const url = new URL(window.location.origin + window.location.pathname);
   url.hash = buildShareHash(words, selectedMode()).slice(1);
@@ -390,12 +459,7 @@ export function renderResultWorkspaceCta({ mode, wordCount, missedCount }) {
 }
 
 function isTeacherSignedIn() {
-  if (!signedInPromise) {
-    signedInPromise = fetch('/api/me', { credentials: 'same-origin' })
-      .then((response) => response.ok)
-      .catch(() => false);
-  }
-  return signedInPromise;
+  return getAccount().then(Boolean);
 }
 
 export function openTeacherAssignment(entryPoint = 'practice_result') {
@@ -433,6 +497,7 @@ if (typeof window !== 'undefined') {
     copyPracticeLink,
     renderResultWorkspaceCta,
     openTeacherAssignment,
+    canStartPractice,
   };
   window.spellingMode = api;
   Object.assign(window, api);

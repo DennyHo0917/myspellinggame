@@ -36,7 +36,7 @@ import { gameState, resetGameState } from "./gameState.js";
 import { initializeWords } from "./gameLoop.js";
 import { fallingWords } from "./words.js";
 import { updateStats } from "./rendering.js";
-import { prepareSession, renderSummary } from "./spellingMode.js";
+import { canStartPractice, prepareSession, renderSummary } from "./spellingMode.js";
 import { renderDictationSummary, startDictation } from "./dictationMode.js";
 import { t } from "./pageLocale.js";
 
@@ -116,7 +116,8 @@ export function showCongratulations() {
 }
 
 // ---------- 游戏控制 ----------
-export function startGame() {
+export async function startGame() {
+  if (!(await canStartPractice())) return;
   const session = prepareSession();
   if (!session) return;
   gameState.startTime = Date.now();

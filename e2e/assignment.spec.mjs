@@ -238,6 +238,74 @@ const analyticsEvents = (page, name) =>
     name,
   );
 
+const limitWords = (count) =>
+  Array.from({ length: count }, (_, index) => {
+    let suffix = "";
+    let value = index;
+    do {
+      suffix = String.fromCharCode(97 + (value % 26)) + suffix;
+      value = Math.floor(value / 26) - 1;
+    } while (value >= 0);
+    return `limitword${suffix}`;
+  }).join("\n");
+
+test("practice enforces anonymous, Free, Plus, and practice-link word limits", async ({
+  page,
+}) => {
+  let account = null;
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      status: account ? 200 : 401,
+      contentType: "application/json",
+      body: JSON.stringify(account || {}),
+    }),
+  );
+
+  await page.goto("/");
+  await page.locator("#custom-word-list").fill(limitWords(20));
+  await page.getByRole("button", { name: "Start Spelling Test" }).click();
+  await expect(
+    page.getByRole("button", { name: "Return to main menu" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Return to main menu" }).click();
+
+  await page.locator("#custom-word-list").fill(limitWords(21));
+  await page.getByRole("button", { name: "Start Spelling Test" }).click();
+  await expect(page.locator("#spelling-status")).toContainText(
+    "No-login practice supports up to 20 words",
+  );
+
+  await page.getByRole("button", { name: "Copy practice link" }).click();
+  await page
+    .locator(".practice-share-option", { hasText: "Practice only" })
+    .click();
+  await expect(page.locator("#spelling-status")).toContainText(
+    "No-login practice supports up to 20 words",
+  );
+
+  account = { plan: "free", user: { id: "teacher-a", name: "Teacher A" } };
+  await page.reload();
+  await page.locator("#custom-word-list").fill(limitWords(40));
+  await page.getByRole("button", { name: "Start Spelling Test" }).click();
+  await expect(
+    page.getByRole("button", { name: "Return to main menu" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Return to main menu" }).click();
+  await page.locator("#custom-word-list").fill(limitWords(41));
+  await page.getByRole("button", { name: "Start Spelling Test" }).click();
+  await expect(page.locator("#spelling-status")).toContainText(
+    "Free accounts support up to 40 words",
+  );
+
+  account.plan = "plus";
+  await page.reload();
+  await page.locator("#custom-word-list").fill(limitWords(80));
+  await page.getByRole("button", { name: "Start Spelling Test" }).click();
+  await expect(
+    page.getByRole("button", { name: "Return to main menu" }),
+  ).toBeVisible();
+});
+
 test("practice records a valid list and start separately", async ({ page }) => {
   await page.goto("/");
   await page.locator("#custom-word-list").fill("because\nfriend");
@@ -286,9 +354,9 @@ test("Copy practice link chooses anonymous practice before copying", async ({
   await trigger.click();
   await expect(chooser).toHaveCount(0);
   await trigger.click();
-  expect(await analyticsEvents(page, "practice_share_options_viewed")).toEqual(
-    [{ mode: "typing", word_count: 2, locale: "en" }],
-  );
+  expect(await analyticsEvents(page, "practice_share_options_viewed")).toEqual([
+    { mode: "typing", word_count: 2, locale: "en" },
+  ]);
 
   await page
     .locator(".practice-share-option", { hasText: "Practice only" })
@@ -341,7 +409,9 @@ test("Practice only keeps the existing prompt fallback", async ({ page }) => {
   );
 });
 
-test("share choices are localized without raw message keys", async ({ page }) => {
+test("share choices are localized without raw message keys", async ({
+  page,
+}) => {
   for (const path of ["/es/", "/pt-br/", "/fr/", "/id/", "/zh/"]) {
     await page.goto(path);
     await page.locator("#copy-practice-link-btn").click();
@@ -913,9 +983,7 @@ test("teacher creates an assignment with an example sentence and the student pla
   });
   expect(
     await page.evaluate(() =>
-      JSON.parse(
-        sessionStorage.getItem("createEventsBeforeNavigation") || "[]",
-      )
+      JSON.parse(sessionStorage.getItem("createEventsBeforeNavigation") || "[]")
         .filter((entry) => entry[1] === "assignment_created")
         .map((entry) => entry[2]),
     ),
@@ -1168,9 +1236,7 @@ test("Google sign-in returns to a prefilled new teacher assignment", async ({
   await expect(page.getByLabel("Typing", { exact: true })).toBeChecked();
   expect(
     await page.evaluate(() =>
-      JSON.parse(
-        sessionStorage.getItem("authEventsBeforeNavigation") || "[]",
-      )
+      JSON.parse(sessionStorage.getItem("authEventsBeforeNavigation") || "[]")
         .filter((entry) => entry[1] === "teacher_auth_started")
         .map((entry) => entry[2]),
     ),
@@ -1199,7 +1265,7 @@ test("Checkout analytics separate creation attempts from Stripe redirects", asyn
 
   await page.goto("/pricing");
   const checkout = page.getByRole("button", {
-    name: "Start 30-day free trial · Monthly",
+    name: "Start 14-day free trial · Monthly",
   });
   await checkout.scrollIntoViewIfNeeded();
   await expect

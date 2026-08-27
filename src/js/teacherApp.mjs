@@ -1314,6 +1314,7 @@ async function renderDetail(me, id) {
 
 async function renderLearner(me, id) {
   const data = await api(`/api/learners/${id}`);
+  const reviewData = data.todaysReview || { count: 0, words: null };
   const main = shell();
   const card = document.createElement("section");
   card.className = "product-card";
@@ -1381,6 +1382,45 @@ async function renderLearner(me, id) {
   );
   summary.append(summaryTitle, grid);
   main.append(summary);
+
+  const todaysReview = document.createElement("section");
+  todaysReview.className = "product-card";
+  const todaysReviewTitle = document.createElement("h2");
+  todaysReviewTitle.textContent = copy.todaysReview;
+  const todaysReviewCount = document.createElement("p");
+  todaysReviewCount.textContent = reviewData.count
+    ? m("todaysReviewCount", { count: reviewData.count })
+    : copy.todaysReviewEmpty;
+  todaysReview.append(todaysReviewTitle, todaysReviewCount);
+  if (data.smartReview && reviewData.words?.length) {
+    const list = document.createElement("div");
+    list.className = "word-list";
+    for (const item of reviewData.words) {
+      const word = document.createElement("span");
+      word.className = "word-chip";
+      word.textContent = `${item.word} · ${m("todaysReviewMisses", {
+        count: item.recentMissCount,
+        date: date(item.lastPracticedAt),
+      })}`;
+      list.append(word);
+    }
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = copy.createTodaysReview;
+    button.addEventListener("click", () => {
+      saveAssignmentDraft(
+        reviewData.words,
+        m("todaysReviewDraftTitle", { name: data.learner.name }),
+        reviewData.words.map((word) => word.exampleSentence),
+      );
+    });
+    todaysReview.append(list, button);
+  } else if (!data.smartReview && reviewData.count) {
+    const locked = document.createElement("p");
+    locked.textContent = copy.todaysReviewUpgrade;
+    todaysReview.append(locked, upgradeLink("todays_review"));
+  }
+  main.append(todaysReview);
 
   const review = document.createElement("section");
   review.className = "product-card";

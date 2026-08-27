@@ -41,3 +41,7 @@ eslint.config.mjs
 .prettierignore
 client-key.txt
 client-key.txt/**
+documents
+documents/**
+data
+data/**

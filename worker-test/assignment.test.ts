@@ -3,7 +3,12 @@ import { applyD1Migrations, reset, type D1Migration } from "cloudflare:test";
 import { beforeEach, describe, expect, it } from "vitest";
 import type Stripe from "stripe";
 
-import { HttpError, masteryStatus, monthStart } from "../src/worker/domain";
+import {
+  calculateReviewState,
+  HttpError,
+  masteryStatus,
+  monthStart,
+} from "../src/worker/domain";
 import {
   restrictTeacherAuthCallback,
   safeTeacherCallbackURL,
@@ -841,6 +846,100 @@ describe("cross-assignment mastery", () => {
   });
 });
 
+describe("today's review state", () => {
+  const now = new Date("2026-08-27T00:00:00.000Z");
+  const result = (correct: boolean, daysAgo: number) => ({
+    correct,
+    practicedAt: new Date(now.getTime() - daysAgo * 86_400_000).toISOString(),
+  });
+
+  it("returns due states after a miss", () => {
+    expect(calculateReviewState([result(false, 0)], now)?.due).toBe(true);
+    expect(
+      calculateReviewState([result(false, 0), result(true, 0)], now)?.due,
+    ).toBe(false);
+    expect(
+      calculateReviewState([result(false, 2), result(true, 2)], now)?.due,
+    ).toBe(true);
+    expect(
+      calculateReviewState(
+        [result(false, 1), result(true, 1), result(true, 1)],
+        now,
+      )?.due,
+    ).toBe(false);
+    expect(
+      calculateReviewState(
+        [result(false, 4), result(true, 4), result(true, 4)],
+        now,
+      )?.due,
+    ).toBe(true);
+    expect(
+      calculateReviewState(
+        [result(false, 4), result(true, 4), result(true, 4), result(true, 4)],
+        now,
+      ),
+    ).toBeNull();
+  });
+
+  it("ignores words that were never missed", () => {
+    expect(
+      calculateReviewState([result(true, 0), result(true, 0)], now),
+    ).toBeNull();
+  });
+
+  it("hides words from Free and returns them to Plus", async () => {
+    const learner = await createLearner("Learner 01");
+    const assignment = await createAssignment(teacherA, {
+      words: ["because"],
+      exampleSentences: ["I stayed inside because it was raining."],
+    });
+    const words = await publicWords(String(assignment.body.publicId));
+    await submit(String(assignment.body.publicId), words.words, {
+      learnerPublicId: String(learner.body.public_id),
+      answers: ["wrong"],
+    });
+
+    const free = (await (
+      await call(`/api/learners/${learner.body.id}`)
+    ).json()) as {
+      todaysReview: { count: number; words: null };
+    };
+    expect(free.todaysReview).toEqual({ count: 1, words: null });
+
+    await insertSubscription({ plan: "pro", status: "active" });
+    const plus = (await (
+      await call(`/api/learners/${learner.body.id}`)
+    ).json()) as {
+      todaysReview: {
+        count: number;
+        words: Array<{ word: string; exampleSentence: string | null }>;
+      };
+    };
+    expect(plus.todaysReview.count).toBe(1);
+    expect(plus.todaysReview.words).toEqual([
+      expect.objectContaining({
+        word: "because",
+        exampleSentence: "I stayed inside because it was raining.",
+      }),
+    ]);
+  });
+
+  it("does not count incomplete attempts", async () => {
+    const learner = await createLearner("Learner 01");
+    const assignment = await createAssignment(teacherA, { words: ["because"] });
+    const words = await publicWords(String(assignment.body.publicId));
+    await submit(String(assignment.body.publicId), words.words, {
+      learnerPublicId: String(learner.body.public_id),
+      answers: ["wrong"],
+      completed: false,
+    });
+    const detail = (await (
+      await call(`/api/learners/${learner.body.id}`)
+    ).json()) as { todaysReview: { count: number } };
+    expect(detail.todaysReview.count).toBe(0);
+  });
+});
+
 describe("assignment attempts", () => {
   it("expires Free results after 30 days and Pro results after 365 days", async () => {
     const retentionDays = async (attemptId: string) => {
@@ -1398,7 +1497,7 @@ describe("Stripe checkout", () => {
       });
       expect(
         ((await (await call("/api/me")).json()) as { plan: string }).plan,
-      ).toBe("pro");
+      ).toBe("plus");
 
       await expect(
         createCheckout(
@@ -1742,7 +1841,7 @@ describe("Stripe event processing", () => {
       trialEndsAt: string | null;
     };
     expect(me).toMatchObject({
-      plan: "pro",
+      plan: "plus",
       subscriptionStatus: "trialing",
       trialEligible: false,
     });

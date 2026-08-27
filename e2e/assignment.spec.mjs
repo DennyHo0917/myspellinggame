@@ -1076,6 +1076,72 @@ test("workspace P0 flow keeps empty smart review actions retryable", async ({
   await expect(assignmentReview).toBeEnabled();
 });
 
+test("Plus teacher creates today's review assignment from learner detail", async ({
+  page,
+}) => {
+  const learnerId = "abababab-abab-4bab-8bab-abababababab";
+  const json = (route, body) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(body),
+    });
+  await page.route("**/api/me", (route) =>
+    json(route, {
+      user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
+      plan: "plus",
+      limits: { activeAssignments: 20, monthlyAttempts: null },
+    }),
+  );
+  await page.route(`**/api/learners/${learnerId}`, (route) =>
+    json(route, {
+      learner: { id: learnerId, name: "Emily", archived: false },
+      historyDays: 365,
+      smartReview: true,
+      summary: {
+        completedAttempts: 1,
+        accuracy: 0,
+        mastered: 0,
+        learning: 0,
+        needsReview: 1,
+      },
+      todaysReview: {
+        count: 1,
+        words: [
+          {
+            word: "because",
+            recentMissCount: 2,
+            lastPracticedAt: "2026-08-26T00:00:00.000Z",
+            consecutiveCorrectAfterLastMiss: 0,
+            dueAt: "2026-08-27T00:00:00.000Z",
+            exampleSentence: "I stayed inside because it was raining.",
+          },
+        ],
+      },
+      words: [],
+    }),
+  );
+
+  await page.goto(`/teacher/learners/${learnerId}?lang=en`);
+  const review = page.locator("section").filter({
+    has: page.getByRole("heading", { name: "Today's Review" }),
+  });
+  await expect(review).toContainText("because");
+  await review
+    .getByRole("button", { name: "Create Review Assignment" })
+    .click();
+  await expect(page).toHaveURL(/\/teacher\/assignments\/new/);
+  await expect(page.locator("#assignment-title")).toHaveValue(
+    "Emily — Today's Review",
+  );
+  await expect(page.locator("#assignment-words")).toHaveValue("because");
+  await expect(page.locator("#assignment-sentences")).toHaveValue(
+    "I stayed inside because it was raining.",
+  );
+  await expect(
+    page.locator('input[name="mode"][value="dictation"]'),
+  ).toBeChecked();
+});
+
 test("a Pro dashboard never requests or displays upgrade pricing", async ({
   page,
 }) => {

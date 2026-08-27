@@ -365,6 +365,39 @@ export function masteryStatus(results: boolean[]): MasteryStatus {
   return "learning";
 }
 
+export type ReviewResult = {
+  correct: boolean;
+  practicedAt: string;
+};
+
+export function calculateReviewState(
+  results: ReviewResult[],
+  now = new Date(),
+) {
+  let lastMiss = -1;
+  for (let index = results.length - 1; index >= 0; index -= 1) {
+    if (!results[index].correct) {
+      lastMiss = index;
+      break;
+    }
+  }
+  if (lastMiss < 0) return null;
+  const consecutiveCorrectAfterLastMiss = results.length - lastMiss - 1;
+  if (consecutiveCorrectAfterLastMiss >= 3) return null;
+  const lastPracticedAt = results.at(-1)!.practicedAt;
+  const delayDays = [0, 1, 3][consecutiveCorrectAfterLastMiss];
+  const dueAt = delayDays
+    ? addDays(lastPracticedAt, delayDays)
+    : now.toISOString();
+  return {
+    lastPracticedAt,
+    recentMissCount: results.filter((result) => !result.correct).length,
+    consecutiveCorrectAfterLastMiss,
+    dueAt,
+    due: new Date(dueAt).getTime() <= now.getTime(),
+  };
+}
+
 export function accuracyRange(value: number): string {
   if (value < 50) return "0-49";
   if (value < 75) return "50-74";

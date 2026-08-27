@@ -8,6 +8,7 @@ import {
   HttpError,
   PLAN_LIMITS,
   addDays,
+  calculateReviewState,
   csvCell,
   masteryStatus,
   monthStart,
@@ -760,7 +761,8 @@ async function learnerMastery(db: D1Database, learner: LearnerRow, plan: Plan) {
       .first<{ count: number; last_practiced_at: string | null }>(),
     db
       .prepare(
-        `SELECT at.id AS attempt_id, at.completed_at, aw.word, aw.position, ai.is_correct
+        `SELECT at.id AS attempt_id, at.completed_at, aw.word, aw.position,
+                aw.example_sentence, ai.is_correct
          FROM attempts at
          JOIN assignments a ON a.id = at.assignment_id
          JOIN attempt_items ai ON ai.attempt_id = at.id
@@ -775,6 +777,7 @@ async function learnerMastery(db: D1Database, learner: LearnerRow, plan: Plan) {
         completed_at: string;
         word: string;
         position: number;
+        example_sentence: string | null;
         is_correct: number;
       }>(),
   ]);
@@ -783,10 +786,12 @@ async function learnerMastery(db: D1Database, learner: LearnerRow, plan: Plan) {
     {
       word: string;
       results: boolean[];
+      reviewResults: Array<{ correct: boolean; practicedAt: string }>;
       correctCount: number;
       incorrectCount: number;
       lastPracticedAt: string;
       lastIncorrectAt: string | null;
+      exampleSentence: string | null;
     }
   >();
   for (const row of itemRows.results) {
@@ -794,25 +799,42 @@ async function learnerMastery(db: D1Database, learner: LearnerRow, plan: Plan) {
     const current = grouped.get(key) ?? {
       word: row.word,
       results: [],
+      reviewResults: [],
       correctCount: 0,
       incorrectCount: 0,
       lastPracticedAt: row.completed_at,
       lastIncorrectAt: null,
+      exampleSentence: null,
     };
     const correct = row.is_correct === 1;
     current.word = row.word;
     current.results.push(correct);
+    current.reviewResults.push({ correct, practicedAt: row.completed_at });
     current.correctCount += correct ? 1 : 0;
     current.incorrectCount += correct ? 0 : 1;
     current.lastPracticedAt = row.completed_at;
     if (!correct) current.lastIncorrectAt = row.completed_at;
+    if (row.example_sentence) current.exampleSentence = row.example_sentence;
     grouped.set(key, current);
   }
-  const words = [...grouped.values()].map(({ results, ...word }) => ({
-    ...word,
-    status: masteryStatus(results),
-    lastResult: results.at(-1) ? "correct" : "incorrect",
-  }));
+  const words = [...grouped.values()].map(
+    ({ results, reviewResults, ...word }) => ({
+      ...word,
+      status: masteryStatus(results),
+      lastResult: results.at(-1) ? "correct" : "incorrect",
+      reviewState: calculateReviewState(reviewResults),
+    }),
+  );
+  const reviewWords = words
+    .filter((word) => word.reviewState?.due)
+    .sort(
+      (a, b) =>
+        a.reviewState!.consecutiveCorrectAfterLastMiss -
+          b.reviewState!.consecutiveCorrectAfterLastMiss ||
+        b.reviewState!.recentMissCount - a.reviewState!.recentMissCount ||
+        a.reviewState!.dueAt.localeCompare(b.reviewState!.dueAt) ||
+        a.word.localeCompare(b.word),
+    );
   const correctItems = words.reduce((sum, word) => sum + word.correctCount, 0);
   const totalItems = words.reduce(
     (sum, word) => sum + word.correctCount + word.incorrectCount,
@@ -822,6 +844,20 @@ async function learnerMastery(db: D1Database, learner: LearnerRow, plan: Plan) {
     learner: { ...learner, archived: Boolean(learner.archived) },
     historyDays: PLAN_LIMITS[plan].historyDays,
     smartReview: PLAN_LIMITS[plan].smartReview,
+    todaysReview: {
+      count: reviewWords.length,
+      words: PLAN_LIMITS[plan].smartReview
+        ? reviewWords.slice(0, 20).map((word) => ({
+            word: word.word,
+            recentMissCount: word.reviewState!.recentMissCount,
+            lastPracticedAt: word.reviewState!.lastPracticedAt,
+            consecutiveCorrectAfterLastMiss:
+              word.reviewState!.consecutiveCorrectAfterLastMiss,
+            dueAt: word.reviewState!.dueAt,
+            exampleSentence: word.exampleSentence,
+          }))
+        : null,
+    },
     summary: {
       completedAttempts: Number(attempts?.count ?? 0),
       accuracy: totalItems ? Math.round((correctItems / totalItems) * 100) : 0,
@@ -831,9 +867,12 @@ async function learnerMastery(db: D1Database, learner: LearnerRow, plan: Plan) {
       needsReview: words.filter((word) => word.status === "needs_review")
         .length,
     },
-    words: words.sort((a, b) =>
-      b.lastPracticedAt.localeCompare(a.lastPracticedAt),
-    ),
+    words: words
+      .map(
+        ({ reviewState: _reviewState, exampleSentence: _sentence, ...word }) =>
+          word,
+      )
+      .sort((a, b) => b.lastPracticedAt.localeCompare(a.lastPracticedAt)),
   };
 }
 

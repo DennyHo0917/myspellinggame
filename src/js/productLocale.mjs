@@ -1502,6 +1502,67 @@ const SENTENCE_LIBRARY_COPY = {
   },
 };
 
+const TODAYS_REVIEW_COPY = {
+  en: {
+    todaysReview: "Today's Review",
+    todaysReviewCount: "{count} words need review today.",
+    todaysReviewEmpty: "Nothing due today.",
+    todaysReviewUpgrade:
+      "Upgrade to Plus to create a focused review assignment.",
+    todaysReviewMisses: "Missed {count} times · Last practiced {date}",
+    createTodaysReview: "Create Review Assignment",
+    todaysReviewDraftTitle: "{name} — Today's Review",
+  },
+  es: {
+    todaysReview: "Repaso de hoy",
+    todaysReviewCount: "Hoy hay {count} palabras para repasar.",
+    todaysReviewEmpty: "No hay nada pendiente hoy.",
+    todaysReviewUpgrade:
+      "Pásate a Plus para crear una tarea de repaso personalizada.",
+    todaysReviewMisses: "Fallada {count} veces · Última práctica: {date}",
+    createTodaysReview: "Crear tarea de repaso",
+    todaysReviewDraftTitle: "{name} — Repaso de hoy",
+  },
+  "pt-BR": {
+    todaysReview: "Revisão de hoje",
+    todaysReviewCount: "Há {count} palavras para revisar hoje.",
+    todaysReviewEmpty: "Nada para revisar hoje.",
+    todaysReviewUpgrade:
+      "Assine o Plus para criar uma tarefa de revisão focada.",
+    todaysReviewMisses: "Errou {count} vezes · Última prática: {date}",
+    createTodaysReview: "Criar tarefa de revisão",
+    todaysReviewDraftTitle: "{name} — Revisão de hoje",
+  },
+  fr: {
+    todaysReview: "Révision du jour",
+    todaysReviewCount: "{count} mots sont à revoir aujourd'hui.",
+    todaysReviewEmpty: "Rien à revoir aujourd'hui.",
+    todaysReviewUpgrade:
+      "Passez à Plus pour créer un devoir de révision ciblé.",
+    todaysReviewMisses: "Raté {count} fois · Dernier exercice : {date}",
+    createTodaysReview: "Créer le devoir de révision",
+    todaysReviewDraftTitle: "{name} — Révision du jour",
+  },
+  id: {
+    todaysReview: "Ulasan hari ini",
+    todaysReviewCount: "Ada {count} kata untuk diulas hari ini.",
+    todaysReviewEmpty: "Tidak ada yang perlu diulas hari ini.",
+    todaysReviewUpgrade: "Pilih Plus untuk membuat tugas ulasan yang terarah.",
+    todaysReviewMisses: "Salah {count} kali · Latihan terakhir: {date}",
+    createTodaysReview: "Buat tugas ulasan",
+    todaysReviewDraftTitle: "{name} — Ulasan hari ini",
+  },
+  zh: {
+    todaysReview: "今日复习",
+    todaysReviewCount: "今天有 {count} 个单词需要复习。",
+    todaysReviewEmpty: "今天没有待复习单词。",
+    todaysReviewUpgrade: "升级 Plus 后可创建针对性复习作业。",
+    todaysReviewMisses: "答错 {count} 次 · 最近练习：{date}",
+    createTodaysReview: "创建复习作业",
+    todaysReviewDraftTitle: "{name} — 今日复习",
+  },
+};
+
 function productUrlLocale(value) {
   const key = String(value || "").toLowerCase();
   return Object.hasOwn(URL_LOCALES, key) ? URL_LOCALES[key] : "";
@@ -1555,6 +1616,7 @@ export function productMessages(locale = productLocale()) {
   const pack = {
     ...(PACKS[locale] || PACKS.en),
     ...(SENTENCE_LIBRARY_COPY[locale] || SENTENCE_LIBRARY_COPY.en),
+    ...(TODAYS_REVIEW_COPY[locale] || TODAYS_REVIEW_COPY.en),
   };
   return Object.fromEntries(
     Object.entries(pack).map(([key, value]) => [

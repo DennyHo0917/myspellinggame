@@ -272,6 +272,7 @@ function saveAssignmentDraft(words, title = "", exampleSentences = "") {
     sessionStorage.setItem("mySpellingTeacherDraftTitle", title.slice(0, 80));
     sessionStorage.setItem("mySpellingTeacherDraftMode", "dictation");
   } catch {}
+  setAssignmentEntryPoint("workspace");
   location.href = `/teacher/assignments/new?lang=${encodeURIComponent(locale)}`;
 }
 

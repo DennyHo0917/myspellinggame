@@ -810,6 +810,14 @@ test("teacher creates an assignment with an example sentence and the student pla
         contentType: "application/json",
         body: JSON.stringify({
           assignments: [],
+          savedLists: [
+            {
+              id: "55555555-5555-4555-8555-555555555555",
+              title: "Sentence practice",
+              words: ["because"],
+              word_details: [{ word: "because", example_sentence: sentence }],
+            },
+          ],
           usage: {
             activeAssignments: 0,
             monthlyAttempts: 0,
@@ -869,7 +877,7 @@ test("teacher creates an assignment with an example sentence and the student pla
   await page.evaluate(() =>
     sessionStorage.setItem("mySpellingAssignmentEntryPoint", "copy_track"),
   );
-  await page.getByRole("link", { name: "Create assignment" }).click();
+  await page.getByRole("button", { name: "Use for assignment" }).click();
   expect(
     await page.evaluate(() =>
       sessionStorage.getItem("mySpellingAssignmentEntryPoint"),
@@ -1659,6 +1667,9 @@ test("Plus teacher creates today's review assignment from learner detail", async
   );
 
   await page.goto(`/teacher/learners/${learnerId}?lang=en`);
+  await page.evaluate(() =>
+    sessionStorage.setItem("mySpellingAssignmentEntryPoint", "copy_track"),
+  );
   const review = page.locator("section").filter({
     has: page.getByRole("heading", { name: "Today's Review" }),
   });
@@ -1667,6 +1678,11 @@ test("Plus teacher creates today's review assignment from learner detail", async
     .getByRole("button", { name: "Create Review Assignment" })
     .click();
   await expect(page).toHaveURL(/\/teacher\/assignments\/new/);
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("mySpellingAssignmentEntryPoint"),
+    ),
+  ).toBe("workspace");
   await expect(page.locator("#assignment-title")).toHaveValue(
     "Emily — Today's Review",
   );

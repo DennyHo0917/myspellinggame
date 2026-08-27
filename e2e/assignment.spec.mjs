@@ -822,7 +822,7 @@ test("teacher creates an assignment with an example sentence and the student pla
             activeAssignments: 0,
             monthlyAttempts: 0,
             studentNicknames: 0,
-            limits: { activeAssignments: 2, monthlyAttempts: 30 },
+            limits: { activeAssignments: 1, monthlyAttempts: 15 },
           },
         }),
       });
@@ -1279,7 +1279,7 @@ test("failed automatic Checkout stays retryable on the teacher page", async ({
           activeAssignments: 0,
           monthlyAttempts: 0,
           studentNicknames: 0,
-          limits: { activeAssignments: 2, monthlyAttempts: 30 },
+          limits: { activeAssignments: 1, monthlyAttempts: 15 },
         },
       }),
     }),
@@ -1756,8 +1756,8 @@ test("free teacher results preview distinct missed words as inert text", async (
         user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
         plan: "free",
         limits: {
-          activeAssignments: 2,
-          monthlyAttempts: 30,
+          activeAssignments: 1,
+          monthlyAttempts: 15,
           studentNicknames: 30,
         },
         activeAssignments: 1,
@@ -1865,9 +1865,9 @@ test("free assignment and learner previews avoid zero-value urgency", async ({
       user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
       plan: "free",
       limits: {
-        activeAssignments: 2,
-        monthlyAttempts: 30,
-        learnerProfiles: 3,
+        activeAssignments: 1,
+        monthlyAttempts: 15,
+        learnerProfiles: 1,
       },
     }),
   );
@@ -1887,7 +1887,7 @@ test("free assignment and learner previews avoid zero-value urgency", async ({
   await page.route(`**/api/learners/${learnerId}`, (route) =>
     json(route, {
       learner: { id: learnerId, name: "Student 01", archived: false },
-      historyDays: 30,
+      historyDays: 14,
       smartReview: false,
       summary: {
         completedAttempts: 3,

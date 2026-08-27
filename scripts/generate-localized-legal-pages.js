@@ -178,7 +178,7 @@ const locale = {
         ],
         [
           "Assignments and Results",
-          "When a signed-in teacher or parent publishes an assignment or saves a custom list, its title, words, settings, and deadline are stored in Cloudflare D1. Student nicknames and profiles, plus links between profiles and completed assignment results, are stored to show mastery across assignments and create smart review lists. Completed results and their history are stored for 30 days on Free or 365 days on Plus, then expire. Saved lists remain until deleted. Student profiles can be archived and restored; archiving does not delete the profile or linked results. Deleting an assignment also deletes its results. We do not collect student email, IP address, or User-Agent.",
+          "When a signed-in teacher or parent publishes an assignment or saves a custom list, its title, words, settings, and deadline are stored in Cloudflare D1. Student nicknames and profiles, plus links between profiles and completed assignment results, are stored to show mastery across assignments and create smart review lists. Completed results and their history are stored for 14 days on Free or 365 days on Plus, then expire. Saved lists remain until deleted. Student profiles can be archived and restored; archiving does not delete the profile or linked results. Deleting an assignment also deletes its results. We do not collect student email, IP address, or User-Agent.",
         ],
         [
           "Analytics",
@@ -283,7 +283,7 @@ const locale = {
         ],
         [
           "Tareas y resultados",
-          "Cuando un docente o familiar conectado publica una tarea o guarda una lista personalizada, el título, las palabras, los ajustes y la fecha límite se guardan en Cloudflare D1. Los apodos y perfiles de estudiantes, junto con la relación entre cada perfil y los resultados completados, se usan para mostrar el dominio entre tareas y crear repasos inteligentes. Los resultados completados y su historial se guardan 30 días en Gratis o 365 días en Plus y después caducan. Las listas permanecen hasta que se eliminan. Los perfiles se pueden archivar y restaurar; archivarlos no borra el perfil ni los resultados relacionados. Al borrar una tarea también se borran sus resultados. No recopilamos email, dirección IP ni User-Agent del estudiante.",
+          "Cuando un docente o familiar conectado publica una tarea o guarda una lista personalizada, el título, las palabras, los ajustes y la fecha límite se guardan en Cloudflare D1. Los apodos y perfiles de estudiantes, junto con la relación entre cada perfil y los resultados completados, se usan para mostrar el dominio entre tareas y crear repasos inteligentes. Los resultados completados y su historial se guardan 14 días en Gratis o 365 días en Plus y después caducan. Las listas permanecen hasta que se eliminan. Los perfiles se pueden archivar y restaurar; archivarlos no borra el perfil ni los resultados relacionados. Al borrar una tarea también se borran sus resultados. No recopilamos email, dirección IP ni User-Agent del estudiante.",
         ],
         [
           "Analítica",
@@ -388,7 +388,7 @@ const locale = {
         ],
         [
           "Tarefas e resultados",
-          "Quando um professor ou responsável conectado publica uma tarefa ou salva uma lista personalizada, título, palavras, configurações e prazo ficam no Cloudflare D1. Apelidos e perfis de alunos, além da ligação entre cada perfil e os resultados concluídos, são usados para mostrar o domínio entre tarefas e criar revisões inteligentes. Resultados concluídos e seu histórico ficam por 30 dias no Grátis ou 365 dias no Plus e depois expiram. Listas salvas permanecem até serem excluídas. Perfis podem ser arquivados e restaurados; arquivar não exclui o perfil nem os resultados relacionados. Excluir uma tarefa também exclui seus resultados. Não coletamos email, endereço IP ou User-Agent do aluno.",
+          "Quando um professor ou responsável conectado publica uma tarefa ou salva uma lista personalizada, título, palavras, configurações e prazo ficam no Cloudflare D1. Apelidos e perfis de alunos, além da ligação entre cada perfil e os resultados concluídos, são usados para mostrar o domínio entre tarefas e criar revisões inteligentes. Resultados concluídos e seu histórico ficam por 14 dias no Grátis ou 365 dias no Plus e depois expiram. Listas salvas permanecem até serem excluídas. Perfis podem ser arquivados e restaurados; arquivar não exclui o perfil nem os resultados relacionados. Excluir uma tarefa também exclui seus resultados. Não coletamos email, endereço IP ou User-Agent do aluno.",
         ],
         [
           "Analytics",
@@ -493,7 +493,7 @@ const locale = {
         ],
         [
           "Devoirs et résultats",
-          "Lorsqu’un enseignant ou un parent connecté publie un devoir ou enregistre une liste personnalisée, le titre, les mots, les réglages et l’échéance sont stockés dans Cloudflare D1. Les pseudonymes et profils des élèves, ainsi que les liens entre profils et résultats terminés, servent à afficher la maîtrise entre plusieurs devoirs et à créer des révisions intelligentes. Les résultats terminés et leur historique sont conservés 30 jours avec l’offre gratuite ou 365 jours avec Plus, puis expirent. Les listes restent enregistrées jusqu’à leur suppression. Les profils peuvent être archivés et restaurés ; l’archivage ne supprime ni le profil ni les résultats associés. Supprimer un devoir supprime aussi ses résultats. Aucun email, adresse IP ni User-Agent d’élève n’est collecté.",
+          "Lorsqu’un enseignant ou un parent connecté publie un devoir ou enregistre une liste personnalisée, le titre, les mots, les réglages et l’échéance sont stockés dans Cloudflare D1. Les pseudonymes et profils des élèves, ainsi que les liens entre profils et résultats terminés, servent à afficher la maîtrise entre plusieurs devoirs et à créer des révisions intelligentes. Les résultats terminés et leur historique sont conservés 14 jours avec l’offre gratuite ou 365 jours avec Plus, puis expirent. Les listes restent enregistrées jusqu’à leur suppression. Les profils peuvent être archivés et restaurés ; l’archivage ne supprime ni le profil ni les résultats associés. Supprimer un devoir supprime aussi ses résultats. Aucun email, adresse IP ni User-Agent d’élève n’est collecté.",
         ],
         [
           "Mesure d’audience",
@@ -598,7 +598,7 @@ const locale = {
         ],
         [
           "Tugas dan hasil",
-          "Saat guru atau orang tua yang sudah masuk menerbitkan tugas atau menyimpan daftar khusus, judul, kata, pengaturan, dan tenggat disimpan di Cloudflare D1. Nama panggilan dan profil siswa, beserta hubungan profil dengan hasil tugas yang selesai, dipakai untuk menampilkan penguasaan lintas tugas dan membuat ulasan pintar. Hasil yang selesai dan riwayatnya disimpan 30 hari pada paket Gratis atau 365 hari pada Plus, lalu kedaluwarsa. Daftar tersimpan tetap ada sampai dihapus. Profil dapat diarsipkan dan dipulihkan; pengarsipan tidak menghapus profil atau hasil terkait. Menghapus tugas juga menghapus hasilnya. Kami tidak mengumpulkan email, alamat IP, atau User-Agent siswa.",
+          "Saat guru atau orang tua yang sudah masuk menerbitkan tugas atau menyimpan daftar khusus, judul, kata, pengaturan, dan tenggat disimpan di Cloudflare D1. Nama panggilan dan profil siswa, beserta hubungan profil dengan hasil tugas yang selesai, dipakai untuk menampilkan penguasaan lintas tugas dan membuat ulasan pintar. Hasil yang selesai dan riwayatnya disimpan 14 hari pada paket Gratis atau 365 hari pada Plus, lalu kedaluwarsa. Daftar tersimpan tetap ada sampai dihapus. Profil dapat diarsipkan dan dipulihkan; pengarsipan tidak menghapus profil atau hasil terkait. Menghapus tugas juga menghapus hasilnya. Kami tidak mengumpulkan email, alamat IP, atau User-Agent siswa.",
         ],
         [
           "Analytics",
@@ -700,7 +700,7 @@ const locale = {
         ],
         [
           "作业和学习结果",
-          "教师或家长登录后发布作业或保存自定义词表时，标题、单词、设置和截止时间会保存到 Cloudflare D1。学生昵称和档案，以及档案与不同作业完成结果之间的关联，用于展示跨作业掌握度并生成智能复习。已完成结果及其历史在免费版保存 30 天，在 Plus 版保存 365 天，之后过期。已保存词表会保留到用户主动删除。学生档案可归档和恢复；归档不会删除档案或关联结果。删除作业时，其结果也会一并删除。我们不采集学生邮箱、IP 地址或 User-Agent。",
+          "教师或家长登录后发布作业或保存自定义词表时，标题、单词、设置和截止时间会保存到 Cloudflare D1。学生昵称和档案，以及档案与不同作业完成结果之间的关联，用于展示跨作业掌握度并生成智能复习。已完成结果及其历史在免费版保存 14 天，在 Plus 版保存 365 天，之后过期。已保存词表会保留到用户主动删除。学生档案可归档和恢复；归档不会删除档案或关联结果。删除作业时，其结果也会一并删除。我们不采集学生邮箱、IP 地址或 User-Agent。",
         ],
         [
           "访问分析",

@@ -1,11 +1,11 @@
 export const PLAN_LIMITS = {
   free: {
-    activeAssignments: 2,
-    monthlyAttempts: 30,
-    savedLists: 3,
-    learnerProfiles: 3,
-    historyDays: 30,
-    retentionDays: 30,
+    activeAssignments: 1,
+    monthlyAttempts: 15,
+    savedLists: 1,
+    learnerProfiles: 1,
+    historyDays: 14,
+    retentionDays: 14,
     smartReview: false,
     csvExport: false,
     missedWordStats: false,

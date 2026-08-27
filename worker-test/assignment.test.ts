@@ -8,6 +8,7 @@ import {
   HttpError,
   masteryStatus,
   monthStart,
+  PLAN_LIMITS,
 } from "../src/worker/domain";
 import {
   restrictTeacherAuthCallback,
@@ -270,6 +271,33 @@ describe("teacher auth callback", () => {
 });
 
 describe("teacher authorization and quotas", () => {
+  it("keeps the Free and Plus plan limits centralized", () => {
+    expect(PLAN_LIMITS.free).toEqual({
+      activeAssignments: 1,
+      monthlyAttempts: 15,
+      savedLists: 1,
+      learnerProfiles: 1,
+      historyDays: 14,
+      retentionDays: 14,
+      smartReview: false,
+      csvExport: false,
+      missedWordStats: false,
+      sentenceLibrary: false,
+    });
+    expect(PLAN_LIMITS.plus).toEqual({
+      activeAssignments: 20,
+      monthlyAttempts: null,
+      savedLists: null,
+      learnerProfiles: 150,
+      historyDays: 365,
+      retentionDays: 365,
+      smartReview: true,
+      csvExport: true,
+      missedWordStats: true,
+      sentenceLibrary: true,
+    });
+  });
+
   it("rejects an unauthenticated teacher request", async () => {
     const response = await call("/api/assignments", {}, null);
     expect(response.status).toBe(401);
@@ -289,15 +317,28 @@ describe("teacher authorization and quotas", () => {
     expect(
       (await createAssignment(teacherA, { title: "One" })).response.status,
     ).toBe(201);
-    expect(
-      (await createAssignment(teacherA, { title: "Two" })).response.status,
-    ).toBe(201);
-    const third = await createAssignment(teacherA, { title: "Three" });
-    expect(third.response.status).toBe(403);
-    expect(third.body.error).toBe("active_assignment_limit");
+    const second = await createAssignment(teacherA, { title: "Two" });
+    expect(second.response.status).toBe(403);
+    expect(second.body.error).toBe("active_assignment_limit");
+  });
+
+  it("allows 20 active Plus assignments", async () => {
+    await insertSubscription({ plan: "pro", status: "active" });
+    for (let index = 1; index <= 20; index += 1) {
+      expect(
+        (await createAssignment(teacherA, { title: `Assignment ${index}` }))
+          .response.status,
+      ).toBe(201);
+    }
+    const limited = await createAssignment(teacherA, {
+      title: "Assignment 21",
+    });
+    expect(limited.response.status).toBe(403);
+    expect(limited.body.error).toBe("active_assignment_limit");
   });
 
   it("stores optional example sentences and returns null for old-style words", async () => {
+    await insertSubscription({ plan: "pro", status: "active" });
     const created = await createAssignment(teacherA, {
       words: ["because", "friend"],
       exampleSentences: ["I stayed inside because it was raining.", ""],
@@ -388,7 +429,7 @@ describe("teacher authorization and quotas", () => {
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
     const now = new Date().toISOString();
-    const statements = Array.from({ length: 30 }, () =>
+    const statements = Array.from({ length: 15 }, () =>
       bindings.DB.prepare(
         `INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at)
          VALUES (?, ?, ?, ?)`,
@@ -401,15 +442,18 @@ describe("teacher authorization and quotas", () => {
     expect(((await response.json()) as Record<string, unknown>).error).toBe(
       "monthly_submission_limit",
     );
+
+    await insertSubscription({ plan: "pro", status: "active" });
+    expect((await submit(publicId, assignment.words)).status).toBe(201);
   });
 
   it("keeps public nickname submissions independent from saved learner quotas", async () => {
     const created = await createAssignment();
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
-    for (let index = 0; index < 4; index += 1) {
+    for (let index = 0; index < 2; index += 1) {
       expect((await createLearner(`Learner ${index}`)).response.status).toBe(
-        index < 3 ? 201 : 403,
+        index < 1 ? 201 : 403,
       );
     }
     const response = await submit(publicId, assignment.words, {
@@ -420,21 +464,26 @@ describe("teacher authorization and quotas", () => {
       await bindings.DB.prepare("SELECT COUNT(*) AS count FROM learners").first(
         "count",
       ),
-    ).toBe(3);
+    ).toBe(1);
   });
 });
 
 describe("saved lists and learner profiles", () => {
   it("enforces Free saved-list limits and leaves Pro lists unlimited", async () => {
-    for (const title of ["One", "Two", "Three"]) {
-      expect((await createSavedList(title)).response.status).toBe(201);
-    }
-    const limited = await createSavedList("Four");
+    expect((await createSavedList("One")).response.status).toBe(201);
+    const limited = await createSavedList("Two");
     expect(limited.response.status).toBe(403);
     expect(limited.body.error).toBe("saved_list_limit");
 
     await insertSubscription({ plan: "pro", status: "active" });
-    expect((await createSavedList("Four")).response.status).toBe(201);
+    expect((await createSavedList("Two")).response.status).toBe(201);
+  });
+
+  it("enforces the one-profile Free limit", async () => {
+    expect((await createLearner("Learner 01")).response.status).toBe(201);
+    const limited = await createLearner("Learner 02");
+    expect(limited.response.status).toBe(403);
+    expect(limited.body.error).toBe("learner_limit");
   });
 
   it("enforces the 150-profile Pro limit", async () => {
@@ -607,6 +656,7 @@ describe("saved lists and learner profiles", () => {
   });
 
   it("allows duplicate learner names with distinct public identities", async () => {
+    await insertSubscription({ plan: "pro", status: "active" });
     const first = await createLearner("Emily");
     const second = await createLearner("Emily");
     expect(first.response.status).toBe(201);
@@ -635,6 +685,7 @@ describe("saved lists and learner profiles", () => {
   });
 
   it("isolates duplicate-name magic learners and rejects cross-owner tokens", async () => {
+    await insertSubscription({ plan: "pro", status: "active" });
     const learnerA = await createLearner("Emily");
     const learnerB = await createLearner("Emily");
     const assignment = await createAssignment(teacherA);
@@ -857,7 +908,7 @@ describe("cross-assignment mastery", () => {
     );
   });
 
-  it("shows 30 days on Free, 365 days on Pro, and locks smart review", async () => {
+  it("shows 14 days on Free, 365 days on Pro, and locks smart review", async () => {
     const learner = await createLearner("Learner 01");
     const learnerPublicId = String(learner.body.public_id);
     const created = await createAssignment();
@@ -876,7 +927,7 @@ describe("cross-assignment mastery", () => {
     const free = (await (
       await call(`/api/learners/${learner.body.id}`)
     ).json()) as { historyDays: number; words: unknown[] };
-    expect(free.historyDays).toBe(30);
+    expect(free.historyDays).toBe(14);
     expect(free.words).toHaveLength(0);
     expect(
       (
@@ -1002,7 +1053,7 @@ describe("today's review state", () => {
 });
 
 describe("assignment attempts", () => {
-  it("expires Free results after 30 days and Pro results after 365 days", async () => {
+  it("expires Free results after 14 days and Pro results after 365 days", async () => {
     const retentionDays = async (attemptId: string) => {
       const row = await bindings.DB.prepare(
         "SELECT completed_at, retention_expires_at FROM attempts WHERE id = ?",
@@ -1021,7 +1072,7 @@ describe("assignment attempts", () => {
     const freeAttempt = (await (
       await submit(String(freeAssignment.body.publicId), freeWords.words)
     ).json()) as { id: string };
-    expect(await retentionDays(freeAttempt.id)).toBe(30);
+    expect(await retentionDays(freeAttempt.id)).toBe(14);
 
     await insertSubscription({ plan: "pro", status: "active" });
     const proAssignment = await createAssignment(teacherA, {

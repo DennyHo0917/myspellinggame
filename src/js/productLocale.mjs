@@ -197,7 +197,7 @@ const PACKS = {
     needsReview: "Needs review",
     historyWindow: "Progress from the last {days} days",
     masteryHistoryUpgrade:
-      "Free includes 30 days of mastery history. Upgrade to Pro for 365 days.",
+      "Free includes 14 days of mastery history. Upgrade to Pro for 365 days.",
     smartReview: "Smart missed-word review",
     smartReviewValue:
       "Turn missed words across assignments into a focused review list in one click.",
@@ -221,12 +221,12 @@ const PACKS = {
     invalidListTitle: "Use a saved-list title with 1–80 characters.",
     savedListNotFound: "This saved list could not be found.",
     savedListLimit:
-      "You’ve reached the Free plan limit of 3 saved lists. Upgrade to Pro for unlimited saved lists.",
+      "You’ve reached the Free plan limit of 1 saved list. Upgrade to Pro for unlimited saved lists.",
     learnerNotFound: "This student profile could not be found.",
     learnerExists:
       "A student profile with that nickname or number already exists.",
     learnerLimit:
-      "You’ve reached the Free plan limit of 3 student profiles. Upgrade to Pro for up to 150 students.",
+      "You’ve reached the Free plan limit of 1 student profile. Upgrade to Pro for up to 150 students.",
     smartReviewRequired: "Smart review is available on Pro.",
     proActive:
       "Pro is active. Saved lists, long-term mastery, and smart review are now unlocked.",
@@ -439,7 +439,7 @@ const PACKS = {
     needsReview: "Necesita repaso",
     historyWindow: "Progreso de los últimos {days} días",
     masteryHistoryUpgrade:
-      "Gratis incluye 30 días de historial de dominio. Pásate a Pro para consultar 365 días.",
+      "Gratis incluye 14 días de historial de dominio. Pásate a Pro para consultar 365 días.",
     smartReview: "Repaso inteligente de errores",
     smartReviewValue:
       "Convierte en un clic los errores de varias tareas en una lista de repaso específica.",
@@ -463,11 +463,11 @@ const PACKS = {
       "El título de la lista debe tener entre 1 y 80 caracteres.",
     savedListNotFound: "No se encontró esta lista guardada.",
     savedListLimit:
-      "Has alcanzado el límite de 3 listas guardadas del plan Gratis. Pásate a Pro para guardar listas ilimitadas.",
+      "Has alcanzado el límite de 1 lista guardada del plan Gratis. Pásate a Pro para guardar listas ilimitadas.",
     learnerNotFound: "No se encontró este perfil.",
     learnerExists: "Ya existe un perfil con ese apodo o número.",
     learnerLimit:
-      "Has alcanzado el límite de 3 perfiles del plan Gratis. Pásate a Pro para gestionar hasta 150 estudiantes.",
+      "Has alcanzado el límite de 1 perfil del plan Gratis. Pásate a Pro para gestionar hasta 150 estudiantes.",
     smartReviewRequired: "El repaso inteligente está disponible con Pro.",
     proActive:
       "Pro está activo. Ya están disponibles las listas guardadas, el historial de dominio a largo plazo y el repaso inteligente.",
@@ -679,7 +679,7 @@ const PACKS = {
     needsReview: "Precisa de revisão",
     historyWindow: "Progresso dos últimos {days} dias",
     masteryHistoryUpgrade:
-      "O plano Grátis inclui 30 dias de histórico de domínio. Passe para o Pro para acessar 365 dias.",
+      "O plano Grátis inclui 14 dias de histórico de domínio. Passe para o Pro para acessar 365 dias.",
     smartReview: "Revisão inteligente de erros",
     smartReviewValue:
       "Transforme em um clique os erros de várias tarefas em uma lista de revisão focada.",
@@ -703,11 +703,11 @@ const PACKS = {
     invalidListTitle: "Use um título de lista com 1 a 80 caracteres.",
     savedListNotFound: "Esta lista salva não foi encontrada.",
     savedListLimit:
-      "Você atingiu o limite de 3 listas salvas do plano Grátis. Passe para o Pro para ter listas ilimitadas.",
+      "Você atingiu o limite de 1 lista salva do plano Grátis. Passe para o Pro para ter listas ilimitadas.",
     learnerNotFound: "Este perfil não foi encontrado.",
     learnerExists: "Já existe um perfil com esse apelido ou número.",
     learnerLimit:
-      "Você atingiu o limite de 3 perfis do plano Grátis. Passe para o Pro para acompanhar até 150 alunos.",
+      "Você atingiu o limite de 1 perfil do plano Grátis. Passe para o Pro para acompanhar até 150 alunos.",
     smartReviewRequired: "A revisão inteligente está disponível no Pro.",
     proActive:
       "O Pro está ativo. Listas salvas, histórico de domínio de longo prazo e revisão inteligente já estão liberados.",
@@ -921,7 +921,7 @@ const PACKS = {
     needsReview: "À revoir",
     historyWindow: "Progression des {days} derniers jours",
     masteryHistoryUpgrade:
-      "L’offre gratuite comprend 30 jours d’historique. Passez à Pro pour accéder à 365 jours.",
+      "L’offre gratuite comprend 14 jours d’historique. Passez à Pro pour accéder à 365 jours.",
     smartReview: "Révision intelligente des erreurs",
     smartReviewValue:
       "Transformez en un clic les erreurs de plusieurs devoirs en une liste de révision ciblée.",
@@ -947,11 +947,11 @@ const PACKS = {
       "Le titre de la liste doit contenir entre 1 et 80 caractères.",
     savedListNotFound: "Cette liste enregistrée est introuvable.",
     savedListLimit:
-      "Vous avez atteint la limite gratuite de 3 listes. Passez à Pro pour enregistrer un nombre illimité de listes.",
+      "Vous avez atteint la limite gratuite de 1 liste. Passez à Pro pour enregistrer un nombre illimité de listes.",
     learnerNotFound: "Ce profil est introuvable.",
     learnerExists: "Un profil avec ce pseudo ou ce numéro existe déjà.",
     learnerLimit:
-      "Vous avez atteint la limite gratuite de 3 profils. Passez à Pro pour suivre jusqu’à 150 élèves.",
+      "Vous avez atteint la limite gratuite de 1 profil. Passez à Pro pour suivre jusqu’à 150 élèves.",
     smartReviewRequired: "La révision intelligente est disponible avec Pro.",
     proActive:
       "Pro est actif. Les listes enregistrées, l’historique de maîtrise à long terme et la révision intelligente sont maintenant disponibles.",
@@ -1162,7 +1162,7 @@ const PACKS = {
     needsReview: "Perlu diulang",
     historyWindow: "Perkembangan dalam {days} hari terakhir",
     masteryHistoryUpgrade:
-      "Paket Gratis mencakup riwayat penguasaan 30 hari. Pilih Pro untuk melihat riwayat 365 hari.",
+      "Paket Gratis mencakup riwayat penguasaan 14 hari. Pilih Pro untuk melihat riwayat 365 hari.",
     smartReview: "Ulasan pintar kata yang salah",
     smartReviewValue:
       "Ubah kata yang salah dari berbagai tugas menjadi daftar latihan terarah dalam satu klik.",
@@ -1185,12 +1185,12 @@ const PACKS = {
     invalidListTitle: "Gunakan judul daftar sepanjang 1–80 karakter.",
     savedListNotFound: "Daftar tersimpan ini tidak ditemukan.",
     savedListLimit:
-      "Anda telah mencapai batas 3 daftar tersimpan pada paket Gratis. Pilih Pro untuk daftar tanpa batas.",
+      "Anda telah mencapai batas 1 daftar tersimpan pada paket Gratis. Pilih Pro untuk daftar tanpa batas.",
     learnerNotFound: "Profil siswa ini tidak ditemukan.",
     learnerExists:
       "Profil dengan nama panggilan atau nomor tersebut sudah ada.",
     learnerLimit:
-      "Anda telah mencapai batas 3 profil pada paket Gratis. Pilih Pro untuk menyimpan hingga 150 profil siswa.",
+      "Anda telah mencapai batas 1 profil pada paket Gratis. Pilih Pro untuk menyimpan hingga 150 profil siswa.",
     smartReviewRequired: "Ulasan pintar tersedia pada paket Pro.",
     proActive:
       "Pro sudah aktif. Daftar tersimpan, riwayat penguasaan jangka panjang, dan ulasan pintar kini terbuka.",
@@ -1387,7 +1387,7 @@ const PACKS = {
     needsReview: "需要复习",
     historyWindow: "最近 {days} 天的学习进度",
     masteryHistoryUpgrade:
-      "免费版包含 30 天掌握度历史；升级 Pro 可查看 365 天。",
+      "免费版包含 14 天掌握度历史；升级 Pro 可查看 365 天。",
     smartReview: "智能错词复习",
     smartReviewValue: "一键汇总多次作业中的错词，生成针对性的复习词表。",
     smartReviewUpgrade: "升级 Pro 后可创建智能错词复习作业。",
@@ -1409,11 +1409,11 @@ const PACKS = {
     invalidListTitle: "词表标题需为 1～80 个字符。",
     savedListNotFound: "找不到这个已保存词表。",
     savedListLimit:
-      "你已达到免费版 3 个词表的上限。升级 Pro 可不限量保存词表。",
+      "你已达到免费版 1 个词表的上限。升级 Pro 可不限量保存词表。",
     learnerNotFound: "找不到这个学生档案。",
     learnerExists: "相同昵称或编号的学生档案已存在。",
     learnerLimit:
-      "你已达到免费版 3 个学生档案的上限。升级 Pro 最多可管理 150 名学生。",
+      "你已达到免费版 1 个学生档案的上限。升级 Pro 最多可管理 150 名学生。",
     smartReviewRequired: "智能错词复习仅 Pro 可用。",
     proActive: "Pro 已激活。已解锁词表保存、长期掌握度和智能错词复习。",
     trialActiveMonth:

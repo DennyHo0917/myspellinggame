@@ -163,7 +163,7 @@ const pages = {
       local: [
         "Tu lista de palabras y tus preferencias se guardan localmente en este navegador.",
         "Los enlaces nuevos guardan la lista en el fragmento de la URL, que el navegador procesa sin enviarlo al servidor.",
-        "Las tareas que un docente o familiar publica de forma explícita y sus resultados se guardan en Cloudflare D1 durante 30 días en Gratis o 365 días en Plus. No recopilamos email, IP ni User-Agent del estudiante.",
+        "Las tareas que un docente o familiar publica de forma explícita y sus resultados se guardan en Cloudflare D1 durante 14 días en Gratis o 365 días en Plus. No recopilamos email, IP ni User-Agent del estudiante.",
         "Puedes borrar estos datos desde el navegador o desde este panel.",
       ],
       analyticsTitle: "Analítica",
@@ -321,7 +321,7 @@ const pages = {
       local: [
         "Sua lista de palavras e preferências ficam salvas neste navegador.",
         "Os links novos guardam a lista no fragmento da URL, processado pelo navegador sem ser enviado ao servidor.",
-        "Tarefas publicadas explicitamente por professores ou responsáveis e seus resultados ficam no Cloudflare D1 por 30 dias no Grátis ou 365 dias no Plus. Não coletamos email, IP ou User-Agent do aluno.",
+        "Tarefas publicadas explicitamente por professores ou responsáveis e seus resultados ficam no Cloudflare D1 por 14 dias no Grátis ou 365 dias no Plus. Não coletamos email, IP ou User-Agent do aluno.",
         "Você pode apagar esses dados pelo navegador ou por este painel.",
       ],
       analyticsTitle: "Analytics",
@@ -479,7 +479,7 @@ const pages = {
       local: [
         "Votre liste de mots et vos préférences sont enregistrées localement dans ce navigateur.",
         "Les nouveaux liens placent la liste dans le fragment de l’URL, traité par le navigateur sans être envoyé au serveur.",
-        "Les devoirs publiés explicitement par un enseignant ou un parent et leurs résultats sont conservés dans Cloudflare D1 pendant 30 jours en gratuit ou 365 jours avec Plus. Aucun email, IP ni User-Agent élève n’est collecté.",
+        "Les devoirs publiés explicitement par un enseignant ou un parent et leurs résultats sont conservés dans Cloudflare D1 pendant 14 jours en gratuit ou 365 jours avec Plus. Aucun email, IP ni User-Agent élève n’est collecté.",
         "Vous pouvez effacer ces données depuis le navigateur ou depuis ce panneau.",
       ],
       analyticsTitle: "Mesure d’audience",
@@ -637,7 +637,7 @@ const pages = {
       local: [
         "Daftar kata dan pilihan latihan disimpan di browser ini.",
         "Link baru menyimpan daftar di fragmen URL yang diproses browser tanpa dikirim ke server.",
-        "Tugas yang diterbitkan guru atau orang tua dan hasilnya disimpan di Cloudflare D1 selama 30 hari pada paket Gratis atau 365 hari pada Plus. Email, IP, dan User-Agent siswa tidak dikumpulkan.",
+        "Tugas yang diterbitkan guru atau orang tua dan hasilnya disimpan di Cloudflare D1 selama 14 hari pada paket Gratis atau 365 hari pada Plus. Email, IP, dan User-Agent siswa tidak dikumpulkan.",
         "Kamu bisa menghapus data ini lewat browser atau panel ini.",
       ],
       analyticsTitle: "Analytics",
@@ -787,7 +787,7 @@ const pages = {
       local: [
         "你的单词表和练习偏好会保存在当前浏览器里。",
         "新分享链接把单词表放在 URL 片段中，由浏览器处理，不会发送到服务器。",
-        "教师或家长明确发布的作业及学生成绩会保存到 Cloudflare D1：免费版 30 天，Plus 版 365 天。我们不采集学生邮箱、IP 或 User-Agent。",
+        "教师或家长明确发布的作业及学生成绩会保存到 Cloudflare D1：免费版 14 天，Plus 版 365 天。我们不采集学生邮箱、IP 或 User-Agent。",
         "你可以在浏览器设置里清除，也可以用这里的清除按钮。",
       ],
       analyticsTitle: "访问分析",

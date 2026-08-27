@@ -305,7 +305,7 @@ const faqUpdates = {
     additions: [
       [
         "Can teachers track student spelling progress over time?",
-        "Yes. A teacher or parent workspace can link completed assignments to student profiles and show spelling progress across multiple assignments. Free accounts keep 30 days of history, while Plus keeps 365 days.",
+        "Yes. A teacher or parent workspace can link completed assignments to student profiles and show spelling progress across multiple assignments. Free accounts keep 14 days of history, while Plus keeps 365 days.",
       ],
       [
         "Can I save and reuse weekly spelling lists?",
@@ -345,7 +345,7 @@ const faqUpdates = {
     additions: [
       [
         "¿Pueden docentes y familias seguir el progreso de spelling con el tiempo?",
-        "Sí. Un espacio de trabajo puede vincular tareas terminadas con perfiles de estudiantes y mostrar el progreso entre varias tareas. Gratis guarda 30 días de historial y Plus, 365 días.",
+        "Sí. Un espacio de trabajo puede vincular tareas terminadas con perfiles de estudiantes y mostrar el progreso entre varias tareas. Gratis guarda 14 días de historial y Plus, 365 días.",
       ],
       [
         "¿Puedo guardar y reutilizar listas semanales?",
@@ -385,7 +385,7 @@ const faqUpdates = {
     additions: [
       [
         "Professores e responsáveis podem acompanhar o progresso de ortografia?",
-        "Sim. Um espaço de trabalho pode ligar tarefas concluídas aos perfis dos alunos e mostrar o progresso em várias tarefas. O Grátis guarda 30 dias de histórico e o Plus, 365 dias.",
+        "Sim. Um espaço de trabalho pode ligar tarefas concluídas aos perfis dos alunos e mostrar o progresso em várias tarefas. O Grátis guarda 14 dias de histórico e o Plus, 365 dias.",
       ],
       [
         "Posso salvar e reutilizar listas semanais?",
@@ -425,7 +425,7 @@ const faqUpdates = {
     additions: [
       [
         "Les enseignants et les parents peuvent-ils suivre les progrès en orthographe ?",
-        "Oui. Un espace de travail peut relier les devoirs terminés aux profils d’élèves et montrer les progrès sur plusieurs devoirs. L’offre gratuite conserve 30 jours d’historique et Plus, 365 jours.",
+        "Oui. Un espace de travail peut relier les devoirs terminés aux profils d’élèves et montrer les progrès sur plusieurs devoirs. L’offre gratuite conserve 14 jours d’historique et Plus, 365 jours.",
       ],
       [
         "Puis-je enregistrer et réutiliser les listes de la semaine ?",
@@ -465,7 +465,7 @@ const faqUpdates = {
     additions: [
       [
         "Bisakah guru dan orang tua memantau kemajuan ejaan dari waktu ke waktu?",
-        "Bisa. Ruang kerja dapat menghubungkan tugas yang selesai ke profil siswa dan menampilkan kemajuan di beberapa tugas. Paket Gratis menyimpan riwayat 30 hari, sedangkan Plus 365 hari.",
+        "Bisa. Ruang kerja dapat menghubungkan tugas yang selesai ke profil siswa dan menampilkan kemajuan di beberapa tugas. Paket Gratis menyimpan riwayat 14 hari, sedangkan Plus 365 hari.",
       ],
       [
         "Bisa menyimpan dan memakai ulang daftar mingguan?",
@@ -505,7 +505,7 @@ const faqUpdates = {
     additions: [
       [
         "老师和家长可以持续追踪学生的拼写进度吗？",
-        "可以。工作台可以把已完成作业关联到学生档案，展示多次作业中的拼写进度。免费版保留 30 天历史，Plus 保留 365 天。",
+        "可以。工作台可以把已完成作业关联到学生档案，展示多次作业中的拼写进度。免费版保留 14 天历史，Plus 保留 365 天。",
       ],
       [
         "可以保存并重复使用每周词表吗？",

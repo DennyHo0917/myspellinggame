@@ -129,6 +129,30 @@ test('workspace navigation and assignment pricing stay role-inclusive in every l
   }
 });
 
+test('pricing shows the current Free workspace limits in every locale', () => {
+  const expected = {
+    '': ['1 active assignment', '15 student submissions per month', '14-day mastery history', '1 saved list', '1 student profile'],
+    es: ['1 tarea activa', '15 entregas de estudiantes al mes', '14 días de historial de dominio', '1 lista guardada', '1 perfil de estudiante'],
+    'pt-br': ['1 tarefa ativa', '15 envios de alunos por mês', '14 dias de histórico de domínio', '1 lista salva', '1 perfil de aluno'],
+    fr: ['1 devoir actif', '15 remises d’élèves par mois', '14 jours d’historique de maîtrise', '1 liste enregistrée', '1 profil d’élève'],
+    id: ['1 tugas aktif', '15 kiriman siswa per bulan', 'Riwayat penguasaan 14 hari', '1 daftar tersimpan', '1 profil siswa'],
+    zh: ['最多 1 个活跃作业', '每月 15 份学生提交', '14 天掌握度历史', '保存 1 个词表', '创建 1 个学生档案'],
+  };
+  const old = {
+    '': ['2 active assignments', '30 student submissions per month', '30-day mastery history', '3 saved lists', '3 student profiles'],
+    es: ['2 tareas activas', '30 entregas de estudiantes al mes', '30 días de historial de dominio', '3 listas guardadas', '3 perfiles de estudiante'],
+    'pt-br': ['2 tarefas ativas', '30 envios de alunos por mês', '30 dias de histórico de domínio', '3 listas salvas', '3 perfis de aluno'],
+    fr: ['2 devoirs actifs', '30 remises d’élèves par mois', '30 jours d’historique de maîtrise', '3 listes enregistrées', '3 profils d’élève'],
+    id: ['2 tugas aktif', '30 kiriman siswa per bulan', 'Riwayat penguasaan 30 hari', '3 daftar tersimpan', '3 profil siswa'],
+    zh: ['最多 2 个活跃作业', '每月 30 份学生提交', '30 天掌握度历史', '保存 3 个词表', '创建 3 个学生档案'],
+  };
+  for (const [locale, terms] of Object.entries(expected)) {
+    const pricing = fs.readFileSync(path.join(root, locale, 'pricing.html'), 'utf8');
+    for (const term of terms) assert.ok(pricing.includes(term), `${locale || 'en'}: ${term}`);
+    for (const term of old[locale]) assert.ok(!pricing.includes(term), `${locale || 'en'}: ${term}`);
+  }
+});
+
 test('pricing explains the complete 30-day trial in every locale', () => {
   const expected = {
     '': ['30', '$0', 'Card required', '$5.99/month', '$49.99/year', 'automatically', 'cancel'],

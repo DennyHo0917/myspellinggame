@@ -188,3 +188,22 @@ test('FAQ visible questions and JSON-LD entities stay synchronized', () => {
     assert.deepEqual(json.mainEntity.map((item) => item.name), visible, locale || 'en');
   }
 });
+
+test('llms.txt publishes the current product summary and canonical sources', () => {
+  const content = fs.readFileSync(path.join(root, 'llms.txt'), 'utf8');
+  for (const text of [
+    '# My Spelling Game',
+    '## What My Spelling Game Does',
+    '## Accounts',
+    "## Today's Review",
+    '## Mastery',
+    '## Free and Plus',
+    '## Primary Pages',
+    'https://myspellinggame.com/',
+    'https://myspellinggame.com/faq',
+    'https://myspellinggame.com/pricing',
+    'https://myspellinggame.com/about',
+    'https://myspellinggame.com/privacy',
+  ]) assert.ok(content.includes(text), text);
+  assert.doesNotMatch(content, /workers\.dev|localhost|\.html/);
+});

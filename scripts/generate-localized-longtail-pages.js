@@ -1708,6 +1708,33 @@ const longtailContentBoosts = {
   },
 };
 
+const homeschoolProgressPanels = {
+  en: [
+    "Track Progress Across the Week",
+    "For repeated weekly practice, a parent can use a workspace to save the list, track progress, and keep completed results connected to the same student profile. Start the week by finding difficult words, review missed words later, and use cross-day results to distinguish words still being learned from words confirmed as mastered. Today's Review on Plus can surface missed words when they are due again.",
+  ],
+  es: [
+    "Seguir el progreso durante la semana",
+    "Para practicar cada semana, una familia puede guardar la lista en un espacio de trabajo y vincular los resultados al mismo perfil del estudiante. Primero identifica las palabras difíciles, luego repasa los fallos y usa los resultados de distintos días para distinguir lo que aún se aprende de lo que ya está dominado. Today's Review de Plus muestra los fallos cuando toca repetirlos.",
+  ],
+  "pt-BR": [
+    "Acompanhar o progresso durante a semana",
+    "Para a prática semanal, um responsável pode salvar a lista no espaço de trabalho e manter os resultados ligados ao mesmo perfil de aluno. Comece encontrando as palavras difíceis, revise os erros depois e use resultados de dias diferentes para distinguir o que ainda está sendo aprendido do que já foi dominado. O Today's Review do Plus mostra os erros quando chega a hora de praticá-los novamente.",
+  ],
+  fr: [
+    "Suivre les progrès pendant la semaine",
+    "Pour une pratique hebdomadaire, un parent peut enregistrer la liste dans un espace de travail et relier les résultats au même profil d’élève. Repérez d’abord les mots difficiles, revoyez les mots manqués plus tard et utilisez les résultats de plusieurs jours pour distinguer les mots en cours d’apprentissage de ceux qui sont maîtrisés. Today's Review de Plus propose les mots manqués lorsqu’ils doivent revenir.",
+  ],
+  id: [
+    "Pantau kemajuan sepanjang minggu",
+    "Untuk latihan mingguan berulang, orang tua dapat menyimpan daftar di ruang kerja dan menghubungkan hasil yang selesai ke profil siswa yang sama. Temukan kata sulit di awal minggu, ulas kata yang salah kemudian, lalu gunakan hasil dari beberapa hari untuk membedakan kata yang masih dipelajari dari kata yang sudah dikuasai. Today's Review di Plus menampilkan kata salah saat waktunya berlatih lagi.",
+  ],
+  zh: [
+    "追踪一周中的练习进度",
+    "进行每周重复练习时，家长可以在工作台保存词表，并把完成结果关联到同一个学生档案。先找出困难单词，之后复习错词，再利用不同日期的结果区分仍在学习的单词和已经确认掌握的单词。Plus 的 Today's Review 会在错词需要再次练习时把它们找出来。",
+  ],
+};
+
 for (const [langCode, boosts] of Object.entries(longtailContentBoosts)) {
   for (const [slug, boost] of Object.entries(boosts)) {
     const page = pages[langCode] && pages[langCode][slug];
@@ -2100,6 +2127,11 @@ for (const pagesBySlug of Object.values(pages)) {
     page.panels = indexes.map((index) => page.panels[index]);
     page.faq = page.faq.slice(-3);
   }
+}
+
+for (const [langCode, panel] of Object.entries(homeschoolProgressPanels)) {
+  const page = pages[langCode]?.["homeschool-spelling-practice"];
+  if (page) page.panels.push(panel);
 }
 
 const existingFaq = {

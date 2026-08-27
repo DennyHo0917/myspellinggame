@@ -54,6 +54,39 @@ const benefitsLabels = {
   zh: "练习优势",
 };
 
+const workspaceCopy = {
+  en: {
+    heading: "For parents and teachers",
+    text: "Want to use the same spelling lists week after week? Create a free workspace to save lists, assign practice without student accounts, track progress across assignments, and see which words need review next.",
+    cta: "Open Workspace",
+  },
+  es: {
+    heading: "Para familias y docentes",
+    text: "¿Quieres usar las mismas listas de spelling semana tras semana? Crea un espacio de trabajo gratis para guardar listas, asignar prácticas sin cuentas de estudiantes, seguir el progreso entre tareas y ver qué palabras necesitan repaso.",
+    cta: "Abrir el espacio de trabajo",
+  },
+  "pt-BR": {
+    heading: "Para responsáveis e professores",
+    text: "Quer usar as mesmas listas de ortografia semana após semana? Crie um espaço de trabalho gratuito para salvar listas, atribuir práticas sem contas de alunos, acompanhar o progresso entre tarefas e ver quais palavras precisam de revisão.",
+    cta: "Abrir o espaço de trabalho",
+  },
+  fr: {
+    heading: "Pour les parents et les enseignants",
+    text: "Vous voulez réutiliser les mêmes listes chaque semaine ? Créez un espace de travail gratuit pour enregistrer les listes, proposer des exercices sans compte élève, suivre les progrès entre les devoirs et voir les mots à revoir.",
+    cta: "Ouvrir l’espace de travail",
+  },
+  id: {
+    heading: "Untuk orang tua dan guru",
+    text: "Ingin memakai daftar ejaan yang sama setiap minggu? Buat ruang kerja gratis untuk menyimpan daftar, memberikan latihan tanpa akun siswa, memantau kemajuan di berbagai tugas, dan melihat kata yang perlu diulas berikutnya.",
+    cta: "Buka Ruang kerja",
+  },
+  zh: {
+    heading: "适合家长和老师",
+    text: "想每周重复使用同一份单词表吗？创建免费工作台，保存词表、在无需学生账号的情况下布置练习、追踪不同作业的进度，并查看下一步需要复习的单词。",
+    cta: "打开工作台",
+  },
+};
+
 const pages = {
   es: {
     htmlLang: "es",
@@ -1316,6 +1349,12 @@ ${listItems(info.bullets)}
             <h3>${info.repeatTitle}</h3>
             <p>${info.repeatText}</p>
         </div>
+
+        <section class="spelling-seo-copy workspace-seo-section">
+            <h2>${workspaceCopy[page.pageLocale].heading}</h2>
+            <p>${workspaceCopy[page.pageLocale].text}</p>
+            <a class="seo-cta" href="/teacher?lang=${encodeURIComponent(page.pageLocale)}">${workspaceCopy[page.pageLocale].cta}</a>
+        </section>
     </div>
 
     <script>

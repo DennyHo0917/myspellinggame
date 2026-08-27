@@ -145,3 +145,46 @@ test('pricing pages use student terminology in every locale', () => {
     );
   }
 });
+
+test('localized home pages expose the Workspace section without changing practice SEO', () => {
+  const workspaceTerms = {
+    '': ['For parents and teachers', 'save lists', 'student accounts', 'track progress', 'review'],
+    es: ['Para familias y docentes', 'guardar listas', 'cuentas de estudiantes', 'seguir el progreso', 'repaso'],
+    'pt-br': ['Para responsáveis e professores', 'salvar listas', 'contas de alunos', 'acompanhar o progresso', 'revisão'],
+    fr: ['Pour les parents et les enseignants', 'enregistrer les listes', 'compte élève', 'suivre les progrès', 'revoir'],
+    id: ['Untuk orang tua dan guru', 'menyimpan daftar', 'akun siswa', 'memantau kemajuan', 'diulas'],
+    zh: ['适合家长和老师', '保存词表', '学生账号', '追踪', '复习'],
+  };
+  for (const [locale, terms] of Object.entries(workspaceTerms)) {
+    const html = fs.readFileSync(path.join(root, locale, 'index.html'), 'utf8');
+    for (const term of terms) assert.ok(html.includes(term), `${locale || 'en'}: ${term}`);
+    assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
+  }
+  const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  assert.match(home, /<title>Free Spelling Test With Your Own Words — No Login<\/title>/);
+  assert.match(home, /<h1[^>]*>Free Spelling Test With Your Own Words<\/h1>/);
+  assert.doesNotMatch(home, /365 days on Pro/);
+});
+
+test('FAQ, About, and Homeschool pages describe current product capabilities', () => {
+  const faq = fs.readFileSync(path.join(root, 'faq.html'), 'utf8');
+  for (const term of ["Today's Review", 'mastered', 'example sentences', 'student accounts', 'progress']) {
+    assert.ok(faq.includes(term), term);
+  }
+  const about = fs.readFileSync(path.join(root, 'about.html'), 'utf8');
+  for (const term of ['workspace', 'assignments', 'progress']) assert.ok(about.includes(term), term);
+  assert.doesNotMatch(about, /A small, no-login spelling practice tool|product goal is intentionally narrow/);
+  const homeschool = fs.readFileSync(path.join(root, 'homeschool-spelling-practice.html'), 'utf8');
+  for (const term of ['Track Progress Across the Week', 'progress', 'review', 'mastered', "Today's Review"]) {
+    assert.ok(homeschool.includes(term), term);
+  }
+});
+
+test('FAQ visible questions and JSON-LD entities stay synchronized', () => {
+  for (const locale of locales) {
+    const html = fs.readFileSync(path.join(root, locale, 'faq.html'), 'utf8');
+    const visible = [...html.matchAll(/<details class="faq-item"><summary>([^<]+)<\/summary>/g)].map((match) => match[1]);
+    const json = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] || '{}');
+    assert.deepEqual(json.mainEntity.map((item) => item.name), visible, locale || 'en');
+  }
+});

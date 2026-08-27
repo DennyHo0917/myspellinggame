@@ -296,6 +296,259 @@ const locales = {
   },
 };
 
+const faqUpdates = {
+  en: {
+    intro:
+      "Answers about custom spelling lists, practice modes, student accounts, assignments, progress tracking, mastery, review, and Plus.",
+    account:
+      "No. Students open an assignment or practice link and enter a nickname when needed. Student email accounts and passwords are not required.",
+    additions: [
+      [
+        "Can teachers track student spelling progress over time?",
+        "Yes. A teacher or parent workspace can link completed assignments to student profiles and show spelling progress across multiple assignments. Free accounts keep 30 days of history, while Plus keeps 365 days.",
+      ],
+      [
+        "Can I save and reuse weekly spelling lists?",
+        "Yes. Signed-in teachers and parents can save spelling lists and reuse them for future assignments. Free includes a limited number of saved lists, while Plus allows unlimited saved lists.",
+      ],
+      [
+        "What is Today's Review?",
+        "Today's Review is a Plus feature that uses a student's completed spelling history to surface previously missed words when they are due for more practice.",
+      ],
+      [
+        "How does My Spelling Game decide when a word is mastered?",
+        "A word requires at least three consecutive correct completed attempts across at least two UTC practice dates to be marked mastered.",
+      ],
+      [
+        "Can I use example sentences with spelling words?",
+        "Yes. Example sentences are optional. In dictation practice, My Spelling Game can read the word, the example sentence, and the word again.",
+      ],
+      [
+        "Can My Spelling Game automatically provide example sentences?",
+        "Plus includes a curated sentence library that can fill example sentences for known words. Teachers and parents can still edit the sentence before publishing an assignment.",
+      ],
+      [
+        "Does My Spelling Game charge per student?",
+        "No. Plus supports up to 150 student profiles without a per-student fee.",
+      ],
+      [
+        "Can parents use My Spelling Game?",
+        "Yes. Parents can use free practice without an account or sign in to a workspace to save weekly lists, create assignments, and track a child's progress over time.",
+      ],
+    ],
+  },
+  es: {
+    intro:
+      "Respuestas sobre listas personalizadas, modos de práctica, cuentas de estudiantes, tareas, progreso, dominio, repaso y Plus.",
+    account:
+      "No. Los estudiantes abren un enlace de práctica o una tarea y escriben un apodo cuando hace falta. No necesitan email ni contraseña.",
+    additions: [
+      [
+        "¿Pueden docentes y familias seguir el progreso de spelling con el tiempo?",
+        "Sí. Un espacio de trabajo puede vincular tareas terminadas con perfiles de estudiantes y mostrar el progreso entre varias tareas. Gratis guarda 30 días de historial y Plus, 365 días.",
+      ],
+      [
+        "¿Puedo guardar y reutilizar listas semanales?",
+        "Sí. Docentes y familias conectados pueden guardar listas y reutilizarlas en futuras tareas. Gratis incluye una cantidad limitada y Plus permite listas ilimitadas.",
+      ],
+      [
+        "¿Qué es Today's Review?",
+        "Today's Review es una función de Plus que usa el historial de spelling para mostrar palabras falladas cuando toca practicarlas de nuevo.",
+      ],
+      [
+        "¿Cómo decide My Spelling Game que una palabra está dominada?",
+        "Una palabra necesita al menos tres intentos completados correctos consecutivos en al menos dos fechas de práctica UTC distintas para marcarse como dominada.",
+      ],
+      [
+        "¿Puedo usar frases de ejemplo con las palabras?",
+        "Sí. Son opcionales. En el dictado, My Spelling Game puede leer la palabra, la frase de ejemplo y la palabra otra vez.",
+      ],
+      [
+        "¿My Spelling Game puede proporcionar frases automáticamente?",
+        "Plus incluye una biblioteca seleccionada de frases para completar palabras conocidas. Docentes y familias pueden editar la frase antes de publicar.",
+      ],
+      [
+        "¿My Spelling Game cobra por estudiante?",
+        "No. Plus admite hasta 150 perfiles de estudiantes sin cobrar por cada estudiante.",
+      ],
+      [
+        "¿Pueden usarlo las familias?",
+        "Sí. Las familias pueden practicar gratis sin cuenta o usar un espacio de trabajo para guardar listas, crear tareas y seguir el progreso del niño.",
+      ],
+    ],
+  },
+  "pt-br": {
+    intro:
+      "Respostas sobre listas personalizadas, modos de prática, contas de alunos, tarefas, progresso, domínio, revisão e Plus.",
+    account:
+      "Não. Os alunos abrem um link de prática ou tarefa e usam um apelido quando necessário. Email e senha de aluno não são necessários.",
+    additions: [
+      [
+        "Professores e responsáveis podem acompanhar o progresso de ortografia?",
+        "Sim. Um espaço de trabalho pode ligar tarefas concluídas aos perfis dos alunos e mostrar o progresso em várias tarefas. O Grátis guarda 30 dias de histórico e o Plus, 365 dias.",
+      ],
+      [
+        "Posso salvar e reutilizar listas semanais?",
+        "Sim. Professores e responsáveis conectados podem salvar listas e reutilizá-las em futuras tarefas. O Grátis inclui um limite de listas e o Plus permite listas ilimitadas.",
+      ],
+      [
+        "O que é o Today's Review?",
+        "Today's Review é um recurso Plus que usa o histórico de ortografia para mostrar palavras erradas quando chega a hora de praticá-las novamente.",
+      ],
+      [
+        "Como o My Spelling Game decide que uma palavra foi dominada?",
+        "A palavra precisa de pelo menos três tentativas concluídas e corretas em sequência, em pelo menos duas datas UTC diferentes, para ser marcada como dominada.",
+      ],
+      [
+        "Posso usar frases de exemplo com as palavras?",
+        "Sim. As frases são opcionais. No ditado, o My Spelling Game pode ler a palavra, a frase de exemplo e a palavra novamente.",
+      ],
+      [
+        "O My Spelling Game pode fornecer frases automaticamente?",
+        "O Plus inclui uma biblioteca selecionada de frases para preencher palavras conhecidas. Professores e responsáveis ainda podem editar a frase antes de publicar.",
+      ],
+      [
+        "O My Spelling Game cobra por aluno?",
+        "Não. O Plus aceita até 150 perfis de alunos sem cobrança por aluno.",
+      ],
+      [
+        "Responsáveis podem usar o My Spelling Game?",
+        "Sim. Responsáveis podem praticar grátis sem conta ou entrar no espaço de trabalho para salvar listas, criar tarefas e acompanhar o progresso da criança.",
+      ],
+    ],
+  },
+  fr: {
+    intro:
+      "Réponses sur les listes personnalisées, les modes de pratique, les comptes élèves, les devoirs, les progrès, la maîtrise, la révision et Plus.",
+    account:
+      "Non. Les élèves ouvrent un lien de pratique ou un devoir et utilisent un pseudonyme si nécessaire. Aucun email ni mot de passe élève n’est requis.",
+    additions: [
+      [
+        "Les enseignants et les parents peuvent-ils suivre les progrès en orthographe ?",
+        "Oui. Un espace de travail peut relier les devoirs terminés aux profils d’élèves et montrer les progrès sur plusieurs devoirs. L’offre gratuite conserve 30 jours d’historique et Plus, 365 jours.",
+      ],
+      [
+        "Puis-je enregistrer et réutiliser les listes de la semaine ?",
+        "Oui. Les enseignants et parents connectés peuvent enregistrer des listes et les réutiliser pour de futurs devoirs. L’offre gratuite est limitée, tandis que Plus autorise les listes illimitées.",
+      ],
+      [
+        "Qu’est-ce que Today's Review ?",
+        "Today's Review est une fonction Plus qui utilise l’historique d’orthographe pour proposer les mots manqués lorsqu’ils doivent être revus.",
+      ],
+      [
+        "Comment My Spelling Game décide-t-il qu’un mot est maîtrisé ?",
+        "Un mot doit compter au moins trois tentatives terminées correctes consécutives sur au moins deux dates UTC différentes pour être marqué comme maîtrisé.",
+      ],
+      [
+        "Puis-je utiliser des phrases d’exemple avec les mots ?",
+        "Oui. Elles sont facultatives. En dictée, My Spelling Game peut lire le mot, la phrase d’exemple, puis le mot à nouveau.",
+      ],
+      [
+        "My Spelling Game peut-il fournir automatiquement des phrases ?",
+        "Plus inclut une bibliothèque sélectionnée de phrases pour compléter les mots connus. Les adultes peuvent modifier la phrase avant de publier.",
+      ],
+      [
+        "My Spelling Game facture-t-il par élève ?",
+        "Non. Plus prend en charge jusqu’à 150 profils d’élèves sans frais par élève.",
+      ],
+      [
+        "Les parents peuvent-ils utiliser My Spelling Game ?",
+        "Oui. Ils peuvent pratiquer gratuitement sans compte ou utiliser un espace de travail pour enregistrer des listes, créer des devoirs et suivre les progrès de l’enfant.",
+      ],
+    ],
+  },
+  id: {
+    intro:
+      "Jawaban tentang daftar kata sendiri, mode latihan, akun siswa, tugas, kemajuan, penguasaan, ulasan, dan Plus.",
+    account:
+      "Tidak. Siswa membuka link latihan atau tugas dan memakai nama panggilan bila diperlukan. Email dan kata sandi siswa tidak diperlukan.",
+    additions: [
+      [
+        "Bisakah guru dan orang tua memantau kemajuan ejaan dari waktu ke waktu?",
+        "Bisa. Ruang kerja dapat menghubungkan tugas yang selesai ke profil siswa dan menampilkan kemajuan di beberapa tugas. Paket Gratis menyimpan riwayat 30 hari, sedangkan Plus 365 hari.",
+      ],
+      [
+        "Bisa menyimpan dan memakai ulang daftar mingguan?",
+        "Bisa. Guru dan orang tua yang sudah masuk dapat menyimpan daftar dan memakainya lagi untuk tugas berikutnya. Gratis memiliki batas daftar, sedangkan Plus tidak terbatas.",
+      ],
+      [
+        "Apa itu Today's Review?",
+        "Today's Review adalah fitur Plus yang memakai riwayat ejaan untuk menampilkan kata yang salah saat waktunya berlatih lagi.",
+      ],
+      [
+        "Bagaimana My Spelling Game menentukan kata sudah dikuasai?",
+        "Sebuah kata harus memiliki setidaknya tiga percobaan selesai yang benar secara berurutan pada setidaknya dua tanggal latihan UTC berbeda untuk dianggap dikuasai.",
+      ],
+      [
+        "Bisa memakai kalimat contoh dengan kata ejaan?",
+        "Bisa. Kalimat contoh bersifat opsional. Dalam dikte, My Spelling Game dapat membacakan kata, kalimat contoh, lalu kata lagi.",
+      ],
+      [
+        "Apakah My Spelling Game bisa menyediakan kalimat contoh otomatis?",
+        "Plus memiliki pustaka kalimat pilihan untuk mengisi kata yang dikenal. Guru dan orang tua tetap bisa mengedit kalimat sebelum menerbitkan tugas.",
+      ],
+      [
+        "Apakah My Spelling Game mengenakan biaya per siswa?",
+        "Tidak. Plus mendukung hingga 150 profil siswa tanpa biaya per siswa.",
+      ],
+      [
+        "Bisakah orang tua memakai My Spelling Game?",
+        "Bisa. Orang tua dapat berlatih gratis tanpa akun atau masuk ke ruang kerja untuk menyimpan daftar, membuat tugas, dan memantau kemajuan anak.",
+      ],
+    ],
+  },
+  zh: {
+    intro:
+      "集中说明自定义单词表、练习模式、学生账号、作业、进度、掌握度、复习和 Plus。",
+    account:
+      "不需要。学生打开练习链接或作业，需要时输入昵称即可，不需要学生邮箱或密码。",
+    additions: [
+      [
+        "老师和家长可以持续追踪学生的拼写进度吗？",
+        "可以。工作台可以把已完成作业关联到学生档案，展示多次作业中的拼写进度。免费版保留 30 天历史，Plus 保留 365 天。",
+      ],
+      [
+        "可以保存并重复使用每周词表吗？",
+        "可以。登录后的老师和家长可以保存词表，用于之后创建作业。免费版有保存数量限制，Plus 支持无限保存。",
+      ],
+      [
+        "什么是 Today's Review？",
+        "Today's Review 是 Plus 功能，会根据学生完成过的拼写历史，在错词需要再次练习时把它们找出来。",
+      ],
+      [
+        "My Spelling Game 如何判断单词已经掌握？",
+        "单词必须在至少两个不同的 UTC 练习日期中，连续完成至少三次正确作答，才会被标记为已掌握。",
+      ],
+      [
+        "可以给拼写单词添加例句吗？",
+        "可以。例句是可选的。听写练习时，My Spelling Game 可以依次读出单词、例句和单词。",
+      ],
+      [
+        "My Spelling Game 能自动提供例句吗？",
+        "Plus 包含精选例句库，可以为已知单词补充例句。老师和家长发布作业前仍可编辑例句。",
+      ],
+      [
+        "My Spelling Game 按学生收费吗？",
+        "不收费。Plus 支持最多 150 个学生档案，不按学生单独收费。",
+      ],
+      [
+        "家长可以使用 My Spelling Game 吗？",
+        "可以。家长无需账号即可免费练习，也可以登录工作台保存每周词表、创建作业并持续追踪孩子的进度。",
+      ],
+    ],
+  },
+};
+
+for (const [code, update] of Object.entries(faqUpdates)) {
+  const item = locales[code];
+  item.intro = update.intro;
+  const account = item.questions.findIndex(([question]) =>
+    /account|cuenta|conta|compte|akun|账号/.test(question),
+  );
+  if (account >= 0) item.questions[account][1] = update.account;
+  item.questions.push(...update.additions);
+}
+
 const all = Object.entries(locales).map(([code, item]) => ({ code, ...item }));
 const labels = {
   en: "English",

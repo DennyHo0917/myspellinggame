@@ -13,3 +13,9 @@ Before release:
 7. Verify `/teacher` and `/a/*` return `X-Robots-Tag: noindex, nofollow, noarchive`, while `/pricing` remains indexable.
 
 The existing `_redirects` file continues to redirect old `.html` paths to extensionless URLs. These dashboard settings are manual deployment tasks and are not claimed as active by this repository.
+
+## IndexNow
+
+The public verification key is stored at `/c8e75d1227e47ac22dd5464a576d8bcf.txt`. After a production deployment is live and that URL is reachable, run `npm run indexnow`. The command submits only canonical public HTML pages changed in the latest Git commit; use `npm run indexnow -- --base=<previous-deployed-commit>` when a deployment spans multiple commits. Use `--dry-run` to inspect the URL list without sending it.
+
+Submission status can be checked in **Bing Webmaster Tools → IndexNow**. IndexNow notifies participating search engines about changed URLs; it does not guarantee crawling or indexing.

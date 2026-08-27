@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -18,8 +19,19 @@ function tagContent(html, expression) {
   return html.match(expression)?.[1] || '';
 }
 
+function gitDate(file) {
+  const relative = path.relative(root, file).split(path.sep).join('/');
+  return execFileSync('git', ['log', '-1', '--format=%cs', '--', relative], {
+    cwd: root,
+    encoding: 'utf8',
+  }).trim();
+}
+
 test('sitemap contains each extensionless canonical exactly once with complete hreflang', () => {
+  execFileSync(process.execPath, [path.join(root, 'scripts/generate-sitemap.js')], { cwd: root });
   const xml = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
+  execFileSync(process.execPath, [path.join(root, 'scripts/generate-sitemap.js')], { cwd: root });
+  assert.equal(fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8'), xml);
   const blocks = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map((match) => match[1]);
   const sitemapUrls = blocks.map((block) => tagContent(block, /<loc>([^<]+)<\/loc>/));
   const canonicals = publicHtmlFiles().map((file) => tagContent(
@@ -36,27 +48,24 @@ test('sitemap contains each extensionless canonical exactly once with complete h
   }
 
   const lastmods = blocks.map((block) => tagContent(block, /<lastmod>([^<]+)<\/lastmod>/));
+  const today = new Date().toISOString().slice(0, 10);
+  for (const lastmod of lastmods) {
+    assert.match(lastmod, /^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(lastmod <= today, lastmod);
+  }
   assert.ok(new Set(lastmods).size > 1);
   const byUrl = new Map(blocks.map((block) => [
     tagContent(block, /<loc>([^<]+)<\/loc>/),
     tagContent(block, /<lastmod>([^<]+)<\/lastmod>/),
   ]));
-  assert.equal(byUrl.get('https://myspellinggame.com/'), '2026-08-23');
-  assert.equal(byUrl.get('https://myspellinggame.com/homeschool-spelling-practice'), '2026-08-23');
-  assert.equal(byUrl.get('https://myspellinggame.com/es/about'), '2026-08-23');
-  assert.equal(byUrl.get('https://myspellinggame.com/zh/contact'), '2026-08-23');
-  assert.equal(byUrl.get('https://myspellinggame.com/pricing'), '2026-08-23');
-  assert.equal(byUrl.get('https://myspellinggame.com/contact'), '2026-08-23');
-  assert.equal(byUrl.get('https://myspellinggame.com/es/sight-word-typing-game'), '2026-06-28');
-  assert.equal(byUrl.get('https://myspellinggame.com/sight-word-typing-game'), '2026-06-22');
-
   for (const file of publicHtmlFiles()) {
     const html = fs.readFileSync(file, 'utf8');
-    const dateModified = tagContent(html, /"dateModified"\s*:\s*"(\d{4}-\d{2}-\d{2})"/);
-    if (!dateModified) continue;
     const canonical = tagContent(html, /<link rel="canonical" href="([^"]+)">/);
-    assert.equal(byUrl.get(canonical), dateModified);
+    assert.equal(byUrl.get(canonical), gitDate(file), file);
   }
+
+  const generator = fs.readFileSync(path.join(root, 'scripts/generate-sitemap.js'), 'utf8');
+  assert.doesNotMatch(generator, /baselineLastmod|currentContentLastmod/);
 });
 
 test('home and remaining long-tail pages have one H1 and distinct metadata per locale', () => {

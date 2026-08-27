@@ -19,7 +19,6 @@ function ignored(file) {
 test('Cloudflare excludes repository-only files from static assets', () => {
   for (const file of [
     '.git/config',
-    '.cursor/rules/project-overview.mdc',
     '.wrangler/state/v3/d1/miniflare-D1DatabaseObject',
     'test/seo.test.mjs',
     'scripts/generate-sitemap.js',
@@ -42,6 +41,7 @@ test('Cloudflare keeps required website assets public', () => {
     'sitemap.xml',
     'robots.txt',
     'manifest.json',
+    'c8e75d1227e47ac22dd5464a576d8bcf.txt',
     '_headers',
     '_redirects',
   ]) assert.equal(ignored(file), false, file);

@@ -1,7 +1,5 @@
 .git
 .git/**
-.cursor
-.cursor/**
 .wrangler
 .wrangler/**
 node_modules

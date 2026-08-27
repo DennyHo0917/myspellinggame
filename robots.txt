@@ -3,7 +3,6 @@ Allow: /
 
 Disallow: /scripts/
 Disallow: /.git/
-Disallow: /.cursor/
 Disallow: /dist/
 Disallow: /practice.html
 Disallow: /tournament.html

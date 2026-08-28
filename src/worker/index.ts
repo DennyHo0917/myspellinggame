@@ -1961,10 +1961,22 @@ export async function handleRequest(
     const user = await requireTeacher(env, request, getSession);
     if (method === "GET") {
       const plan = await getPlan(env, user.id);
+      const learners = await listLearners(env.DB, user.id, plan);
+      const learnersWithReviewCounts =
+        request.headers.get("x-workspace-review-counts") === "1"
+          ? await Promise.all(
+              learners.map(async (learner) => ({
+                ...learner,
+                needs_review_count: (
+                  await learnerMastery(env.DB, learner, plan)
+                ).summary.needsReview,
+              })),
+            )
+          : learners;
       return json({
         assignments: await listAssignments(env.DB, user.id, plan),
         savedLists: await listSavedLists(env.DB, user.id),
-        learners: await listLearners(env.DB, user.id, plan),
+        learners: learnersWithReviewCounts,
         usage: await usage(env.DB, user.id, plan),
       });
     }

@@ -102,6 +102,14 @@ function isParentPlan(me) {
   return me.plan === "parent";
 }
 
+function workspaceLearnerLabel(me) {
+  return me.plan === "free"
+    ? copy.freeLearners
+    : isParentPlan(me)
+      ? copy.familyLearners
+      : copy.learners;
+}
+
 function attachLongListAdvice(form, wordsSelector) {
   const input = form.querySelector(wordsSelector);
   if (!input) return;
@@ -266,6 +274,31 @@ function workspaceIcon(name) {
   return icons[name] || "•";
 }
 
+function workspaceSection(value, fallback = "overview") {
+  if (value === "saved-lists") return "savedLists";
+  return [
+    "overview",
+    "assignments",
+    "learners",
+    "savedLists",
+    "progress",
+  ].includes(value)
+    ? value
+    : fallback;
+}
+
+function workspaceRoute(pathname = location.pathname) {
+  return (
+    {
+      "/teacher": "overview",
+      "/teacher/assignments": "assignments",
+      "/teacher/learners": "learners",
+      "/teacher/saved-lists": "savedLists",
+      "/teacher/progress": "progress",
+    }[pathname] || null
+  );
+}
+
 function shell(me = null, activeSection = "overview") {
   root.replaceChildren();
   const wrapper = document.createElement("div");
@@ -283,28 +316,34 @@ function shell(me = null, activeSection = "overview") {
   const sidebar = document.createElement("aside");
   sidebar.className = "workspace-sidebar";
   sidebar.setAttribute("aria-label", copy.dashboardTitle);
-  const planLearners =
-    me.plan === "free"
-      ? copy.freeLearners
-      : isParentPlan(me)
-        ? copy.familyLearners
-        : copy.learners;
+  const planLearners = workspaceLearnerLabel(me);
   const currentHash = location.hash.replace(/^#/, "");
   const requestedSection = new URLSearchParams(location.search).get("section");
   const current =
-    location.pathname === "/teacher"
-      ? requestedSection || currentHash || activeSection
-      : activeSection;
+    workspaceRoute() ||
+    workspaceSection(requestedSection || currentHash, activeSection);
   const dashboardHref = `/teacher?lang=${encodeURIComponent(locale)}`;
   const items = [
-    ["overview", copy.overview, `${dashboardHref}#overview`],
-    ["assignments", copy.assignments, `${dashboardHref}#assignments`],
-    ["learners", planLearners, `${dashboardHref}#learners`],
-    ["savedLists", copy.savedLists, `${dashboardHref}#saved-lists`],
+    ["overview", copy.overview, dashboardHref],
+    [
+      "assignments",
+      copy.assignments,
+      `/teacher/assignments?lang=${encodeURIComponent(locale)}`,
+    ],
+    [
+      "learners",
+      planLearners,
+      `/teacher/learners?lang=${encodeURIComponent(locale)}`,
+    ],
+    [
+      "savedLists",
+      copy.savedLists,
+      `/teacher/saved-lists?lang=${encodeURIComponent(locale)}`,
+    ],
     [
       "progress",
       copy.freeProgress,
-      `${dashboardHref}&section=progress#learners`,
+      `/teacher/progress?lang=${encodeURIComponent(locale)}`,
     ],
     [
       "billing",
@@ -332,7 +371,7 @@ function shell(me = null, activeSection = "overview") {
       });
     link.addEventListener("click", () => {
       closeWorkspaceDrawer();
-      if (location.pathname !== "/teacher" || key === "billing") return;
+      if (key === "billing" || href) return;
       menu
         .querySelector('[aria-current="page"]')
         ?.removeAttribute("aria-current");
@@ -387,23 +426,36 @@ function shell(me = null, activeSection = "overview") {
   overlay.className = "workspace-drawer-overlay";
   overlay.type = "button";
   overlay.setAttribute("aria-label", copy.closeWorkspaceMenu);
-  overlay.addEventListener("click", closeWorkspaceDrawer);
+  overlay.addEventListener("click", () => closeWorkspaceDrawer(true));
   wrapper.append(overlay, footer());
   root.append(wrapper);
   const toggle = wrapper.querySelector("#workspace-menu-toggle");
+  const mobileWorkspace = matchMedia("(max-width: 800px)");
   toggle?.addEventListener("click", () => {
     const open = wrapper.classList.toggle("is-drawer-open");
     toggle.setAttribute("aria-expanded", String(open));
     document.body.classList.toggle("workspace-drawer-active", open);
+    sidebar.inert = mobileWorkspace.matches && !open;
+    if (open) sidebar.querySelector('[aria-current="page"]')?.focus();
   });
-  function closeWorkspaceDrawer() {
+  function closeWorkspaceDrawer(restoreFocus = false) {
+    const wasOpen = wrapper.classList.contains("is-drawer-open");
     wrapper.classList.remove("is-drawer-open");
     toggle?.setAttribute("aria-expanded", "false");
     document.body.classList.remove("workspace-drawer-active");
+    sidebar.inert = mobileWorkspace.matches;
+    if (restoreFocus && wasOpen) toggle?.focus();
   }
   wrapper.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") closeWorkspaceDrawer();
+    if (event.key === "Escape") closeWorkspaceDrawer(true);
   });
+  const syncWorkspaceMode = () => {
+    if (!mobileWorkspace.matches) closeWorkspaceDrawer();
+    sidebar.inert =
+      mobileWorkspace.matches && !wrapper.classList.contains("is-drawer-open");
+  };
+  mobileWorkspace.addEventListener("change", syncWorkspaceMode);
+  syncWorkspaceMode();
   return main;
 }
 
@@ -563,7 +615,7 @@ async function renderLogin() {
   if (location.hash === "#teacher-sign-in") focusTeacherSignIn();
 }
 
-function usageCards(data, me) {
+function usageCards(data, me, needsReviewCount) {
   const grid = document.createElement("div");
   grid.className = "grid";
   const values = [
@@ -584,15 +636,6 @@ function usageCards(data, me) {
       "",
     ],
     [
-      data.limits.savedLists === null
-        ? copy.savedListsUnlimited
-        : m("savedListsUsage", {
-            used: data.savedLists,
-            limit: data.limits.savedLists,
-          }),
-      "",
-    ],
-    [
       m(
         me.plan === "free"
           ? "freeLearnerUsage"
@@ -606,6 +649,7 @@ function usageCards(data, me) {
       ),
       "",
     ],
+    [m("needsReviewWords", { count: needsReviewCount }), ""],
   ];
   for (const [text] of values) {
     const card = document.createElement("div");
@@ -853,6 +897,33 @@ function renderLearners(me, learners) {
   heading.textContent = learnerCopy.heading;
   const intro = document.createElement("p");
   intro.textContent = learnerCopy.intro;
+  const classUrl =
+    isTeacherPlan(me) && me.classPublicId
+      ? `${location.origin}/join/${me.classPublicId}`
+      : null;
+  const join = document.createElement("div");
+  if (classUrl) {
+    join.className = "notice workspace-class-join";
+    const label = document.createElement("strong");
+    label.textContent = copy.classJoin;
+    const url = document.createElement("p");
+    url.textContent = `${copy.classJoinUrl}: ${classUrl}`;
+    const copyUrl = document.createElement("button");
+    copyUrl.type = "button";
+    copyUrl.className = "button-secondary";
+    copyUrl.setAttribute("aria-live", "polite");
+    copyUrl.textContent = copy.copyClassUrl;
+    copyUrl.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(classUrl);
+        copyUrl.textContent = copy.classUrlCopied;
+        copyUrl.classList.add("is-success");
+      } catch {
+        prompt(copy.copyClassUrl, classUrl);
+      }
+    });
+    join.append(label, url, copyUrl);
+  }
   const form = document.createElement("form");
   form.className = "product-form compact-form inline-form";
   form.innerHTML = `<div class="field"><label for="learner-name">${learnerCopy.name}</label><input id="learner-name" maxlength="32" required placeholder="${learnerCopy.placeholder}"></div><div class="actions"><button type="submit">${learnerCopy.add}</button></div>`;
@@ -877,7 +948,9 @@ function renderLearners(me, learners) {
       );
     }
   });
-  section.append(heading, intro, form);
+  section.append(heading, intro);
+  if (classUrl) section.append(join);
+  section.append(form);
   const list = document.createElement("div");
   list.className = "assignment-list workspace-list";
   for (const learner of learners) {
@@ -893,6 +966,11 @@ function renderLearners(me, learners) {
       const badge = document.createElement("span");
       badge.className = "badge closed";
       badge.textContent = copy.archived;
+      titleRow.append(badge);
+    } else {
+      const badge = document.createElement("span");
+      badge.className = "badge";
+      badge.textContent = copy.active;
       titleRow.append(badge);
     }
     const summary = document.createElement("p");
@@ -917,11 +995,13 @@ function renderLearners(me, learners) {
     const copyPin = document.createElement("button");
     copyPin.type = "button";
     copyPin.className = "button-secondary";
+    copyPin.setAttribute("aria-live", "polite");
     copyPin.textContent = copy.copyPin;
     copyPin.addEventListener("click", async () => {
       try {
         await navigator.clipboard.writeText(learner.join_pin);
         copyPin.textContent = copy.pinCopied;
+        copyPin.classList.add("is-success");
       } catch {
         prompt(copy.copyPin, learner.join_pin);
       }
@@ -967,68 +1047,27 @@ function renderLearners(me, learners) {
   return section;
 }
 
-async function renderDashboard(me) {
-  const data = await api("/api/assignments");
-  const main = shell(me, "overview");
-  const card = document.createElement("section");
-  card.className = "product-card teacher-dashboard-card";
-  card.id = "overview";
-  const heading = document.createElement("h1");
-  heading.textContent = copy.dashboardTitle;
-  const greeting = document.createElement("p");
-  greeting.textContent = m("greeting", { name: me.user.name });
-  const plan = document.createElement("span");
-  plan.className = `badge teacher-plan-badge ${isPlusPlan(me) ? "pro" : ""}`;
-  plan.textContent = isParentPlan(me)
-    ? copy.parentPlan
-    : isTeacherPlan(me) || isPlusPlan(me)
-      ? copy.teacherPlan
-      : copy.freePlan;
-  const actions = document.createElement("div");
-  actions.className = "actions";
-  const create = document.createElement("a");
-  create.className = "button-link";
-  create.href = `/teacher/assignments/new?lang=${encodeURIComponent(locale)}`;
-  create.textContent = copy.newAssignment;
-  create.addEventListener("click", () => setAssignmentEntryPoint("workspace"));
-  const billing = document.createElement(isPlusPlan(me) ? "button" : "a");
-  if (isPlusPlan(me)) {
-    billing.type = "button";
-    billing.className = "button-secondary";
-    billing.textContent = copy.manageBilling;
-    billing.addEventListener("click", openPortal);
-  } else {
-    billing.href = productPagePath("pricing", locale);
-    billing.className = "button-link pro";
-    billing.textContent = copy.upgrade;
-  }
-  actions.append(create, billing);
-  const submissionNotice = submissionLimitNotice(data.usage);
-  card.append(heading, greeting, plan, usageCards(data.usage, me));
-  if (isTeacherPlan(me) && me.classPublicId) {
-    const join = document.createElement("p");
-    join.className = "notice";
-    join.textContent = `${copy.classJoinUrl}: ${location.origin}/join/${me.classPublicId}`;
-    card.append(join);
-  }
-  if (submissionNotice) card.append(submissionNotice);
-  card.append(actions);
-  main.append(card);
-
+function renderAssignmentsCard(
+  me,
+  assignments,
+  { limit = null, id = "assignments", heading = copy.assignments } = {},
+) {
   const listCard = document.createElement("section");
   listCard.className = "product-card";
-  listCard.id = "assignments";
+  listCard.id = id;
   const listHeading = document.createElement("h2");
-  listHeading.textContent = copy.assignments;
+  listHeading.textContent = heading;
   listCard.append(listHeading);
-  if (!data.assignments.length) {
+  const visibleAssignments = limit ? assignments.slice(0, limit) : assignments;
+  if (!visibleAssignments.length) {
     const empty = document.createElement("p");
+    empty.className = "empty-state";
     empty.textContent = copy.noAssignments;
     listCard.append(empty);
   } else {
     const list = document.createElement("div");
     list.className = "assignment-list";
-    for (const assignment of data.assignments) {
+    for (const assignment of visibleAssignments) {
       const row = document.createElement("article");
       row.className = "assignment-row";
       const body = document.createElement("div");
@@ -1072,10 +1111,397 @@ async function renderDashboard(me) {
     }
     listCard.append(list);
   }
-  main.append(listCard);
+  return listCard;
+}
+
+function renderProgressCard(
+  learners,
+  { recentOnly = false, headingText = null, id = "progress" } = {},
+) {
+  const card = document.createElement("section");
+  card.className = "product-card";
+  card.id = id;
+  const heading = document.createElement("h2");
+  heading.textContent =
+    headingText || (recentOnly ? copy.recentProgress : copy.freeProgress);
+  card.append(heading);
+  const progressLearners = [...learners]
+    .filter((learner) => !recentOnly || learner.last_practiced_at)
+    .sort((a, b) =>
+      String(b.last_practiced_at || "").localeCompare(
+        String(a.last_practiced_at || ""),
+      ),
+    );
+  const visibleLearners = recentOnly
+    ? progressLearners.slice(0, 5)
+    : progressLearners;
+  if (!visibleLearners.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = copy.noRecentProgress;
+    card.append(empty);
+    return card;
+  }
+  const list = document.createElement("div");
+  list.className = "assignment-list workspace-list";
+  for (const learner of visibleLearners) {
+    const row = document.createElement("article");
+    row.className = "assignment-row";
+    const body = document.createElement("div");
+    const title = document.createElement("h3");
+    title.textContent = learner.name;
+    const summary = document.createElement("p");
+    summary.className = "assignment-meta";
+    summary.textContent = m("learnerSummary", {
+      count: learner.completed_attempts,
+      accuracy: learner.accuracy,
+    });
+    const review = document.createElement("p");
+    review.className = "assignment-meta";
+    review.textContent = m("needsReviewWords", {
+      count: learner.needs_review_count || 0,
+    });
+    body.append(title, summary, review);
+    const open = document.createElement("a");
+    open.className = "button-link button-secondary";
+    open.href = `/teacher/learners/${learner.id}?lang=${encodeURIComponent(locale)}`;
+    open.textContent = copy.viewLearner;
+    row.append(body, open);
+    list.append(row);
+  }
+  card.append(list);
+  return card;
+}
+
+function progressTabs(panels) {
+  const tabs = document.createElement("div");
+  tabs.className = "workspace-tabs";
+  tabs.setAttribute("role", "tablist");
+  const initial = panels.some(([key]) => `#${key}` === location.hash)
+    ? location.hash.slice(1)
+    : panels[0][0];
+  const select = (selected) => {
+    for (const [key, , panel, button] of panels) {
+      const active = key === selected;
+      button.setAttribute("aria-selected", String(active));
+      button.tabIndex = active ? 0 : -1;
+      panel.hidden = !active;
+    }
+  };
+  for (const [key, label, panel] of panels) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "workspace-tab";
+    button.id = `progress-tab-${key}`;
+    button.setAttribute("role", "tab");
+    button.setAttribute("aria-controls", `progress-panel-${key}`);
+    button.textContent = label;
+    panel.id = `progress-panel-${key}`;
+    panel.setAttribute("role", "tabpanel");
+    panel.setAttribute("aria-labelledby", button.id);
+    button.addEventListener("click", () => {
+      select(key);
+      history.replaceState(
+        {},
+        "",
+        `${location.pathname}${location.search}#${key}`,
+      );
+    });
+    panels.find(([panelKey]) => panelKey === key).push(button);
+    tabs.append(button);
+  }
+  select(initial);
+  return tabs;
+}
+
+function progressLearnerRows(learners, { reviewActions = false } = {}) {
+  const list = document.createElement("div");
+  list.className = "assignment-list workspace-list";
+  for (const learner of learners) {
+    const row = document.createElement("article");
+    row.className = "assignment-row";
+    const body = document.createElement("div");
+    const title = document.createElement("h3");
+    title.textContent = learner.name;
+    const summary = document.createElement("p");
+    summary.className = "assignment-meta";
+    summary.textContent = reviewActions
+      ? m("needsReviewWords", { count: learner.needs_review_count || 0 })
+      : m("learnerSummary", {
+          count: learner.completed_attempts,
+          accuracy: learner.accuracy,
+        });
+    body.append(title, summary);
+    const actions = document.createElement("div");
+    actions.className = "actions compact-actions";
+    const open = document.createElement("a");
+    open.className = "button-link button-secondary";
+    open.href = `/teacher/learners/${learner.id}?lang=${encodeURIComponent(locale)}`;
+    open.textContent = copy.viewLearner;
+    actions.append(open);
+    if (reviewActions) {
+      const create = document.createElement("button");
+      create.type = "button";
+      create.textContent = copy.createReview;
+      const status = statusElement(actions);
+      create.addEventListener("click", async () => {
+        create.disabled = true;
+        try {
+          const result = await api(`/api/learners/${learner.id}/review`, {
+            method: "POST",
+            body: "{}",
+          });
+          if (!result.words.length) {
+            status.textContent = copy.noReviewWords;
+            return;
+          }
+          saveAssignmentDraft(
+            result.words,
+            m("reviewDraftTitle", { name: learner.name }),
+          );
+        } catch (error) {
+          status.textContent = error.message;
+          status.className = "status error";
+        } finally {
+          create.disabled = false;
+        }
+      });
+      actions.prepend(create);
+    }
+    row.append(body, actions);
+    list.append(row);
+  }
+  return list;
+}
+
+async function renderProgressCenter(me, data) {
+  const main = shell(me, "progress");
+  const learners = data.learners || [];
+  const completed = learners.reduce(
+    (sum, learner) => sum + Number(learner.completed_attempts || 0),
+    0,
+  );
+  const practiced = learners.filter((learner) => learner.completed_attempts);
+  const accuracy = practiced.length
+    ? Math.round(
+        practiced.reduce(
+          (sum, learner) => sum + Number(learner.accuracy || 0),
+          0,
+        ) / practiced.length,
+      )
+    : 0;
+  const needsReview = learners.reduce(
+    (sum, learner) => sum + Number(learner.needs_review_count || 0),
+    0,
+  );
+
+  const header = document.createElement("section");
+  header.className = "product-card";
+  const title = document.createElement("h1");
+  title.textContent = copy.freeProgress;
+  const historyCopy = document.createElement("p");
+  historyCopy.textContent = m("historyWindow", {
+    days: me.plan === "free" ? 14 : 365,
+  });
+  header.append(title, historyCopy);
+
+  const overview = document.createElement("div");
+  const overviewCard = document.createElement("section");
+  overviewCard.className = "product-card";
+  const overviewTitle = document.createElement("h2");
+  overviewTitle.textContent = copy.progressOverview;
+  const grid = document.createElement("div");
+  grid.className = "grid";
+  grid.append(
+    statCard(copy.completedPractices, completed),
+    statCard(copy.summaryAverage, `${accuracy}%`),
+    statCard(copy.needsReview, needsReview),
+  );
+  overviewCard.append(overviewTitle, grid);
+  overview.append(
+    overviewCard,
+    renderProgressCard(learners, {
+      recentOnly: true,
+      id: "recent-progress",
+    }),
+  );
+
+  const missed = document.createElement("section");
+  missed.className = "product-card";
+  const missedTitle = document.createElement("h2");
+  missedTitle.textContent = copy.commonMisses;
+  missed.append(missedTitle);
+  if (isTeacherPlan(me)) {
+    const details = await Promise.all(
+      (data.assignments || [])
+        .slice(0, 5)
+        .map((assignment) =>
+          api(`/api/assignments/${assignment.id}`).catch(() => null),
+        ),
+    );
+    const counts = new Map();
+    for (const detail of details)
+      for (const item of detail?.missedWordStats || [])
+        counts.set(item.word, (counts.get(item.word) || 0) + item.misses);
+    const list = document.createElement("div");
+    list.className = "word-list";
+    for (const [word, count] of [...counts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)) {
+      const chip = document.createElement("span");
+      chip.className = "word-chip";
+      chip.textContent = `${word} · ${count}`;
+      list.append(chip);
+    }
+    if (list.children.length) missed.append(list);
+    else {
+      const empty = document.createElement("p");
+      empty.className = "empty-state";
+      empty.textContent = copy.noReviewWords;
+      missed.append(empty);
+    }
+  } else if (learners.length) {
+    missed.append(progressLearnerRows(learners));
+  } else {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = copy.noRecentProgress;
+    missed.append(empty);
+  }
+  overview.append(missed);
+
+  const mastery = document.createElement("div");
+  mastery.append(
+    renderProgressCard(learners, {
+      headingText: `${copy.mastery} · ${workspaceLearnerLabel(me)}`,
+      id: "progress-mastery",
+    }),
+  );
+
+  const smartReview = document.createElement("div");
+  const smartReviewCard = document.createElement("section");
+  smartReviewCard.className = "product-card";
+  const smartReviewTitle = document.createElement("h2");
+  smartReviewTitle.textContent = copy.smartReview;
+  const smartReviewCopy = document.createElement("p");
+  smartReviewCopy.textContent = copy.smartReviewValue;
+  smartReviewCard.append(smartReviewTitle, smartReviewCopy);
+  if (!isPlusPlan(me)) {
+    const preview = document.createElement("p");
+    preview.textContent = needsReview
+      ? m("smartReviewPreview", { count: needsReview })
+      : copy.smartReviewUpgrade;
+    smartReviewCard.append(preview, upgradeLink("smart_review"));
+  } else if (learners.length) {
+    smartReviewCard.append(
+      progressLearnerRows(learners, { reviewActions: true }),
+    );
+  } else {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = copy.noRecentProgress;
+    smartReviewCard.append(empty);
+  }
+  smartReview.append(smartReviewCard);
+
+  const panels = [
+    ["overview", copy.overview, overview],
+    ["mastery", copy.mastery, mastery],
+    ["smart-review", copy.smartReview, smartReview],
+  ];
+  header.append(progressTabs(panels));
+  main.append(header, overview, mastery, smartReview);
+}
+
+async function renderDashboard(me) {
+  const params = new URLSearchParams(location.search);
+  const section = workspaceSection(
+    workspaceRoute() ||
+      params.get("section") ||
+      location.hash.replace(/^#/, ""),
+  );
+  const data = await api("/api/assignments", {
+    headers:
+      section === "overview" || section === "progress"
+        ? { "x-workspace-review-counts": "1" }
+        : undefined,
+  });
+  if (section === "savedLists") {
+    const main = shell(me, "savedLists");
+    main.append(renderSavedLists(me, data.savedLists || []));
+    return;
+  }
+  if (section === "learners") {
+    const main = shell(me, "learners");
+    main.append(renderLearners(me, data.learners || []));
+    return;
+  }
+  if (section === "progress") {
+    await renderProgressCenter(me, data);
+    return;
+  }
+  const main = shell(
+    me,
+    section === "assignments" ? "assignments" : "overview",
+  );
+  if (section === "assignments") {
+    main.append(renderAssignmentsCard(me, data.assignments || []));
+    return;
+  }
+  const needsReviewCount = (data.learners || []).reduce(
+    (sum, learner) => sum + Number(learner.needs_review_count || 0),
+    0,
+  );
+  const card = document.createElement("section");
+  card.className = "product-card teacher-dashboard-card";
+  card.id = "overview";
+  const heading = document.createElement("h1");
+  heading.textContent = copy.dashboardTitle;
+  const greeting = document.createElement("p");
+  greeting.textContent = m("greeting", { name: me.user.name });
+  const plan = document.createElement("span");
+  plan.className = `badge teacher-plan-badge ${isPlusPlan(me) ? "pro" : ""}`;
+  plan.textContent = isParentPlan(me)
+    ? copy.parentPlan
+    : isTeacherPlan(me) || isPlusPlan(me)
+      ? copy.teacherPlan
+      : copy.freePlan;
+  const actions = document.createElement("div");
+  actions.className = "actions";
+  const create = document.createElement("a");
+  create.className = "button-link";
+  create.href = `/teacher/assignments/new?lang=${encodeURIComponent(locale)}`;
+  create.textContent = copy.newAssignment;
+  create.addEventListener("click", () => setAssignmentEntryPoint("workspace"));
+  const billing = document.createElement(isPlusPlan(me) ? "button" : "a");
+  if (isPlusPlan(me)) {
+    billing.type = "button";
+    billing.className = "button-secondary";
+    billing.textContent = copy.manageBilling;
+    billing.addEventListener("click", openPortal);
+  } else {
+    billing.href = productPagePath("pricing", locale);
+    billing.className = "button-link pro";
+    billing.textContent = copy.upgrade;
+  }
+  actions.append(create, billing);
+  const submissionNotice = submissionLimitNotice(data.usage);
+  card.append(
+    heading,
+    greeting,
+    plan,
+    usageCards(data.usage, me, needsReviewCount),
+  );
+  if (submissionNotice) card.append(submissionNotice);
+  card.append(actions);
+  main.append(card);
   main.append(
-    renderSavedLists(me, data.savedLists || []),
-    renderLearners(me, data.learners || []),
+    renderAssignmentsCard(me, data.assignments || [], {
+      limit: 5,
+      id: "recent-assignments",
+      heading: copy.recentAssignments,
+    }),
+    renderProgressCard(data.learners || [], { recentOnly: true }),
   );
 }
 
@@ -1152,7 +1578,7 @@ async function renderNew(me) {
   headingRow.className = "assignment-form-heading";
   const backLink = document.createElement("a");
   backLink.className = "button-link button-secondary";
-  backLink.href = `/teacher?lang=${encodeURIComponent(locale)}`;
+  backLink.href = `/teacher/assignments?lang=${encodeURIComponent(locale)}`;
   backLink.textContent = copy.backToDashboard;
   headingRow.append(heading, backLink);
   const form = document.createElement("form");
@@ -1323,7 +1749,7 @@ async function renderDetail(me, id) {
   headingRow.className = "assignment-detail-heading";
   const backLink = document.createElement("a");
   backLink.className = "button-link button-secondary";
-  backLink.href = `/teacher?lang=${encodeURIComponent(locale)}`;
+  backLink.href = `/teacher/assignments?lang=${encodeURIComponent(locale)}`;
   backLink.textContent = copy.backToDashboard;
   headingRow.append(titleRow, backLink);
   const linkLabel = document.createElement("h2");
@@ -1343,6 +1769,7 @@ async function renderDetail(me, id) {
   actions.className = "actions";
   const copyButton = document.createElement("button");
   copyButton.type = "button";
+  copyButton.setAttribute("aria-live", "polite");
   copyButton.textContent =
     me.plan === "free" || isParentPlan(me) ? copy.freeCopyLink : copy.copyLink;
   const toggle = document.createElement("button");
@@ -1367,6 +1794,7 @@ async function renderDetail(me, id) {
       me.plan === "free" || isParentPlan(me)
         ? copy.freeLinkCopied
         : copy.copied;
+    copyButton.classList.add("is-success");
     trackEvent("assignment_link_copied", {
       mode: data.mode,
       word_count: data.words.length,
@@ -1384,7 +1812,7 @@ async function renderDetail(me, id) {
   remove.addEventListener("click", async () => {
     if (!confirm(copy.deleteConfirm)) return;
     await api(`/api/assignments/${id}`, { method: "DELETE" });
-    location.href = `/teacher?lang=${encodeURIComponent(locale)}`;
+    location.href = `/teacher/assignments?lang=${encodeURIComponent(locale)}`;
   });
   saveList.addEventListener("click", async () => {
     try {
@@ -1666,7 +2094,7 @@ async function renderLearner(me, id) {
   }
   const back = document.createElement("a");
   back.className = "button-link button-secondary";
-  back.href = `/teacher?lang=${encodeURIComponent(locale)}`;
+  back.href = `/teacher/progress?lang=${encodeURIComponent(locale)}`;
   back.textContent = copy.backToDashboard;
   const headingActions = document.createElement("div");
   headingActions.className = "actions compact-actions";
@@ -1675,6 +2103,7 @@ async function renderLearner(me, id) {
     const copyLearnerLink = document.createElement("button");
     copyLearnerLink.type = "button";
     copyLearnerLink.className = "button-secondary";
+    copyLearnerLink.setAttribute("aria-live", "polite");
     copyLearnerLink.textContent =
       me.plan === "free"
         ? copy.freeCopyLearnerLink
@@ -1690,6 +2119,7 @@ async function renderLearner(me, id) {
             : isParentPlan(me)
               ? copy.familyChildLinkCopied
               : copy.learnerLinkCopied;
+        copyLearnerLink.classList.add("is-success");
       } catch {
         copyLearnerLink.textContent = copy.learnerLinkCopied;
       }
@@ -2015,13 +2445,18 @@ function showActivationTimeout(plan) {
 }
 
 async function init() {
-  root.textContent = copy.loading;
+  const loading = document.createElement("p");
+  loading.className = "workspace-loading";
+  loading.setAttribute("role", "status");
+  loading.textContent = copy.loading;
+  root.replaceChildren(loading);
   let me;
   try {
     me = await api("/api/me");
   } catch (error) {
     if (error.status === 401) return renderLogin();
-    root.textContent = error.message;
+    loading.className = "workspace-loading error";
+    loading.textContent = error.message;
     return;
   }
   try {

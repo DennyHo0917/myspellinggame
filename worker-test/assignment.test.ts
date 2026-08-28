@@ -1339,6 +1339,30 @@ describe("cross-assignment mastery", () => {
     ).toBe("needs_review");
   });
 
+  it("includes mastery review counts only for workspace overview requests", async () => {
+    const learner = await createLearner("Learner 01");
+    const created = await createAssignment();
+    const words = await publicWords(String(created.body.publicId));
+    await submit(String(created.body.publicId), words.words, {
+      learnerPublicId: String(learner.body.public_id),
+      answers: ["wrong", "banana"],
+    });
+
+    const regular = (await (await call("/api/assignments")).json()) as {
+      learners: Array<Record<string, unknown>>;
+    };
+    expect(regular.learners[0]).not.toHaveProperty("needs_review_count");
+
+    const overview = (await (
+      await call("/api/assignments", {
+        headers: { "x-workspace-review-counts": "1" },
+      })
+    ).json()) as {
+      learners: Array<Record<string, unknown>>;
+    };
+    expect(overview.learners[0]).toMatchObject({ needs_review_count: 1 });
+  });
+
   it("aggregates completed attempts and builds a focused Pro review", async () => {
     await insertSubscription({ plan: "pro", status: "active" });
     const learner = await createLearner("Learner 01");

@@ -443,6 +443,19 @@ a {
 .workspace-list {
   margin-top: 1rem;
 }
+.workspace-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.workspace-tab {
+  width: auto;
+}
+.workspace-tab[aria-selected="true"] {
+  background: var(--brand-dark);
+  color: #fff;
+}
 .compact-actions {
   justify-content: flex-end;
 }
@@ -916,11 +929,12 @@ th {
 /* Workspace navigation keeps the existing page sections and routes intact. */
 .workspace-layout {
   display: grid;
-  grid-template-columns: 230px minmax(0, 1080px);
-  gap: 22px;
-  width: min(1332px, 100%);
+  grid-template-columns: 224px minmax(0, 960px);
+  gap: 20px;
+  width: min(1204px, 100%);
   margin: 22px auto 0;
   align-items: start;
+  transition: grid-template-columns 160ms ease;
 }
 
 .workspace-layout.is-sidebar-collapsed {
@@ -931,6 +945,19 @@ th {
   width: 100%;
   min-width: 0;
   margin: 0;
+  gap: 16px;
+}
+
+.workspace-layout .product-card {
+  padding: clamp(1rem, 2vw, 1.35rem);
+  border-radius: 10px;
+  box-shadow: 0 8px 22px rgba(39, 62, 70, 0.06);
+}
+
+.workspace-layout .assignment-row {
+  align-items: center;
+  border-radius: 8px;
+  background: #fbfdfd;
 }
 
 .workspace-sidebar {
@@ -943,10 +970,12 @@ th {
   padding: 10px;
   overflow-y: auto;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  background: #fff;
   box-shadow: 0 8px 24px rgba(39, 62, 70, 0.07);
-  transition: width 160ms ease;
+  transition:
+    width 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .workspace-sidebar.is-collapsed {
@@ -954,7 +983,9 @@ th {
 }
 
 .workspace-sidebar-menu {
-  display: grid;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   gap: 4px;
 }
 
@@ -962,12 +993,12 @@ th {
 .workspace-sidebar-collapse {
   display: flex;
   width: 100%;
-  min-height: 42px;
+  min-height: 44px;
   align-items: center;
   gap: 11px;
   padding: 9px 11px;
   border: 0;
-  border-radius: 7px;
+  border-radius: 8px;
   background: transparent;
   box-shadow: none;
   color: #17202a;
@@ -992,27 +1023,33 @@ th {
 .workspace-sidebar-link[aria-current="page"] {
   background: var(--brand);
   color: #fff;
+  box-shadow: inset 3px 0 0 rgba(255, 255, 255, 0.72);
 }
 
 .workspace-sidebar-icon {
   display: inline-grid;
   width: 24px;
   min-width: 24px;
+  height: 24px;
   place-items: center;
   font-size: 1.15rem;
   line-height: 1;
 }
 
-.workspace-sidebar-signout {
-  margin-top: 8px;
+.workspace-sidebar-link[data-section="billing"] {
+  margin-top: auto;
   border-top: 1px solid var(--line);
-  border-radius: 0 0 7px 7px;
+  border-radius: 0 0 8px 8px;
+}
+
+.workspace-sidebar-signout {
+  color: var(--muted);
 }
 
 .workspace-sidebar-collapse {
-  margin-top: auto;
+  margin-top: 8px;
   border-top: 1px solid var(--line);
-  border-radius: 0 0 7px 7px;
+  border-radius: 0 0 8px 8px;
 }
 
 .workspace-sidebar.is-collapsed .workspace-sidebar-label {
@@ -1028,6 +1065,80 @@ th {
 .workspace-drawer-toggle,
 .workspace-drawer-overlay {
   display: none;
+}
+
+.workspace-shell :is(a, button, input, textarea, select):focus-visible {
+  outline: 3px solid rgba(52, 104, 194, 0.34);
+  outline-offset: 2px;
+}
+
+.workspace-shell button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.workspace-shell .workspace-tab {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  background: #eef4f2;
+  color: var(--brand-dark);
+}
+
+.workspace-shell .workspace-tab:hover,
+.workspace-shell .workspace-tab:focus-visible {
+  background: #dfecea;
+}
+
+.workspace-shell .workspace-tab[aria-selected="true"] {
+  border-color: var(--brand-dark);
+  background: var(--brand-dark);
+  color: #fff;
+}
+
+.workspace-shell .empty-state {
+  padding: 1rem;
+  border: 1px dashed #bfd0cc;
+  border-radius: 8px;
+  background: #fbfdfd;
+  color: var(--muted);
+  text-align: center;
+}
+
+.workspace-shell .status:not(:empty) {
+  padding: 0.65rem 0.75rem;
+  border-radius: 7px;
+  background: #f1f5f4;
+}
+
+.workspace-shell .status.error:not(:empty) {
+  background: #fff1f0;
+}
+
+.workspace-shell .status.success:not(:empty),
+.workspace-shell .button-secondary.is-success {
+  background: #e8f5ee;
+  color: #217451;
+}
+
+.workspace-shell .button-link.pro {
+  box-shadow: 0 6px 16px rgba(52, 104, 194, 0.18);
+}
+
+.workspace-loading {
+  width: min(520px, calc(100% - 28px));
+  margin: 18vh auto 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--muted);
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(39, 62, 70, 0.07);
+}
+
+.workspace-loading.error {
+  border-color: #f3b7b2;
+  color: var(--red);
 }
 
 .workspace-layout section[id] {
@@ -1056,8 +1167,8 @@ th {
     display: inline-grid;
     grid-column: 2;
     grid-row: 1;
-    width: 38px;
-    min-height: 36px;
+    width: 44px;
+    min-height: 44px;
     padding: 0;
     place-items: center;
     border: 1px solid var(--line);
@@ -1070,7 +1181,7 @@ th {
   .workspace-layout {
     display: block;
     width: 100%;
-    margin-top: 22px;
+    margin-top: 16px;
   }
 
   .workspace-sidebar,
@@ -1104,6 +1215,10 @@ th {
     display: none;
   }
 
+  .workspace-sidebar-link {
+    min-height: 48px;
+  }
+
   .workspace-drawer-overlay {
     position: fixed;
     z-index: 100;
@@ -1119,6 +1234,37 @@ th {
 
   .workspace-shell.is-drawer-open .workspace-drawer-overlay {
     display: block;
+  }
+}
+
+@media (max-width: 700px) {
+  .workspace-layout .product-card {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+
+  .workspace-layout .assignment-row {
+    gap: 0.85rem;
+    padding: 0.9rem;
+  }
+
+  .workspace-layout .compact-actions {
+    justify-content: stretch;
+  }
+
+  .workspace-layout .actions > button,
+  .workspace-layout .actions > .button-link {
+    min-height: 44px;
+    flex-basis: 100%;
+  }
+
+  .workspace-layout .workspace-tabs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  }
+
+  .workspace-layout .workspace-tab {
+    width: 100%;
   }
 }
 
@@ -1348,6 +1494,10 @@ body.assignment-page {
 
 .notice {
   border-radius: 6px;
+}
+
+.workspace-class-join p {
+  overflow-wrap: anywhere;
 }
 
 .pricing-card {

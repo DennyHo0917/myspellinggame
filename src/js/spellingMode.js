@@ -39,13 +39,31 @@ function status(text) {
   document.getElementById('spelling-limit-cta')?.remove();
 }
 
+async function updateLongListAdvice() {
+  const input = textarea();
+  if (!input) return;
+  let advice = document.getElementById('long-list-advice');
+  if (!advice) {
+    advice = document.createElement('small');
+    advice.id = 'long-list-advice';
+    advice.className = 'spelling-help';
+    advice.textContent = t('longListAdvice');
+    input.after(advice);
+  }
+  advice.hidden = true;
+  if (currentWords().length <= 20) return;
+  if (readShareState(window.location).sharedLink) return;
+  const account = await getAccount();
+  advice.hidden = !account || currentWords().length <= 20;
+}
+
 function isPlusAccount(account) {
-  return account?.plan === 'plus' || account?.plan === 'pro';
+  return ['parent', 'teacher', 'plus', 'pro'].includes(account?.plan);
 }
 
 function practiceLimit(account, anonymousOnly = false) {
   if (anonymousOnly || !account) return ANONYMOUS_WORD_LIMIT;
-  return isPlusAccount(account) ? 80 : 40;
+  return isPlusAccount(account) ? 40 : 30;
 }
 
 function showLimitCta(key, href, ctaKey) {
@@ -70,7 +88,7 @@ async function getAccount() {
           ...account,
           plan:
             account.plan ||
-            (account.limits?.activeAssignments === 20 ? 'plus' : 'free'),
+            (account.limits?.monthlyAttempts === null ? 'teacher' : 'free'),
         };
       })
       .catch(() => null);
@@ -171,7 +189,11 @@ export function initSpellingMode() {
   if (easyToggle) easyToggle.checked = localStorage.getItem(EASY_KEY) === '1';
 
   status(t('wordsReady', { count: currentWords().length }));
-  input.addEventListener('input', () => status(t('wordsReady', { count: currentWords().length })));
+  void updateLongListAdvice();
+  input.addEventListener('input', () => {
+    status(t('wordsReady', { count: currentWords().length }));
+    void updateLongListAdvice();
+  });
   syncModeUI();
   void getAccount();
   if (readShareState(window.location).autoStart) queueMicrotask(() => window.startGame?.());

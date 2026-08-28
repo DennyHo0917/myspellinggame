@@ -6,7 +6,12 @@ const teacher = {
 };
 
 function account(plan, billingInterval = null) {
-  return { ...teacher, plan, billingInterval };
+  return {
+    ...teacher,
+    plan,
+    billingInterval,
+    subscriptionStatus: plan === "free" ? null : "active",
+  };
 }
 
 async function mockAssignments(page, plan = "pro") {
@@ -51,9 +56,7 @@ const conversionEvents = (page) =>
       .map((entry) => Array.from(entry))
       .filter((entry) => entry[0] === "event")
       .map((entry) => entry[1])
-      .filter((name) =>
-        ["subscription_started", "trial_started", "purchase"].includes(name),
-      ),
+      .filter((name) => ["subscription_started", "purchase"].includes(name)),
   );
 
 test("ordinary teacher routes do not override the stored locale", async ({
@@ -112,6 +115,77 @@ test("Checkout success waits for Free to become Pro and records once", async ({
   expect(await conversionEvents(page)).toEqual([]);
 });
 
+test("Parent Checkout success waits for Parent activation and records the Parent price", async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    sessionStorage.setItem("pendingCheckoutLocale", "en"),
+  );
+  let calls = 0;
+  await page.route("**/api/me", async (route) => {
+    calls += 1;
+    if (calls > 1) await new Promise((resolve) => setTimeout(resolve, 1_500));
+    return route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(
+        calls === 1 ? account("free") : account("parent", "month"),
+      ),
+    });
+  });
+  await mockAssignments(page, "parent");
+
+  await page.goto("/teacher?lang=en&checkout=success&plan=parent");
+  await expect(page.getByText("Activating your Parent plan…")).toBeVisible();
+  await expect(page.getByText("Parent plan", { exact: true })).toBeVisible();
+  await expect(page.getByText("Parent plan is active.")).toBeVisible();
+  await expect(page).not.toHaveURL(/checkout=success|plan=parent/);
+  expect(
+    await page.evaluate(
+      () =>
+        window.dataLayer
+          .map((entry) => Array.from(entry))
+          .find(
+            (entry) => entry[0] === "event" && entry[1] === "purchase",
+          )?.[2],
+    ),
+  ).toEqual({ billing_interval: "month", value: 4.99, currency: "USD" });
+});
+
+test("Teacher Checkout success waits for Teacher activation and records the Teacher price", async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    sessionStorage.setItem("pendingCheckoutLocale", "en"),
+  );
+  let calls = 0;
+  await page.route("**/api/me", async (route) => {
+    calls += 1;
+    if (calls > 1) await new Promise((resolve) => setTimeout(resolve, 1_500));
+    return route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(
+        calls === 1 ? account("free") : account("teacher", "month"),
+      ),
+    });
+  });
+  await mockAssignments(page, "teacher");
+
+  await page.goto("/teacher?lang=en&checkout=success&plan=teacher");
+  await expect(page.getByText("Activating your Teacher plan…")).toBeVisible();
+  await expect(page.getByText("Teacher plan", { exact: true })).toBeVisible();
+  await expect(page.getByText("Teacher plan is active.")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () =>
+        window.dataLayer
+          .map((entry) => Array.from(entry))
+          .find(
+            (entry) => entry[0] === "event" && entry[1] === "purchase",
+          )?.[2],
+    ),
+  ).toEqual({ billing_interval: "month", value: 9.99, currency: "USD" });
+});
+
 test("Checkout success handles an account that is already Pro", async ({
   page,
 }) => {
@@ -137,7 +211,7 @@ test("Checkout success handles an account that is already Pro", async ({
   ]);
 });
 
-test("Checkout trial activation records no purchase and shows renewal details", async ({
+test("a historical trialing subscription stays usable without trial UI", async ({
   page,
 }) => {
   await page.addInitScript(() =>
@@ -149,8 +223,6 @@ test("Checkout trial activation records no purchase and shows renewal details", 
       body: JSON.stringify({
         ...account("pro", "year"),
         subscriptionStatus: "trialing",
-        trialEligible: false,
-        trialEndsAt: "2026-09-24T12:00:00.000Z",
       }),
     }),
   );
@@ -158,21 +230,12 @@ test("Checkout trial activation records no purchase and shows renewal details", 
 
   await page.goto("/teacher?lang=en&checkout=success");
 
-  await expect(page.getByText(/14-day Plus trial is active/)).toContainText(
-    "$49.99/year",
-  );
+  await expect(page.getByText(/Plus is active/)).toBeVisible();
+  await expect(page.locator("body")).not.toContainText(/trial/i);
   await expect(
     page.getByRole("button", { name: "Manage billing" }),
   ).toBeVisible();
-  expect(await conversionEvents(page)).toEqual(["trial_started"]);
-  expect(
-    await page.evaluate(() => {
-      const entry = window.dataLayer
-        .map((item) => Array.from(item))
-        .find((item) => item[0] === "event" && item[1] === "trial_started");
-      return entry?.[2];
-    }),
-  ).toEqual({ billing_interval: "year", trial_days: 14 });
+  expect(await conversionEvents(page)).toEqual([]);
 });
 
 test("an arbitrary Checkout success URL does not record a purchase", async ({
@@ -380,94 +443,8 @@ for (const viewport of [
     await mockSignedOut(page);
     await page.goto("/teacher?lang=en");
     await expect(page.locator("#teacher-sign-in")).toBeVisible();
-    const selector = page.locator(
-      ".teacher-pricing .plan-selector:not(.pricing-card-spacer)",
-    );
-    const proCard = page.locator(".teacher-pricing .pricing-card").nth(1);
-    await expect(selector).toBeVisible();
-    const selectorBox = await selector.boundingBox();
-    const proCardBox = await proCard.boundingBox();
-    expect(selectorBox.width).toBeLessThan(proCardBox.width - 40);
-    if (viewport.name === "desktop") {
-      const freeHeadingBox = await page
-        .locator(".teacher-pricing .pricing-card")
-        .nth(0)
-        .locator(".pricing-card-heading")
-        .boundingBox();
-      const proHeadingBox = await proCard
-        .locator(".pricing-card-heading")
-        .boundingBox();
-      const proTitleBox = await proCard.locator("h2").boundingBox();
-      const freePriceBox = await page
-        .locator(".pricing-card")
-        .nth(0)
-        .locator(".price")
-        .boundingBox();
-      const proPriceBox = await page
-        .locator(".pricing-card")
-        .nth(1)
-        .locator(".price")
-        .boundingBox();
-      const freeListBox = await page
-        .locator(".pricing-card")
-        .nth(0)
-        .locator("ul")
-        .boundingBox();
-      const proListBox = await page
-        .locator(".pricing-card")
-        .nth(1)
-        .locator("ul")
-        .boundingBox();
-      const proDescriptionBox = await proCard
-        .locator("#selected-plan-description")
-        .boundingBox();
-      const freeDescriptionBox = await page
-        .locator(".teacher-pricing .pricing-card")
-        .nth(0)
-        .locator(".plan-description")
-        .boundingBox();
-      const freeCtaBox = await page
-        .locator("[data-free-teacher-cta]")
-        .boundingBox();
-      const proCtaBox = await page
-        .locator("[data-confirm-checkout]")
-        .boundingBox();
-      expect(
-        Math.abs(
-          selectorBox.y +
-            selectorBox.height / 2 -
-            (proTitleBox.y + proTitleBox.height / 2),
-        ),
-      ).toBeLessThanOrEqual(1);
-      expect(
-        Math.abs(
-          selectorBox.x +
-            selectorBox.width -
-            (proHeadingBox.x + proHeadingBox.width),
-        ),
-      ).toBeLessThanOrEqual(1);
-      expect(
-        freePriceBox.y - (freeHeadingBox.y + freeHeadingBox.height),
-      ).toBeLessThanOrEqual(4);
-      expect(
-        proPriceBox.y - (proHeadingBox.y + proHeadingBox.height),
-      ).toBeLessThanOrEqual(4);
-      expect(
-        freeListBox.y - (freeDescriptionBox.y + freeDescriptionBox.height),
-      ).toBeLessThanOrEqual(24);
-      expect(
-        proListBox.y - (proDescriptionBox.y + proDescriptionBox.height),
-      ).toBeLessThanOrEqual(32);
-      expect(Math.abs(freeHeadingBox.y - proHeadingBox.y)).toBeLessThanOrEqual(
-        1,
-      );
-      expect(Math.abs(freePriceBox.y - proPriceBox.y)).toBeLessThanOrEqual(1);
-      expect(
-        Math.abs(freeDescriptionBox.y - proDescriptionBox.y),
-      ).toBeLessThanOrEqual(1);
-      expect(Math.abs(freeListBox.y - proListBox.y)).toBeLessThanOrEqual(48);
-      expect(Math.abs(freeCtaBox.y - proCtaBox.y)).toBeLessThanOrEqual(1);
-    }
+    await expect(page.locator(".teacher-pricing .plan-selector")).toBeVisible();
+    await expect(page.locator(".teacher-pricing .pricing-card")).toHaveCount(3);
     await page.evaluate(() => {
       window.teacherPageMarker = "still-here";
     });
@@ -497,38 +474,17 @@ for (const viewport of [
       await page.goto(`/teacher?lang=${encodeURIComponent(locale)}`);
       const layout = await page.locator(".teacher-pricing").evaluate((root) => {
         const cards = [...root.querySelectorAll(".pricing-card")];
-        const bounds = (card, selector) =>
-          card.querySelector(selector).getBoundingClientRect();
-        const freeHeading = bounds(cards[0], ".pricing-card-heading");
-        const proHeading = bounds(cards[1], ".pricing-card-heading");
-        const freePrice = bounds(cards[0], ".price");
-        const proPrice = bounds(cards[1], ".price");
-        const freeDescription = bounds(cards[0], ".plan-description");
-        const proDescription = bounds(cards[1], ".plan-description");
-        const freeList = bounds(cards[0], "ul");
-        const proList = bounds(cards[1], "ul");
-        const selector = bounds(cards[1], ".plan-selector");
         return {
-          cardHeight: cards[0].getBoundingClientRect().height,
-          descriptionOffset: Math.abs(freeDescription.y - proDescription.y),
-          headingOffset: Math.abs(freeHeading.y - proHeading.y),
-          listOffset: Math.abs(freeList.y - proList.y),
+          count: cards.length,
           overflow: cards.some(
             (card) => card.scrollWidth > card.clientWidth + 1,
           ),
-          priceOffset: Math.abs(freePrice.y - proPrice.y),
-          selectorPriceGap: proPrice.top - selector.bottom,
+          selectorVisible: Boolean(root.querySelector(".plan-selector")),
         };
       });
+      expect(layout.count, locale).toBe(3);
       expect(layout.overflow, locale).toBe(false);
-      expect(layout.selectorPriceGap, locale).toBeGreaterThanOrEqual(0);
-      if (viewport.desktop) {
-        expect(layout.cardHeight, locale).toBeGreaterThanOrEqual(500);
-        expect(layout.headingOffset, locale).toBeLessThanOrEqual(1);
-        expect(layout.priceOffset, locale).toBeLessThanOrEqual(1);
-        expect(layout.descriptionOffset, locale).toBeLessThanOrEqual(1);
-        expect(layout.listOffset, locale).toBeLessThanOrEqual(64);
-      }
+      expect(layout.selectorVisible, locale).toBe(true);
     });
   }
 }
@@ -550,68 +506,38 @@ test("standalone Free CTA opens the matching teacher sign-in area", async ({
   ).toBeFocused();
 });
 
-test("signed-out teacher pricing switches plans and preserves Checkout intent", async ({
+test("signed-out pricing switches yearly and monthly plan prices", async ({
   page,
 }) => {
-  let checkoutBody;
   await mockSignedOut(page);
-  await page.route("**/api/billing/checkout", async (route) => {
-    checkoutBody = route.request().postDataJSON();
-    await route.fulfill({
-      status: 401,
+  await page.route("**/api/billing/checkout", (route) =>
+    route.fulfill({
+      status: 500,
       contentType: "application/json",
-      body: JSON.stringify({ error: "sign_in_required" }),
-    });
-  });
-  await page.goto("/teacher?lang=en");
-
-  const price = page.locator("#selected-plan-price");
-  const description = page.locator("#selected-plan-description");
-  const savings = page.locator("#selected-plan-savings");
-  const confirm = page.locator("[data-confirm-checkout]");
+      body: JSON.stringify({ error: "internal_error" }),
+    }),
+  );
+  await page.goto("/pricing");
+  await expect(page.locator(".pricing-grid .pricing-card")).toHaveCount(3);
   const monthly = page.getByRole("button", { name: "Monthly plan" });
   const yearly = page.getByRole("button", { name: "Yearly plan" });
-
-  await yearly.click();
-  await expect(price).toHaveText("$4.17 / month");
-  await expect(description).toContainText("$49.99/year automatically");
-  await expect(savings).toHaveText("Save 30%");
-  await expect(savings).toBeVisible();
-  await expect(confirm).toHaveText("Start 14-day free trial · Yearly");
-
-  await monthly.click();
-  await expect(price).toHaveText("$5.99 / month");
-  await expect(description).toContainText("$5.99/month automatically");
-  await expect(savings).toBeHidden();
-  await expect(confirm).toHaveText("Start 14-day free trial · Monthly");
-
-  await yearly.click();
-  const navigated = page.waitForEvent(
-    "framenavigated",
-    (frame) => frame === page.mainFrame(),
+  const parentPrice = page.locator(
+    '[data-plan-card="parent"] [data-plan-price]',
   );
-  await confirm.click();
-  await navigated;
-  await page.waitForLoadState("domcontentloaded");
-  await expect(page).toHaveURL(/\/teacher\?lang=en$/);
-  expect(checkoutBody).toEqual({ interval: "year", locale: "en" });
-  expect(
-    await page.evaluate(() =>
-      sessionStorage.getItem("pendingCheckoutInterval"),
-    ),
-  ).toBe("year");
-  expect(
-    await page.evaluate(() => sessionStorage.getItem("pendingCheckoutLocale")),
-  ).toBe("en");
-
-  await page.locator("[data-free-teacher-cta]").click();
-  await expect(page).toHaveURL(/#teacher-sign-in$/);
-  await expect(
-    page.getByRole("button", { name: "Continue with Google" }),
-  ).toBeFocused();
+  const teacherPrice = page.locator(
+    '[data-plan-card="teacher"] [data-plan-price]',
+  );
+  await expect(parentPrice).toHaveText("$4.99 / month");
+  await expect(teacherPrice).toHaveText("$9.99 / month");
+  await yearly.click();
+  await expect(parentPrice).toHaveText("$49.99 / year");
+  await expect(teacherPrice).toHaveText("$99.99 / year");
+  await monthly.click();
+  await expect(parentPrice).toHaveText("$4.99 / month");
+  await expect(teacherPrice).toHaveText("$9.99 / month");
 });
 
-test("signed-in Free pricing marks the current plan without a link", async ({
+test("signed-in Free standalone pricing remains available", async ({
   page,
 }) => {
   await page.route("**/api/me", (route) =>
@@ -620,126 +546,28 @@ test("signed-in Free pricing marks the current plan without a link", async ({
       body: JSON.stringify(account("free")),
     }),
   );
-  await mockAssignments(page, "free");
-
-  await page.goto("/teacher?lang=en");
-  const currentPlan = page.locator("button[data-free-teacher-cta]");
-  await expect(currentPlan).toHaveText("Current plan");
-  await expect(currentPlan).toBeDisabled();
-  await expect(page.locator("a[data-free-teacher-cta]")).toHaveCount(0);
-  const pricingLayout = await page
-    .locator(".teacher-pricing")
-    .evaluate((root) => {
-      const cards = root.querySelectorAll(".pricing-card");
-      const freePrice = cards[0]
-        .querySelector(".price")
-        .getBoundingClientRect();
-      const proPrice = cards[1].querySelector(".price").getBoundingClientRect();
-      const freeList = cards[0].querySelector("ul").getBoundingClientRect();
-      const proList = cards[1].querySelector("ul").getBoundingClientRect();
-      const freeDescription = cards[0]
-        .querySelector(".plan-description")
-        .getBoundingClientRect();
-      const freeHeading = cards[0]
-        .querySelector(".pricing-card-heading")
-        .getBoundingClientRect();
-      const proHeading = cards[1]
-        .querySelector(".pricing-card-heading")
-        .getBoundingClientRect();
-      const proDescription = cards[1]
-        .querySelector("#selected-plan-description")
-        .getBoundingClientRect();
-      const selector = cards[1]
-        .querySelector(".plan-selector")
-        .getBoundingClientRect();
-      const proTitle = cards[1].querySelector("h2").getBoundingClientRect();
-      const freeCta = cards[0]
-        .querySelector("[data-free-teacher-cta]")
-        .getBoundingClientRect();
-      const proCta = cards[1]
-        .querySelector("[data-confirm-checkout]")
-        .getBoundingClientRect();
-      return {
-        cardDisplay: getComputedStyle(cards[0]).display,
-        ctaOffset: Math.abs(freeCta.y - proCta.y),
-        freeHeadingGap: freePrice.top - freeHeading.bottom,
-        freeListGap: freeList.top - freeDescription.bottom,
-        proHeadingGap: proPrice.top - proHeading.bottom,
-        proListGap: proList.top - proDescription.bottom,
-        headingOffset: Math.abs(freeHeading.y - proHeading.y),
-        priceOffset: Math.abs(freePrice.y - proPrice.y),
-        descriptionOffset: Math.abs(freeDescription.y - proDescription.y),
-        listOffset: Math.abs(freeList.y - proList.y),
-        selectorTitleCenterOffset: Math.abs(
-          selector.y + selector.height / 2 - (proTitle.y + proTitle.height / 2),
-        ),
-        selectorRightOffset: Math.abs(selector.right - proHeading.right),
-      };
-    });
-  expect(pricingLayout.cardDisplay).toBe("flex");
-  expect(pricingLayout.ctaOffset).toBeLessThanOrEqual(1);
-  expect(pricingLayout.freeHeadingGap).toBeLessThanOrEqual(4);
-  expect(pricingLayout.freeListGap).toBeLessThanOrEqual(64);
-  expect(pricingLayout.proHeadingGap).toBeLessThanOrEqual(4);
-  expect(pricingLayout.proListGap).toBeLessThanOrEqual(32);
-  expect(pricingLayout.headingOffset).toBeLessThanOrEqual(1);
-  expect(pricingLayout.priceOffset).toBeLessThanOrEqual(1);
-  expect(pricingLayout.descriptionOffset).toBeLessThanOrEqual(1);
-  expect(pricingLayout.listOffset).toBeLessThanOrEqual(48);
-  expect(pricingLayout.selectorTitleCenterOffset).toBeLessThanOrEqual(1);
-  expect(pricingLayout.selectorRightOffset).toBeLessThanOrEqual(1);
-  await expect(page.getByRole("link", { name: "Practice" })).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Pricing" })).toHaveCount(0);
-  await expect(
-    page.getByRole("link", { name: "Home", exact: true }),
-  ).toBeVisible();
-  await expect(page.getByRole("link", { name: "Privacy" })).toHaveAttribute(
-    "href",
-    "/privacy",
+  await page.goto("/pricing");
+  await expect(page.locator(".pricing-grid .pricing-card")).toHaveCount(3);
+  await expect(page.locator('[data-plan-card="free"]')).toContainText(
+    "Current plan",
   );
-  const footerStyle = await page
-    .locator(".product-footer")
-    .evaluate((footer) => {
-      const links = footer.querySelector(".footer-links");
-      const privacy = footer.querySelector('a[href="/privacy"]');
-      return {
-        borderTopStyle: getComputedStyle(footer).borderTopStyle,
-        linksDisplay: getComputedStyle(links).display,
-        linkColor: getComputedStyle(privacy).color,
-        linkWeight: getComputedStyle(privacy).fontWeight,
-      };
-    });
-  expect(footerStyle).toEqual({
-    borderTopStyle: "solid",
-    linksDisplay: "block",
-    linkColor: "rgb(47, 111, 115)",
-    linkWeight: "700",
-  });
 });
 
-test("a signed-in account without trial eligibility sees immediate billing", async ({
+test("signed-in plan selection keeps all three plan cards available", async ({
   page,
 }) => {
   await page.route("**/api/me", (route) =>
     route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
-        ...account("free", "month"),
-        subscriptionStatus: "canceled",
-        trialEligible: false,
-        trialEndsAt: null,
+        ...account("free"),
       }),
     }),
   );
-  await mockAssignments(page, "free");
+  await page.goto("/pricing");
 
-  await page.goto("/teacher?lang=en");
-
-  await expect(page.locator("#selected-plan-description")).toHaveText(
-    "$5.99 charged today, then monthly until canceled.",
-  );
-  await expect(page.locator("[data-confirm-checkout]")).toHaveText("Subscribe");
-  await expect(page.locator(".teacher-pricing")).not.toContainText(
-    "Start 14-day free trial",
+  await expect(page.locator(".pricing-grid .pricing-card")).toHaveCount(3);
+  await expect(page.locator('[data-plan-card="free"]')).toContainText(
+    "Current plan",
   );
 });

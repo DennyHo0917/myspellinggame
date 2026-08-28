@@ -1,11 +1,15 @@
 import Stripe from "stripe";
-import { HttpError } from "./domain";
+import { HttpError, resolvePlan } from "./domain";
 
 export interface StripeEnv {
   STRIPE_SECRET_KEY: string;
   STRIPE_WEBHOOK_SECRET: string;
   STRIPE_PRICE_MONTHLY: string;
   STRIPE_PRICE_YEARLY: string;
+  STRIPE_PARENT_PRICE_MONTHLY: string;
+  STRIPE_PARENT_PRICE_YEARLY: string;
+  STRIPE_TEACHER_PRICE_MONTHLY: string;
+  STRIPE_TEACHER_PRICE_YEARLY: string;
 }
 
 const CHECKOUT_SESSION_DURATION_SECONDS = 35 * 60;
@@ -16,15 +20,10 @@ type SubscriptionAccess = {
   stripe_price_id: string | null;
 };
 
-type TrialAccess = {
-  trial_used_at: string | null;
-  stripe_customer_id: string | null;
-  stripe_subscription_id: string | null;
-};
-
 type CheckoutOptions = {
   now?: Date;
   locale?: string;
+  plan?: "parent" | "teacher";
   createSession?: (
     params: Stripe.Checkout.SessionCreateParams,
     options: Stripe.RequestOptions,
@@ -50,10 +49,49 @@ const STRIPE_LOCALE_PATHS = {
 
 type StripeLocale = keyof typeof STRIPE_LOCALE_PATHS;
 
+type CheckoutPlan = "parent" | "teacher" | "legacy";
+
 function stripeLocale(value?: string): StripeLocale {
   return value && Object.hasOwn(STRIPE_LOCALE_PATHS, value)
     ? (value as StripeLocale)
     : "en";
+}
+
+function checkoutPrice(
+  env: StripeEnv,
+  plan: CheckoutPlan,
+  interval: "month" | "year",
+) {
+  if (plan === "parent")
+    return interval === "month"
+      ? env.STRIPE_PARENT_PRICE_MONTHLY
+      : env.STRIPE_PARENT_PRICE_YEARLY;
+  if (plan === "teacher")
+    return interval === "month"
+      ? env.STRIPE_TEACHER_PRICE_MONTHLY
+      : env.STRIPE_TEACHER_PRICE_YEARLY;
+  return interval === "month"
+    ? env.STRIPE_PRICE_MONTHLY
+    : env.STRIPE_PRICE_YEARLY;
+}
+
+function configuredPricePlan(priceId: string, env: StripeEnv) {
+  if (
+    priceId === env.STRIPE_PARENT_PRICE_MONTHLY ||
+    priceId === env.STRIPE_PARENT_PRICE_YEARLY
+  )
+    return "parent";
+  if (
+    priceId === env.STRIPE_TEACHER_PRICE_MONTHLY ||
+    priceId === env.STRIPE_TEACHER_PRICE_YEARLY
+  )
+    return "teacher";
+  if (
+    priceId === env.STRIPE_PRICE_MONTHLY ||
+    priceId === env.STRIPE_PRICE_YEARLY
+  )
+    return "legacy";
+  return null;
 }
 
 export function hasActiveSubscription(
@@ -67,17 +105,7 @@ export function hasActiveSubscription(
     (!subscription.current_period_end ||
       subscription.current_period_end > now.toISOString()) &&
     subscription.stripe_price_id &&
-    (subscription.stripe_price_id === env.STRIPE_PRICE_MONTHLY ||
-      subscription.stripe_price_id === env.STRIPE_PRICE_YEARLY),
-  );
-}
-
-export function isTrialEligible(subscription: TrialAccess | null) {
-  return Boolean(
-    !subscription ||
-    (!subscription.trial_used_at &&
-      !subscription.stripe_customer_id &&
-      !subscription.stripe_subscription_id),
+    configuredPricePlan(subscription.stripe_price_id, env),
   );
 }
 
@@ -150,8 +178,8 @@ export async function createCheckout(
   origin: string,
   options: CheckoutOptions = {},
 ) {
-  const price =
-    interval === "month" ? env.STRIPE_PRICE_MONTHLY : env.STRIPE_PRICE_YEARLY;
+  const plan = options.plan ?? "teacher";
+  const price = checkoutPrice(env, plan, interval);
   if (!price)
     throw new HttpError(
       503,
@@ -161,7 +189,7 @@ export async function createCheckout(
   const subscription = await db
     .prepare(
       `SELECT status, current_period_end, stripe_price_id, stripe_customer_id,
-              stripe_subscription_id, trial_used_at
+              stripe_subscription_id
        FROM subscriptions WHERE user_id = ?`,
     )
     .bind(user.id)
@@ -171,7 +199,6 @@ export async function createCheckout(
       stripe_price_id: string | null;
       stripe_customer_id: string | null;
       stripe_subscription_id: string | null;
-      trial_used_at: string | null;
     }>();
   const now = options.now ?? new Date();
   if (hasActiveSubscription(subscription ?? null, env, now)) {
@@ -181,7 +208,6 @@ export async function createCheckout(
       "This teacher already has an active subscription.",
     );
   }
-  const trialGranted = isTrialEligible(subscription ?? null);
   const nowIso = now.toISOString();
   let stripeClient: Stripe | null = null;
   const checkoutSessions = () => {
@@ -270,7 +296,7 @@ export async function createCheckout(
       {
         mode: "subscription",
         line_items: [{ price, quantity: 1 }],
-        success_url: `${origin}/teacher?lang=${locale}&checkout=success&interval=${interval}`,
+        success_url: `${origin}/teacher?lang=${locale}&checkout=success&interval=${interval}&plan=${plan}`,
         cancel_url: `${origin}${STRIPE_LOCALE_PATHS[locale]}/pricing?checkout=cancelled`,
         client_reference_id: user.id,
         customer: subscription?.stripe_customer_id || undefined,
@@ -280,15 +306,14 @@ export async function createCheckout(
         payment_method_collection: "always",
         metadata: {
           owner_user_id: user.id,
+          plan,
           billing_interval: interval,
-          trial_granted: String(trialGranted),
         },
         subscription_data: {
-          ...(trialGranted ? { trial_period_days: 14 } : {}),
           metadata: {
             owner_user_id: user.id,
+            plan,
             billing_interval: interval,
-            trial_granted: String(trialGranted),
           },
         },
         allow_promotion_codes: true,
@@ -371,19 +396,35 @@ async function applySubscription(
   if (!ownerUserId) return;
   const priceId = subscription.items?.data?.[0]?.price?.id ?? "";
   const interval = subscription.items?.data?.[0]?.price?.recurring?.interval;
-  const configuredPrice =
-    priceId === env.STRIPE_PRICE_MONTHLY || priceId === env.STRIPE_PRICE_YEARLY;
+  const configuredPlan = configuredPricePlan(priceId, env);
   const active =
-    configuredPrice &&
+    configuredPlan &&
     (subscription.status === "active" || subscription.status === "trialing");
+  const existing = await db
+    .prepare(
+      `SELECT s.plan, u.workspace_type FROM user u
+       LEFT JOIN subscriptions s ON s.user_id = u.id WHERE u.id = ?`,
+    )
+    .bind(ownerUserId)
+    .first<{ plan: string | null; workspace_type: string | null }>();
+  const plan =
+    active && configuredPlan === "parent"
+      ? "parent"
+      : active && configuredPlan === "teacher"
+        ? "teacher"
+        : resolvePlan(
+            existing?.plan,
+            existing?.workspace_type,
+            Boolean(active),
+          );
   const now = new Date().toISOString();
   await db
     .prepare(
       `INSERT INTO subscriptions (
          user_id, plan, status, billing_interval, stripe_customer_id,
          stripe_subscription_id, stripe_price_id, current_period_end,
-         cancel_at_period_end, trial_used_at, updated_at
-       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         cancel_at_period_end, updated_at
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(user_id) DO UPDATE SET
          plan = excluded.plan,
          status = excluded.status,
@@ -393,12 +434,11 @@ async function applySubscription(
          stripe_price_id = excluded.stripe_price_id,
          current_period_end = excluded.current_period_end,
          cancel_at_period_end = excluded.cancel_at_period_end,
-         trial_used_at = COALESCE(subscriptions.trial_used_at, excluded.trial_used_at),
          updated_at = excluded.updated_at`,
     )
     .bind(
       ownerUserId,
-      active ? "pro" : "free",
+      plan,
       subscription.status,
       interval === "year" ? "year" : "month",
       objectId(subscription.customer),
@@ -406,7 +446,6 @@ async function applySubscription(
       priceId,
       subscriptionPeriodEnd(subscription),
       subscription.cancel_at_period_end ? 1 : 0,
-      subscription.status === "trialing" ? now : null,
       now,
     )
     .run();
@@ -420,43 +459,44 @@ async function applyCheckout(
   const ownerUserId =
     session.client_reference_id || session.metadata?.owner_user_id;
   if (!ownerUserId) return;
-  const existing = await db
-    .prepare(
-      `SELECT trial_used_at, stripe_customer_id, stripe_subscription_id
-       FROM subscriptions WHERE user_id = ?`,
-    )
-    .bind(ownerUserId)
-    .first<TrialAccess>();
   const now = new Date().toISOString();
-  const trialUsedAt =
-    session.metadata?.trial_granted === "true" &&
-    isTrialEligible(existing ?? null)
-      ? now
-      : null;
+  const metadataPlan = session.metadata?.plan;
+  const plan =
+    metadataPlan === "parent" || metadataPlan === "teacher"
+      ? metadataPlan
+      : "free";
+  const pricePlan =
+    metadataPlan === "parent"
+      ? "parent"
+      : metadataPlan === "teacher"
+        ? "teacher"
+        : "legacy";
   await db
     .prepare(
       `INSERT INTO subscriptions (
          user_id, plan, status, billing_interval, stripe_customer_id,
          stripe_subscription_id, stripe_price_id, current_period_end,
-         cancel_at_period_end, trial_used_at, updated_at
-       ) VALUES (?, 'free', 'pending', ?, ?, ?, ?, NULL, 0, ?, ?)
+         cancel_at_period_end, updated_at
+       ) VALUES (?, ?, 'pending', ?, ?, ?, ?, NULL, 0, ?)
        ON CONFLICT(user_id) DO UPDATE SET
+         plan = excluded.plan,
          billing_interval = excluded.billing_interval,
          stripe_customer_id = COALESCE(excluded.stripe_customer_id, subscriptions.stripe_customer_id),
          stripe_subscription_id = COALESCE(excluded.stripe_subscription_id, subscriptions.stripe_subscription_id),
          stripe_price_id = COALESCE(excluded.stripe_price_id, subscriptions.stripe_price_id),
-         trial_used_at = COALESCE(subscriptions.trial_used_at, excluded.trial_used_at),
          updated_at = excluded.updated_at`,
     )
     .bind(
       ownerUserId,
+      plan,
       session.metadata?.billing_interval === "year" ? "year" : "month",
       objectId(session.customer),
       objectId(session.subscription),
-      session.metadata?.billing_interval === "year"
-        ? env.STRIPE_PRICE_YEARLY
-        : env.STRIPE_PRICE_MONTHLY,
-      trialUsedAt,
+      checkoutPrice(
+        env,
+        pricePlan,
+        session.metadata?.billing_interval === "year" ? "year" : "month",
+      ),
       now,
     )
     .run();
@@ -482,11 +522,24 @@ async function applyInvoiceStatus(
   await db
     .prepare(
       `UPDATE subscriptions SET status = ?,
-       plan = CASE WHEN ? = 'active' AND stripe_price_id IN (?, ?) THEN 'pro' ELSE 'free' END,
+       plan = CASE
+         WHEN ? = 'active' AND stripe_price_id IN (?, ?) THEN 'parent'
+         WHEN ? = 'active' AND stripe_price_id IN (?, ?) THEN 'teacher'
+         WHEN ? = 'active' AND stripe_price_id IN (?, ?) THEN
+         CASE WHEN plan IN ('parent', 'teacher') THEN plan
+              WHEN (SELECT workspace_type FROM user WHERE id = subscriptions.user_id) = 'teacher'
+              THEN 'teacher' ELSE 'parent' END
+         ELSE 'free' END,
        updated_at = ? WHERE stripe_subscription_id = ? OR stripe_customer_id = ?`,
     )
     .bind(
       status,
+      status,
+      env.STRIPE_PARENT_PRICE_MONTHLY || "",
+      env.STRIPE_PARENT_PRICE_YEARLY || "",
+      status,
+      env.STRIPE_TEACHER_PRICE_MONTHLY || "",
+      env.STRIPE_TEACHER_PRICE_YEARLY || "",
       status,
       env.STRIPE_PRICE_MONTHLY,
       env.STRIPE_PRICE_YEARLY,

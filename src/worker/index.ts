@@ -15,6 +15,7 @@ import {
   monthStart,
   normalizeWord,
   randomPublicId,
+  resolvePlan,
   scoreAnswers,
   validateAttemptId,
   validateDeadline,
@@ -33,7 +34,6 @@ import {
   createCheckout,
   createPortal,
   hasActiveSubscription,
-  isTrialEligible,
   verifyAndProcessWebhook,
   type StripeEnv,
 } from "./stripe";
@@ -102,6 +102,13 @@ type LearnerRow = {
   join_pin_hash?: string | null;
   join_pin?: string | null;
 };
+
+function ownerLearner(learner: LearnerRow, plan: Plan) {
+  const result = { ...learner };
+  delete result.join_pin_hash;
+  if (plan !== "teacher") delete result.join_pin;
+  return result;
+}
 
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
 
@@ -291,14 +298,12 @@ async function adminStats(env: Env, now = new Date()) {
     stripe_price_id: string | null;
   }>();
   let proUsers = 0;
-  let trialingUsers = 0;
   let activePaidUsers = 0;
   let monthlyUsers = 0;
   let yearlyUsers = 0;
   for (const subscription of subscriptions.results) {
     if (!hasActiveSubscription(subscription, env, now)) continue;
     proUsers += 1;
-    if (subscription.status === "trialing") trialingUsers += 1;
     if (subscription.status === "active") activePaidUsers += 1;
     if (subscription.billing_interval === "month") monthlyUsers += 1;
     if (subscription.billing_interval === "year") yearlyUsers += 1;
@@ -307,7 +312,6 @@ async function adminStats(env: Env, now = new Date()) {
     totalUsers: Number(summary?.totalUsers ?? 0),
     googleUsers: Number(summary?.googleUsers ?? 0),
     proUsers,
-    trialingUsers,
     activePaidUsers,
     monthlyUsers,
     yearlyUsers,
@@ -340,8 +344,8 @@ async function adminUsers(env: Env, url: URL) {
     `SELECT u.id, u.name, u.email, u.createdAt,
             (SELECT GROUP_CONCAT(DISTINCT a.providerId)
              FROM account a WHERE a.userId = u.id) AS loginProvider,
-            s.status, s.billing_interval, s.current_period_end,
-            s.stripe_price_id, s.trial_used_at
+            u.workspace_type, s.plan, s.status, s.billing_interval, s.current_period_end,
+            s.stripe_price_id
      FROM user u
      LEFT JOIN subscriptions s ON s.user_id = u.id
      ${where}
@@ -359,11 +363,12 @@ async function adminUsers(env: Env, url: URL) {
       email: string;
       createdAt: string;
       loginProvider: string | null;
+      plan: string | null;
+      workspace_type: "family" | "teacher" | null;
       status: string | null;
       billing_interval: "month" | "year" | null;
       current_period_end: string | null;
       stripe_price_id: string | null;
-      trial_used_at: string | null;
     }>();
   return {
     users: rows.results.map((row) => ({
@@ -371,19 +376,20 @@ async function adminUsers(env: Env, url: URL) {
       name: row.name,
       email: row.email,
       loginProvider: row.loginProvider,
-      plan: hasActiveSubscription(
-        {
-          status: row.status ?? "",
-          current_period_end: row.current_period_end,
-          stripe_price_id: row.stripe_price_id,
-        },
-        env,
-      )
-        ? "plus"
-        : "free",
+      plan: resolvePlan(
+        row.plan,
+        row.workspace_type,
+        hasActiveSubscription(
+          {
+            status: row.status ?? "",
+            current_period_end: row.current_period_end,
+            stripe_price_id: row.stripe_price_id,
+          },
+          env,
+        ),
+      ),
       subscriptionStatus: row.status,
       billingInterval: row.billing_interval,
-      trialUsed: Boolean(row.trial_used_at),
       currentPeriodEnd: row.current_period_end,
       createdAt: row.createdAt,
     })),
@@ -399,18 +405,30 @@ async function getPlan(
   now = new Date(),
 ): Promise<Plan> {
   const subscription = await env.DB.prepare(
-    `SELECT status, current_period_end, stripe_price_id FROM subscriptions
-       WHERE user_id = ?`,
+    `SELECT s.plan, s.status, s.current_period_end, s.stripe_price_id,
+            u.workspace_type
+       FROM user u LEFT JOIN subscriptions s ON s.user_id = u.id
+       WHERE u.id = ?`,
   )
     .bind(userId)
     .first<{
-      status: string;
+      plan: string | null;
+      status: string | null;
       current_period_end: string | null;
       stripe_price_id: string | null;
+      workspace_type: "family" | "teacher" | null;
     }>();
-  return hasActiveSubscription(subscription ?? null, env, now)
-    ? "plus"
-    : "free";
+  return resolvePlan(
+    subscription?.plan,
+    subscription?.workspace_type,
+    hasActiveSubscription(
+      subscription
+        ? { ...subscription, status: subscription.status ?? "" }
+        : null,
+      env,
+      now,
+    ),
+  );
 }
 
 async function matchSentenceLibrary(
@@ -771,8 +789,8 @@ async function listLearners(db: D1Database, ownerUserId: string, plan: Plan) {
        ORDER BY l.archived, l.updated_at DESC`,
     )
     .bind(historyCutoff(plan), ownerUserId)
-    .all();
-  return learners.results;
+    .all<LearnerRow>();
+  return learners.results.map((learner) => ownerLearner(learner, plan));
 }
 
 async function createLearner(
@@ -831,7 +849,7 @@ async function createLearner(
     join_pin_hash: joinPinHash,
     join_pin: joinPin,
   } satisfies LearnerRow;
-  return learner;
+  return ownerLearner(learner, plan);
 }
 
 async function updateLearner(
@@ -962,7 +980,10 @@ async function learnerMastery(db: D1Database, learner: LearnerRow, plan: Plan) {
     0,
   );
   return {
-    learner: { ...learner, archived: Boolean(learner.archived) },
+    learner: {
+      ...ownerLearner(learner, plan),
+      archived: Boolean(learner.archived),
+    },
     historyDays: PLAN_LIMITS[plan].historyDays,
     smartReview: PLAN_LIMITS[plan].smartReview,
     todaysReview: {
@@ -1757,13 +1778,13 @@ export async function handleRequest(
       throw new HttpError(401, "invalid_join", "The PIN is invalid.");
     const hash = await hashPin(body.pin);
     const learner = await env.DB.prepare(
-      `SELECT l.public_id FROM learners l JOIN user u ON u.id = l.owner_user_id
-       WHERE u.class_public_id = ? AND u.workspace_type = 'teacher'
-         AND l.join_pin_hash = ? AND l.archived = 0`,
+      `SELECT l.public_id, l.owner_user_id
+       FROM learners l JOIN user u ON u.id = l.owner_user_id
+       WHERE u.class_public_id = ? AND l.join_pin_hash = ? AND l.archived = 0`,
     )
       .bind(joinMatch[1], hash)
-      .first<{ public_id: string }>();
-    if (!learner)
+      .first<{ public_id: string; owner_user_id: string }>();
+    if (!learner || (await getPlan(env, learner.owner_user_id)) !== "teacher")
       throw new HttpError(401, "invalid_join", "The PIN is invalid.");
     return json({ learnerPublicId: learner.public_id });
   }
@@ -1771,23 +1792,20 @@ export async function handleRequest(
   if (url.pathname === "/api/me" && method === "GET") {
     const user = await requireTeacher(env, request, getSession);
     const subscription = await env.DB.prepare(
-      `SELECT status, billing_interval, current_period_end, stripe_price_id,
-              stripe_customer_id, stripe_subscription_id, trial_used_at
+      `SELECT plan, status, billing_interval, current_period_end, stripe_price_id,
+              stripe_customer_id, stripe_subscription_id
        FROM subscriptions WHERE user_id = ?`,
     )
       .bind(user.id)
       .first<{
+        plan: string;
         status: string;
         billing_interval: "month" | "year" | null;
         current_period_end: string | null;
         stripe_price_id: string | null;
         stripe_customer_id: string | null;
         stripe_subscription_id: string | null;
-        trial_used_at: string | null;
       }>();
-    const plan = hasActiveSubscription(subscription ?? null, env)
-      ? "plus"
-      : "free";
     const workspace = await env.DB.prepare(
       "SELECT workspace_type, class_public_id FROM user WHERE id = ?",
     )
@@ -1796,23 +1814,25 @@ export async function handleRequest(
         workspace_type: "family" | "teacher" | null;
         class_public_id: string | null;
       }>();
-    if (workspace?.workspace_type === "teacher")
-      workspace.class_public_id = await ensureTeacherJoinIdentity(
-        env.DB,
-        user.id,
-        overrides.pinGenerator,
-      );
+    const plan = resolvePlan(
+      subscription?.plan,
+      workspace?.workspace_type,
+      hasActiveSubscription(subscription ?? null, env),
+    );
+    const classPublicId =
+      plan === "teacher"
+        ? await ensureTeacherJoinIdentity(
+            env.DB,
+            user.id,
+            overrides.pinGenerator,
+          )
+        : null;
     return json({
       user: { id: user.id, name: user.name, email: user.email },
       billingInterval: subscription?.billing_interval || null,
       subscriptionStatus: subscription?.status || null,
-      trialEligible: isTrialEligible(subscription ?? null),
-      trialEndsAt:
-        subscription?.status === "trialing"
-          ? subscription.current_period_end
-          : null,
       workspaceType: workspace?.workspace_type ?? null,
-      classPublicId: workspace?.class_public_id ?? null,
+      classPublicId,
       ...(await usage(env.DB, user.id, plan)),
     });
   }
@@ -1924,7 +1944,12 @@ export async function handleRequest(
       );
     if (method === "PATCH") {
       requireSameOrigin(request);
-      return json(await updateLearner(env.DB, request, learner));
+      return json(
+        ownerLearner(
+          await updateLearner(env.DB, request, learner),
+          await getPlan(env, user.id),
+        ),
+      );
     }
   }
 
@@ -2035,13 +2060,27 @@ export async function handleRequest(
         "Choose monthly or yearly billing.",
       );
     }
+    if (
+      body.plan !== undefined &&
+      body.plan !== "parent" &&
+      body.plan !== "teacher"
+    ) {
+      throw new HttpError(
+        400,
+        "invalid_plan",
+        "Choose a supported subscription plan.",
+      );
+    }
     const checkout = await createCheckout(
       env,
       env.DB,
       user,
       body.interval,
       url.origin,
-      { locale: typeof body.locale === "string" ? body.locale : undefined },
+      {
+        locale: typeof body.locale === "string" ? body.locale : undefined,
+        plan: body.plan === "parent" ? "parent" : "teacher",
+      },
     );
     return json({ url: checkout.url });
   }
@@ -2074,7 +2113,7 @@ export async function handleRequest(
   return env.ASSETS.fetch(request);
 }
 
-async function scheduled(_controller: ScheduledController, env: Env) {
+export async function scheduled(_controller: ScheduledController, env: Env) {
   const now = new Date();
   const staleAssignments = new Date(
     now.getTime() - 366 * 86_400_000,
@@ -2083,7 +2122,7 @@ async function scheduled(_controller: ScheduledController, env: Env) {
     Date.UTC(now.getUTCFullYear() - 1, now.getUTCMonth(), 1),
   ).toISOString();
   await env.DB.batch([
-    env.DB.prepare("DELETE FROM attempts WHERE retention_expires_at <= ?").bind(
+    env.DB.prepare("DELETE FROM attempts WHERE retention_expires_at < ?").bind(
       now.toISOString(),
     ),
     env.DB.prepare("DELETE FROM assignments WHERE expires_at <= ?").bind(

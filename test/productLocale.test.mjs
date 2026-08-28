@@ -16,13 +16,12 @@ test("pricing paths stay inside the active product locale", () => {
   assert.equal(productPagePath("pricing", "zh"), "/zh/pricing");
 });
 
-test("word-limit copy states Free and Plus list limits in every locale", () => {
+test("word-limit copy states Free and paid list limits in every locale", () => {
   for (const [locale] of PRODUCT_LOCALES) {
     const copy = productMessages(locale);
+    assert.match(copy.wordLimit, /30/);
     assert.match(copy.wordLimit, /40/);
-    assert.match(copy.wordLimit, /80/);
-    assert.match(copy.wordLimit, /Plus/);
-    assert.doesNotMatch(copy.wordLimit, /Pro/);
+    assert.doesNotMatch(copy.wordLimit, /80/);
   }
 });
 
@@ -45,11 +44,16 @@ test("every product locale keeps the brand and has a distinct student-limit mess
     assert.match(copy.submissionLimitWarning, /\{limit\}/);
     assert.match(copy.submissionLimitReached, /\{limit\}/);
     assert.match(copy.activeLimit, /1/);
-    assert.match(copy.activeLimit, /20/);
+    assert.doesNotMatch(copy.activeLimit, /20/);
+    assert.ok(copy.longListAdvice);
     assert.ok(copy.activatingPro);
     assert.ok(copy.activationDelayed);
     assert.ok(copy.checkAgain);
   }
+  assert.doesNotMatch(
+    productMessages("en").longListAdvice,
+    /upgrade|paid|plan|limit/i,
+  );
 });
 
 test("workspace titles stay role-neutral in every product locale", () => {
@@ -66,6 +70,66 @@ test("workspace titles stay role-neutral in every product locale", () => {
     assert.equal(copy.signInTitle, expected[locale]);
     assert.equal(copy.dashboardTitle, expected[locale]);
   }
+});
+
+test("Free workspace learner labels are localized and neutral", () => {
+  const keys = [
+    "freeSavedLists",
+    "freeLearners",
+    "freeLearnersCopy",
+    "freeLearnerUsage",
+    "freeLearnerName",
+    "freeLearnerNamePlaceholder",
+    "freeAddLearner",
+    "freeProgress",
+    "freeLearnerNamePrompt",
+    "freeLearnerCount",
+    "freeSelectedLearners",
+    "freeAssignmentLink",
+    "freeCopyLink",
+    "freeLinkCopied",
+    "freeNoResults",
+    "freeCopyLearnerLink",
+    "freeLearnerLinkCopied",
+  ];
+  for (const [locale] of PRODUCT_LOCALES) {
+    const copy = productMessages(locale);
+    for (const key of keys) assert.ok(copy[key], `${locale}: ${key}`);
+  }
+  assert.equal(productMessages("en").freeLearners, "Learners");
+  assert.equal(productMessages("en").freeAddLearner, "Add learner");
+  assert.equal(productMessages("en").freeProgress, "Progress");
+  assert.equal(productMessages("en").freeSavedLists, "Saved Lists");
+  assert.doesNotMatch(
+    keys.map((key) => productMessages("en")[key]).join(" "),
+    /parent|teacher|child|student/i,
+  );
+});
+
+test("Parent workspace child labels are localized", () => {
+  const keys = [
+    "parentPlan",
+    "children",
+    "familyLearners",
+    "familyLearnersCopy",
+    "familyLearnerUsage",
+    "familyLearnerName",
+    "familyLearnerNamePrompt",
+    "familyLearnerNamePlaceholder",
+    "addChild",
+    "selectedChildren",
+    "familyNoResults",
+    "familyCopyChildLink",
+    "familyChildLinkCopied",
+  ];
+  for (const [locale] of PRODUCT_LOCALES) {
+    const copy = productMessages(locale);
+    for (const key of keys) assert.ok(copy[key], `${locale}: ${key}`);
+  }
+  const copy = productMessages("en");
+  assert.equal(copy.familyLearners, "Children");
+  assert.equal(copy.addChild, "Add child");
+  assert.equal(copy.selectedChildren, "Selected children");
 });
 
 test("paid workspace features are localized in every product locale", () => {

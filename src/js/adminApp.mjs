@@ -53,7 +53,7 @@ function formatSubscriptionStatus(value) {
   return (
     {
       active: "生效",
-      trialing: "试用中",
+      trialing: "生效",
       canceled: "已取消",
       incomplete: "未完成",
       past_due: "已逾期",
@@ -73,7 +73,6 @@ function renderStats(stats) {
     ["注册用户总数", stats.totalUsers],
     ["Google 用户", stats.googleUsers],
     ["当前 Plus 用户", stats.proUsers],
-    ["试用中", stats.trialingUsers],
     ["正式付费", stats.activePaidUsers],
     ["月付用户", stats.monthlyUsers],
     ["年付用户", stats.yearlyUsers],
@@ -105,10 +104,11 @@ async function loadUsers() {
         user.name,
         user.email,
         formatProvider(user.loginProvider),
-        user.plan === "plus" || user.plan === "pro" ? "Plus" : "免费",
+        ["parent", "teacher", "plus", "pro"].includes(user.plan)
+          ? "Plus"
+          : "免费",
         formatSubscriptionStatus(user.subscriptionStatus),
         formatBillingInterval(user.billingInterval),
-        user.trialUsed ? "是" : "否",
         formatDate(user.currentPeriodEnd),
         formatDate(user.createdAt),
       ]) {

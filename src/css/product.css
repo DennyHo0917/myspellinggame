@@ -636,11 +636,25 @@ th {
 
 .pricing-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
+}
+.pricing-toolbar {
+  display: flex;
+  justify-content: center;
 }
 .pricing-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.pricing-card.selected {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 2px var(--brand);
+}
+.pricing-card > [data-plan-cta] {
+  width: 100%;
+  margin-top: auto;
 }
 .price {
   font-size: 2rem;
@@ -683,6 +697,12 @@ th {
   .assignment-form-heading,
   .assignment-detail-heading {
     flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 1000px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
   }
 }
 

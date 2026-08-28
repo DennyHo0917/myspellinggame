@@ -42,17 +42,21 @@ Set `ADMIN_EMAIL` in the Cloudflare Worker variables (or with `wrangler secret p
 
 1. Create one recurring monthly Price at USD 5.99 and one recurring yearly Price at USD 49.99.
 2. Set their IDs as `STRIPE_PRICE_MONTHLY` and `STRIPE_PRICE_YEARLY`.
-3. Enable and configure the Stripe Customer Portal for subscription management.
-4. Create a webhook endpoint at `https://myspellinggame.com/api/stripe/webhook` for:
+3. Create one recurring monthly Parent Price at USD 4.99 and one recurring yearly Parent Price at USD 49.99.
+4. Set their IDs as `STRIPE_PARENT_PRICE_MONTHLY` and `STRIPE_PARENT_PRICE_YEARLY`.
+5. Create one recurring monthly Teacher Price at USD 9.99 and one recurring yearly Teacher Price at USD 99.99.
+6. Set their IDs as `STRIPE_TEACHER_PRICE_MONTHLY` and `STRIPE_TEACHER_PRICE_YEARLY`.
+7. Enable and configure the Stripe Customer Portal for subscription management.
+8. Create a webhook endpoint at `https://myspellinggame.com/api/stripe/webhook` for:
    - `checkout.session.completed`
    - `customer.subscription.created`
    - `customer.subscription.updated`
    - `customer.subscription.deleted`
    - `invoice.payment_succeeded`
    - `invoice.payment_failed`
-5. Store the API key and webhook signing secret as `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` Cloudflare secrets.
+9. Store the API key and webhook signing secret as `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` Cloudflare secrets.
 
-After deploying the 14-day trial, enable Stripe's trial-ending reminder email, confirm that the Customer Portal allows subscription cancellation, and verify that the monthly and yearly Prices remain USD 5.99 and USD 49.99. The Prices themselves do not need a trial configured; Checkout sets the trial period.
+Confirm that the Customer Portal allows subscription cancellation, and verify the Parent Prices remain USD 4.99/month and USD 49.99/year and the Teacher Prices remain USD 9.99/month and USD 99.99/year. Keep the legacy Prices configured for existing subscriptions.
 
 For local webhook testing, run Stripe CLI forwarding to `http://localhost:5173/api/stripe/webhook` and use its temporary `whsec_...` value only in `.dev.vars`.
 

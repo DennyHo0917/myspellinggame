@@ -12,12 +12,13 @@ import {
   PLAN_LIMITS,
   enforcePlanWordLimit,
   planWordLimit,
+  resolvePlan,
 } from "../src/worker/domain";
 import {
   restrictTeacherAuthCallback,
   safeTeacherCallbackURL,
 } from "../src/worker/auth";
-import { handleRequest, type Env } from "../src/worker/index";
+import { handleRequest, scheduled, type Env } from "../src/worker/index";
 import {
   createCheckout,
   createPortal,
@@ -66,6 +67,10 @@ function testEnv(overrides: Partial<Env> = {}): Env {
     STRIPE_WEBHOOK_SECRET: "whsec_placeholder",
     STRIPE_PRICE_MONTHLY: "price_monthly",
     STRIPE_PRICE_YEARLY: "price_yearly",
+    STRIPE_PARENT_PRICE_MONTHLY: "price_parent_monthly",
+    STRIPE_PARENT_PRICE_YEARLY: "price_parent_yearly",
+    STRIPE_TEACHER_PRICE_MONTHLY: "price_teacher_monthly",
+    STRIPE_TEACHER_PRICE_YEARLY: "price_teacher_yearly",
     ...overrides,
   };
 }
@@ -127,7 +132,7 @@ async function insertSubscription({
   priceId = "price_monthly",
   currentPeriodEnd = null,
 }: {
-  plan: "free" | "pro";
+  plan: "free" | "parent" | "teacher" | "plus" | "pro";
   status: string;
   priceId?: string;
   currentPeriodEnd?: string | null;
@@ -290,7 +295,7 @@ describe("teacher auth callback", () => {
 });
 
 describe("teacher authorization and quotas", () => {
-  it("keeps the Free and Plus plan limits centralized", () => {
+  it("keeps the Free, Parent, and Teacher limits centralized", () => {
     expect(PLAN_LIMITS.free).toEqual({
       activeAssignments: 1,
       monthlyAttempts: 8,
@@ -303,34 +308,45 @@ describe("teacher authorization and quotas", () => {
       missedWordStats: false,
       sentenceLibrary: false,
     });
-    expect(PLAN_LIMITS.plus).toEqual({
-      activeAssignments: 20,
+    const paidLimits = {
       monthlyAttempts: null,
       savedLists: null,
-      learnerProfiles: 150,
       historyDays: 365,
       retentionDays: 365,
       smartReview: true,
+      sentenceLibrary: true,
+    };
+    expect(PLAN_LIMITS.parent).toEqual({
+      ...paidLimits,
+      activeAssignments: 3,
+      learnerProfiles: 5,
+      csvExport: false,
+      missedWordStats: false,
+    });
+    expect(PLAN_LIMITS.teacher).toEqual({
+      ...paidLimits,
+      activeAssignments: 5,
+      learnerProfiles: 40,
       csvExport: true,
       missedWordStats: true,
-      sentenceLibrary: true,
     });
   });
 
-  it("enforces 40-word Free and 80-word Plus list limits", () => {
-    expect(planWordLimit("free")).toBe(40);
-    expect(planWordLimit("plus")).toBe(80);
+  it("enforces 30-word Free and 40-word paid limits", () => {
+    expect(planWordLimit("free")).toBe(30);
+    expect(planWordLimit("parent")).toBe(40);
+    expect(planWordLimit("teacher")).toBe(40);
     expect(() =>
-      enforcePlanWordLimit(Array.from({ length: 40 }), "free"),
+      enforcePlanWordLimit(Array.from({ length: 30 }), "free"),
     ).not.toThrow();
     expect(() =>
-      enforcePlanWordLimit(Array.from({ length: 41 }), "free"),
+      enforcePlanWordLimit(Array.from({ length: 31 }), "free"),
     ).toThrow(HttpError);
     expect(() =>
-      enforcePlanWordLimit(Array.from({ length: 80 }), "plus"),
+      enforcePlanWordLimit(Array.from({ length: 40 }), "parent"),
     ).not.toThrow();
     expect(() =>
-      enforcePlanWordLimit(Array.from({ length: 81 }), "plus"),
+      enforcePlanWordLimit(Array.from({ length: 41 }), "teacher"),
     ).toThrow(HttpError);
     expect(parseWordList(testWords(80))).toHaveLength(80);
     expect(() => parseWordList(testWords(81))).toThrowError(
@@ -338,29 +354,124 @@ describe("teacher authorization and quotas", () => {
     );
   });
 
+  it("resolves canonical plans and legacy Plus/Pro values", () => {
+    expect(resolvePlan("free", null, false)).toBe("free");
+    expect(resolvePlan("parent", null, true)).toBe("parent");
+    expect(resolvePlan("teacher", null, true)).toBe("teacher");
+    expect(resolvePlan("plus", "family", true)).toBe("parent");
+    expect(resolvePlan("pro", "teacher", true)).toBe("teacher");
+    expect(resolvePlan("pro", null, true)).toBe("teacher");
+    expect(resolvePlan("teacher", "teacher", false)).toBe("free");
+  });
+
+  it.each([
+    ["parent", null, "parent"],
+    ["teacher", null, "teacher"],
+    ["plus", "family", "parent"],
+    ["pro", "teacher", "teacher"],
+  ] as const)(
+    "resolves an active %s subscription as %s",
+    async (storedPlan, workspaceType, expected) => {
+      if (workspaceType)
+        await bindings.DB.prepare(
+          "UPDATE user SET workspace_type = ? WHERE id = ?",
+        )
+          .bind(workspaceType, teacherA.id)
+          .run();
+      await insertSubscription({ plan: storedPlan, status: "active" });
+      const me = (await (await call("/api/me")).json()) as { plan: string };
+      expect(me.plan).toBe(expected);
+    },
+  );
+
+  it("resolves a user without paid access as Free", async () => {
+    const me = (await (await call("/api/me")).json()) as { plan: string };
+    expect(me.plan).toBe("free");
+  });
+
   it("enforces word limits on assignment writes", async () => {
     const freeBoundary = await createAssignment(teacherA, {
-      words: testWords(40),
+      words: testWords(30),
     });
     expect(freeBoundary.response.status).toBe(201);
-    const free = await createAssignment(teacherA, { words: testWords(41) });
+    const free = await createAssignment(teacherA, { words: testWords(31) });
     expect(free.response.status).toBe(403);
     expect(free.body.error).toBe("word_limit");
-    await insertSubscription({ plan: "pro", status: "trialing" });
-    const plus = await createAssignment(teacherA, { words: testWords(80) });
-    expect(plus.response.status).toBe(201);
-    const technicalLimit = await createAssignment(teacherA, {
-      words: testWords(81),
-    });
-    expect(technicalLimit.response.status).toBe(400);
-    expect(technicalLimit.body.error).toBe("invalid_words");
+  });
+
+  it.each(["parent", "teacher"] as const)(
+    "enforces the 40-word %s assignment limit",
+    async (plan) => {
+      await insertSubscription({ plan, status: "active" });
+      expect(
+        (await createAssignment(teacherA, { words: testWords(40) })).response
+          .status,
+      ).toBe(201);
+      const limited = await createAssignment(teacherA, {
+        words: testWords(41),
+      });
+      expect(limited.response.status).toBe(403);
+      expect(limited.body.error).toBe("word_limit");
+    },
+  );
+
+  it("cleans expired attempts and cascades their attempt items", async () => {
+    const created = await createAssignment();
+    const publicId = String(created.body.publicId);
+    const words = await publicWords(publicId);
+    const expired = (await (await submit(publicId, words.words)).json()) as {
+      id: string;
+    };
+    const retained = (await (await submit(publicId, words.words)).json()) as {
+      id: string;
+    };
+    await bindings.DB.batch([
+      bindings.DB.prepare(
+        "UPDATE attempts SET retention_expires_at = ? WHERE id = ?",
+      ).bind("2000-01-01T00:00:00.000Z", expired.id),
+      bindings.DB.prepare(
+        "UPDATE attempts SET retention_expires_at = ? WHERE id = ?",
+      ).bind("2999-01-01T00:00:00.000Z", retained.id),
+    ]);
+    const beforeItems = await bindings.DB.prepare(
+      "SELECT COUNT(*) AS count FROM attempt_items WHERE attempt_id = ?",
+    )
+      .bind(expired.id)
+      .first<{ count: number }>();
+    expect(Number(beforeItems?.count)).toBeGreaterThan(0);
+
+    await scheduled({} as ScheduledController, testEnv());
+    await scheduled({} as ScheduledController, testEnv());
+
+    await expect(
+      bindings.DB.prepare("SELECT id FROM attempts WHERE id = ?")
+        .bind(expired.id)
+        .first(),
+    ).resolves.toBeNull();
+    await expect(
+      bindings.DB.prepare("SELECT id FROM attempts WHERE id = ?")
+        .bind(retained.id)
+        .first(),
+    ).resolves.toBeTruthy();
+    await expect(
+      bindings.DB.prepare("SELECT id FROM assignments WHERE id = ?")
+        .bind(created.body.id)
+        .first(),
+    ).resolves.toBeTruthy();
+    await expect(
+      bindings.DB.prepare(
+        "SELECT COUNT(*) AS count FROM attempt_items WHERE attempt_id = ?",
+      )
+        .bind(expired.id)
+        .first("count"),
+    ).resolves.toBe(0);
   });
 
   it("enforces word limits on assignment updates", async () => {
     const created = await createAssignment();
     const rejected = await call(`/api/assignments/${created.body.id}`, {
       method: "PATCH",
-      body: JSON.stringify({ title: "Too long", words: testWords(41) }),
+      body: JSON.stringify({ title: "Too long", words: testWords(31) }),
     });
     expect(rejected.status).toBe(403);
     expect(((await rejected.json()) as { error: string }).error).toBe(
@@ -372,7 +483,7 @@ describe("teacher authorization and quotas", () => {
 
   it("keeps a legacy over-limit assignment readable after Free downgrade", async () => {
     await insertSubscription({ plan: "pro", status: "active" });
-    const created = await createAssignment(teacherA, { words: testWords(60) });
+    const created = await createAssignment(teacherA, { words: testWords(40) });
     expect(created.response.status).toBe(201);
     await bindings.DB.prepare(
       "UPDATE subscriptions SET status = 'canceled', stripe_price_id = NULL WHERE user_id = ?",
@@ -382,7 +493,7 @@ describe("teacher authorization and quotas", () => {
     const detail = await call(`/api/assignments/${created.body.id}`);
     expect(detail.status).toBe(200);
     expect(((await detail.json()) as { words: unknown[] }).words).toHaveLength(
-      60,
+      40,
     );
   });
 
@@ -410,20 +521,26 @@ describe("teacher authorization and quotas", () => {
     expect(second.body.error).toBe("active_assignment_limit");
   });
 
-  it("allows 20 active Plus assignments", async () => {
-    await insertSubscription({ plan: "pro", status: "active" });
-    for (let index = 1; index <= 20; index += 1) {
-      expect(
-        (await createAssignment(teacherA, { title: `Assignment ${index}` }))
-          .response.status,
-      ).toBe(201);
-    }
-    const limited = await createAssignment(teacherA, {
-      title: "Assignment 21",
-    });
-    expect(limited.response.status).toBe(403);
-    expect(limited.body.error).toBe("active_assignment_limit");
-  });
+  it.each([
+    ["parent", 3],
+    ["teacher", 5],
+  ] as const)(
+    "enforces the %s active-assignment limit",
+    async (plan, limit) => {
+      await insertSubscription({ plan, status: "active" });
+      for (let index = 1; index <= limit; index += 1) {
+        expect(
+          (await createAssignment(teacherA, { title: `Assignment ${index}` }))
+            .response.status,
+        ).toBe(201);
+      }
+      const limited = await createAssignment(teacherA, {
+        title: `Assignment ${limit + 1}`,
+      });
+      expect(limited.response.status).toBe(403);
+      expect(limited.body.error).toBe("active_assignment_limit");
+    },
+  );
 
   it("stores optional example sentences and returns null for old-style words", async () => {
     await insertSubscription({ plan: "pro", status: "active" });
@@ -520,7 +637,7 @@ describe("teacher authorization and quotas", () => {
     ).toBe(201);
     const updated = await call(`/api/assignments/${created.body.id}`, {
       method: "PATCH",
-      body: JSON.stringify({ words: testWords(41) }),
+      body: JSON.stringify({ words: testWords(31) }),
     });
     expect(updated.status).toBe(409);
     expect(((await updated.json()) as { error: string }).error).toBe(
@@ -547,10 +664,27 @@ describe("teacher authorization and quotas", () => {
     expect(((await limited.json()) as Record<string, unknown>).error).toBe(
       "monthly_submission_limit",
     );
-
-    await insertSubscription({ plan: "pro", status: "active" });
-    expect((await submit(publicId, assignment.words)).status).toBe(201);
   });
+
+  it.each(["parent", "teacher"] as const)(
+    "keeps %s monthly submissions unlimited",
+    async (plan) => {
+      await insertSubscription({ plan, status: "active" });
+      const created = await createAssignment();
+      const publicId = String(created.body.publicId);
+      const assignment = await publicWords(publicId);
+      const now = new Date().toISOString();
+      await bindings.DB.batch(
+        Array.from({ length: 8 }, () =>
+          bindings.DB.prepare(
+            `INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at)
+             VALUES (?, ?, ?, ?)`,
+          ).bind(crypto.randomUUID(), teacherA.id, monthStart(), now),
+        ),
+      );
+      expect((await submit(publicId, assignment.words)).status).toBe(201);
+    },
+  );
 
   it("keeps public nickname submissions independent from saved learner quotas", async () => {
     const created = await createAssignment();
@@ -574,35 +708,45 @@ describe("teacher authorization and quotas", () => {
 });
 
 describe("saved lists and learner profiles", () => {
-  it("enforces Free and Plus saved-list word limits", async () => {
+  it("enforces the Free saved-list word limit", async () => {
     const freeBoundary = await createSavedList(
       "Free boundary",
       teacherA,
-      testWords(40),
+      testWords(30),
     );
     expect(freeBoundary.response.status).toBe(201);
     const freeRejected = await createSavedList(
       "Free too long",
       teacherA,
-      testWords(41),
+      testWords(31),
     );
     expect(freeRejected.response.status).toBe(403);
     expect(freeRejected.body.error).toBe("word_limit");
-
-    await insertSubscription({ plan: "pro", status: "active" });
-    const plusBoundary = await createSavedList(
-      "Plus boundary",
-      teacherA,
-      testWords(80),
-    );
-    expect(plusBoundary.response.status).toBe(201);
   });
+
+  it.each(["parent", "teacher"] as const)(
+    "enforces the 40-word %s saved-list limit",
+    async (plan) => {
+      await insertSubscription({ plan, status: "active" });
+      expect(
+        (await createSavedList("Boundary", teacherA, testWords(40))).response
+          .status,
+      ).toBe(201);
+      const limited = await createSavedList(
+        "Too long",
+        teacherA,
+        testWords(41),
+      );
+      expect(limited.response.status).toBe(403);
+      expect(limited.body.error).toBe("word_limit");
+    },
+  );
 
   it("rejects over-limit saved-list updates without changing the list", async () => {
     const saved = await createSavedList("Editable list");
     const rejected = await call(`/api/saved-lists/${saved.body.id}`, {
       method: "PATCH",
-      body: JSON.stringify({ title: "Too long", words: testWords(41) }),
+      body: JSON.stringify({ title: "Too long", words: testWords(31) }),
     });
     expect(rejected.status).toBe(403);
     expect(((await rejected.json()) as { error: string }).error).toBe(
@@ -615,15 +759,21 @@ describe("saved lists and learner profiles", () => {
     ]);
   });
 
-  it("enforces Free saved-list limits and leaves Pro lists unlimited", async () => {
+  it("enforces the Free saved-list limit", async () => {
     expect((await createSavedList("One")).response.status).toBe(201);
     const limited = await createSavedList("Two");
     expect(limited.response.status).toBe(403);
     expect(limited.body.error).toBe("saved_list_limit");
-
-    await insertSubscription({ plan: "pro", status: "active" });
-    expect((await createSavedList("Two")).response.status).toBe(201);
   });
+
+  it.each(["parent", "teacher"] as const)(
+    "keeps %s saved lists unlimited",
+    async (plan) => {
+      await insertSubscription({ plan, status: "active" });
+      expect((await createSavedList("One")).response.status).toBe(201);
+      expect((await createSavedList("Two")).response.status).toBe(201);
+    },
+  );
 
   it("enforces the one-profile Free limit", async () => {
     expect((await createLearner("Learner 01")).response.status).toBe(201);
@@ -632,10 +782,13 @@ describe("saved lists and learner profiles", () => {
     expect(limited.body.error).toBe("learner_limit");
   });
 
-  it("enforces the 150-profile Pro limit", async () => {
-    await insertSubscription({ plan: "pro", status: "active" });
+  it.each([
+    ["parent", 5],
+    ["teacher", 40],
+  ] as const)("enforces the %s learner limit", async (plan, limit) => {
+    await insertSubscription({ plan, status: "active" });
     const now = new Date().toISOString();
-    const statements = Array.from({ length: 150 }, (_, index) =>
+    const statements = Array.from({ length: limit }, (_, index) =>
       bindings.DB.prepare(
         `INSERT INTO learners (
              id, owner_user_id, name, name_key, archived, created_at, updated_at
@@ -649,9 +802,8 @@ describe("saved lists and learner profiles", () => {
         now,
       ),
     );
-    await bindings.DB.batch(statements.slice(0, 100));
-    await bindings.DB.batch(statements.slice(100));
-    const limited = await createLearner("Learner 151");
+    await bindings.DB.batch(statements);
+    const limited = await createLearner(`Learner ${limit + 1}`);
     expect(limited.response.status).toBe(403);
     expect(limited.body.error).toBe("learner_limit");
   });
@@ -934,6 +1086,23 @@ describe("saved lists and learner profiles", () => {
 });
 
 describe("assignment learner binding and class join", () => {
+  it("lets Parent assign one assignment to multiple children", async () => {
+    await insertSubscription({ plan: "parent", status: "active" });
+    const alice = await createLearner("Alice");
+    const bob = await createLearner("Bob");
+    const created = await createAssignment(teacherA, {
+      learnerIds: [alice.body.id, bob.body.id],
+    });
+    expect(created.response.status).toBe(201);
+    const detail = (await (
+      await call(`/api/assignments/${created.body.id}`)
+    ).json()) as { assignedLearners: Array<{ id: string; name: string }> };
+    expect(detail.assignedLearners).toEqual([
+      { id: alice.body.id, name: "Alice" },
+      { id: bob.body.id, name: "Bob" },
+    ]);
+  });
+
   it("binds owned learners, filters learner home, and attributes submissions", async () => {
     await insertSubscription({ plan: "pro", status: "active" });
     const learnerA = await createLearner("Alice");
@@ -986,19 +1155,53 @@ describe("assignment learner binding and class join", () => {
     expect(created.body.error).toBe("learner_forbidden");
   });
 
-  it("persists workspace type and resolves a teacher class PIN without roster exposure", async () => {
-    const workspace = await call(
-      "/api/workspace",
-      { method: "PATCH", body: JSON.stringify({ workspaceType: "teacher" }) },
-      teacherA,
+  it("keeps Teacher-only PIN and Class Join unavailable to Parent plans", async () => {
+    await bindings.DB.prepare(
+      "UPDATE user SET workspace_type = 'teacher', class_public_id = 'legacyClass1' WHERE id = ?",
+    )
+      .bind(teacherA.id)
+      .run();
+    await insertSubscription({ plan: "parent", status: "active" });
+    const learner = await createLearner("Alice");
+    expect(learner.body).not.toHaveProperty("join_pin");
+    expect(learner.body).not.toHaveProperty("join_pin_hash");
+
+    const me = (await (await call("/api/me")).json()) as {
+      plan: string;
+      classPublicId: string | null;
+    };
+    expect(me).toMatchObject({ plan: "parent", classPublicId: null });
+    const roster = (await (await call("/api/assignments")).json()) as {
+      learners: Array<Record<string, unknown>>;
+    };
+    expect(roster.learners[0]).not.toHaveProperty("join_pin");
+    expect(roster.learners[0]).not.toHaveProperty("join_pin_hash");
+
+    const storedPin = await bindings.DB.prepare(
+      "SELECT join_pin FROM learners WHERE id = ?",
+    )
+      .bind(learner.body.id)
+      .first<string>("join_pin");
+    const joined = await call(
+      "/api/public/join/legacyClass1",
+      { method: "POST", body: JSON.stringify({ pin: storedPin }) },
+      null,
     );
-    expect(workspace.status).toBe(200);
+    expect(joined.status).toBe(401);
+    expect(await joined.json()).toEqual(
+      expect.objectContaining({ error: "invalid_join" }),
+    );
+  });
+
+  it("uses the Teacher plan for class join and keeps PINs out of public responses", async () => {
+    await insertSubscription({ plan: "teacher", status: "active" });
     const learner = await createLearner("Alice");
     const me = (await (await call("/api/me")).json()) as {
-      workspaceType: string;
+      plan: string;
+      workspaceType: string | null;
       classPublicId: string;
     };
-    expect(me.workspaceType).toBe("teacher");
+    expect(me.plan).toBe("teacher");
     expect(me.classPublicId).toMatch(/^[A-Za-z0-9_-]{8,24}$/);
     expect(learner.body.join_pin).toMatch(/^\d{4}$/);
 
@@ -1048,10 +1251,7 @@ describe("assignment learner binding and class join", () => {
   });
 
   it("rate limits class join by class and client IP", async () => {
-    await call("/api/workspace", {
-      method: "PATCH",
-      body: JSON.stringify({ workspaceType: "teacher" }),
-    });
+    await insertSubscription({ plan: "teacher", status: "active" });
     await createLearner("Alice");
     const me = (await (await call("/api/me")).json()) as {
       classPublicId: string;
@@ -1083,7 +1283,7 @@ describe("assignment learner binding and class join", () => {
   });
 
   it("retries a colliding PIN when creating a learner", async () => {
-    await insertSubscription({ plan: "pro", status: "active" });
+    await insertSubscription({ plan: "teacher", status: "active" });
     expect(
       (await createLearner("Alice", teacherA, () => "1234")).response.status,
     ).toBe(201);
@@ -1215,43 +1415,54 @@ describe("cross-assignment mastery", () => {
     );
   });
 
-  it("shows 14 days on Free, 365 days on Pro, and locks smart review", async () => {
-    const learner = await createLearner("Learner 01");
-    const learnerPublicId = String(learner.body.public_id);
-    const created = await createAssignment();
-    const words = await publicWords(String(created.body.publicId));
-    await submit(String(created.body.publicId), words.words, {
-      learnerPublicId,
-      answers: ["wrong", "banana"],
-    });
-    const oldDate = new Date(Date.now() - 45 * 86_400_000).toISOString();
-    await bindings.DB.prepare(
-      "UPDATE attempts SET completed_at = ? WHERE learner_id = ?",
-    )
-      .bind(oldDate, learner.body.id)
-      .run();
+  it.each(["parent", "teacher"] as const)(
+    "shows 14 days on Free, 365 days on %s, and locks Free smart review",
+    async (plan) => {
+      const learner = await createLearner("Learner 01");
+      const learnerPublicId = String(learner.body.public_id);
+      const created = await createAssignment();
+      const words = await publicWords(String(created.body.publicId));
+      await submit(String(created.body.publicId), words.words, {
+        learnerPublicId,
+        answers: ["wrong", "banana"],
+      });
+      const oldDate = new Date(Date.now() - 45 * 86_400_000).toISOString();
+      await bindings.DB.prepare(
+        "UPDATE attempts SET completed_at = ? WHERE learner_id = ?",
+      )
+        .bind(oldDate, learner.body.id)
+        .run();
 
-    const free = (await (
-      await call(`/api/learners/${learner.body.id}`)
-    ).json()) as { historyDays: number; words: unknown[] };
-    expect(free.historyDays).toBe(14);
-    expect(free.words).toHaveLength(0);
-    expect(
-      (
-        await call(`/api/learners/${learner.body.id}/review`, {
-          method: "POST",
-          body: "{}",
-        })
-      ).status,
-    ).toBe(403);
+      const free = (await (
+        await call(`/api/learners/${learner.body.id}`)
+      ).json()) as { historyDays: number; words: unknown[] };
+      expect(free.historyDays).toBe(14);
+      expect(free.words).toHaveLength(0);
+      expect(
+        (
+          await call(`/api/learners/${learner.body.id}/review`, {
+            method: "POST",
+            body: "{}",
+          })
+        ).status,
+      ).toBe(403);
 
-    await insertSubscription({ plan: "pro", status: "active" });
-    const pro = (await (
-      await call(`/api/learners/${learner.body.id}`)
-    ).json()) as { historyDays: number; words: unknown[] };
-    expect(pro.historyDays).toBe(365);
-    expect(pro.words).toHaveLength(2);
-  });
+      await insertSubscription({ plan, status: "active" });
+      const paid = (await (
+        await call(`/api/learners/${learner.body.id}`)
+      ).json()) as { historyDays: number; words: unknown[] };
+      expect(paid.historyDays).toBe(365);
+      expect(paid.words).toHaveLength(2);
+      expect(
+        (
+          await call(`/api/learners/${learner.body.id}/review`, {
+            method: "POST",
+            body: "{}",
+          })
+        ).status,
+      ).toBe(200);
+    },
+  );
 });
 
 describe("today's review state", () => {
@@ -1360,37 +1571,40 @@ describe("today's review state", () => {
 });
 
 describe("assignment attempts", () => {
-  it("expires Free results after 14 days and Pro results after 365 days", async () => {
-    const retentionDays = async (attemptId: string) => {
-      const row = await bindings.DB.prepare(
-        "SELECT completed_at, retention_expires_at FROM attempts WHERE id = ?",
-      )
-        .bind(attemptId)
-        .first<{ completed_at: string; retention_expires_at: string }>();
-      return (
-        (new Date(row!.retention_expires_at).getTime() -
-          new Date(row!.completed_at).getTime()) /
-        86_400_000
-      );
-    };
+  it.each(["parent", "teacher"] as const)(
+    "expires Free results after 14 days and %s results after 365 days",
+    async (plan) => {
+      const retentionDays = async (attemptId: string) => {
+        const row = await bindings.DB.prepare(
+          "SELECT completed_at, retention_expires_at FROM attempts WHERE id = ?",
+        )
+          .bind(attemptId)
+          .first<{ completed_at: string; retention_expires_at: string }>();
+        return (
+          (new Date(row!.retention_expires_at).getTime() -
+            new Date(row!.completed_at).getTime()) /
+          86_400_000
+        );
+      };
 
-    const freeAssignment = await createAssignment();
-    const freeWords = await publicWords(String(freeAssignment.body.publicId));
-    const freeAttempt = (await (
-      await submit(String(freeAssignment.body.publicId), freeWords.words)
-    ).json()) as { id: string };
-    expect(await retentionDays(freeAttempt.id)).toBe(14);
+      const freeAssignment = await createAssignment();
+      const freeWords = await publicWords(String(freeAssignment.body.publicId));
+      const freeAttempt = (await (
+        await submit(String(freeAssignment.body.publicId), freeWords.words)
+      ).json()) as { id: string };
+      expect(await retentionDays(freeAttempt.id)).toBe(14);
 
-    await insertSubscription({ plan: "pro", status: "active" });
-    const proAssignment = await createAssignment(teacherA, {
-      title: "Pro retention",
-    });
-    const proWords = await publicWords(String(proAssignment.body.publicId));
-    const proAttempt = (await (
-      await submit(String(proAssignment.body.publicId), proWords.words)
-    ).json()) as { id: string };
-    expect(await retentionDays(proAttempt.id)).toBe(365);
-  });
+      await insertSubscription({ plan, status: "active" });
+      const paidAssignment = await createAssignment(teacherA, {
+        title: "Paid retention",
+      });
+      const paidWords = await publicWords(String(paidAssignment.body.publicId));
+      const paidAttempt = (await (
+        await submit(String(paidAssignment.body.publicId), paidWords.words)
+      ).json()) as { id: string };
+      expect(await retentionDays(paidAttempt.id)).toBe(365);
+    },
+  );
 
   it("records an unfinished attempt when a student returns to the assignment start", async () => {
     const created = await createAssignment();
@@ -1687,7 +1901,7 @@ describe("assignment attempts", () => {
     ).toBe(0);
   });
 
-  it("keeps CSV and class-wide missed-word statistics behind the Pro plan", async () => {
+  it("keeps CSV and class-wide missed-word statistics Teacher-only", async () => {
     const created = await createAssignment();
     const id = String(created.body.id);
     const publicId = String(created.body.publicId);
@@ -1704,7 +1918,7 @@ describe("assignment attempts", () => {
       `INSERT INTO subscriptions (
          user_id, plan, status, billing_interval, stripe_price_id,
          current_period_end, cancel_at_period_end, updated_at
-       ) VALUES (?, 'pro', 'active', 'month', 'price_monthly', ?, 0, ?)`,
+       ) VALUES (?, 'parent', 'active', 'month', 'price_monthly', ?, 0, ?)`,
     )
       .bind(
         teacherA.id,
@@ -1713,13 +1927,29 @@ describe("assignment attempts", () => {
       )
       .run();
 
+    expect((await call(`/api/assignments/${id}/export.csv`)).status).toBe(403);
+    const parentDetail = (await (
+      await call(`/api/assignments/${id}`)
+    ).json()) as Record<string, unknown>;
+    expect(parentDetail.missedWordStats).toBeNull();
+
+    await bindings.DB.prepare(
+      "UPDATE subscriptions SET plan = 'teacher' WHERE user_id = ?",
+    )
+      .bind(teacherA.id)
+      .run();
+
     const exportResponse = await call(`/api/assignments/${id}/export.csv`);
     expect(exportResponse.status).toBe(200);
     expect(await exportResponse.text()).toContain("Student 01");
-    const proDetail = (await (await call(`/api/assignments/${id}`)).json()) as {
+    const teacherDetail = (await (
+      await call(`/api/assignments/${id}`)
+    ).json()) as {
       missedWordStats: Array<{ word: string; misses: number }>;
     };
-    expect(proDetail.missedWordStats).toEqual([{ word: "banana", misses: 1 }]);
+    expect(teacherDetail.missedWordStats).toEqual([
+      { word: "banana", misses: 1 },
+    ]);
   });
 });
 
@@ -1736,10 +1966,10 @@ describe("Stripe checkout", () => {
   });
 
   it.each([
-    ["month", "price_monthly"],
-    ["year", "price_yearly"],
+    ["month", "price_teacher_monthly"],
+    ["year", "price_teacher_yearly"],
   ] as const)(
-    "grants one 14-day %s trial and always collects a payment method",
+    "creates Teacher %s Checkout with the configured Price and explicit plan metadata",
     async (interval, priceId) => {
       let sent: Stripe.Checkout.SessionCreateParams | null = null;
       await createCheckout(
@@ -1761,16 +1991,167 @@ describe("Stripe checkout", () => {
         mode: "subscription",
         payment_method_collection: "always",
         line_items: [{ price: priceId, quantity: 1 }],
-        metadata: { trial_granted: "true" },
+        metadata: { plan: "teacher" },
         subscription_data: {
-          trial_period_days: 14,
-          metadata: { trial_granted: "true" },
+          metadata: { plan: "teacher" },
         },
       });
+      const params = sent as unknown as Stripe.Checkout.SessionCreateParams;
+      expect(params.subscription_data?.trial_period_days).toBeUndefined();
+      expect(params.metadata).not.toHaveProperty("trial_granted");
     },
   );
 
-  it("charges immediately after the account has used its trial", async () => {
+  it.each([
+    ["month", "price_parent_monthly"],
+    ["year", "price_parent_yearly"],
+  ] as const)(
+    "creates Parent %s Checkout with the configured Price and explicit plan metadata",
+    async (interval, priceId) => {
+      let sent: Stripe.Checkout.SessionCreateParams | null = null;
+      await createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        interval,
+        "https://example.test",
+        {
+          now,
+          plan: "parent",
+          createSession: async (params) => {
+            sent = params;
+            return createSession(params);
+          },
+        },
+      );
+
+      expect(sent).toMatchObject({
+        line_items: [{ price: priceId, quantity: 1 }],
+        success_url: `https://example.test/teacher?lang=en&checkout=success&interval=${interval}&plan=parent`,
+        metadata: { plan: "parent", billing_interval: interval },
+        subscription_data: {
+          metadata: { plan: "parent", billing_interval: interval },
+        },
+      });
+      const params = sent as unknown as Stripe.Checkout.SessionCreateParams;
+      expect(params.subscription_data?.trial_period_days).toBeUndefined();
+      expect(params.metadata).not.toHaveProperty("trial_granted");
+    },
+  );
+
+  it("reuses duplicate Parent Checkout and safely replaces it when the interval changes", async () => {
+    const prices: string[] = [];
+    const expiredSessions: string[] = [];
+    let calls = 0;
+    const options = {
+      now,
+      plan: "parent" as const,
+      createSession: async (params: Stripe.Checkout.SessionCreateParams) => {
+        calls += 1;
+        prices.push(String(params.line_items?.[0]?.price));
+        return {
+          id: `cs_parent_${calls}`,
+          url: `https://checkout.test/parent/${calls}`,
+          expires_at: params.expires_at!,
+        };
+      },
+      expireSession: async (id: string) => {
+        expiredSessions.push(id);
+      },
+    };
+
+    await expect(
+      createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        "month",
+        "https://example.test",
+        options,
+      ),
+    ).resolves.toMatchObject({ id: "cs_parent_1" });
+    await expect(
+      createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        "month",
+        "https://example.test",
+        options,
+      ),
+    ).resolves.toEqual({ url: "https://checkout.test/parent/1" });
+    await expect(
+      createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        "year",
+        "https://example.test",
+        options,
+      ),
+    ).resolves.toMatchObject({ id: "cs_parent_2" });
+
+    expect(prices).toEqual(["price_parent_monthly", "price_parent_yearly"]);
+    expect(expiredSessions).toEqual(["cs_parent_1"]);
+  });
+
+  it("reuses duplicate Teacher Checkout and safely replaces it when the interval changes", async () => {
+    const prices: string[] = [];
+    const expiredSessions: string[] = [];
+    let calls = 0;
+    const options = {
+      now,
+      plan: "teacher" as const,
+      createSession: async (params: Stripe.Checkout.SessionCreateParams) => {
+        calls += 1;
+        prices.push(String(params.line_items?.[0]?.price));
+        return {
+          id: `cs_teacher_${calls}`,
+          url: `https://checkout.test/teacher/${calls}`,
+          expires_at: params.expires_at!,
+        };
+      },
+      expireSession: async (id: string) => {
+        expiredSessions.push(id);
+      },
+    };
+
+    await expect(
+      createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        "month",
+        "https://example.test",
+        options,
+      ),
+    ).resolves.toMatchObject({ id: "cs_teacher_1" });
+    await expect(
+      createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        "month",
+        "https://example.test",
+        options,
+      ),
+    ).resolves.toEqual({ url: "https://checkout.test/teacher/1" });
+    await expect(
+      createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        "year",
+        "https://example.test",
+        options,
+      ),
+    ).resolves.toMatchObject({ id: "cs_teacher_2" });
+
+    expect(prices).toEqual(["price_teacher_monthly", "price_teacher_yearly"]);
+    expect(expiredSessions).toEqual(["cs_teacher_1"]);
+  });
+
+  it("creates a normal paid Checkout regardless of historical trial state", async () => {
     await insertSubscription({ plan: "free", status: "inactive" });
     await bindings.DB.prepare(
       "UPDATE subscriptions SET trial_used_at = ? WHERE user_id = ?",
@@ -1797,7 +2178,7 @@ describe("Stripe checkout", () => {
     const params = sent as unknown as Stripe.Checkout.SessionCreateParams;
     expect(params.payment_method_collection).toBe("always");
     expect(params.subscription_data?.trial_period_days).toBeUndefined();
-    expect(params.metadata?.trial_granted).toBe("false");
+    expect(params.metadata?.trial_granted).toBeUndefined();
   });
 
   it.each([
@@ -1832,7 +2213,7 @@ describe("Stripe checkout", () => {
       );
 
       expect(successUrl).toBe(
-        `https://example.test/teacher?lang=${expected}&checkout=success&interval=month`,
+        `https://example.test/teacher?lang=${expected}&checkout=success&interval=month&plan=teacher`,
       );
       expect(cancelUrl).toBe(
         `https://example.test${pricingPath}?checkout=cancelled`,
@@ -1916,7 +2297,7 @@ describe("Stripe checkout", () => {
       });
       expect(
         ((await (await call("/api/me")).json()) as { plan: string }).plan,
-      ).toBe("plus");
+      ).toBe("teacher");
 
       await expect(
         createCheckout(
@@ -2004,8 +2385,8 @@ describe("Stripe checkout", () => {
   });
 
   it.each([
-    ["year", "month", "price_yearly", "price_monthly"],
-    ["month", "year", "price_monthly", "price_yearly"],
+    ["year", "month", "price_teacher_yearly", "price_teacher_monthly"],
+    ["month", "year", "price_teacher_monthly", "price_teacher_yearly"],
   ] as const)(
     "replaces an active %s lock when switching to %s",
     async (firstInterval, secondInterval, firstPrice, secondPrice) => {
@@ -2084,7 +2465,7 @@ describe("Stripe checkout", () => {
       const createRacingSession = async (
         params: Stripe.Checkout.SessionCreateParams,
       ) => {
-        const first = params.line_items?.[0]?.price === "price_monthly";
+        const first = params.line_items?.[0]?.price === "price_teacher_monthly";
         if (first) {
           markStarted();
           await gate;
@@ -2322,7 +2703,6 @@ describe("Stripe event processing", () => {
           metadata: {
             owner_user_id: teacherA.id,
             billing_interval: "month",
-            trial_granted: "true",
           },
         },
       },
@@ -2355,6 +2735,7 @@ describe("Stripe event processing", () => {
     eventId: string,
     status: string,
     interval: "month" | "year" = "month",
+    plan: "parent" | "teacher" = "teacher",
   ) =>
     ({
       id: eventId,
@@ -2368,13 +2749,20 @@ describe("Stripe event processing", () => {
           customer: "cus_trial",
           status,
           cancel_at_period_end: status === "canceled",
-          metadata: { owner_user_id: teacherA.id },
+          metadata: { owner_user_id: teacherA.id, plan },
           items: {
             data: [
               {
                 current_period_end: Math.floor(Date.now() / 1000) + 86_400,
                 price: {
-                  id: interval === "year" ? "price_yearly" : "price_monthly",
+                  id:
+                    plan === "parent"
+                      ? interval === "year"
+                        ? "price_parent_yearly"
+                        : "price_parent_monthly"
+                      : interval === "year"
+                        ? "price_teacher_yearly"
+                        : "price_teacher_monthly",
                   recurring: { interval },
                 },
               },
@@ -2383,6 +2771,62 @@ describe("Stripe event processing", () => {
         },
       },
     }) as unknown as Stripe.Event;
+
+  it.each(["month", "year"] as const)(
+    "activates Parent from the configured %s subscription Price",
+    async (interval) => {
+      await processStripeEvent(
+        bindings.DB,
+        subscriptionEvent(
+          `evt_parent_${interval}`,
+          "active",
+          interval,
+          "parent",
+        ),
+        testEnv(),
+      );
+
+      await expect(
+        bindings.DB.prepare(
+          "SELECT plan, status, billing_interval, stripe_price_id FROM subscriptions WHERE user_id = ?",
+        )
+          .bind(teacherA.id)
+          .first(),
+      ).resolves.toEqual({
+        plan: "parent",
+        status: "active",
+        billing_interval: interval,
+        stripe_price_id:
+          interval === "year" ? "price_parent_yearly" : "price_parent_monthly",
+      });
+    },
+  );
+
+  it.each(["month", "year"] as const)(
+    "activates Teacher from the configured %s subscription Price",
+    async (interval) => {
+      await processStripeEvent(
+        bindings.DB,
+        subscriptionEvent(`evt_teacher_${interval}`, "active", interval),
+        testEnv(),
+      );
+      await expect(
+        bindings.DB.prepare(
+          "SELECT plan, status, billing_interval, stripe_price_id FROM subscriptions WHERE user_id = ?",
+        )
+          .bind(teacherA.id)
+          .first(),
+      ).resolves.toEqual({
+        plan: "teacher",
+        status: "active",
+        billing_interval: interval,
+        stripe_price_id:
+          interval === "year"
+            ? "price_teacher_yearly"
+            : "price_teacher_monthly",
+      });
+    },
+  );
 
   it("does not consume a trial when Checkout expires", async () => {
     await createTestCheckout("cs_expired", new Date());
@@ -2401,7 +2845,7 @@ describe("Stripe event processing", () => {
     ).toBeNull();
   });
 
-  it("consumes the trial on completed Checkout across billing intervals", async () => {
+  it("does not create trial state when Checkout completes", async () => {
     await createTestCheckout("cs_trial", new Date());
     await processStripeEvent(
       bindings.DB,
@@ -2414,7 +2858,7 @@ describe("Stripe event processing", () => {
       )
         .bind(teacherA.id)
         .first("trial_used_at"),
-    ).toBeTruthy();
+    ).toBeNull();
     await bindings.DB.prepare(
       "UPDATE subscriptions SET status = 'canceled', plan = 'free' WHERE user_id = ?",
     )
@@ -2442,10 +2886,22 @@ describe("Stripe event processing", () => {
 
     const params = sent as unknown as Stripe.Checkout.SessionCreateParams;
     expect(params.subscription_data?.trial_period_days).toBeUndefined();
-    expect(params.metadata?.trial_granted).toBe("false");
+    expect(params.metadata?.trial_granted).toBeUndefined();
   });
 
-  it("keeps trial access and permanently preserves usage after cancellation or failure", async () => {
+  it("keeps historical trialing access without exposing trial state", async () => {
+    const historicalTrialUsedAt = new Date().toISOString();
+    await insertSubscription({
+      plan: "teacher",
+      status: "trialing",
+      priceId: "price_teacher_monthly",
+      currentPeriodEnd: new Date(Date.now() + 86_400_000).toISOString(),
+    });
+    await bindings.DB.prepare(
+      "UPDATE subscriptions SET trial_used_at = ? WHERE user_id = ?",
+    )
+      .bind(historicalTrialUsedAt, teacherA.id)
+      .run();
     await processStripeEvent(
       bindings.DB,
       subscriptionEvent("evt_trialing", "trialing"),
@@ -2459,15 +2915,13 @@ describe("Stripe event processing", () => {
     const me = (await (await call("/api/me")).json()) as {
       plan: string;
       subscriptionStatus: string;
-      trialEligible: boolean;
-      trialEndsAt: string | null;
     };
     expect(me).toMatchObject({
-      plan: "plus",
+      plan: "teacher",
       subscriptionStatus: "trialing",
-      trialEligible: false,
     });
-    expect(me.trialEndsAt).toBeTruthy();
+    expect(me).not.toHaveProperty("trialEligible");
+    expect(me).not.toHaveProperty("trialEndsAt");
 
     await processStripeEvent(
       bindings.DB,
@@ -2501,7 +2955,7 @@ describe("Stripe event processing", () => {
     });
   });
 
-  it("ignores a $0 trial invoice but activates Pro after a real payment", async () => {
+  it("keeps historical $0 invoices from activating a subscription", async () => {
     await processStripeEvent(
       bindings.DB,
       subscriptionEvent("evt_invoice_trialing", "trialing"),
@@ -2537,7 +2991,7 @@ describe("Stripe event processing", () => {
       )
         .bind(teacherA.id)
         .first(),
-    ).toEqual({ plan: "pro", status: "active" });
+    ).toEqual({ plan: "teacher", status: "active" });
   });
 
   it.each(["checkout.session.expired", "checkout.session.completed"] as const)(

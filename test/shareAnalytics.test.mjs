@@ -1,5 +1,5 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
+import test from "node:test";
+import assert from "node:assert/strict";
 
 import {
   cleanPageLocation,
@@ -8,172 +8,219 @@ import {
   sanitizeEventParams,
   setAssignmentEntryPoint,
   trackUsageLimit,
-} from '../src/js/analytics.mjs';
-import { launcherUrl } from '../src/js/landingLauncher.mjs';
-import { buildShareHash, readShareState } from '../src/js/shareState.mjs';
+} from "../src/js/analytics.mjs";
+import { launcherUrl } from "../src/js/landingLauncher.mjs";
+import { buildShareHash, readShareState } from "../src/js/shareState.mjs";
 
-test('new share links use a hash and restore their mode', () => {
-  const hash = buildShareHash(['because', 'friend'], 'dictation');
+test("new share links use a hash and restore their mode", () => {
+  const hash = buildShareHash(["because", "friend"], "dictation");
   assert.match(hash, /^#words=/);
-  assert.equal(hash.includes('?'), false);
-  assert.deepEqual(readShareState({ hash, search: '' }), {
-    words: 'because,friend',
-    mode: 'dictation',
+  assert.equal(hash.includes("?"), false);
+  assert.deepEqual(readShareState({ hash, search: "" }), {
+    words: "because,friend",
+    mode: "dictation",
     autoStart: false,
-    entryPage: '',
+    entryPage: "",
     sharedLink: true,
-    source: 'hash',
+    source: "hash",
   });
 });
 
-test('legacy query shares still load and default to Typing Rain', () => {
-  const state = readShareState({ search: '?words=red,blue', hash: '' });
-  assert.equal(state.words, 'red,blue');
-  assert.equal(state.mode, 'typing');
-  assert.equal(state.source, 'query');
+test("legacy query shares still load and default to Typing Rain", () => {
+  const state = readShareState({ search: "?words=red,blue", hash: "" });
+  assert.equal(state.words, "red,blue");
+  assert.equal(state.mode, "typing");
+  assert.equal(state.source, "query");
 });
 
-test('landing launchers preserve the selected mode and autostart', () => {
-  const url = new URL(launcherUrl('/fr/', ' Apple\napple\nbanana ', 'typing', '/fr/'));
+test("landing launchers preserve the selected mode and autostart", () => {
+  const url = new URL(
+    launcherUrl("/fr/", " Apple\napple\nbanana ", "typing", "/fr/"),
+  );
   const state = readShareState(url);
-  assert.equal(url.pathname, '/fr/');
-  assert.equal(state.words, 'apple,banana');
-  assert.equal(state.mode, 'typing');
+  assert.equal(url.pathname, "/fr/");
+  assert.equal(state.words, "apple,banana");
+  assert.equal(state.mode, "typing");
   assert.equal(state.autoStart, true);
-  assert.equal(state.entryPage, '/fr/');
+  assert.equal(state.entryPage, "/fr/");
 });
 
-test('GA page location strips query strings and fragments', () => {
+test("GA page location strips query strings and fragments", () => {
   assert.equal(
-    cleanPageLocation('https://myspellinggame.com/zh/?words=secret#words=private'),
-    'https://myspellinggame.com/zh/',
+    cleanPageLocation(
+      "https://myspellinggame.com/zh/?words=secret#words=private",
+    ),
+    "https://myspellinggame.com/zh/",
   );
 });
 
-test('analytics allowlists omit raw words and typed answers', () => {
-  assert.deepEqual(sanitizeEventParams('word_completed', {
-    mode: 'dictation',
-    word_length: 7,
-    correct: true,
-    word: 'because',
-    answer: 'becuase',
-    words: ['because'],
-  }), { mode: 'dictation', word_length: 7, correct: true });
+test("analytics allowlists omit raw words and typed answers", () => {
+  assert.deepEqual(
+    sanitizeEventParams("word_completed", {
+      mode: "dictation",
+      word_length: 7,
+      correct: true,
+      word: "because",
+      answer: "becuase",
+      words: ["because"],
+    }),
+    { mode: "dictation", word_length: 7, correct: true },
+  );
 });
 
-test('signup CTA analytics keep only conversion funnel fields', () => {
-  assert.deepEqual(sanitizeEventParams('signup_cta_viewed', {
-    mode: 'dictation',
-    word_count: 10,
-    missed_count: 3,
-    replay_round: false,
-    cta_location: 'practice_result',
-    words: ['because'],
-  }), {
-    mode: 'dictation',
-    word_count: 10,
-    missed_count: 3,
-    replay_round: false,
-    cta_location: 'practice_result',
-  });
+test("signup CTA analytics keep only conversion funnel fields", () => {
+  assert.deepEqual(
+    sanitizeEventParams("signup_cta_viewed", {
+      mode: "dictation",
+      word_count: 10,
+      missed_count: 3,
+      replay_round: false,
+      cta_location: "practice_result",
+      words: ["because"],
+    }),
+    {
+      mode: "dictation",
+      word_count: 10,
+      missed_count: 3,
+      replay_round: false,
+      cta_location: "practice_result",
+    },
+  );
 });
 
-test('practice share analytics keep only chooser and anonymous-share fields', () => {
-  assert.deepEqual(sanitizeEventParams('practice_share_options_viewed', {
-    mode: 'typing',
-    word_count: 8,
-    locale: 'en',
-    words: ['because'],
-  }), { mode: 'typing', word_count: 8, locale: 'en' });
-  assert.deepEqual(sanitizeEventParams('practice_link_copied', {
-    mode: 'typing',
-    word_count: 8,
-    locale: 'en',
-    share_type: 'practice_only',
-    words: ['because'],
-  }), {
-    mode: 'typing',
-    word_count: 8,
-    locale: 'en',
-    share_type: 'practice_only',
-  });
+test("practice share analytics keep only chooser and anonymous-share fields", () => {
+  assert.deepEqual(
+    sanitizeEventParams("practice_share_options_viewed", {
+      mode: "typing",
+      word_count: 8,
+      locale: "en",
+      words: ["because"],
+    }),
+    { mode: "typing", word_count: 8, locale: "en" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("practice_link_copied", {
+      mode: "typing",
+      word_count: 8,
+      locale: "en",
+      share_type: "practice_only",
+      words: ["because"],
+    }),
+    {
+      mode: "typing",
+      word_count: 8,
+      locale: "en",
+      share_type: "practice_only",
+    },
+  );
 });
 
-test('teacher analytics omit student, assignment, and Stripe identifiers', () => {
+test("teacher analytics omit student, assignment, and Stripe identifiers", () => {
   const privateValues = {
-    nickname: 'Student 01',
-    word: 'because',
-    words: ['because'],
-    answer: 'becuase',
-    assignment_id: 'assignment-secret',
-    public_id: 'public-secret',
-    stripe_id: 'sub_secret',
+    nickname: "Student 01",
+    word: "because",
+    words: ["because"],
+    answer: "becuase",
+    assignment_id: "assignment-secret",
+    public_id: "public-secret",
+    stripe_id: "sub_secret",
   };
   const expected = {
-    mode: 'typing',
+    mode: "typing",
     word_count: 8,
-    accuracy_range: '90-100',
-    duration_range: '1-3m',
+    accuracy_range: "90-100",
+    duration_range: "1-3m",
   };
-  assert.deepEqual(sanitizeEventParams('assignment_completed', {
-    ...privateValues,
-    ...expected,
-  }), expected);
-  assert.deepEqual(sanitizeEventParams('checkout_started', {
-    ...privateValues,
-    billing_interval: 'year',
-  }), { billing_interval: 'year' });
-  assert.deepEqual(sanitizeEventParams('checkout_redirected', {
-    ...privateValues,
-    billing_interval: 'year',
-  }), { billing_interval: 'year' });
-  assert.deepEqual(sanitizeEventParams('assignment_entry_clicked', {
-    ...privateValues,
-    mode: 'typing',
-    word_count: 8,
-    entry_point: 'copy_track',
-  }), { mode: 'typing', word_count: 8, entry_point: 'copy_track' });
-  assert.deepEqual(sanitizeEventParams('teacher_auth_started', {
-    ...privateValues,
-    entry_point: 'copy_track',
-  }), { entry_point: 'copy_track' });
-  assert.deepEqual(sanitizeEventParams('teacher_auth_completed', {
-    ...privateValues,
-    entry_point: 'copy_track',
-  }), { entry_point: 'copy_track' });
-  assert.deepEqual(sanitizeEventParams('assignment_created', {
-    ...privateValues,
-    mode: 'typing',
-    word_count: 8,
-    entry_point: 'copy_track',
-  }), { mode: 'typing', word_count: 8, entry_point: 'copy_track' });
-  assert.deepEqual(sanitizeEventParams('usage_limit_reached', {
-    ...privateValues,
-    limit_type: 'monthly_submissions',
-  }), { limit_type: 'monthly_submissions' });
-  assert.deepEqual(sanitizeEventParams('upgrade_clicked', {
-    ...privateValues,
-    billing_interval: 'month',
-  }), { billing_interval: 'month' });
-  assert.deepEqual(sanitizeEventParams('upgrade_cta_clicked', {
-    ...privateValues,
-    cta_location: 'smart_review',
-  }), { cta_location: 'smart_review' });
-  assert.deepEqual(sanitizeEventParams('purchase', {
-    ...privateValues,
-    billing_interval: 'year',
-    value: 49.99,
-    currency: 'USD',
-  }), { billing_interval: 'year', value: 49.99, currency: 'USD' });
-  assert.deepEqual(sanitizeEventParams('trial_started', {
-    ...privateValues,
-    billing_interval: 'month',
-    trial_days: 14,
-  }), { billing_interval: 'month', trial_days: 14 });
-  assert.deepEqual(sanitizeEventParams('teacher_auth_completed', privateValues), {});
+  assert.deepEqual(
+    sanitizeEventParams("assignment_completed", {
+      ...privateValues,
+      ...expected,
+    }),
+    expected,
+  );
+  assert.deepEqual(
+    sanitizeEventParams("checkout_started", {
+      ...privateValues,
+      billing_interval: "year",
+    }),
+    { billing_interval: "year" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("checkout_redirected", {
+      ...privateValues,
+      billing_interval: "year",
+    }),
+    { billing_interval: "year" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("assignment_entry_clicked", {
+      ...privateValues,
+      mode: "typing",
+      word_count: 8,
+      entry_point: "copy_track",
+    }),
+    { mode: "typing", word_count: 8, entry_point: "copy_track" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("teacher_auth_started", {
+      ...privateValues,
+      entry_point: "copy_track",
+    }),
+    { entry_point: "copy_track" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("teacher_auth_completed", {
+      ...privateValues,
+      entry_point: "copy_track",
+    }),
+    { entry_point: "copy_track" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("assignment_created", {
+      ...privateValues,
+      mode: "typing",
+      word_count: 8,
+      entry_point: "copy_track",
+    }),
+    { mode: "typing", word_count: 8, entry_point: "copy_track" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("usage_limit_reached", {
+      ...privateValues,
+      limit_type: "monthly_submissions",
+    }),
+    { limit_type: "monthly_submissions" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("upgrade_clicked", {
+      ...privateValues,
+      billing_interval: "month",
+    }),
+    { billing_interval: "month" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("upgrade_cta_clicked", {
+      ...privateValues,
+      cta_location: "smart_review",
+    }),
+    { cta_location: "smart_review" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("purchase", {
+      ...privateValues,
+      billing_interval: "year",
+      value: 49.99,
+      currency: "USD",
+    }),
+    { billing_interval: "year", value: 49.99, currency: "USD" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("teacher_auth_completed", privateValues),
+    {},
+  );
 });
 
-test('assignment entry points accept only the fixed funnel sources', () => {
+test("assignment entry points accept only the fixed funnel sources", () => {
   const values = new Map();
   globalThis.sessionStorage = {
     getItem: (key) => values.get(key) ?? null,
@@ -181,49 +228,59 @@ test('assignment entry points accept only the fixed funnel sources', () => {
     removeItem: (key) => values.delete(key),
   };
   try {
-    for (const source of ['copy_track', 'assign_homework', 'practice_result', 'workspace']) {
+    for (const source of [
+      "copy_track",
+      "assign_homework",
+      "practice_result",
+      "workspace",
+    ]) {
       assert.equal(setAssignmentEntryPoint(source), true);
       assert.equal(getAssignmentEntryPoint(), source);
     }
-    assert.equal(setAssignmentEntryPoint('email@example.test'), false);
-    values.set('mySpellingAssignmentEntryPoint', 'email@example.test');
+    assert.equal(setAssignmentEntryPoint("email@example.test"), false);
+    values.set("mySpellingAssignmentEntryPoint", "email@example.test");
     assert.equal(getAssignmentEntryPoint(), null);
     globalThis.sessionStorage = {
       getItem: () => {
-        throw new Error('blocked');
+        throw new Error("blocked");
       },
       setItem: () => {
-        throw new Error('blocked');
+        throw new Error("blocked");
       },
     };
-    assert.equal(setAssignmentEntryPoint('workspace'), false);
+    assert.equal(setAssignmentEntryPoint("workspace"), false);
     assert.equal(getAssignmentEntryPoint(), null);
   } finally {
     delete globalThis.sessionStorage;
   }
 });
 
-test('usage limits report a known type at most once per page', () => {
+test("usage limits report a known type at most once per page", () => {
   const events = [];
   globalThis.window = { gtag: (...args) => events.push(args) };
   try {
-    trackUsageLimit('monthly_submission_limit');
-    trackUsageLimit('monthly_submission_limit');
-    trackUsageLimit('attempt_limit');
-    trackUsageLimit('saved_list_limit');
-    trackUsageLimit('learner_limit');
+    trackUsageLimit("monthly_submission_limit");
+    trackUsageLimit("monthly_submission_limit");
+    trackUsageLimit("attempt_limit");
+    trackUsageLimit("saved_list_limit");
+    trackUsageLimit("learner_limit");
     assert.deepEqual(events, [
-      ['event', 'usage_limit_reached', { limit_type: 'monthly_submissions' }],
-      ['event', 'usage_limit_reached', { limit_type: 'saved_lists' }],
-      ['event', 'usage_limit_reached', { limit_type: 'learner_profiles' }],
+      ["event", "usage_limit_reached", { limit_type: "monthly_submissions" }],
+      ["event", "usage_limit_reached", { limit_type: "saved_lists" }],
+      ["event", "usage_limit_reached", { limit_type: "learner_profiles" }],
     ]);
   } finally {
     delete globalThis.window;
   }
 });
 
-test('return visits are emitted at most once per session', () => {
-  const local = new Map([['mySpellingGameVisitHistory', JSON.stringify({ lastVisit: 1000, count: 2 })]]);
+test("return visits are emitted at most once per session", () => {
+  const local = new Map([
+    [
+      "mySpellingGameVisitHistory",
+      JSON.stringify({ lastVisit: 1000, count: 2 }),
+    ],
+  ]);
   const session = new Map();
   const events = [];
   globalThis.window = { gtag: (...args) => events.push(args) };
@@ -239,10 +296,16 @@ test('return visits are emitted at most once per session', () => {
   try {
     initReturnVisit(86401000);
     initReturnVisit(172801000);
-    assert.deepEqual(events, [['event', 'return_visit', {
-      days_since_last_visit: 1,
-      visit_count_range: '3-5',
-    }]]);
+    assert.deepEqual(events, [
+      [
+        "event",
+        "return_visit",
+        {
+          days_since_last_visit: 1,
+          visit_count_range: "3-5",
+        },
+      ],
+    ]);
   } finally {
     delete globalThis.window;
     delete globalThis.localStorage;

@@ -27,6 +27,10 @@ function testEnv(overrides: Partial<Env> = {}): Env {
     STRIPE_WEBHOOK_SECRET: "whsec_placeholder",
     STRIPE_PRICE_MONTHLY: "price_monthly",
     STRIPE_PRICE_YEARLY: "price_yearly",
+    STRIPE_PARENT_PRICE_MONTHLY: "price_parent_monthly",
+    STRIPE_PARENT_PRICE_YEARLY: "price_parent_yearly",
+    STRIPE_TEACHER_PRICE_MONTHLY: "price_teacher_monthly",
+    STRIPE_TEACHER_PRICE_YEARLY: "price_teacher_yearly",
     ADMIN_EMAIL: admin.email,
     ...overrides,
   };
@@ -191,7 +195,6 @@ describe("read-only admin dashboard", () => {
       totalUsers: 4,
       googleUsers: 2,
       proUsers: 2,
-      trialingUsers: 1,
       activePaidUsers: 1,
       monthlyUsers: 1,
       yearlyUsers: 1,

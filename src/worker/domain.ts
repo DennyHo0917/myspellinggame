@@ -1,3 +1,14 @@
+const PAID_PLAN_LIMITS = {
+  monthlyAttempts: null,
+  savedLists: null,
+  historyDays: 365,
+  retentionDays: 365,
+  smartReview: true,
+  csvExport: true,
+  missedWordStats: true,
+  sentenceLibrary: true,
+} as const;
+
 export const PLAN_LIMITS = {
   free: {
     activeAssignments: 1,
@@ -11,25 +22,35 @@ export const PLAN_LIMITS = {
     missedWordStats: false,
     sentenceLibrary: false,
   },
-  plus: {
-    activeAssignments: 20,
-    monthlyAttempts: null,
-    savedLists: null,
-    learnerProfiles: 150,
-    historyDays: 365,
-    retentionDays: 365,
-    smartReview: true,
-    csvExport: true,
-    missedWordStats: true,
-    sentenceLibrary: true,
+  parent: {
+    ...PAID_PLAN_LIMITS,
+    activeAssignments: 3,
+    learnerProfiles: 5,
+    csvExport: false,
+    missedWordStats: false,
+  },
+  teacher: {
+    ...PAID_PLAN_LIMITS,
+    activeAssignments: 5,
+    learnerProfiles: 40,
   },
 } as const;
 
 export type Plan = keyof typeof PLAN_LIMITS;
 export type Mode = "dictation" | "typing";
 
+export function resolvePlan(
+  storedPlan: unknown,
+  workspaceType: unknown,
+  hasPaidAccess: boolean,
+): Plan {
+  if (!hasPaidAccess) return "free";
+  if (storedPlan === "parent" || storedPlan === "teacher") return storedPlan;
+  return workspaceType === "family" ? "parent" : "teacher";
+}
+
 export function planWordLimit(plan: Plan): number {
-  return plan === "plus" ? 80 : 40;
+  return plan === "free" ? 30 : 40;
 }
 
 export function enforcePlanWordLimit(words: readonly unknown[], plan: Plan) {
@@ -38,7 +59,7 @@ export function enforcePlanWordLimit(words: readonly unknown[], plan: Plan) {
     throw new HttpError(
       403,
       "word_limit",
-      `${plan === "plus" ? "Plus" : "Free accounts"} support up to ${limit} words per list.`,
+      `${plan === "free" ? "Free accounts" : "Paid plans"} support up to ${limit} words per list.`,
     );
   }
 }

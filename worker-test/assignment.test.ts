@@ -93,10 +93,12 @@ async function call(
   init: RequestInit = {},
   teacher: Teacher | null = teacherA,
   env: Env = testEnv(),
+  overrides: { pinGenerator?: () => string } = {},
 ) {
   try {
     return await handleRequest(request(path, init), env, {
       getSession: sessionFor(teacher),
+      ...overrides,
     });
   } catch (error) {
     if (error instanceof HttpError) {
@@ -185,11 +187,17 @@ async function createSavedList(
   return { response, body: (await response.json()) as Record<string, unknown> };
 }
 
-async function createLearner(name: string, teacher: Teacher = teacherA) {
+async function createLearner(
+  name: string,
+  teacher: Teacher = teacherA,
+  pinGenerator?: () => string,
+) {
   const response = await call(
     "/api/learners",
     { method: "POST", body: JSON.stringify({ name }) },
     teacher,
+    testEnv(),
+    { pinGenerator },
   );
   return { response, body: (await response.json()) as Record<string, unknown> };
 }
@@ -994,6 +1002,30 @@ describe("assignment learner binding and class join", () => {
     expect(me.classPublicId).toMatch(/^[A-Za-z0-9_-]{8,24}$/);
     expect(learner.body.join_pin).toMatch(/^\d{4}$/);
 
+    const roster = (await (await call("/api/assignments")).json()) as {
+      learners: Array<Record<string, unknown>>;
+    };
+    expect(roster.learners).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: learner.body.id,
+          join_pin: learner.body.join_pin,
+        }),
+      ]),
+    );
+    const otherRoster = (await (
+      await call("/api/assignments", {}, teacherB)
+    ).json()) as { learners: Array<Record<string, unknown>> };
+    expect(otherRoster.learners).toHaveLength(0);
+
+    const publicHome = (await (
+      await call(`/api/public/learners/${learner.body.public_id}`, {}, null)
+    ).json()) as Record<string, unknown>;
+    expect(JSON.stringify(publicHome)).not.toContain("join_pin");
+    expect(JSON.stringify(publicHome)).not.toContain(
+      String(learner.body.join_pin),
+    );
+
     const joined = await call(
       `/api/public/join/${me.classPublicId}`,
       { method: "POST", body: JSON.stringify({ pin: learner.body.join_pin }) },
@@ -1013,6 +1045,52 @@ describe("assignment learner binding and class join", () => {
     expect(await wrong.json()).toEqual(
       expect.objectContaining({ error: "invalid_join" }),
     );
+  });
+
+  it("rate limits class join by class and client IP", async () => {
+    await call("/api/workspace", {
+      method: "PATCH",
+      body: JSON.stringify({ workspaceType: "teacher" }),
+    });
+    await createLearner("Alice");
+    const me = (await (await call("/api/me")).json()) as {
+      classPublicId: string;
+    };
+    let key = "";
+    const limitedEnv = testEnv({
+      CREATE_LIMITER: {
+        limit: async (input) => {
+          key = input.key;
+          return { success: false };
+        },
+      },
+    });
+    const response = await call(
+      `/api/public/join/${me.classPublicId}`,
+      {
+        method: "POST",
+        headers: { "CF-Connecting-IP": "203.0.113.10" },
+        body: JSON.stringify({ pin: "1234" }),
+      },
+      null,
+      limitedEnv,
+    );
+    expect(response.status).toBe(429);
+    expect(await response.json()).toEqual(
+      expect.objectContaining({ error: "rate_limited" }),
+    );
+    expect(key).toBe(`join:${me.classPublicId}:203.0.113.10`);
+  });
+
+  it("retries a colliding PIN when creating a learner", async () => {
+    await insertSubscription({ plan: "pro", status: "active" });
+    expect(
+      (await createLearner("Alice", teacherA, () => "1234")).response.status,
+    ).toBe(201);
+    const pins = ["1234", "5678"];
+    const learner = await createLearner("Bob", teacherA, () => pins.shift()!);
+    expect(learner.response.status).toBe(201);
+    expect(learner.body.join_pin).toBe("5678");
   });
 });
 

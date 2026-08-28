@@ -51,7 +51,10 @@ export interface Env extends AuthEnv, StripeEnv {
 
 type TeacherSession = Awaited<ReturnType<typeof getTeacherSession>>;
 type SessionGetter = (env: Env, request: Request) => Promise<TeacherSession>;
-type HandlerOverrides = { getSession?: SessionGetter };
+type HandlerOverrides = {
+  getSession?: SessionGetter;
+  pinGenerator?: () => string;
+};
 
 type AssignmentRow = {
   id: string;
@@ -123,7 +126,34 @@ function randomPin() {
   return String(bytes[0] % 10_000).padStart(4, "0");
 }
 
-async function ensureTeacherJoinIdentity(db: D1Database, userId: string) {
+async function generateUniqueLearnerPin(
+  db: D1Database,
+  ownerUserId: string,
+  generatePin = randomPin,
+) {
+  for (let tries = 0; tries < 20; tries += 1) {
+    const pin = generatePin();
+    const hash = await hashPin(pin);
+    const exists = await db
+      .prepare(
+        "SELECT 1 FROM learners WHERE owner_user_id = ? AND join_pin_hash = ?",
+      )
+      .bind(ownerUserId, hash)
+      .first();
+    if (!exists) return { pin, hash };
+  }
+  throw new HttpError(
+    503,
+    "pin_unavailable",
+    "A student PIN could not be generated. Try again.",
+  );
+}
+
+async function ensureTeacherJoinIdentity(
+  db: D1Database,
+  userId: string,
+  generatePin = randomPin,
+) {
   let user = await db
     .prepare("SELECT class_public_id FROM user WHERE id = ?")
     .bind(userId)
@@ -150,29 +180,17 @@ async function ensureTeacherJoinIdentity(db: D1Database, userId: string) {
     .bind(userId)
     .all<{ id: string }>();
   for (const learner of learners.results) {
-    let hash = "";
-    let pin = "";
-    for (let tries = 0; tries < 20; tries += 1) {
-      pin = randomPin();
-      const candidate = await hashPin(pin);
-      const exists = await db
-        .prepare(
-          "SELECT 1 FROM learners WHERE owner_user_id = ? AND join_pin_hash = ?",
-        )
-        .bind(userId, candidate)
-        .first();
-      if (!exists) {
-        hash = candidate;
-        break;
-      }
-    }
-    if (hash)
-      await db
-        .prepare(
-          "UPDATE learners SET join_pin_hash = ?, join_pin = ? WHERE id = ? AND owner_user_id = ? AND join_pin_hash IS NULL",
-        )
-        .bind(hash, pin, learner.id, userId)
-        .run();
+    const { pin, hash } = await generateUniqueLearnerPin(
+      db,
+      userId,
+      generatePin,
+    );
+    await db
+      .prepare(
+        "UPDATE learners SET join_pin_hash = ?, join_pin = ? WHERE id = ? AND owner_user_id = ? AND join_pin_hash IS NULL",
+      )
+      .bind(hash, pin, learner.id, userId)
+      .run();
   }
   return classPublicId;
 }
@@ -757,7 +775,12 @@ async function listLearners(db: D1Database, ownerUserId: string, plan: Plan) {
   return learners.results;
 }
 
-async function createLearner(env: Env, request: Request, ownerUserId: string) {
+async function createLearner(
+  env: Env,
+  request: Request,
+  ownerUserId: string,
+  generatePin = randomPin,
+) {
   const body = await readJson(request);
   const { nickname: name } = validateNickname(body.name);
   const plan = await getPlan(env, ownerUserId);
@@ -766,8 +789,11 @@ async function createLearner(env: Env, request: Request, ownerUserId: string) {
   const publicId = randomPublicId();
   const nameKey = `learner:${id}`;
   const now = new Date().toISOString();
-  const joinPin = randomPin();
-  const joinPinHash = await hashPin(joinPin);
+  const { pin: joinPin, hash: joinPinHash } = await generateUniqueLearnerPin(
+    env.DB,
+    ownerUserId,
+    generatePin,
+  );
   const inserted = await env.DB.prepare(
     `INSERT INTO learners (id, owner_user_id, name, name_key, public_id, archived, created_at, updated_at, join_pin_hash, join_pin)
      SELECT ?, ?, ?, ?, ?, 0, ?, ?, ?, ?
@@ -1716,6 +1742,16 @@ export async function handleRequest(
   );
   if (joinMatch && method === "POST") {
     requireSameOrigin(request);
+    const clientIp = request.headers.get("CF-Connecting-IP") || "unknown";
+    const allowed = await env.CREATE_LIMITER.limit({
+      key: `join:${joinMatch[1]}:${clientIp}`,
+    });
+    if (!allowed.success)
+      throw new HttpError(
+        429,
+        "rate_limited",
+        "Too many requests. Try again shortly.",
+      );
     const body = await readJson(request);
     if (typeof body.pin !== "string" || !/^\d{4}$/.test(body.pin))
       throw new HttpError(401, "invalid_join", "The PIN is invalid.");
@@ -1764,6 +1800,7 @@ export async function handleRequest(
       workspace.class_public_id = await ensureTeacherJoinIdentity(
         env.DB,
         user.id,
+        overrides.pinGenerator,
       );
     return json({
       user: { id: user.id, name: user.name, email: user.email },
@@ -1852,7 +1889,10 @@ export async function handleRequest(
       });
     if (method === "POST") {
       requireSameOrigin(request);
-      return json(await createLearner(env, request, user.id), 201);
+      return json(
+        await createLearner(env, request, user.id, overrides.pinGenerator),
+        201,
+      );
     }
   }
 

@@ -228,6 +228,124 @@ test("magic learner links use the server identity and hide nickname entry", asyn
   expect(submittedBody).not.toHaveProperty("nickname");
 });
 
+test("teacher uses the visible student PIN to enter the assigned student home", async ({
+  page,
+}) => {
+  const classPublicId = "classroom123";
+  const learnerPublicId = "learnerToken123456789012";
+  const learnerId = "77777777-7777-4777-8777-777777777777";
+  const assignmentId = "88888888-8888-4888-8888-888888888888";
+  const expiresAt = new Date(Date.now() + 86_400_000).toISOString();
+  const json = (route, body) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(body),
+    });
+  await page.route("**/api/me", (route) =>
+    json(route, {
+      user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
+      plan: "plus",
+      workspaceType: "teacher",
+      classPublicId,
+    }),
+  );
+  let createdBody;
+  await page.route("**/api/assignments", async (route) => {
+    if (route.request().method() === "POST") {
+      createdBody = route.request().postDataJSON();
+      return json(route, { id: assignmentId, publicId });
+    }
+    return json(route, {
+      assignments: [],
+      savedLists: [],
+      learners: [
+        {
+          id: learnerId,
+          name: "Alice",
+          archived: 0,
+          join_pin: "1842",
+          completed_attempts: 0,
+          accuracy: 0,
+        },
+      ],
+      usage: {
+        limits: {
+          activeAssignments: 20,
+          monthlyAttempts: null,
+          savedLists: null,
+          learnerProfiles: 150,
+        },
+        activeAssignments: 1,
+        monthlyAttempts: 0,
+        savedLists: 0,
+        learnerProfiles: 1,
+      },
+    });
+  });
+  await page.route(`**/api/assignments/${assignmentId}`, (route) =>
+    json(route, {
+      id: assignmentId,
+      public_id: publicId,
+      title: "Alice's spelling assignment",
+      mode: "typing",
+      status: "published",
+      words,
+      assignedLearners: [{ id: learnerId, name: "Alice" }],
+      summary: { students: 0, attempts: 0, averageAccuracy: 0 },
+      attempts: [],
+      missedWordStats: [],
+    }),
+  );
+  let submittedPin;
+  await page.route(`**/api/public/join/${classPublicId}`, async (route) => {
+    submittedPin = route.request().postDataJSON().pin;
+    await json(route, { learnerPublicId });
+  });
+  await page.route(`**/api/public/learners/${learnerPublicId}`, (route) =>
+    json(route, {
+      learner: { name: "Alice" },
+      assignments: [
+        {
+          public_id: publicId,
+          title: "Alice's spelling assignment",
+          mode: "typing",
+          expires_at: expiresAt,
+          completed: 0,
+        },
+      ],
+    }),
+  );
+
+  await page.goto("/teacher?lang=en");
+  const pinText = await page.getByText(/Student PIN: \d{4}/).textContent();
+  const visiblePin = pinText.match(/\d{4}/)[0];
+  const classUrlText = await page
+    .locator(".notice", { hasText: "Class URL:" })
+    .textContent();
+  const classUrl = classUrlText.match(/https?:\/\/\S+/)[0];
+
+  await page.getByRole("link", { name: "Create assignment" }).click();
+  await page.getByLabel("Assignment title").fill("Alice's spelling assignment");
+  await page.getByLabel("Spelling words").fill("apple\nbanana");
+  await page.getByLabel("Typing").check();
+  await page.getByLabel("Selected students").check();
+  await page.getByLabel("Alice").check();
+  await page.getByRole("button", { name: "Create and publish" }).click();
+  await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
+  expect(createdBody.learnerIds).toEqual([learnerId]);
+
+  await page.goto(`${classUrl}?lang=en`);
+  await page.getByLabel("Student PIN").fill(visiblePin);
+  await page.getByRole("button", { name: "Start assignment" }).click();
+
+  await expect(page).toHaveURL(`/l/${learnerPublicId}?lang=en`);
+  await expect(page.getByRole("heading", { name: "Hi, Alice" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Alice's spelling assignment" }),
+  ).toBeVisible();
+  expect(submittedPin).toBe(visiblePin);
+});
+
 const analyticsEvents = (page, name) =>
   page.evaluate(
     (eventName) =>

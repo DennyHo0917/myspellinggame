@@ -722,12 +722,34 @@ function renderLearners(me, learners) {
       accuracy: learner.accuracy,
     });
     body.append(titleRow, summary);
+    if (
+      me.workspaceType === "teacher" &&
+      !learner.archived &&
+      learner.join_pin
+    ) {
+      const pin = document.createElement("p");
+      pin.className = "assignment-meta";
+      pin.textContent = `${copy.studentPin}: ${learner.join_pin}`;
+      body.append(pin);
+    }
     const actions = document.createElement("div");
     actions.className = "actions compact-actions";
     const open = document.createElement("a");
     open.className = "button-link button-secondary";
     open.href = `/teacher/learners/${learner.id}?lang=${encodeURIComponent(locale)}`;
     open.textContent = copy.viewLearner;
+    const copyPin = document.createElement("button");
+    copyPin.type = "button";
+    copyPin.className = "button-secondary";
+    copyPin.textContent = copy.copyPin;
+    copyPin.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(learner.join_pin);
+        copyPin.textContent = copy.pinCopied;
+      } catch {
+        prompt(copy.copyPin, learner.join_pin);
+      }
+    });
     const rename = document.createElement("button");
     rename.type = "button";
     rename.className = "button-secondary";
@@ -758,7 +780,10 @@ function renderLearners(me, learners) {
       });
       await renderDashboard(me);
     });
-    actions.append(open, rename, archive);
+    actions.append(open);
+    if (me.workspaceType === "teacher" && !learner.archived && learner.join_pin)
+      actions.append(copyPin);
+    actions.append(rename, archive);
     row.append(body, actions);
     list.append(row);
   }

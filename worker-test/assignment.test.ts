@@ -285,7 +285,7 @@ describe("teacher authorization and quotas", () => {
   it("keeps the Free and Plus plan limits centralized", () => {
     expect(PLAN_LIMITS.free).toEqual({
       activeAssignments: 1,
-      monthlyAttempts: 15,
+      monthlyAttempts: 8,
       savedLists: 1,
       learnerProfiles: 1,
       historyDays: 14,
@@ -525,7 +525,7 @@ describe("teacher authorization and quotas", () => {
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
     const now = new Date().toISOString();
-    const statements = Array.from({ length: 15 }, () =>
+    const statements = Array.from({ length: 7 }, () =>
       bindings.DB.prepare(
         `INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at)
          VALUES (?, ?, ?, ?)`,
@@ -533,9 +533,10 @@ describe("teacher authorization and quotas", () => {
     );
     await bindings.DB.batch(statements);
 
-    const response = await submit(publicId, assignment.words);
-    expect(response.status).toBe(403);
-    expect(((await response.json()) as Record<string, unknown>).error).toBe(
+    expect((await submit(publicId, assignment.words)).status).toBe(201);
+    const limited = await submit(publicId, assignment.words);
+    expect(limited.status).toBe(403);
+    expect(((await limited.json()) as Record<string, unknown>).error).toBe(
       "monthly_submission_limit",
     );
 
@@ -1825,6 +1826,48 @@ describe("Stripe checkout", () => {
     expect(calls).toBe(1);
   });
 
+  it.each([
+    ["year", "month", "price_yearly", "price_monthly"],
+    ["month", "year", "price_monthly", "price_yearly"],
+  ] as const)(
+    "replaces an active %s lock when switching to %s",
+    async (firstInterval, secondInterval, firstPrice, secondPrice) => {
+      const prices: string[] = [];
+      let calls = 0;
+      const createUniqueSession = async (
+        params: Stripe.Checkout.SessionCreateParams,
+      ) => {
+        calls += 1;
+        prices.push(String(params.line_items?.[0]?.price));
+        return {
+          id: `cs_${calls}`,
+          url: `https://checkout.test/${calls}`,
+          expires_at: params.expires_at!,
+        };
+      };
+
+      await createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        firstInterval,
+        "https://example.test",
+        { now, createSession: createUniqueSession },
+      );
+      await expect(
+        createCheckout(
+          testEnv(),
+          bindings.DB,
+          teacherA,
+          secondInterval,
+          "https://example.test",
+          { now, createSession: createUniqueSession },
+        ),
+      ).resolves.toMatchObject({ id: "cs_2" });
+      expect(prices).toEqual([firstPrice, secondPrice]);
+    },
+  );
+
   it("stores the exact expiration sent to Stripe", async () => {
     let sentExpiresAt = 0;
     await createCheckout(
@@ -1960,12 +2003,16 @@ describe("Stripe event processing", () => {
       },
     }) as unknown as Stripe.Event;
 
-  async function createTestCheckout(id: string, now: Date) {
+  async function createTestCheckout(
+    id: string,
+    now: Date,
+    interval: "month" | "year" = "month",
+  ) {
     return createCheckout(
       testEnv(),
       bindings.DB,
       teacherA,
-      "month",
+      interval,
       "https://example.test",
       {
         now,
@@ -2190,7 +2237,7 @@ describe("Stripe event processing", () => {
     async (eventType) => {
       const now = new Date();
       await createTestCheckout("cs_old", now);
-      await createTestCheckout("cs_new", new Date(now.getTime() + 36 * 60_000));
+      await createTestCheckout("cs_new", now, "year");
 
       await processStripeEvent(
         bindings.DB,

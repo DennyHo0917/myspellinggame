@@ -1,7 +1,7 @@
 export const PLAN_LIMITS = {
   free: {
     activeAssignments: 1,
-    monthlyAttempts: 15,
+    monthlyAttempts: 8,
     savedLists: 1,
     learnerProfiles: 1,
     historyDays: 14,

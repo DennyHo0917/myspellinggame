@@ -31,6 +31,10 @@ const PACKS = {
     plan: "{plan} plan",
     activeUsage: "{used} of {limit} active assignments",
     submissionUsage: "{used} of {limit} submissions this month",
+    submissionLimitWarning:
+      "You're close to the Free monthly limit. {used} of {limit} student submissions used this month. Upgrade to Plus for unlimited student submissions.",
+    submissionLimitReached:
+      "You've reached the Free monthly limit of {limit} student submissions. New assignment results cannot be saved until your monthly limit resets or you upgrade to Plus.",
     unlimited: "Unlimited monthly submissions",
     studentUsage: "{used} student nicknames stored",
     noAssignments: "No assignments yet. Create one to share with students.",
@@ -138,8 +142,10 @@ const PACKS = {
       "You already have an active subscription. Manage it from the workspace.",
     invalidNickname:
       "Enter a nickname or classroom number with 2–32 characters.",
-    activeLimit: "Your active assignment limit has been reached.",
+    activeLimit:
+      "You've reached the Free plan limit of 1 active assignment. Close an existing assignment or upgrade to Plus for up to 20 active assignments.",
     billingUnavailable: "Billing is not configured in this environment yet.",
+    checkoutPending: "A checkout is already being prepared. Please try again.",
     checkoutRetry:
       "We couldn’t open Stripe Checkout. Your selected plan is still saved.",
     retryCheckout: "Try checkout again",
@@ -273,6 +279,10 @@ const PACKS = {
     plan: "Plan {plan}",
     activeUsage: "{used} de {limit} tareas activas",
     submissionUsage: "{used} de {limit} entregas este mes",
+    submissionLimitWarning:
+      "Te estás acercando al límite mensual del plan Gratis. Este mes se han usado {used} de {limit} entregas de estudiantes. Pásate a Plus para tener entregas ilimitadas.",
+    submissionLimitReached:
+      "Has alcanzado el límite mensual del plan Gratis de {limit} entregas de estudiantes. No se podrán guardar nuevos resultados hasta que se renueve el límite mensual o te pases a Plus.",
     unlimited: "Entregas mensuales ilimitadas",
     studentUsage: "{used} apodos guardados",
     noAssignments:
@@ -382,8 +392,10 @@ const PACKS = {
       "Ya tienes una suscripción activa. Adminístrala desde el espacio de trabajo.",
     invalidNickname:
       "Introduce un apodo o número de clase de 2 a 32 caracteres.",
-    activeLimit: "Has alcanzado el límite de tareas activas.",
+    activeLimit:
+      "Has alcanzado el límite del plan Gratis de 1 tarea activa. Cierra una tarea existente o pásate a Plus para tener hasta 20 tareas activas.",
     billingUnavailable: "Los pagos aún no están configurados en este entorno.",
+    checkoutPending: "Ya se está preparando un pago. Inténtalo de nuevo.",
     checkoutRetry:
       "No pudimos abrir el pago seguro. El plan que elegiste sigue guardado.",
     retryCheckout: "Reintentar el pago",
@@ -517,6 +529,10 @@ const PACKS = {
     plan: "Plano {plan}",
     activeUsage: "{used} de {limit} tarefas ativas",
     submissionUsage: "{used} de {limit} envios neste mês",
+    submissionLimitWarning:
+      "Você está perto do limite mensal do plano Grátis. Foram usados {used} de {limit} envios de alunos neste mês. Assine o Plus para ter envios ilimitados.",
+    submissionLimitReached:
+      "Você atingiu o limite mensal do plano Grátis de {limit} envios de alunos. Novos resultados não poderão ser salvos até a renovação do limite mensal ou até você assinar o Plus.",
     unlimited: "Envios mensais ilimitados",
     studentUsage: "{used} apelidos armazenados",
     noAssignments:
@@ -625,9 +641,11 @@ const PACKS = {
     alreadySubscribed:
       "Você já tem uma assinatura ativa. Gerencie-a no espaço de trabalho.",
     invalidNickname: "Use um apelido ou número de sala com 2 a 32 caracteres.",
-    activeLimit: "Você atingiu o limite de tarefas ativas.",
+    activeLimit:
+      "Você atingiu o limite do plano Grátis de 1 tarefa ativa. Feche uma tarefa existente ou assine o Plus para ter até 20 tarefas ativas.",
     billingUnavailable:
       "Os pagamentos ainda não estão configurados neste ambiente.",
+    checkoutPending: "Um checkout já está sendo preparado. Tente novamente.",
     checkoutRetry:
       "Não foi possível abrir o checkout. O plano escolhido continua salvo.",
     retryCheckout: "Tentar o checkout novamente",
@@ -759,6 +777,10 @@ const PACKS = {
     plan: "Offre {plan}",
     activeUsage: "{used} devoirs actifs sur {limit}",
     submissionUsage: "{used} remises sur {limit} ce mois-ci",
+    submissionLimitWarning:
+      "Vous approchez de la limite mensuelle de l’offre Gratuite. {used} remises d’élèves sur {limit} ont été utilisées ce mois-ci. Passez à Plus pour des remises illimitées.",
+    submissionLimitReached:
+      "Vous avez atteint la limite mensuelle de l’offre Gratuite de {limit} remises d’élèves. Les nouveaux résultats ne pourront pas être enregistrés avant la réinitialisation mensuelle ou le passage à Plus.",
     unlimited: "Remises mensuelles illimitées",
     studentUsage: "{used} pseudonymes conservés",
     noAssignments:
@@ -869,8 +891,11 @@ const PACKS = {
     alreadySubscribed:
       "Vous avez déjà un abonnement actif. Gérez-le depuis l’espace de travail.",
     invalidNickname: "Saisissez un pseudonyme ou numéro de 2 à 32 caractères.",
-    activeLimit: "Votre limite de devoirs actifs est atteinte.",
+    activeLimit:
+      "Vous avez atteint la limite de l’offre Gratuite : 1 devoir actif. Fermez un devoir existant ou passez à Plus pour avoir jusqu’à 20 devoirs actifs.",
     billingUnavailable: "La facturation n’est pas encore configurée ici.",
+    checkoutPending:
+      "Un paiement est déjà en cours de préparation. Veuillez réessayer.",
     checkoutRetry:
       "Impossible d’ouvrir le paiement sécurisé. Votre offre reste enregistrée.",
     retryCheckout: "Réessayer le paiement",
@@ -1004,6 +1029,10 @@ const PACKS = {
     plan: "Paket {plan}",
     activeUsage: "{used} dari {limit} tugas aktif",
     submissionUsage: "{used} dari {limit} kiriman bulan ini",
+    submissionLimitWarning:
+      "Anda hampir mencapai batas bulanan paket Gratis. {used} dari {limit} kiriman siswa sudah digunakan bulan ini. Upgrade ke Plus untuk kiriman siswa tanpa batas.",
+    submissionLimitReached:
+      "Anda telah mencapai batas bulanan paket Gratis sebanyak {limit} kiriman siswa. Hasil tugas baru tidak dapat disimpan sampai batas bulanan direset atau Anda upgrade ke Plus.",
     unlimited: "Kiriman bulanan tanpa batas",
     studentUsage: "{used} nama panggilan tersimpan",
     noAssignments: "Belum ada tugas. Buat tugas untuk dibagikan kepada siswa.",
@@ -1111,8 +1140,10 @@ const PACKS = {
       "Kamu sudah memiliki langganan aktif. Kelola dari ruang kerja.",
     invalidNickname:
       "Masukkan nama panggilan atau nomor kelas sepanjang 2–32 karakter.",
-    activeLimit: "Batas tugas aktif sudah tercapai.",
+    activeLimit:
+      "Anda telah mencapai batas paket Gratis sebanyak 1 tugas aktif. Tutup tugas yang ada atau upgrade ke Plus untuk mendapatkan hingga 20 tugas aktif.",
     billingUnavailable: "Pembayaran belum dikonfigurasi di lingkungan ini.",
+    checkoutPending: "Checkout sedang disiapkan. Silakan coba lagi.",
     checkoutRetry:
       "Checkout belum dapat dibuka. Paket yang dipilih tetap tersimpan.",
     retryCheckout: "Coba checkout lagi",
@@ -1244,6 +1275,10 @@ const PACKS = {
     plan: "{plan} 方案",
     activeUsage: "活跃作业 {used}/{limit}",
     submissionUsage: "本月提交 {used}/{limit}",
+    submissionLimitWarning:
+      "即将达到免费版的每月额度。本月已使用 {used}/{limit} 次学生提交。升级到 Plus 即可获得不限量的学生提交。",
+    submissionLimitReached:
+      "已达到免费版每月 {limit} 次学生提交的额度。在每月额度重置或升级到 Plus 前，新的作业结果将无法保存。",
     unlimited: "本月提交不限量",
     studentUsage: "已保存 {used} 个学生昵称",
     noAssignments: "还没有作业。创建一份后即可分享给学生。",
@@ -1345,8 +1380,10 @@ const PACKS = {
     attemptConflict: "本次尝试暂时无法保存，请重试。",
     alreadySubscribed: "你已有生效中的订阅，请在工作台中管理。",
     invalidNickname: "请输入 2～32 个字符的昵称或课堂编号。",
-    activeLimit: "活跃作业额度已用完。",
+    activeLimit:
+      "已达到免费版最多 1 个活跃作业的限制。请先关闭一份现有作业，或升级到 Plus，最多可同时保留 20 个活跃作业。",
     billingUnavailable: "当前环境尚未配置付费功能。",
+    checkoutPending: "结账请求正在处理中，请稍后重试。",
     checkoutRetry: "暂时无法打开 Stripe 结账页，你选择的方案仍已保留。",
     retryCheckout: "重新尝试结账",
     activatingPro: "正在激活 Plus 套餐…",

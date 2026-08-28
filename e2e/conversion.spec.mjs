@@ -21,7 +21,7 @@ async function mockAssignments(page, plan = "pro") {
           studentNicknames: 0,
           limits: {
             activeAssignments: plan === "pro" ? 20 : 1,
-            monthlyAttempts: plan === "pro" ? null : 15,
+            monthlyAttempts: plan === "pro" ? null : 8,
           },
         },
       }),

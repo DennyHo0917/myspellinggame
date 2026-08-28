@@ -49,6 +49,7 @@ const ERROR_KEYS = {
   active_assignment_limit: "activeLimit",
   billing_not_configured: "billingUnavailable",
   already_subscribed: "alreadySubscribed",
+  checkout_pending: "checkoutPending",
   invalid_title: "invalidTitle",
   invalid_words: "invalidWords",
   word_limit: "wordLimit",
@@ -452,6 +453,27 @@ function usageCards(data) {
   return grid;
 }
 
+function submissionLimitNotice(data) {
+  const { monthlyAttempts: used, limits } = data;
+  const limit = limits.monthlyAttempts;
+  if (limit === null || used < 6) return null;
+  const reached = used >= limit;
+  const notice = document.createElement("div");
+  notice.className = "notice submission-limit-notice";
+  const message = document.createElement("p");
+  message.textContent = m(
+    reached ? "submissionLimitReached" : "submissionLimitWarning",
+    { used, limit },
+  );
+  notice.append(
+    message,
+    upgradeLink(
+      reached ? "submission_limit_reached" : "submission_limit_warning",
+    ),
+  );
+  return notice;
+}
+
 function showSectionError(section, error, ctaLocation) {
   section.querySelector(".section-error")?.remove();
   const notice = document.createElement("div");
@@ -754,12 +776,15 @@ async function renderDashboard(me) {
     billing.textContent = copy.manageBilling;
     billing.addEventListener("click", openPortal);
   } else {
-    billing.href = "#pricing";
+    billing.href = productPagePath("pricing", locale);
     billing.className = "button-link pro";
     billing.textContent = copy.upgrade;
   }
   actions.append(create, billing);
-  card.append(heading, greeting, plan, usageCards(data.usage), actions);
+  const submissionNotice = submissionLimitNotice(data.usage);
+  card.append(heading, greeting, plan, usageCards(data.usage));
+  if (submissionNotice) card.append(submissionNotice);
+  card.append(actions);
   main.append(card);
 
   const listCard = document.createElement("section");
@@ -943,6 +968,7 @@ async function renderNew(me) {
   const status = statusElement(form);
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    form.querySelector(".section-error")?.remove();
     const button = form.querySelector('button[type="submit"]');
     button.disabled = true;
     button.textContent = copy.creating;
@@ -978,8 +1004,13 @@ async function renderNew(me) {
       clearAssignmentEntryPoint();
       location.href = `/teacher/assignments/${result.id}?lang=${encodeURIComponent(locale)}`;
     } catch (error) {
-      status.textContent = error.message;
-      status.className = "status error";
+      if (error.code === "active_assignment_limit") {
+        status.textContent = "";
+        showSectionError(form, error, "active_assignment_limit");
+      } else {
+        status.textContent = error.message;
+        status.className = "status error";
+      }
       button.disabled = false;
       button.textContent = copy.publish;
     }

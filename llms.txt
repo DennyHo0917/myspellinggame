@@ -102,7 +102,7 @@ Free accounts support up to 40 words per list.
 Free workspace includes:
 
 - 1 active assignment
-- 15 student submissions per month
+- 8 student submissions per month
 - 1 saved list
 - 1 student profile
 - 14 days of progress and mastery history

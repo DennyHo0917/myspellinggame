@@ -922,7 +922,7 @@ test("teacher creates an assignment with an example sentence and the student pla
             activeAssignments: 0,
             monthlyAttempts: 0,
             studentNicknames: 0,
-            limits: { activeAssignments: 1, monthlyAttempts: 15 },
+            limits: { activeAssignments: 1, monthlyAttempts: 8 },
           },
         }),
       });
@@ -1375,7 +1375,7 @@ test("failed automatic Checkout stays retryable on the teacher page", async ({
           activeAssignments: 0,
           monthlyAttempts: 0,
           studentNicknames: 0,
-          limits: { activeAssignments: 1, monthlyAttempts: 15 },
+          limits: { activeAssignments: 1, monthlyAttempts: 8 },
         },
       }),
     }),
@@ -1544,6 +1544,107 @@ test("mobile conversion pages keep their key actions usable", async ({
   await page.goto("/teacher/assignments/new?lang=en");
   await expect(page.getByLabel("Spelling words")).toBeVisible();
   await expectNoHorizontalOverflow();
+});
+
+test("Free workspace warns before the submission limit and Plus does not", async ({
+  page,
+}) => {
+  let plan = "free";
+  let monthlyAttempts = 6;
+  const json = (route, body, status = 200) =>
+    route.fulfill({
+      status,
+      contentType: "application/json",
+      body: JSON.stringify(body),
+    });
+  await page.route("**/api/me", (route) =>
+    json(route, {
+      user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
+      plan,
+    }),
+  );
+  await page.route("**/api/assignments", (route) =>
+    json(route, {
+      assignments: [],
+      savedLists: [],
+      learners: [],
+      usage: {
+        limits: {
+          activeAssignments: plan === "free" ? 1 : 20,
+          monthlyAttempts: plan === "free" ? 8 : null,
+          savedLists: plan === "free" ? 1 : null,
+          learnerProfiles: plan === "free" ? 1 : 150,
+        },
+        activeAssignments: 0,
+        monthlyAttempts,
+        savedLists: 0,
+        learnerProfiles: 0,
+      },
+    }),
+  );
+
+  await page.goto("/teacher?lang=en");
+  const warning = page.locator(".submission-limit-notice");
+  await expect(warning).toContainText("You're close to the Free monthly limit");
+  await expect(warning).toContainText("6 of 8 student submissions");
+  await expect(
+    warning.getByRole("link", { name: "Upgrade to Plus" }),
+  ).toHaveAttribute("href", "/pricing");
+
+  monthlyAttempts = 8;
+  await page.reload();
+  await expect(page.locator(".submission-limit-notice")).toContainText(
+    "You've reached the Free monthly limit of 8 student submissions",
+  );
+
+  plan = "plus";
+  monthlyAttempts = 100;
+  await page.reload();
+  await expect(page.locator(".submission-limit-notice")).toHaveCount(0);
+});
+
+test("active assignment limit offers a clear locale-aware upgrade", async ({
+  page,
+}) => {
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: {
+          id: "teacher-a",
+          name: "Teacher A",
+          email: "a@example.test",
+        },
+        plan: "free",
+      }),
+    }),
+  );
+  await page.route("**/api/assignments", (route) =>
+    route.fulfill({
+      status: 403,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "active_assignment_limit" }),
+    }),
+  );
+
+  await page.goto("/teacher/assignments/new?lang=en");
+  await page.getByLabel("Assignment title").fill("Week two");
+  await page.getByLabel("Spelling words").fill("apple\nbanana");
+  await page.getByRole("button", { name: "Create and publish" }).click();
+
+  const notice = page.locator(".section-error");
+  await expect(notice).toContainText(
+    "You've reached the Free plan limit of 1 active assignment",
+  );
+  await expect(notice).toContainText(
+    "Close an existing assignment or upgrade to Plus for up to 20 active assignments",
+  );
+  await expect(
+    notice.getByRole("link", { name: "Upgrade to Plus" }),
+  ).toHaveAttribute("href", "/pricing");
+  await expect(
+    page.getByRole("link", { name: "Back to workspace" }),
+  ).toBeVisible();
 });
 
 test("localized FAQ home control is centered and returns home", async ({
@@ -1855,7 +1956,7 @@ test("free teacher results preview distinct missed words as inert text", async (
         plan: "free",
         limits: {
           activeAssignments: 1,
-          monthlyAttempts: 15,
+          monthlyAttempts: 8,
           studentNicknames: 30,
         },
         activeAssignments: 1,
@@ -1964,7 +2065,7 @@ test("free assignment and learner previews avoid zero-value urgency", async ({
       plan: "free",
       limits: {
         activeAssignments: 1,
-        monthlyAttempts: 15,
+        monthlyAttempts: 8,
         learnerProfiles: 1,
       },
     }),

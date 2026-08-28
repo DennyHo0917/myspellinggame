@@ -328,7 +328,7 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
   );
 
   await page.goto("/teacher?lang=en");
-  await expect(page.getByText("Teacher plan", { exact: true })).toBeVisible();
+  await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Assignments" }),
   ).toBeVisible();
@@ -1817,7 +1817,7 @@ test("mobile conversion pages keep their key actions usable", async ({
   await expectNoHorizontalOverflow();
 });
 
-test("Free workspace warns before the submission limit and Plus does not", async ({
+test("Free workspace warns before the submission limit and paid plans do not", async ({
   page,
 }) => {
   let plan = "free";
@@ -1867,19 +1867,21 @@ test("Free workspace warns before the submission limit and Plus does not", async
     page
       .locator(".teacher-dashboard-card")
       .getByRole("link", {
-        name: "Upgrade to Plus",
+        name: "View Plans",
       })
       .first(),
   ).toHaveAttribute("href", "/pricing");
   const warning = page.locator(".submission-limit-notice");
-  await expect(warning).toContainText("You're close to the Free monthly limit");
+  await expect(warning).toContainText(
+    "You're close to the Free Plan monthly limit",
+  );
   await expect(warning).toContainText("6 of 8 student submissions");
   await expect(
-    warning.getByRole("link", { name: "Upgrade to Plus" }),
+    warning.getByRole("link", { name: "View Plans" }),
   ).toHaveAttribute("href", "/pricing");
   await page
     .locator(".teacher-dashboard-card")
-    .getByRole("link", { name: "Upgrade to Plus" })
+    .getByRole("link", { name: "View Plans" })
     .first()
     .click();
   await expect(page).toHaveURL(/\/pricing$/);
@@ -1889,7 +1891,7 @@ test("Free workspace warns before the submission limit and Plus does not", async
   monthlyAttempts = 8;
   await page.reload();
   await expect(page.locator(".submission-limit-notice")).toContainText(
-    "You've reached the Free monthly limit of 8 student submissions",
+    "You've reached the Free Plan monthly limit of 8 student submissions",
   );
 
   plan = "teacher";
@@ -1941,13 +1943,13 @@ test("active assignment limit offers a clear locale-aware upgrade", async ({
 
   const notice = page.locator(".section-error");
   await expect(notice).toContainText(
-    "You've reached the Free plan limit of 1 active assignment",
+    "You've reached the Free Plan limit of 1 active assignment",
   );
   await expect(notice).toContainText(
     "Close an existing assignment or upgrade for more active assignments",
   );
   await expect(
-    notice.getByRole("link", { name: "Upgrade to Plus" }),
+    notice.getByRole("link", { name: "View Plans" }),
   ).toHaveAttribute("href", "/pricing");
   await expect(
     page.getByRole("link", { name: "Back to workspace" }),
@@ -2305,7 +2307,7 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
   );
 
   await page.goto("/teacher?lang=en");
-  await expect(page.getByText("Parent plan", { exact: true })).toBeVisible();
+  await expect(page.getByText("Parent Plan", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Children" })).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Saved Lists" }),
@@ -2523,16 +2525,14 @@ test("free assignment and learner previews avoid zero-value urgency", async ({
     has: page.getByRole("heading", { name: "Smart missed-word review" }),
   });
   await expect(review).toContainText(
-    "4 words currently need review. Upgrade to Plus to turn them into a focused review assignment.",
+    "4 words currently need review. Parent and Teacher Plans can turn them into a focused review assignment. View plans.",
   );
-  await expect(
-    review.getByRole("link", { name: "Upgrade to Plus" }),
-  ).toHaveCount(1);
+  await expect(review.getByRole("link", { name: "View Plans" })).toHaveCount(1);
 
   needsReview = 0;
   await page.reload();
   await expect(review).toContainText(
-    "Upgrade to Plus to create smart review assignments.",
+    "Smart Review is included in Parent and Teacher Plans. View plans.",
   );
   await expect(review).not.toContainText("0 words");
 });

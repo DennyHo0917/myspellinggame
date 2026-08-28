@@ -234,20 +234,23 @@ export async function createCheckout(
   };
   const existingLock = await db
     .prepare(
-      `SELECT interval, stripe_session_id, session_url, expires_at FROM checkout_locks
+      `SELECT plan, interval, stripe_session_id, session_url, expires_at FROM checkout_locks
        WHERE user_id = ? AND expires_at > ?`,
     )
     .bind(user.id, nowIso)
     .first<{
+      plan: "parent" | "teacher" | null;
       interval: "month" | "year";
       stripe_session_id: string | null;
       session_url: string | null;
       expires_at: string;
     }>();
   if (existingLock) {
-    if (existingLock.interval === interval && existingLock.session_url)
+    const sameCheckout =
+      existingLock.plan === plan && existingLock.interval === interval;
+    if (sameCheckout && existingLock.session_url)
       return { url: existingLock.session_url };
-    if (existingLock.interval === interval)
+    if (sameCheckout)
       throw new HttpError(
         409,
         "checkout_pending",
@@ -262,27 +265,38 @@ export async function createCheckout(
   const expiresAt = new Date(sessionExpiresAt * 1000).toISOString();
   const claim = await db
     .prepare(
-      `INSERT INTO checkout_locks (user_id, token, interval, expires_at, created_at)
-       VALUES (?, ?, ?, ?, ?)
+      `INSERT INTO checkout_locks (user_id, token, plan, interval, expires_at, created_at)
+       VALUES (?, ?, ?, ?, ?, ?)
        ON CONFLICT(user_id) DO UPDATE SET
-         token = excluded.token, interval = excluded.interval,
+         token = excluded.token, plan = excluded.plan,
+         interval = excluded.interval,
          stripe_session_id = NULL, session_url = NULL,
          expires_at = excluded.expires_at,
          created_at = excluded.created_at
        WHERE checkout_locks.expires_at <= ?
+          OR checkout_locks.plan IS NULL
+          OR checkout_locks.plan <> excluded.plan
           OR checkout_locks.interval <> excluded.interval`,
     )
-    .bind(user.id, token, interval, expiresAt, nowIso, nowIso)
+    .bind(user.id, token, plan, interval, expiresAt, nowIso, nowIso)
     .run();
   if (!claim.meta.changes) {
     const pending = await db
       .prepare(
-        `SELECT interval, session_url FROM checkout_locks
+        `SELECT plan, interval, session_url FROM checkout_locks
          WHERE user_id = ? AND expires_at > ?`,
       )
       .bind(user.id, nowIso)
-      .first<{ interval: "month" | "year"; session_url: string | null }>();
-    if (pending?.interval === interval && pending.session_url)
+      .first<{
+        plan: "parent" | "teacher" | null;
+        interval: "month" | "year";
+        session_url: string | null;
+      }>();
+    if (
+      pending?.plan === plan &&
+      pending.interval === interval &&
+      pending.session_url
+    )
       return { url: pending.session_url };
     throw new HttpError(
       409,

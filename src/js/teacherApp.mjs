@@ -830,15 +830,11 @@ async function renderDashboard(me) {
   greeting.textContent = m("greeting", { name: me.user.name });
   const plan = document.createElement("span");
   plan.className = `badge teacher-plan-badge ${isPlusPlan(me) ? "pro" : ""}`;
-  plan.textContent = m("plan", {
-    plan: isParentPlan(me)
-      ? copy.parentPlan
-      : isTeacherPlan(me)
-        ? copy.teacherPlan
-        : isPlusPlan(me)
-          ? "Plus"
-          : "Free",
-  });
+  plan.textContent = isParentPlan(me)
+    ? copy.parentPlan
+    : isTeacherPlan(me) || isPlusPlan(me)
+      ? copy.teacherPlan
+      : copy.freePlan;
   const actions = document.createElement("div");
   actions.className = "actions";
   const create = document.createElement("a");

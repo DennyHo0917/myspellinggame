@@ -101,8 +101,7 @@ test("Checkout success waits for Free to become Pro and records once", async ({
   await mockAssignments(page);
 
   await page.goto("/teacher?lang=en&checkout=success");
-  await expect(page.getByText("Activating your Plus plan…")).toBeVisible();
-  await expect(page.getByText("Plus plan", { exact: true })).toBeVisible();
+  await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   await expect(page).not.toHaveURL(/checkout=success/);
   expect(await conversionEvents(page)).toEqual([
     "subscription_started",
@@ -111,7 +110,7 @@ test("Checkout success waits for Free to become Pro and records once", async ({
   expect(calls).toBe(2);
 
   await page.goto("/teacher?lang=en&checkout=success");
-  await expect(page.getByText("Plus plan", { exact: true })).toBeVisible();
+  await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   expect(await conversionEvents(page)).toEqual([]);
 });
 
@@ -135,9 +134,8 @@ test("Parent Checkout success waits for Parent activation and records the Parent
   await mockAssignments(page, "parent");
 
   await page.goto("/teacher?lang=en&checkout=success&plan=parent");
-  await expect(page.getByText("Activating your Parent plan…")).toBeVisible();
-  await expect(page.getByText("Parent plan", { exact: true })).toBeVisible();
-  await expect(page.getByText("Parent plan is active.")).toBeVisible();
+  await expect(page.getByText("Parent Plan", { exact: true })).toBeVisible();
+  await expect(page.getByText("Parent Plan is active.")).toBeVisible();
   await expect(page).not.toHaveURL(/checkout=success|plan=parent/);
   expect(
     await page.evaluate(
@@ -171,9 +169,8 @@ test("Teacher Checkout success waits for Teacher activation and records the Teac
   await mockAssignments(page, "teacher");
 
   await page.goto("/teacher?lang=en&checkout=success&plan=teacher");
-  await expect(page.getByText("Activating your Teacher plan…")).toBeVisible();
-  await expect(page.getByText("Teacher plan", { exact: true })).toBeVisible();
-  await expect(page.getByText("Teacher plan is active.")).toBeVisible();
+  await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
+  await expect(page.getByText("Teacher Plan is active.")).toBeVisible();
   expect(
     await page.evaluate(
       () =>
@@ -203,7 +200,7 @@ test("Checkout success handles an account that is already Pro", async ({
   await mockAssignments(page);
 
   await page.goto("/teacher?lang=en&checkout=success");
-  await expect(page.getByText("Plus plan", { exact: true })).toBeVisible();
+  await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   expect(calls).toBe(1);
   expect(await conversionEvents(page)).toEqual([
     "subscription_started",
@@ -230,7 +227,7 @@ test("a historical trialing subscription stays usable without trial UI", async (
 
   await page.goto("/teacher?lang=en&checkout=success");
 
-  await expect(page.getByText(/Plus is active/)).toBeVisible();
+  await expect(page.getByText(/paid plan is active/)).toBeVisible();
   await expect(page.locator("body")).not.toContainText(/trial/i);
   await expect(
     page.getByRole("button", { name: "Manage billing" }),
@@ -250,7 +247,7 @@ test("an arbitrary Checkout success URL does not record a purchase", async ({
   await mockAssignments(page);
 
   await page.goto("/teacher?lang=en&checkout=success");
-  await expect(page.getByText("Plus plan", { exact: true })).toBeVisible();
+  await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   expect(await conversionEvents(page)).toEqual([]);
 });
 
@@ -345,7 +342,7 @@ test("Checkout success times out safely and can be checked again", async ({
 
   await page.goto("/teacher?lang=en&checkout=success");
   await expect(
-    page.getByText("Checkout completed. Plus activation is still processing."),
+    page.getByText("Checkout completed. Plan activation is still processing."),
   ).toBeVisible({ timeout: 15_000 });
   expect(calls).toBe(11);
   expect(await conversionEvents(page)).toEqual([]);
@@ -356,7 +353,7 @@ test("Checkout success times out safely and can be checked again", async ({
 
   activated = true;
   await page.getByRole("button", { name: "Check again" }).click();
-  await expect(page.getByText("Plus plan", { exact: true })).toBeVisible();
+  await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   expect(await conversionEvents(page)).toEqual([
     "subscription_started",
     "purchase",
@@ -423,8 +420,7 @@ test("Checkout activation recovers from a temporary network error", async ({
   await mockAssignments(page);
 
   await page.goto("/teacher?lang=en&checkout=success");
-  await expect(page.getByText("Activating your Plus plan…")).toBeVisible();
-  await expect(page.getByText("Plus plan", { exact: true })).toBeVisible();
+  await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   expect(calls).toBe(3);
   expect(await conversionEvents(page)).toEqual([
     "subscription_started",

@@ -2151,6 +2151,140 @@ describe("Stripe checkout", () => {
     expect(expiredSessions).toEqual(["cs_teacher_1"]);
   });
 
+  it.each([
+    [
+      "parent",
+      "teacher",
+      "month",
+      "price_parent_monthly",
+      "price_teacher_monthly",
+    ],
+    [
+      "teacher",
+      "parent",
+      "month",
+      "price_teacher_monthly",
+      "price_parent_monthly",
+    ],
+    [
+      "parent",
+      "teacher",
+      "year",
+      "price_parent_yearly",
+      "price_teacher_yearly",
+    ],
+    [
+      "teacher",
+      "parent",
+      "year",
+      "price_teacher_yearly",
+      "price_parent_yearly",
+    ],
+  ] as const)(
+    "replaces an active %s Checkout with %s for the same %s interval",
+    async (firstPlan, secondPlan, interval, firstPrice, secondPrice) => {
+      const prices: string[] = [];
+      const expired: string[] = [];
+      let calls = 0;
+      const checkout = (plan: "parent" | "teacher") =>
+        createCheckout(
+          testEnv(),
+          bindings.DB,
+          teacherA,
+          interval,
+          "https://example.test",
+          {
+            now,
+            plan,
+            createSession: async (params) => {
+              calls += 1;
+              prices.push(String(params.line_items?.[0]?.price));
+              return {
+                id: `cs_${calls}`,
+                url: `https://checkout.test/${calls}`,
+                expires_at: params.expires_at!,
+              };
+            },
+            expireSession: async (id) => {
+              expired.push(id);
+            },
+          },
+        );
+
+      await expect(checkout(firstPlan)).resolves.toMatchObject({ id: "cs_1" });
+      await expect(checkout(secondPlan)).resolves.toMatchObject({ id: "cs_2" });
+      expect(prices).toEqual([firstPrice, secondPrice]);
+      expect(expired).toEqual(["cs_1"]);
+      await expect(
+        bindings.DB.prepare(
+          `SELECT plan, interval, stripe_session_id FROM checkout_locks
+           WHERE user_id = ?`,
+        )
+          .bind(teacherA.id)
+          .first(),
+      ).resolves.toEqual({
+        plan: secondPlan,
+        interval,
+        stripe_session_id: "cs_2",
+      });
+    },
+  );
+
+  it("safely replaces a pre-migration Checkout lock without a plan", async () => {
+    await bindings.DB.prepare(
+      `INSERT INTO checkout_locks (
+         user_id, token, interval, stripe_session_id, session_url,
+         expires_at, created_at
+       ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    )
+      .bind(
+        teacherA.id,
+        "legacy-token",
+        "month",
+        "cs_legacy",
+        "https://checkout.test/legacy",
+        new Date(now.getTime() + 30 * 60_000).toISOString(),
+        now.toISOString(),
+      )
+      .run();
+    const expired: string[] = [];
+
+    await expect(
+      createCheckout(
+        testEnv(),
+        bindings.DB,
+        teacherA,
+        "month",
+        "https://example.test",
+        {
+          now,
+          plan: "parent",
+          createSession: async (params) => ({
+            id: "cs_parent",
+            url: "https://checkout.test/parent",
+            expires_at: params.expires_at!,
+          }),
+          expireSession: async (id) => {
+            expired.push(id);
+          },
+        },
+      ),
+    ).resolves.toMatchObject({ id: "cs_parent" });
+    expect(expired).toEqual(["cs_legacy"]);
+    await expect(
+      bindings.DB.prepare(
+        `SELECT plan, interval, stripe_session_id FROM checkout_locks
+         WHERE user_id = ?`,
+      )
+        .bind(teacherA.id)
+        .first(),
+    ).resolves.toEqual({
+      plan: "parent",
+      interval: "month",
+      stripe_session_id: "cs_parent",
+    });
+  });
+
   it("creates a normal paid Checkout regardless of historical trial state", async () => {
     await insertSubscription({ plan: "free", status: "inactive" });
     await bindings.DB.prepare(

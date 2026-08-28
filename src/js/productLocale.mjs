@@ -28,15 +28,16 @@ const PACKS = {
     dashboardTitle: "Workspace",
     greeting: "Welcome, {name}",
     newAssignment: "Create assignment",
-    plan: "{plan} plan",
-    parentPlan: "Parent",
-    teacherPlan: "Teacher",
+    plan: "{plan}",
+    freePlan: "Free Plan",
+    parentPlan: "Parent Plan",
+    teacherPlan: "Teacher Plan",
     activeUsage: "{used} of {limit} active assignments",
     submissionUsage: "{used} of {limit} submissions this month",
     submissionLimitWarning:
-      "You're close to the Free monthly limit. {used} of {limit} student submissions used this month. Upgrade to Plus for unlimited student submissions.",
+      "You're close to the Free Plan monthly limit. {used} of {limit} student submissions used this month. View plans for unlimited student submissions.",
     submissionLimitReached:
-      "You've reached the Free monthly limit of {limit} student submissions. New assignment results cannot be saved until your monthly limit resets or you upgrade to Plus.",
+      "You've reached the Free Plan monthly limit of {limit} student submissions. New assignment results cannot be saved until your monthly limit resets. View plans for unlimited student submissions.",
     unlimited: "Unlimited monthly submissions",
     studentUsage: "{used} student nicknames stored",
     noAssignments: "No assignments yet. Create one to share with students.",
@@ -47,7 +48,7 @@ const PACKS = {
     due: "Due {date}",
     open: "View results",
     manageBilling: "Manage billing",
-    upgrade: "Upgrade to Plus",
+    upgrade: "View Plans",
     newTitle: "Create a spelling assignment",
     assignmentTitle: "Assignment title",
     titlePlaceholder: "Week 3 spelling practice",
@@ -94,9 +95,9 @@ const PACKS = {
     deleteResultFailed: "The result could not be deleted. Try again.",
     commonMisses: "Most commonly missed words",
     proStatsLocked:
-      "Upgrade to Plus for assignment-wide missed-word statistics and CSV export.",
+      "Teacher Plan includes assignment-wide missed-word statistics and CSV export. View plans.",
     missedWordsPreview:
-      "{count} words have been missed in this assignment. Upgrade to Plus to see which words are missed most often.",
+      "{count} words have been missed in this assignment. Teacher Plan shows which words are missed most often. View plans.",
     copied: "Student link copied.",
     learnerHome: "Student home",
     learnerGreeting: "Hi, {name}",
@@ -148,19 +149,19 @@ const PACKS = {
     invalidNickname:
       "Enter a nickname or classroom number with 2–32 characters.",
     activeLimit:
-      "You've reached the Free plan limit of 1 active assignment. Close an existing assignment or upgrade for more active assignments.",
+      "You've reached the Free Plan limit of 1 active assignment. Close an existing assignment or upgrade for more active assignments.",
     billingUnavailable: "Billing is not configured in this environment yet.",
     checkoutPending: "A checkout is already being prepared. Please try again.",
     checkoutRetry:
       "We couldn’t open Stripe Checkout. Your selected plan is still saved.",
     retryCheckout: "Try checkout again",
-    activatingPro: "Activating your Plus plan…",
-    activatingPlan: "Activating your {plan} plan…",
+    activatingPro: "Activating your plan…",
+    activatingPlan: "Activating your {plan}…",
     activationDelayed:
-      "Checkout completed. Plus activation is still processing.",
+      "Checkout completed. Plan activation is still processing.",
     activationDelayedPlan:
-      "Checkout completed. {plan} plan activation is still processing.",
-    planActive: "{plan} plan is active.",
+      "Checkout completed. {plan} activation is still processing.",
+    planActive: "{plan} is active.",
     checkAgain: "Check again",
     invalidTitle: "Use an assignment title with 1–80 characters.",
     invalidWords: "Use 1–80 words, each 2–24 characters long.",
@@ -253,13 +254,14 @@ const PACKS = {
     needsReview: "Needs review",
     historyWindow: "Progress from the last {days} days",
     masteryHistoryUpgrade:
-      "Free includes 14 days of mastery history. Upgrade to Plus for 365 days.",
+      "Free Plan includes 14 days of mastery history. Parent and Teacher Plans include 365 days. View plans.",
     smartReview: "Smart missed-word review",
     smartReviewValue:
       "Turn missed words across assignments into a focused review list in one click.",
-    smartReviewUpgrade: "Upgrade to Plus to create smart review assignments.",
+    smartReviewUpgrade:
+      "Smart Review is included in Parent and Teacher Plans. View plans.",
     smartReviewPreview:
-      "{count} words currently need review. Upgrade to Plus to turn them into a focused review assignment.",
+      "{count} words currently need review. Parent and Teacher Plans can turn them into a focused review assignment. View plans.",
     createReview: "Create review assignment",
     noReviewWords: "There are no missed words that need review yet.",
     reviewDraftTitle: "Review: {name}",
@@ -277,15 +279,16 @@ const PACKS = {
     invalidListTitle: "Use a saved-list title with 1–80 characters.",
     savedListNotFound: "This saved list could not be found.",
     savedListLimit:
-      "You’ve reached the Free plan limit of 1 saved list. Upgrade to Plus for unlimited saved lists.",
+      "You’ve reached the Free Plan limit of 1 saved list. View plans for unlimited saved lists.",
     learnerNotFound: "This student profile could not be found.",
     learnerExists:
       "A student profile with that nickname or number already exists.",
     learnerLimit:
-      "You’ve reached the Free plan limit of 1 student profile. Upgrade to Plus for up to 150 students.",
-    smartReviewRequired: "Smart review is available on Plus.",
+      "You’ve reached the Free Plan limit of 1 student profile. View plans for more student profiles.",
+    smartReviewRequired:
+      "Smart Review is included in Parent and Teacher Plans.",
     proActive:
-      "Plus is active. Saved lists, long-term mastery, and smart review are now unlocked.",
+      "Your paid plan is active. Saved lists, long-term mastery, and Smart Review are now unlocked.",
     rateLimited: "Too many requests. Wait a moment and try again.",
     invalidSubmission:
       "This submission is invalid. Restart the assignment and try again.",
@@ -320,15 +323,16 @@ const PACKS = {
     dashboardTitle: "Espacio de trabajo",
     greeting: "Hola, {name}",
     newAssignment: "Crear tarea",
-    plan: "Plan {plan}",
-    parentPlan: "Familiar",
-    teacherPlan: "Docente",
+    plan: "{plan}",
+    freePlan: "Plan Gratis",
+    parentPlan: "Plan para familias",
+    teacherPlan: "Plan para docentes",
     activeUsage: "{used} de {limit} tareas activas",
     submissionUsage: "{used} de {limit} entregas este mes",
     submissionLimitWarning:
-      "Te estás acercando al límite mensual del plan Gratis. Este mes se han usado {used} de {limit} entregas de estudiantes. Pásate a Plus para tener entregas ilimitadas.",
+      "Te estás acercando al límite mensual del Plan Gratis. Este mes se han usado {used} de {limit} entregas de estudiantes. Consulta los planes para obtener entregas ilimitadas.",
     submissionLimitReached:
-      "Has alcanzado el límite mensual del plan Gratis de {limit} entregas de estudiantes. No se podrán guardar nuevos resultados hasta que se renueve el límite mensual o te pases a Plus.",
+      "Has alcanzado el límite mensual del Plan Gratis de {limit} entregas de estudiantes. No se podrán guardar nuevos resultados hasta que se restablezca el límite mensual. Consulta los planes para obtener entregas ilimitadas.",
     unlimited: "Entregas mensuales ilimitadas",
     studentUsage: "{used} apodos guardados",
     noAssignments:
@@ -340,7 +344,7 @@ const PACKS = {
     due: "Entrega: {date}",
     open: "Ver resultados",
     manageBilling: "Gestionar suscripción",
-    upgrade: "Pasar a Plus",
+    upgrade: "Ver planes",
     newTitle: "Crear una tarea de spelling",
     assignmentTitle: "Título de la tarea",
     titlePlaceholder: "Práctica de spelling, semana 3",
@@ -387,9 +391,9 @@ const PACKS = {
     deleteResultFailed: "No se pudo eliminar el resultado. Inténtalo de nuevo.",
     commonMisses: "Palabras con más errores",
     proStatsLocked:
-      "Pasa a Plus para ver estadísticas de errores de toda la tarea y exportar CSV.",
+      "El Plan para docentes incluye estadísticas de errores de toda la tarea y exportación CSV. Consulta los planes.",
     missedWordsPreview:
-      "En esta tarea se han fallado {count} palabras. Pásate a Plus para ver cuáles se fallan con más frecuencia.",
+      "En esta tarea se han fallado {count} palabras. El Plan para docentes muestra cuáles se fallan con más frecuencia. Consulta los planes.",
     copied: "Enlace para estudiantes copiado.",
     learnerHome: "Inicio del estudiante",
     learnerGreeting: "Hola, {name}",
@@ -448,13 +452,13 @@ const PACKS = {
     checkoutRetry:
       "No pudimos abrir el pago seguro. El plan que elegiste sigue guardado.",
     retryCheckout: "Reintentar el pago",
-    activatingPro: "Activando tu plan Plus…",
-    activatingPlan: "Activando tu plan {plan}…",
+    activatingPro: "Activando tu plan…",
+    activatingPlan: "Activando {plan}…",
     activationDelayed:
-      "El pago seguro se completó. La activación de Plus todavía se está procesando.",
+      "El pago seguro se completó. La activación del plan todavía se está procesando.",
     activationDelayedPlan:
-      "El pago seguro se completó. La activación del plan {plan} todavía se está procesando.",
-    planActive: "El plan {plan} está activo.",
+      "El pago seguro se completó. La activación de {plan} todavía se está procesando.",
+    planActive: "{plan} está activo.",
     checkAgain: "Comprobar de nuevo",
     invalidTitle: "Usa un título de entre 1 y 80 caracteres.",
     invalidWords: "Usa entre 1 y 80 palabras, de 2 a 24 caracteres cada una.",
@@ -546,14 +550,14 @@ const PACKS = {
     needsReview: "Necesita repaso",
     historyWindow: "Progreso de los últimos {days} días",
     masteryHistoryUpgrade:
-      "Gratis incluye 14 días de historial de dominio. Pásate a Plus para consultar 365 días.",
+      "El Plan Gratis incluye 14 días de historial de dominio. Los planes para familias y docentes incluyen 365 días. Consulta los planes.",
     smartReview: "Repaso inteligente de errores",
     smartReviewValue:
       "Convierte en un clic los errores de varias tareas en una lista de repaso específica.",
     smartReviewUpgrade:
-      "Pásate a Plus para crear tareas de repaso inteligente.",
+      "El repaso inteligente está incluido en los planes para familias y docentes. Consulta los planes.",
     smartReviewPreview:
-      "Ahora mismo hay {count} palabras que necesitan repaso. Pásate a Plus para convertirlas en una tarea de repaso específica.",
+      "Ahora mismo hay {count} palabras que necesitan repaso. Los planes para familias y docentes permiten convertirlas en una tarea específica. Consulta los planes.",
     createReview: "Crear tarea de repaso",
     noReviewWords: "Todavía no hay palabras falladas que necesiten repaso.",
     reviewDraftTitle: "Repaso: {name}",
@@ -571,14 +575,15 @@ const PACKS = {
       "El título de la lista debe tener entre 1 y 80 caracteres.",
     savedListNotFound: "No se encontró esta lista guardada.",
     savedListLimit:
-      "Has alcanzado el límite de 1 lista guardada del plan Gratis. Pásate a Plus para guardar listas ilimitadas.",
+      "Has alcanzado el límite de 1 lista guardada del Plan Gratis. Consulta los planes para guardar listas ilimitadas.",
     learnerNotFound: "No se encontró este perfil.",
     learnerExists: "Ya existe un perfil con ese apodo o número.",
     learnerLimit:
-      "Has alcanzado el límite de 1 perfil del plan Gratis. Pásate a Plus para gestionar hasta 150 estudiantes.",
-    smartReviewRequired: "El repaso inteligente está disponible con Plus.",
+      "Has alcanzado el límite de 1 perfil del Plan Gratis. Consulta los planes para gestionar más perfiles.",
+    smartReviewRequired:
+      "El repaso inteligente está incluido en los planes para familias y docentes.",
     proActive:
-      "Plus está activo. Ya están disponibles las listas guardadas, el historial de dominio a largo plazo y el repaso inteligente.",
+      "Tu plan de pago está activo. Ya están disponibles las listas guardadas, el historial de dominio a largo plazo y el repaso inteligente.",
     rateLimited:
       "Hay demasiadas solicitudes. Espera un momento e inténtalo de nuevo.",
     invalidSubmission:
@@ -613,15 +618,16 @@ const PACKS = {
     dashboardTitle: "Espaço de trabalho",
     greeting: "Olá, {name}",
     newAssignment: "Criar tarefa",
-    plan: "Plano {plan}",
-    parentPlan: "Família",
-    teacherPlan: "Professor",
+    plan: "{plan}",
+    freePlan: "Plano Grátis",
+    parentPlan: "Plano para Pais",
+    teacherPlan: "Plano para Professores",
     activeUsage: "{used} de {limit} tarefas ativas",
     submissionUsage: "{used} de {limit} envios neste mês",
     submissionLimitWarning:
-      "Você está perto do limite mensal do plano Grátis. Foram usados {used} de {limit} envios de alunos neste mês. Assine o Plus para ter envios ilimitados.",
+      "Você está perto do limite mensal do Plano Grátis. Foram usados {used} de {limit} envios de alunos neste mês. Veja os planos para ter envios ilimitados.",
     submissionLimitReached:
-      "Você atingiu o limite mensal do plano Grátis de {limit} envios de alunos. Novos resultados não poderão ser salvos até a renovação do limite mensal ou até você assinar o Plus.",
+      "Você atingiu o limite mensal do Plano Grátis de {limit} envios de alunos. Novos resultados não poderão ser salvos até a renovação do limite mensal. Veja os planos para ter envios ilimitados.",
     unlimited: "Envios mensais ilimitados",
     studentUsage: "{used} apelidos armazenados",
     noAssignments:
@@ -633,7 +639,7 @@ const PACKS = {
     due: "Prazo: {date}",
     open: "Ver resultados",
     manageBilling: "Gerenciar assinatura",
-    upgrade: "Assinar Plus",
+    upgrade: "Ver planos",
     newTitle: "Criar tarefa de spelling",
     assignmentTitle: "Título da tarefa",
     titlePlaceholder: "Spelling da semana 3",
@@ -681,9 +687,9 @@ const PACKS = {
       "Não foi possível excluir o resultado. Tente novamente.",
     commonMisses: "Palavras mais erradas",
     proStatsLocked:
-      "Assine o Plus para ver erros de toda a tarefa e exportar CSV.",
+      "O Plano para Professores inclui estatísticas de erros de toda a tarefa e exportação CSV. Veja os planos.",
     missedWordsPreview:
-      "Nesta tarefa, {count} palavras foram erradas. Passe para o Plus para ver quais aparecem mais nos erros.",
+      "Nesta tarefa, {count} palavras foram erradas. O Plano para Professores mostra quais aparecem mais nos erros. Veja os planos.",
     copied: "Link para alunos copiado.",
     learnerHome: "Página do aluno",
     learnerGreeting: "Olá, {name}",
@@ -741,13 +747,13 @@ const PACKS = {
     checkoutRetry:
       "Não foi possível abrir o checkout. O plano escolhido continua salvo.",
     retryCheckout: "Tentar o checkout novamente",
-    activatingPro: "Ativando seu plano Plus…",
-    activatingPlan: "Ativando seu plano {plan}…",
+    activatingPro: "Ativando seu plano…",
+    activatingPlan: "Ativando {plan}…",
     activationDelayed:
-      "Checkout concluído. A ativação do Plus ainda está sendo processada.",
+      "Checkout concluído. A ativação do plano ainda está sendo processada.",
     activationDelayedPlan:
-      "O checkout foi concluído. A ativação do plano {plan} ainda está sendo processada.",
-    planActive: "O plano {plan} está ativo.",
+      "O checkout foi concluído. A ativação de {plan} ainda está sendo processada.",
+    planActive: "{plan} está ativo.",
     checkAgain: "Verificar novamente",
     invalidTitle: "Use um título com 1 a 80 caracteres.",
     invalidWords: "Use de 1 a 80 palavras, cada uma com 2 a 24 caracteres.",
@@ -839,14 +845,14 @@ const PACKS = {
     needsReview: "Precisa de revisão",
     historyWindow: "Progresso dos últimos {days} dias",
     masteryHistoryUpgrade:
-      "O plano Grátis inclui 14 dias de histórico de domínio. Passe para o Plus para acessar 365 dias.",
+      "O Plano Grátis inclui 14 dias de histórico de domínio. Os planos para Pais e Professores incluem 365 dias. Veja os planos.",
     smartReview: "Revisão inteligente de erros",
     smartReviewValue:
       "Transforme em um clique os erros de várias tarefas em uma lista de revisão focada.",
     smartReviewUpgrade:
-      "Passe para o Plus para criar tarefas de revisão inteligente.",
+      "A revisão inteligente está incluída nos planos para Pais e Professores. Veja os planos.",
     smartReviewPreview:
-      "Atualmente, {count} palavras precisam de revisão. Passe para o Plus para transformá-las em uma tarefa de revisão focada.",
+      "Atualmente, {count} palavras precisam de revisão. Os planos para Pais e Professores permitem transformá-las em uma tarefa focada. Veja os planos.",
     createReview: "Criar tarefa de revisão",
     noReviewWords: "Ainda não há palavras erradas que precisem de revisão.",
     reviewDraftTitle: "Revisão: {name}",
@@ -863,14 +869,15 @@ const PACKS = {
     invalidListTitle: "Use um título de lista com 1 a 80 caracteres.",
     savedListNotFound: "Esta lista salva não foi encontrada.",
     savedListLimit:
-      "Você atingiu o limite de 1 lista salva do plano Grátis. Passe para o Plus para ter listas ilimitadas.",
+      "Você atingiu o limite de 1 lista salva do Plano Grátis. Veja os planos para ter listas ilimitadas.",
     learnerNotFound: "Este perfil não foi encontrado.",
     learnerExists: "Já existe um perfil com esse apelido ou número.",
     learnerLimit:
-      "Você atingiu o limite de 1 perfil do plano Grátis. Passe para o Plus para acompanhar até 150 alunos.",
-    smartReviewRequired: "A revisão inteligente está disponível no Plus.",
+      "Você atingiu o limite de 1 perfil do Plano Grátis. Veja os planos para acompanhar mais perfis.",
+    smartReviewRequired:
+      "A revisão inteligente está incluída nos planos para Pais e Professores.",
     proActive:
-      "O Plus está ativo. Listas salvas, histórico de domínio de longo prazo e revisão inteligente já estão liberados.",
+      "Seu plano pago está ativo. Listas salvas, histórico de domínio de longo prazo e revisão inteligente já estão liberados.",
     rateLimited: "Muitas solicitações. Aguarde um momento e tente novamente.",
     invalidSubmission:
       "Este envio é inválido. Reinicie a tarefa e tente novamente.",
@@ -905,15 +912,16 @@ const PACKS = {
     dashboardTitle: "Espace de travail",
     greeting: "Bonjour, {name}",
     newAssignment: "Créer un devoir",
-    plan: "Offre {plan}",
-    parentPlan: "Parent",
-    teacherPlan: "Enseignant",
+    plan: "{plan}",
+    freePlan: "Offre gratuite",
+    parentPlan: "Offre Parents",
+    teacherPlan: "Offre Enseignants",
     activeUsage: "{used} devoirs actifs sur {limit}",
     submissionUsage: "{used} remises sur {limit} ce mois-ci",
     submissionLimitWarning:
-      "Vous approchez de la limite mensuelle de l’offre Gratuite. {used} remises d’élèves sur {limit} ont été utilisées ce mois-ci. Passez à Plus pour des remises illimitées.",
+      "Vous approchez de la limite mensuelle de l’offre gratuite. {used} remises d’élèves sur {limit} ont été utilisées ce mois-ci. Consultez les offres pour des remises illimitées.",
     submissionLimitReached:
-      "Vous avez atteint la limite mensuelle de l’offre Gratuite de {limit} remises d’élèves. Les nouveaux résultats ne pourront pas être enregistrés avant la réinitialisation mensuelle ou le passage à Plus.",
+      "Vous avez atteint la limite mensuelle de l’offre gratuite de {limit} remises d’élèves. Les nouveaux résultats ne pourront pas être enregistrés avant la réinitialisation mensuelle. Consultez les offres pour des remises illimitées.",
     unlimited: "Remises mensuelles illimitées",
     studentUsage: "{used} pseudonymes conservés",
     noAssignments:
@@ -925,7 +933,7 @@ const PACKS = {
     due: "Échéance : {date}",
     open: "Voir les résultats",
     manageBilling: "Gérer l’abonnement",
-    upgrade: "Passer à Plus",
+    upgrade: "Voir les offres",
     newTitle: "Créer un devoir d’orthographe",
     assignmentTitle: "Titre du devoir",
     titlePlaceholder: "Orthographe – semaine 3",
@@ -973,9 +981,9 @@ const PACKS = {
       "Impossible de supprimer le résultat. Veuillez réessayer.",
     commonMisses: "Mots les plus souvent manqués",
     proStatsLocked:
-      "Passez à Plus pour les statistiques de l’ensemble du devoir et l’export CSV.",
+      "L’offre Enseignants inclut les statistiques de l’ensemble du devoir et l’export CSV. Consultez les offres.",
     missedWordsPreview:
-      "{count} mots ont été manqués dans ce devoir. Passez à Plus pour voir lesquels sont le plus souvent manqués.",
+      "{count} mots ont été manqués dans ce devoir. L’offre Enseignants montre lesquels reviennent le plus souvent. Consultez les offres.",
     copied: "Lien pour les élèves copié.",
     learnerHome: "Accueil de l’élève",
     learnerGreeting: "Bonjour, {name}",
@@ -1035,13 +1043,13 @@ const PACKS = {
     checkoutRetry:
       "Impossible d’ouvrir le paiement sécurisé. Votre offre reste enregistrée.",
     retryCheckout: "Réessayer le paiement",
-    activatingPro: "Activation de votre offre Plus…",
-    activatingPlan: "Activation de votre offre {plan}…",
+    activatingPro: "Activation de votre offre…",
+    activatingPlan: "Activation de {plan}…",
     activationDelayed:
-      "Paiement sécurisé terminé. L’activation de Plus est encore en cours.",
+      "Paiement sécurisé terminé. L’activation de l’offre est encore en cours.",
     activationDelayedPlan:
-      "Le paiement est terminé. L’activation de l’offre {plan} est encore en cours.",
-    planActive: "L’offre {plan} est active.",
+      "Le paiement est terminé. L’activation de {plan} est encore en cours.",
+    planActive: "{plan} est active.",
     checkAgain: "Vérifier à nouveau",
     invalidTitle: "Utilisez un titre de 1 à 80 caractères.",
     invalidWords: "Utilisez 1 à 80 mots de 2 à 24 caractères chacun.",
@@ -1134,14 +1142,14 @@ const PACKS = {
     needsReview: "À revoir",
     historyWindow: "Progression des {days} derniers jours",
     masteryHistoryUpgrade:
-      "L’offre gratuite comprend 14 jours d’historique. Passez à Plus pour accéder à 365 jours.",
+      "L’offre gratuite comprend 14 jours d’historique. Les offres Parents et Enseignants incluent 365 jours. Consultez les offres.",
     smartReview: "Révision intelligente des erreurs",
     smartReviewValue:
       "Transformez en un clic les erreurs de plusieurs devoirs en une liste de révision ciblée.",
     smartReviewUpgrade:
-      "Passez à Plus pour créer des devoirs de révision intelligente.",
+      "La révision intelligente est incluse dans les offres Parents et Enseignants. Consultez les offres.",
     smartReviewPreview:
-      "{count} mots nécessitent actuellement une révision. Passez à Plus pour en faire un devoir de révision ciblé.",
+      "{count} mots nécessitent actuellement une révision. Les offres Parents et Enseignants permettent d’en faire un devoir ciblé. Consultez les offres.",
     createReview: "Créer un devoir de révision",
     noReviewWords: "Aucun mot manqué ne nécessite encore de révision.",
     reviewDraftTitle: "Révision : {name}",
@@ -1160,14 +1168,15 @@ const PACKS = {
       "Le titre de la liste doit contenir entre 1 et 80 caractères.",
     savedListNotFound: "Cette liste enregistrée est introuvable.",
     savedListLimit:
-      "Vous avez atteint la limite gratuite de 1 liste. Passez à Plus pour enregistrer un nombre illimité de listes.",
+      "Vous avez atteint la limite gratuite de 1 liste. Consultez les offres pour enregistrer un nombre illimité de listes.",
     learnerNotFound: "Ce profil est introuvable.",
     learnerExists: "Un profil avec ce pseudo ou ce numéro existe déjà.",
     learnerLimit:
-      "Vous avez atteint la limite gratuite de 1 profil. Passez à Plus pour suivre jusqu’à 150 élèves.",
-    smartReviewRequired: "La révision intelligente est disponible avec Plus.",
+      "Vous avez atteint la limite gratuite de 1 profil. Consultez les offres pour suivre davantage de profils.",
+    smartReviewRequired:
+      "La révision intelligente est incluse dans les offres Parents et Enseignants.",
     proActive:
-      "Plus est actif. Les listes enregistrées, l’historique de maîtrise à long terme et la révision intelligente sont maintenant disponibles.",
+      "Votre offre payante est active. Les listes enregistrées, l’historique de maîtrise à long terme et la révision intelligente sont maintenant disponibles.",
     rateLimited: "Trop de demandes. Patientez un instant puis réessayez.",
     invalidSubmission:
       "Cette remise n’est pas valide. Recommencez le devoir puis réessayez.",
@@ -1201,15 +1210,16 @@ const PACKS = {
     dashboardTitle: "Ruang kerja",
     greeting: "Selamat datang, {name}",
     newAssignment: "Buat tugas",
-    plan: "Paket {plan}",
-    parentPlan: "Orang Tua",
-    teacherPlan: "Guru",
+    plan: "{plan}",
+    freePlan: "Paket Gratis",
+    parentPlan: "Paket Orang Tua",
+    teacherPlan: "Paket Guru",
     activeUsage: "{used} dari {limit} tugas aktif",
     submissionUsage: "{used} dari {limit} kiriman bulan ini",
     submissionLimitWarning:
-      "Anda hampir mencapai batas bulanan paket Gratis. {used} dari {limit} kiriman siswa sudah digunakan bulan ini. Upgrade ke Plus untuk kiriman siswa tanpa batas.",
+      "Anda hampir mencapai batas bulanan Paket Gratis. {used} dari {limit} kiriman siswa sudah digunakan bulan ini. Lihat paket untuk kiriman siswa tanpa batas.",
     submissionLimitReached:
-      "Anda telah mencapai batas bulanan paket Gratis sebanyak {limit} kiriman siswa. Hasil tugas baru tidak dapat disimpan sampai batas bulanan direset atau Anda upgrade ke Plus.",
+      "Anda telah mencapai batas bulanan Paket Gratis sebanyak {limit} kiriman siswa. Hasil tugas baru tidak dapat disimpan sampai batas bulanan direset. Lihat paket untuk kiriman siswa tanpa batas.",
     unlimited: "Kiriman bulanan tanpa batas",
     studentUsage: "{used} nama panggilan tersimpan",
     noAssignments: "Belum ada tugas. Buat tugas untuk dibagikan kepada siswa.",
@@ -1220,7 +1230,7 @@ const PACKS = {
     due: "Batas waktu {date}",
     open: "Lihat hasil",
     manageBilling: "Kelola langganan",
-    upgrade: "Naik ke Plus",
+    upgrade: "Lihat paket",
     newTitle: "Buat tugas spelling",
     assignmentTitle: "Judul tugas",
     titlePlaceholder: "Latihan spelling minggu ke-3",
@@ -1267,9 +1277,9 @@ const PACKS = {
     deleteResultFailed: "Hasil tidak dapat dihapus. Coba lagi.",
     commonMisses: "Kata yang paling sering salah",
     proStatsLocked:
-      "Naik ke Plus untuk statistik kesalahan seluruh tugas dan ekspor CSV.",
+      "Paket Guru mencakup statistik kesalahan seluruh tugas dan ekspor CSV. Lihat paket.",
     missedWordsPreview:
-      "{count} kata telah salah dalam tugas ini. Pilih Plus untuk melihat kata mana yang paling sering salah.",
+      "{count} kata telah salah dalam tugas ini. Paket Guru menampilkan kata yang paling sering salah. Lihat paket.",
     copied: "Link untuk siswa disalin.",
     learnerHome: "Beranda siswa",
     learnerGreeting: "Hai, {name}",
@@ -1327,12 +1337,11 @@ const PACKS = {
     checkoutRetry:
       "Checkout belum dapat dibuka. Paket yang dipilih tetap tersimpan.",
     retryCheckout: "Coba checkout lagi",
-    activatingPro: "Mengaktifkan paket Plus Anda…",
-    activatingPlan: "Mengaktifkan paket {plan} Anda…",
-    activationDelayed: "Checkout selesai. Aktivasi Plus masih diproses.",
-    activationDelayedPlan:
-      "Checkout selesai. Aktivasi paket {plan} masih diproses.",
-    planActive: "Paket {plan} aktif.",
+    activatingPro: "Mengaktifkan paket Anda…",
+    activatingPlan: "Mengaktifkan {plan}…",
+    activationDelayed: "Checkout selesai. Aktivasi paket masih diproses.",
+    activationDelayedPlan: "Checkout selesai. Aktivasi {plan} masih diproses.",
+    planActive: "{plan} aktif.",
     checkAgain: "Periksa lagi",
     invalidTitle: "Gunakan judul sepanjang 1–80 karakter.",
     invalidWords: "Gunakan 1–80 kata, masing-masing sepanjang 2–24 karakter.",
@@ -1427,13 +1436,14 @@ const PACKS = {
     needsReview: "Perlu diulang",
     historyWindow: "Perkembangan dalam {days} hari terakhir",
     masteryHistoryUpgrade:
-      "Paket Gratis mencakup riwayat penguasaan 14 hari. Pilih Plus untuk melihat riwayat 365 hari.",
+      "Paket Gratis mencakup riwayat penguasaan 14 hari. Paket Orang Tua dan Guru mencakup 365 hari. Lihat paket.",
     smartReview: "Ulasan pintar kata yang salah",
     smartReviewValue:
       "Ubah kata yang salah dari berbagai tugas menjadi daftar latihan terarah dalam satu klik.",
-    smartReviewUpgrade: "Pilih Plus untuk membuat tugas ulasan pintar.",
+    smartReviewUpgrade:
+      "Ulasan pintar tersedia pada Paket Orang Tua dan Guru. Lihat paket.",
     smartReviewPreview:
-      "Saat ini ada {count} kata yang perlu diulas. Pilih Plus untuk mengubahnya menjadi tugas ulasan terarah.",
+      "Saat ini ada {count} kata yang perlu diulas. Paket Orang Tua dan Guru dapat mengubahnya menjadi tugas terarah. Lihat paket.",
     createReview: "Buat tugas ulasan",
     noReviewWords: "Belum ada kata salah yang perlu diulang.",
     reviewDraftTitle: "Ulasan: {name}",
@@ -1450,15 +1460,16 @@ const PACKS = {
     invalidListTitle: "Gunakan judul daftar sepanjang 1–80 karakter.",
     savedListNotFound: "Daftar tersimpan ini tidak ditemukan.",
     savedListLimit:
-      "Anda telah mencapai batas 1 daftar tersimpan pada paket Gratis. Pilih Plus untuk daftar tanpa batas.",
+      "Anda telah mencapai batas 1 daftar tersimpan pada Paket Gratis. Lihat paket untuk daftar tanpa batas.",
     learnerNotFound: "Profil siswa ini tidak ditemukan.",
     learnerExists:
       "Profil dengan nama panggilan atau nomor tersebut sudah ada.",
     learnerLimit:
-      "Anda telah mencapai batas 1 profil pada paket Gratis. Pilih Plus untuk menyimpan hingga 150 profil siswa.",
-    smartReviewRequired: "Ulasan pintar tersedia pada paket Plus.",
+      "Anda telah mencapai batas 1 profil pada Paket Gratis. Lihat paket untuk menambah profil.",
+    smartReviewRequired:
+      "Ulasan pintar tersedia pada Paket Orang Tua dan Guru.",
     proActive:
-      "Plus sudah aktif. Daftar tersimpan, riwayat penguasaan jangka panjang, dan ulasan pintar kini terbuka.",
+      "Paket berbayar Anda aktif. Daftar tersimpan, riwayat penguasaan jangka panjang, dan ulasan pintar kini terbuka.",
     rateLimited: "Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.",
     invalidSubmission:
       "Kiriman ini tidak valid. Mulai ulang tugas lalu coba lagi.",
@@ -1491,15 +1502,16 @@ const PACKS = {
     dashboardTitle: "工作台",
     greeting: "{name}，你好",
     newAssignment: "创建作业",
-    plan: "{plan} 方案",
-    parentPlan: "家长",
-    teacherPlan: "教师",
+    plan: "{plan}",
+    freePlan: "免费套餐",
+    parentPlan: "家长套餐",
+    teacherPlan: "教师套餐",
     activeUsage: "活跃作业 {used}/{limit}",
     submissionUsage: "本月提交 {used}/{limit}",
     submissionLimitWarning:
-      "即将达到免费版的每月额度。本月已使用 {used}/{limit} 次学生提交。升级到 Plus 即可获得不限量的学生提交。",
+      "即将达到免费套餐的每月额度。本月已使用 {used}/{limit} 次学生提交。查看套餐可获得不限量的学生提交。",
     submissionLimitReached:
-      "已达到免费版每月 {limit} 次学生提交的额度。在每月额度重置或升级到 Plus 前，新的作业结果将无法保存。",
+      "已达到免费套餐每月 {limit} 次学生提交的额度。在每月额度重置前，新的作业结果将无法保存。查看套餐可获得不限量的学生提交。",
     unlimited: "本月提交不限量",
     studentUsage: "已保存 {used} 个学生昵称",
     noAssignments: "还没有作业。创建一份后即可分享给学生。",
@@ -1510,7 +1522,7 @@ const PACKS = {
     due: "截止时间：{date}",
     open: "查看结果",
     manageBilling: "管理订阅",
-    upgrade: "升级 Plus",
+    upgrade: "查看套餐",
     newTitle: "创建拼写作业",
     assignmentTitle: "作业标题",
     titlePlaceholder: "第 3 周拼写练习",
@@ -1554,9 +1566,9 @@ const PACKS = {
     deleteResult: "删除结果",
     deleteResultFailed: "删除结果失败，请重试。",
     commonMisses: "整份作业最容易拼错的单词",
-    proStatsLocked: "升级 Plus 后可查看整份作业的错词统计并导出 CSV。",
+    proStatsLocked: "教师套餐包含整份作业的错词统计和 CSV 导出。查看套餐。",
     missedWordsPreview:
-      "这份作业中已有 {count} 个不同单词被拼错。升级 Plus 可查看全班最常拼错的单词。",
+      "这份作业中已有 {count} 个不同单词被拼错。教师套餐可查看全班最常拼错的单词。查看套餐。",
     copied: "学生链接已复制。",
     learnerHome: "学生主页",
     learnerGreeting: "你好，{name}",
@@ -1610,9 +1622,9 @@ const PACKS = {
     checkoutPending: "结账请求正在处理中，请稍后重试。",
     checkoutRetry: "暂时无法打开 Stripe 结账页，你选择的方案仍已保留。",
     retryCheckout: "重新尝试结账",
-    activatingPro: "正在激活 Plus 套餐…",
+    activatingPro: "正在激活套餐…",
     activatingPlan: "正在激活{plan}…",
-    activationDelayed: "结账已完成，Plus 套餐仍在激活中。",
+    activationDelayed: "结账已完成，套餐仍在激活中。",
     activationDelayedPlan: "结账已完成，{plan}仍在激活中。",
     planActive: "{plan}已激活。",
     checkAgain: "再次检查",
@@ -1700,12 +1712,13 @@ const PACKS = {
     needsReview: "需要复习",
     historyWindow: "最近 {days} 天的学习进度",
     masteryHistoryUpgrade:
-      "免费版包含 14 天掌握度历史；升级 Plus 可查看 365 天。",
+      "免费套餐包含 14 天掌握度历史；家长套餐和教师套餐包含 365 天。查看套餐。",
     smartReview: "智能错词复习",
     smartReviewValue: "一键汇总多次作业中的错词，生成针对性的复习词表。",
-    smartReviewUpgrade: "升级 Plus 后可创建智能错词复习作业。",
+    smartReviewUpgrade:
+      "家长套餐和教师套餐支持创建智能错词复习作业。查看套餐。",
     smartReviewPreview:
-      "当前有 {count} 个单词需要复习。升级 Plus 可一键生成针对性复习作业。",
+      "当前有 {count} 个单词需要复习。家长套餐和教师套餐可一键生成针对性复习作业。查看套餐。",
     createReview: "创建复习作业",
     noReviewWords: "目前没有需要复习的错词。",
     reviewDraftTitle: "复习：{name}",
@@ -1722,13 +1735,13 @@ const PACKS = {
     invalidListTitle: "词表标题需为 1～80 个字符。",
     savedListNotFound: "找不到这个已保存词表。",
     savedListLimit:
-      "你已达到免费版 1 个词表的上限。升级 Plus 可不限量保存词表。",
+      "你已达到免费套餐 1 个词表的上限。查看套餐可不限量保存词表。",
     learnerNotFound: "找不到这个学生档案。",
     learnerExists: "相同昵称或编号的学生档案已存在。",
     learnerLimit:
-      "你已达到免费版 1 个学生档案的上限。升级 Plus 最多可管理 150 名学生。",
-    smartReviewRequired: "智能错词复习仅 Plus 可用。",
-    proActive: "Plus 已激活。已解锁词表保存、长期掌握度和智能错词复习。",
+      "你已达到免费套餐 1 个学生档案的上限。查看套餐可管理更多学生档案。",
+    smartReviewRequired: "智能错词复习包含在家长套餐和教师套餐中。",
+    proActive: "你的付费套餐已激活。已解锁词表保存、长期掌握度和智能错词复习。",
     rateLimited: "请求过于频繁，请稍后重试。",
     invalidSubmission: "本次提交数据无效，请重新开始作业后再试。",
   },
@@ -1758,8 +1771,9 @@ const SENTENCE_LIBRARY_COPY = {
     sentenceSimple: "Simple",
     sentenceDifficult: "Difficult",
     fillSentenceLibrary: "Fill from sentence library",
-    fillSentenceLibraryPlus: "Auto-fill example sentences — Plus",
-    sentenceLibraryRequired: "Sentence library is available on Plus.",
+    fillSentenceLibraryPlus: "Auto-fill example sentences",
+    sentenceLibraryRequired:
+      "Sentence library is included in Parent and Teacher Plans.",
     invalidSentenceLevel: "Choose simple or difficult sentences.",
   },
   es: {
@@ -1767,9 +1781,9 @@ const SENTENCE_LIBRARY_COPY = {
     sentenceSimple: "Sencilla",
     sentenceDifficult: "Difícil",
     fillSentenceLibrary: "Completar desde la biblioteca",
-    fillSentenceLibraryPlus: "Autocompletar frases — Plus",
+    fillSentenceLibraryPlus: "Autocompletar frases",
     sentenceLibraryRequired:
-      "La biblioteca de frases está disponible con Plus.",
+      "La biblioteca de frases está incluida en los planes para familias y docentes.",
     invalidSentenceLevel: "Elige frases sencillas o difíciles.",
   },
   "pt-BR": {
@@ -1777,8 +1791,9 @@ const SENTENCE_LIBRARY_COPY = {
     sentenceSimple: "Simples",
     sentenceDifficult: "Difícil",
     fillSentenceLibrary: "Preencher pela biblioteca",
-    fillSentenceLibraryPlus: "Preencher frases automaticamente — Plus",
-    sentenceLibraryRequired: "A biblioteca de frases está disponível no Plus.",
+    fillSentenceLibraryPlus: "Preencher frases automaticamente",
+    sentenceLibraryRequired:
+      "A biblioteca de frases está incluída nos planos para Pais e Professores.",
     invalidSentenceLevel: "Escolha frases simples ou difíceis.",
   },
   fr: {
@@ -1786,9 +1801,9 @@ const SENTENCE_LIBRARY_COPY = {
     sentenceSimple: "Simple",
     sentenceDifficult: "Difficile",
     fillSentenceLibrary: "Remplir depuis la bibliothèque",
-    fillSentenceLibraryPlus: "Remplir automatiquement — Plus",
+    fillSentenceLibraryPlus: "Remplir automatiquement",
     sentenceLibraryRequired:
-      "La bibliothèque de phrases est disponible avec Plus.",
+      "La bibliothèque de phrases est incluse dans les offres Parents et Enseignants.",
     invalidSentenceLevel: "Choisissez des phrases simples ou difficiles.",
   },
   id: {
@@ -1796,8 +1811,9 @@ const SENTENCE_LIBRARY_COPY = {
     sentenceSimple: "Sederhana",
     sentenceDifficult: "Sulit",
     fillSentenceLibrary: "Isi dari pustaka kalimat",
-    fillSentenceLibraryPlus: "Isi otomatis kalimat — Plus",
-    sentenceLibraryRequired: "Pustaka kalimat tersedia di Plus.",
+    fillSentenceLibraryPlus: "Isi otomatis kalimat",
+    sentenceLibraryRequired:
+      "Pustaka kalimat tersedia pada Paket Orang Tua dan Guru.",
     invalidSentenceLevel: "Pilih kalimat sederhana atau sulit.",
   },
   zh: {
@@ -1805,8 +1821,8 @@ const SENTENCE_LIBRARY_COPY = {
     sentenceSimple: "简单",
     sentenceDifficult: "进阶",
     fillSentenceLibrary: "从例句库填充",
-    fillSentenceLibraryPlus: "自动填充例句 — Plus",
-    sentenceLibraryRequired: "例句库仅 Plus 可用。",
+    fillSentenceLibraryPlus: "自动填充例句",
+    sentenceLibraryRequired: "例句库包含在家长套餐和教师套餐中。",
     invalidSentenceLevel: "请选择简单或进阶例句。",
   },
 };
@@ -1817,7 +1833,7 @@ const TODAYS_REVIEW_COPY = {
     todaysReviewCount: "{count} words need review today.",
     todaysReviewEmpty: "Nothing due today.",
     todaysReviewUpgrade:
-      "Upgrade to Plus to create a focused review assignment.",
+      "Parent and Teacher Plans can create a focused review assignment. View Plans.",
     todaysReviewMisses: "Missed {count} times · Last practiced {date}",
     createTodaysReview: "Create Review Assignment",
     todaysReviewDraftTitle: "{name} — Today's Review",
@@ -1827,7 +1843,7 @@ const TODAYS_REVIEW_COPY = {
     todaysReviewCount: "Hoy hay {count} palabras para repasar.",
     todaysReviewEmpty: "No hay nada pendiente hoy.",
     todaysReviewUpgrade:
-      "Pásate a Plus para crear una tarea de repaso personalizada.",
+      "Los planes para familias y docentes permiten crear una tarea de repaso personalizada. Consulta los planes.",
     todaysReviewMisses: "Fallada {count} veces · Última práctica: {date}",
     createTodaysReview: "Crear tarea de repaso",
     todaysReviewDraftTitle: "{name} — Repaso de hoy",
@@ -1837,7 +1853,7 @@ const TODAYS_REVIEW_COPY = {
     todaysReviewCount: "Há {count} palavras para revisar hoje.",
     todaysReviewEmpty: "Nada para revisar hoje.",
     todaysReviewUpgrade:
-      "Assine o Plus para criar uma tarefa de revisão focada.",
+      "Os planos para Pais e Professores permitem criar uma tarefa de revisão focada. Veja os planos.",
     todaysReviewMisses: "Errou {count} vezes · Última prática: {date}",
     createTodaysReview: "Criar tarefa de revisão",
     todaysReviewDraftTitle: "{name} — Revisão de hoje",
@@ -1847,7 +1863,7 @@ const TODAYS_REVIEW_COPY = {
     todaysReviewCount: "{count} mots sont à revoir aujourd'hui.",
     todaysReviewEmpty: "Rien à revoir aujourd'hui.",
     todaysReviewUpgrade:
-      "Passez à Plus pour créer un devoir de révision ciblé.",
+      "Les offres Parents et Enseignants permettent de créer un devoir de révision ciblé. Consultez les offres.",
     todaysReviewMisses: "Raté {count} fois · Dernier exercice : {date}",
     createTodaysReview: "Créer le devoir de révision",
     todaysReviewDraftTitle: "{name} — Révision du jour",
@@ -1856,7 +1872,8 @@ const TODAYS_REVIEW_COPY = {
     todaysReview: "Ulasan hari ini",
     todaysReviewCount: "Ada {count} kata untuk diulas hari ini.",
     todaysReviewEmpty: "Tidak ada yang perlu diulas hari ini.",
-    todaysReviewUpgrade: "Pilih Plus untuk membuat tugas ulasan yang terarah.",
+    todaysReviewUpgrade:
+      "Paket Orang Tua dan Guru dapat membuat tugas ulasan terarah. Lihat paket.",
     todaysReviewMisses: "Salah {count} kali · Latihan terakhir: {date}",
     createTodaysReview: "Buat tugas ulasan",
     todaysReviewDraftTitle: "{name} — Ulasan hari ini",
@@ -1865,7 +1882,7 @@ const TODAYS_REVIEW_COPY = {
     todaysReview: "今日复习",
     todaysReviewCount: "今天有 {count} 个单词需要复习。",
     todaysReviewEmpty: "今天没有待复习单词。",
-    todaysReviewUpgrade: "升级 Plus 后可创建针对性复习作业。",
+    todaysReviewUpgrade: "家长套餐和教师套餐可创建针对性复习作业。查看套餐。",
     todaysReviewMisses: "答错 {count} 次 · 最近练习：{date}",
     createTodaysReview: "创建复习作业",
     todaysReviewDraftTitle: "{name} — 今日复习",
@@ -1922,17 +1939,11 @@ export function productLocale() {
 }
 
 export function productMessages(locale = productLocale()) {
-  const pack = {
+  return {
     ...(PACKS[locale] || PACKS.en),
     ...(SENTENCE_LIBRARY_COPY[locale] || SENTENCE_LIBRARY_COPY.en),
     ...(TODAYS_REVIEW_COPY[locale] || TODAYS_REVIEW_COPY.en),
   };
-  return Object.fromEntries(
-    Object.entries(pack).map(([key, value]) => [
-      key,
-      typeof value === "string" ? value.replace(/\bPro\b/g, "Plus") : value,
-    ]),
-  );
 }
 
 export function productMessage(key, vars = {}, locale = productLocale()) {

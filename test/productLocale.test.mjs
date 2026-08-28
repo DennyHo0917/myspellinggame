@@ -25,10 +25,18 @@ test("word-limit copy states Free and paid list limits in every locale", () => {
   }
 });
 
-test("paid workspace copy uses Plus as the visible product name", () => {
+test("workspace copy contains no legacy paid product names", () => {
   for (const [locale] of PRODUCT_LOCALES) {
-    assert.doesNotMatch(JSON.stringify(productMessages(locale)), /\bPro\b/);
+    assert.doesNotMatch(
+      JSON.stringify(productMessages(locale)),
+      /\b(?:Plus|Pro)\b/,
+    );
   }
+  const copy = productMessages("en");
+  assert.equal(copy.freePlan, "Free Plan");
+  assert.equal(copy.parentPlan, "Parent Plan");
+  assert.equal(copy.teacherPlan, "Teacher Plan");
+  assert.equal(copy.upgrade, "View Plans");
 });
 
 test("every product locale keeps the brand and has a distinct student-limit message", () => {

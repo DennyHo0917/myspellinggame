@@ -48,7 +48,7 @@ For longer-term review, completed assignment history can be used to identify pre
 
 ## Today's Review
 
-Today's Review is a Plus feature.
+Today's Review is included in Parent and Teacher Plans.
 
 It uses completed spelling history to surface previously missed words when they are due for another practice session.
 
@@ -66,7 +66,7 @@ A later incorrect completed attempt resets the mastery progression.
 
 Teachers and parents can manually add optional example sentences to spelling words.
 
-Plus also includes a curated sentence library for known words.
+Parent and Teacher Plans include a curated sentence library for known words.
 
 The curated sentence library does not generate sentences with AI. Suggested sentences can be edited before an assignment is published.
 
@@ -87,7 +87,7 @@ The workspace supports:
 
 Students still do not need their own accounts.
 
-## Free and Plus
+## Plans
 
 ### Anonymous practice
 
@@ -97,7 +97,7 @@ Practice rounds are not limited. Anonymous practice results are not stored as tr
 
 ### Free
 
-Free accounts support up to 40 words per list.
+Free Plan supports up to 30 words per list.
 
 Free workspace includes:
 
@@ -107,26 +107,46 @@ Free workspace includes:
 - 1 student profile
 - 14 days of progress and mastery history
 
-### Plus
+### Parent Plan
 
-Plus supports up to 80 words per list.
+Parent Plan supports up to 40 words per list.
 
-Plus is currently:
+Parent Plan is currently:
 
-- $5.99 per month
+- $4.99 per month
 - $49.99 per year
 
-Plus includes:
+Parent Plan includes:
 
-- Up to 20 active assignments
-- Unlimited student submissions
+- Up to 3 active assignments
+- Unlimited tracked submissions
 - Unlimited saved lists
-- Up to 150 student profiles
-- No per-student fee
+- Up to 5 child profiles
 - 365-day progress and mastery history
 - Smart missed-word review
 - Today's Review
 - Curated example sentence library
+
+### Teacher Plan
+
+Teacher Plan supports up to 40 words per list.
+
+Teacher Plan is currently:
+
+- $9.99 per month
+- $99.99 per year
+
+Teacher Plan includes:
+
+- Up to 5 active assignments
+- Unlimited tracked submissions
+- Unlimited saved lists
+- Up to 40 student profiles
+- 365-day progress and mastery history
+- Smart missed-word review
+- Today's Review
+- Curated example sentence library
+- Class Join and Student PINs
 - CSV export
 - Group-wide missed-word statistics
 

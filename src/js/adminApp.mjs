@@ -72,7 +72,7 @@ function renderStats(stats) {
   const labels = [
     ["注册用户总数", stats.totalUsers],
     ["Google 用户", stats.googleUsers],
-    ["当前 Plus 用户", stats.proUsers],
+    ["当前付费用户", stats.proUsers],
     ["正式付费", stats.activePaidUsers],
     ["月付用户", stats.monthlyUsers],
     ["年付用户", stats.yearlyUsers],
@@ -104,9 +104,13 @@ async function loadUsers() {
         user.name,
         user.email,
         formatProvider(user.loginProvider),
-        ["parent", "teacher", "plus", "pro"].includes(user.plan)
-          ? "Plus"
-          : "免费",
+        {
+          free: "免费套餐",
+          parent: "家长套餐",
+          teacher: "教师套餐",
+          plus: "家长套餐（历史兼容）",
+          pro: "教师套餐（历史兼容）",
+        }[user.plan] || "免费套餐",
         formatSubscriptionStatus(user.subscriptionStatus),
         formatBillingInterval(user.billingInterval),
         formatDate(user.currentPeriodEnd),

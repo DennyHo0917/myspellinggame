@@ -385,7 +385,7 @@ test("llms.txt publishes the current product summary and canonical sources", () 
     "## Accounts",
     "## Today's Review",
     "## Mastery",
-    "## Free and Plus",
+    "## Plans",
     "1 active assignment",
     "8 student submissions per month",
     "1 saved list",
@@ -403,14 +403,34 @@ test("llms.txt publishes the current product summary and canonical sources", () 
   assert.ok(!content.includes("free trial"));
   assert.ok(content.includes("up to 20 words"));
   assert.ok(content.includes("up to 40 words"));
-  assert.ok(content.includes("up to 80 words"));
+  assert.ok(!content.includes("up to 80 words"));
   const anonymousIndex = content.indexOf("### Anonymous practice");
   const freeIndex = content.indexOf("### Free");
-  const plusIndex = content.indexOf("### Plus");
+  const parentIndex = content.indexOf("### Parent Plan");
+  const teacherIndex = content.indexOf("### Teacher Plan");
   const workspaceIndex = content.indexOf("Free workspace includes:");
   assert.ok(anonymousIndex >= 0 && anonymousIndex < freeIndex);
-  assert.ok(freeIndex < plusIndex);
-  assert.ok(freeIndex < workspaceIndex && workspaceIndex < plusIndex);
+  assert.ok(freeIndex < parentIndex && parentIndex < teacherIndex);
+  assert.ok(freeIndex < workspaceIndex && workspaceIndex < parentIndex);
   assert.ok(!content.includes("30 days of progress history"));
+  assert.doesNotMatch(content, /\b(?:Plus|Pro)\b/);
   assert.doesNotMatch(content, /workers\.dev|localhost|\.html/);
+});
+
+test("public pages contain no legacy paid product names", () => {
+  for (const locale of locales) {
+    for (const file of [
+      "index.html",
+      "faq.html",
+      "privacy.html",
+      "homeschool-spelling-practice.html",
+    ]) {
+      const content = fs.readFileSync(path.join(root, locale, file), "utf8");
+      assert.doesNotMatch(
+        content,
+        /\b(?:Plus|Pro)\b|Family Plus|Teacher Plus/,
+        `${locale || "en"}/${file}`,
+      );
+    }
+  }
 });

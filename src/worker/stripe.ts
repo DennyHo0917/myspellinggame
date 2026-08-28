@@ -29,6 +29,7 @@ type CheckoutOptions = {
     params: Stripe.Checkout.SessionCreateParams,
     options: Stripe.RequestOptions,
   ) => Promise<Pick<Stripe.Checkout.Session, "id" | "url" | "expires_at">>;
+  expireSession?: (sessionId: string) => Promise<unknown>;
 };
 
 type PortalOptions = {
@@ -182,14 +183,38 @@ export async function createCheckout(
   }
   const trialGranted = isTrialEligible(subscription ?? null);
   const nowIso = now.toISOString();
+  let stripeClient: Stripe | null = null;
+  const checkoutSessions = () => {
+    stripeClient ??= stripe(env);
+    return stripeClient.checkout.sessions;
+  };
+  const createSession =
+    options.createSession ??
+    ((params, requestOptions) =>
+      checkoutSessions().create(params, requestOptions));
+  const expireSession =
+    options.expireSession ??
+    ((sessionId) => checkoutSessions().expire(sessionId));
+  const expireCheckoutSession = async (sessionId: string) => {
+    try {
+      await expireSession(sessionId);
+    } catch {
+      throw new HttpError(
+        502,
+        "checkout_unavailable",
+        "The previous Stripe Checkout could not be closed safely.",
+      );
+    }
+  };
   const existingLock = await db
     .prepare(
-      `SELECT interval, session_url, expires_at FROM checkout_locks
+      `SELECT interval, stripe_session_id, session_url, expires_at FROM checkout_locks
        WHERE user_id = ? AND expires_at > ?`,
     )
     .bind(user.id, nowIso)
     .first<{
       interval: "month" | "year";
+      stripe_session_id: string | null;
       session_url: string | null;
       expires_at: string;
     }>();
@@ -202,6 +227,8 @@ export async function createCheckout(
         "checkout_pending",
         "A subscription checkout is already being created.",
       );
+    if (existingLock.stripe_session_id)
+      await expireCheckoutSession(existingLock.stripe_session_id);
   }
   const token = crypto.randomUUID();
   const sessionExpiresAt =
@@ -237,10 +264,6 @@ export async function createCheckout(
       "A subscription checkout is already being created.",
     );
   }
-  const createSession =
-    options.createSession ??
-    ((params, requestOptions) =>
-      stripe(env).checkout.sessions.create(params, requestOptions));
   try {
     const locale = stripeLocale(options.locale);
     const session = await createSession(
@@ -279,7 +302,7 @@ export async function createCheckout(
         "checkout_unavailable",
         "Stripe did not return a Checkout URL.",
       );
-    await db
+    const update = await db
       .prepare(
         `UPDATE checkout_locks
          SET stripe_session_id = ?, session_url = ?, expires_at = ?
@@ -293,6 +316,14 @@ export async function createCheckout(
         token,
       )
       .run();
+    if (!update.meta.changes) {
+      await expireCheckoutSession(session.id);
+      throw new HttpError(
+        409,
+        "checkout_pending",
+        "A newer subscription checkout is already being prepared.",
+      );
+    }
     return session;
   } catch (error) {
     await db

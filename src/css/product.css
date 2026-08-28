@@ -913,6 +913,215 @@ th {
   }
 }
 
+/* Workspace navigation keeps the existing page sections and routes intact. */
+.workspace-layout {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1080px);
+  gap: 22px;
+  width: min(1332px, 100%);
+  margin: 22px auto 0;
+  align-items: start;
+}
+
+.workspace-layout.is-sidebar-collapsed {
+  grid-template-columns: 68px minmax(0, 1080px);
+}
+
+.workspace-layout .teacher-main {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.workspace-sidebar {
+  position: sticky;
+  top: 14px;
+  display: flex;
+  flex-direction: column;
+  min-height: min(620px, calc(100vh - 28px));
+  max-height: calc(100vh - 28px);
+  padding: 10px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 24px rgba(39, 62, 70, 0.07);
+  transition: width 160ms ease;
+}
+
+.workspace-sidebar.is-collapsed {
+  width: 68px;
+}
+
+.workspace-sidebar-menu {
+  display: grid;
+  gap: 4px;
+}
+
+.workspace-sidebar-link,
+.workspace-sidebar-collapse {
+  display: flex;
+  width: 100%;
+  min-height: 42px;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 11px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  box-shadow: none;
+  color: #17202a;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 650;
+  line-height: 1.2;
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.workspace-sidebar-link:hover,
+.workspace-sidebar-link:focus-visible,
+.workspace-sidebar-collapse:hover,
+.workspace-sidebar-collapse:focus-visible {
+  background: rgba(52, 104, 194, 0.09);
+  color: var(--brand-dark);
+}
+
+.workspace-sidebar-link[aria-current="page"] {
+  background: var(--brand);
+  color: #fff;
+}
+
+.workspace-sidebar-icon {
+  display: inline-grid;
+  width: 24px;
+  min-width: 24px;
+  place-items: center;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.workspace-sidebar-signout {
+  margin-top: 8px;
+  border-top: 1px solid var(--line);
+  border-radius: 0 0 7px 7px;
+}
+
+.workspace-sidebar-collapse {
+  margin-top: auto;
+  border-top: 1px solid var(--line);
+  border-radius: 0 0 7px 7px;
+}
+
+.workspace-sidebar.is-collapsed .workspace-sidebar-label {
+  display: none;
+}
+
+.workspace-sidebar.is-collapsed .workspace-sidebar-link,
+.workspace-sidebar.is-collapsed .workspace-sidebar-collapse {
+  justify-content: center;
+  padding-inline: 8px;
+}
+
+.workspace-drawer-toggle,
+.workspace-drawer-overlay {
+  display: none;
+}
+
+.workspace-layout section[id] {
+  scroll-margin-top: 14px;
+}
+
+@media (max-width: 800px) {
+  body.product-page {
+    overflow-x: hidden;
+  }
+
+  body.workspace-drawer-active {
+    overflow: hidden;
+  }
+
+  .workspace-shell .teacher-product-nav {
+    grid-template-columns: 1fr auto auto;
+  }
+
+  .workspace-shell .product-nav-actions {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .workspace-drawer-toggle {
+    display: inline-grid;
+    grid-column: 2;
+    grid-row: 1;
+    width: 38px;
+    min-height: 36px;
+    padding: 0;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.86);
+    color: var(--brand-dark);
+    box-shadow: 0 6px 18px rgba(35, 56, 64, 0.08);
+  }
+
+  .workspace-layout {
+    display: block;
+    width: 100%;
+    margin-top: 22px;
+  }
+
+  .workspace-sidebar,
+  .workspace-sidebar.is-collapsed {
+    position: fixed;
+    z-index: 101;
+    inset: 0 auto 0 0;
+    width: min(280px, calc(100vw - 48px));
+    min-height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0 10px 10px 0;
+    transform: translateX(-105%);
+    transition: transform 180ms ease;
+  }
+
+  .workspace-sidebar.is-collapsed .workspace-sidebar-label {
+    display: inline;
+  }
+
+  .workspace-sidebar.is-collapsed .workspace-sidebar-link,
+  .workspace-sidebar.is-collapsed .workspace-sidebar-collapse {
+    justify-content: flex-start;
+    padding-inline: 11px;
+  }
+
+  .workspace-shell.is-drawer-open .workspace-sidebar {
+    transform: translateX(0);
+  }
+
+  .workspace-sidebar-collapse {
+    display: none;
+  }
+
+  .workspace-drawer-overlay {
+    position: fixed;
+    z-index: 100;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: rgba(19, 32, 43, 0.45);
+    box-shadow: none;
+  }
+
+  .workspace-shell.is-drawer-open .workspace-drawer-overlay {
+    display: block;
+  }
+}
+
 /* Keep the signed-out teacher entry compact while leaving the standalone pricing page unchanged. */
 .teacher-login-main {
   width: min(1080px, 100%);

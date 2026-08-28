@@ -200,7 +200,7 @@ function attachSentenceLibraryControls(
   }
 }
 
-function nav({ signedIn = true } = {}) {
+function nav({ workspace = false } = {}) {
   const element = document.createElement("nav");
   element.className = "product-nav teacher-product-nav";
   const homeHref = productPagePath("", locale);
@@ -210,19 +210,11 @@ function nav({ signedIn = true } = {}) {
   ).join("");
   element.innerHTML = `
     <a class="product-brand" href="${homeHref}"><img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span>${copy.brand}</span></a>
+    ${workspace ? `<button class="workspace-drawer-toggle" id="workspace-menu-toggle" type="button" aria-label="${copy.openWorkspaceMenu}" aria-expanded="false"><span aria-hidden="true">☰</span></button>` : ""}
     <div class="product-nav-actions">
       <details class="language-switcher"><summary class="lang-btn" aria-label="${copy.language}">${copy.language}</summary><div class="lang-menu">${languageOptions}</div></details>
       <a class="button-link button-secondary" href="${homeHref}">${copy.homePage}</a>
-      ${signedIn ? `<button class="button-secondary" id="sign-out" type="button">${copy.signOut}</button>` : ""}
     </div>`;
-  if (signedIn) {
-    element.querySelector("#sign-out").addEventListener("click", async () => {
-      await api("/api/auth/sign-out", { method: "POST", body: "{}" }).catch(
-        () => null,
-      );
-      location.href = homeHref;
-    });
-  }
   return element;
 }
 
@@ -261,15 +253,157 @@ function footer() {
   return element;
 }
 
-function shell() {
+function workspaceIcon(name) {
+  const icons = {
+    overview: "⌂",
+    assignments: "✓",
+    learners: "♙",
+    savedLists: "▤",
+    progress: "↗",
+    billing: "$",
+    signOut: "↪",
+  };
+  return icons[name] || "•";
+}
+
+function shell(me = null, activeSection = "overview") {
   root.replaceChildren();
   const wrapper = document.createElement("div");
-  wrapper.className = "product-shell";
-  wrapper.append(nav());
+  wrapper.className = `product-shell${me ? " workspace-shell" : ""}`;
+  wrapper.append(nav({ workspace: Boolean(me) }));
+  if (!me) {
+    const main = document.createElement("main");
+    main.className = "product-main teacher-main";
+    wrapper.append(main, footer());
+    root.append(wrapper);
+    return main;
+  }
+  const layout = document.createElement("div");
+  layout.className = "workspace-layout";
+  const sidebar = document.createElement("aside");
+  sidebar.className = "workspace-sidebar";
+  sidebar.setAttribute("aria-label", copy.dashboardTitle);
+  const planLearners =
+    me.plan === "free"
+      ? copy.freeLearners
+      : isParentPlan(me)
+        ? copy.familyLearners
+        : copy.learners;
+  const currentHash = location.hash.replace(/^#/, "");
+  const requestedSection = new URLSearchParams(location.search).get("section");
+  const current =
+    location.pathname === "/teacher"
+      ? requestedSection || currentHash || activeSection
+      : activeSection;
+  const dashboardHref = `/teacher?lang=${encodeURIComponent(locale)}`;
+  const items = [
+    ["overview", copy.overview, `${dashboardHref}#overview`],
+    ["assignments", copy.assignments, `${dashboardHref}#assignments`],
+    ["learners", planLearners, `${dashboardHref}#learners`],
+    ["savedLists", copy.savedLists, `${dashboardHref}#saved-lists`],
+    [
+      "progress",
+      copy.freeProgress,
+      `${dashboardHref}&section=progress#learners`,
+    ],
+    [
+      "billing",
+      isPlusPlan(me) ? copy.manageBilling : copy.upgrade,
+      isPlusPlan(me) ? "" : productPagePath("pricing", locale),
+    ],
+  ];
+  const menu = document.createElement("div");
+  menu.className = "workspace-sidebar-menu";
+  for (const [key, label, href] of items) {
+    const link = document.createElement(href ? "a" : "button");
+    link.className = "workspace-sidebar-link";
+    link.dataset.section = key;
+    if (href) link.href = href;
+    else link.type = "button";
+    link.innerHTML = `<span class="workspace-sidebar-icon" aria-hidden="true">${workspaceIcon(key)}</span><span class="workspace-sidebar-label">${label}</span>`;
+    link.setAttribute("aria-label", label);
+    link.title = label;
+    if (current === key || (key === "overview" && !current))
+      link.setAttribute("aria-current", "page");
+    if (key === "billing" && isPlusPlan(me))
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        openPortal();
+      });
+    link.addEventListener("click", () => {
+      closeWorkspaceDrawer();
+      if (location.pathname !== "/teacher" || key === "billing") return;
+      menu
+        .querySelector('[aria-current="page"]')
+        ?.removeAttribute("aria-current");
+      link.setAttribute("aria-current", "page");
+    });
+    menu.append(link);
+  }
+  const signOut = document.createElement("button");
+  signOut.className = "workspace-sidebar-link workspace-sidebar-signout";
+  signOut.type = "button";
+  signOut.dataset.section = "signOut";
+  signOut.innerHTML = `<span class="workspace-sidebar-icon" aria-hidden="true">${workspaceIcon("signOut")}</span><span class="workspace-sidebar-label">${copy.signOut}</span>`;
+  signOut.setAttribute("aria-label", copy.signOut);
+  signOut.title = copy.signOut;
+  signOut.addEventListener("click", async () => {
+    await api("/api/auth/sign-out", { method: "POST", body: "{}" }).catch(
+      () => null,
+    );
+    location.href = productPagePath("", locale);
+  });
+  menu.append(signOut);
+  const collapse = document.createElement("button");
+  collapse.className = "workspace-sidebar-collapse";
+  collapse.type = "button";
+  collapse.setAttribute("aria-expanded", "true");
+  collapse.setAttribute("aria-label", copy.collapseSidebar);
+  collapse.innerHTML = `<span aria-hidden="true">‹</span><span class="workspace-sidebar-label">${copy.collapseSidebar}</span>`;
+  collapse.addEventListener("click", () => {
+    const collapsed = sidebar.classList.toggle("is-collapsed");
+    layout.classList.toggle("is-sidebar-collapsed", collapsed);
+    collapse.setAttribute("aria-expanded", String(!collapsed));
+    collapse.setAttribute(
+      "aria-label",
+      collapsed ? copy.expandSidebar : copy.collapseSidebar,
+    );
+    collapse.innerHTML = `<span aria-hidden="true">${collapsed ? "›" : "‹"}</span><span class="workspace-sidebar-label">${collapsed ? copy.expandSidebar : copy.collapseSidebar}</span>`;
+    try {
+      localStorage.setItem("workspaceSidebarCollapsed", collapsed ? "1" : "0");
+    } catch {}
+  });
+  sidebar.append(menu, collapse);
+  try {
+    if (localStorage.getItem("workspaceSidebarCollapsed") === "1")
+      collapse.click();
+  } catch {}
+  layout.append(sidebar);
   const main = document.createElement("main");
   main.className = "product-main teacher-main";
-  wrapper.append(main, footer());
+  layout.append(main);
+  wrapper.append(layout);
+  const overlay = document.createElement("button");
+  overlay.className = "workspace-drawer-overlay";
+  overlay.type = "button";
+  overlay.setAttribute("aria-label", copy.closeWorkspaceMenu);
+  overlay.addEventListener("click", closeWorkspaceDrawer);
+  wrapper.append(overlay, footer());
   root.append(wrapper);
+  const toggle = wrapper.querySelector("#workspace-menu-toggle");
+  toggle?.addEventListener("click", () => {
+    const open = wrapper.classList.toggle("is-drawer-open");
+    toggle.setAttribute("aria-expanded", String(open));
+    document.body.classList.toggle("workspace-drawer-active", open);
+  });
+  function closeWorkspaceDrawer() {
+    wrapper.classList.remove("is-drawer-open");
+    toggle?.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("workspace-drawer-active");
+  }
+  wrapper.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeWorkspaceDrawer();
+  });
   return main;
 }
 
@@ -374,7 +508,7 @@ async function renderLogin() {
   root.innerHTML = "";
   const wrapper = document.createElement("div");
   wrapper.className = "product-shell teacher-login-shell";
-  wrapper.append(nav({ signedIn: false }));
+  wrapper.append(nav());
   const main = document.createElement("main");
   main.className = "product-main teacher-main teacher-login-main has-pricing";
   const card = document.createElement("section");
@@ -517,6 +651,7 @@ function showSectionError(section, error, ctaLocation) {
 function renderSavedLists(me, savedLists) {
   const section = document.createElement("section");
   section.className = "product-card";
+  section.id = "saved-lists";
   const heading = document.createElement("h2");
   heading.textContent = copy.freeSavedLists;
   const intro = document.createElement("p");
@@ -683,6 +818,7 @@ function renderSavedLists(me, savedLists) {
 function renderLearners(me, learners) {
   const section = document.createElement("section");
   section.className = "product-card";
+  section.id = "learners";
   const learnerCopy =
     me.plan === "free"
       ? {
@@ -833,9 +969,10 @@ function renderLearners(me, learners) {
 
 async function renderDashboard(me) {
   const data = await api("/api/assignments");
-  const main = shell();
+  const main = shell(me, "overview");
   const card = document.createElement("section");
   card.className = "product-card teacher-dashboard-card";
+  card.id = "overview";
   const heading = document.createElement("h1");
   heading.textContent = copy.dashboardTitle;
   const greeting = document.createElement("p");
@@ -880,6 +1017,7 @@ async function renderDashboard(me) {
 
   const listCard = document.createElement("section");
   listCard.className = "product-card";
+  listCard.id = "assignments";
   const listHeading = document.createElement("h2");
   listHeading.textContent = copy.assignments;
   listCard.append(listHeading);
@@ -1005,7 +1143,7 @@ function showCheckoutRetry(interval, plan, error) {
 }
 
 async function renderNew(me) {
-  const main = shell();
+  const main = shell(me, "assignments");
   const card = document.createElement("section");
   card.className = "product-card";
   const heading = document.createElement("h1");
@@ -1169,7 +1307,7 @@ function statCard(label, value) {
 
 async function renderDetail(me, id) {
   const data = await api(`/api/assignments/${id}`);
-  const main = shell();
+  const main = shell(me, "assignments");
   const card = document.createElement("section");
   card.className = "product-card";
   const heading = document.createElement("h1");
@@ -1510,7 +1648,7 @@ async function renderDetail(me, id) {
 async function renderLearner(me, id) {
   const data = await api(`/api/learners/${id}`);
   const reviewData = data.todaysReview || { count: 0, words: null };
-  const main = shell();
+  const main = shell(me, "progress");
   const card = document.createElement("section");
   card.className = "product-card";
   const headingRow = document.createElement("div");
@@ -1824,7 +1962,7 @@ async function renderTeacherRoute(me) {
     else if (learner) await renderLearner(me, learner[1]);
     else await renderDashboard(me);
   } catch (error) {
-    const main = shell();
+    const main = shell(me, "overview");
     const card = document.createElement("section");
     card.className = "product-card error-card";
     const title = document.createElement("h1");

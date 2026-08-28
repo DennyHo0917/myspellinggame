@@ -327,7 +327,7 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
     }),
   );
 
-  await page.goto("/teacher?lang=en");
+  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Assignments" }),
@@ -337,7 +337,11 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
   ).toBeVisible();
   await expect(page.getByRole("heading", { name: "Students" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Add student" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Progress" })).toBeVisible();
+  await expect(
+    page
+      .locator("#learners")
+      .getByRole("link", { name: "Progress", exact: true }),
+  ).toBeVisible();
   const pinText = await page.getByText(/Student PIN: \d{4}/).textContent();
   const visiblePin = pinText.match(/\d{4}/)[0];
   const classUrlText = await page
@@ -346,6 +350,9 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
   const classUrl = classUrlText.match(/https?:\/\/\S+/)[0];
 
   await page.getByRole("link", { name: "Create assignment" }).click();
+  await expect(
+    page.locator('.workspace-sidebar-link[data-section="assignments"]'),
+  ).toHaveAttribute("aria-current", "page");
   await expect(page.getByLabel("All students")).toBeVisible();
   await expect(page.getByLabel("Selected students")).toBeVisible();
   await page.getByLabel("Assignment title").fill("Alice's spelling assignment");
@@ -441,7 +448,11 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
     await expect(
       page.getByRole("button", { name: "Add learner" }),
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: "Progress" })).toBeVisible();
+    await expect(
+      page
+        .locator("#learners")
+        .getByRole("link", { name: "Progress", exact: true }),
+    ).toBeVisible();
     await expect(page.getByText("1 learners")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Children" })).toHaveCount(
       0,
@@ -2117,7 +2128,7 @@ test("workspace P0 flow keeps empty smart review actions retryable", async ({
     json(route, { words: [] }),
   );
 
-  await page.goto("/teacher?lang=en");
+  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
   await page.getByLabel("List title").fill("Week one");
   await page.getByLabel("Spelling words").fill("apple\nbanana");
   await page.getByRole("button", { name: "Save list" }).click();
@@ -2126,7 +2137,10 @@ test("workspace P0 flow keeps empty smart review actions retryable", async ({
   await page.getByLabel("Student nickname or number").fill("Student 01");
   await page.getByRole("button", { name: "Add student" }).click();
   await expect(page.getByRole("heading", { name: "Students" })).toBeVisible();
-  await page.getByRole("link", { name: "Progress" }).click();
+  await page
+    .locator("#learners")
+    .getByRole("link", { name: "Progress", exact: true })
+    .click();
   await expect(
     page.getByRole("heading", { name: "Mastery overview" }),
   ).toBeVisible();
@@ -2146,7 +2160,12 @@ test("workspace P0 flow keeps empty smart review actions retryable", async ({
   ).toBeVisible();
   await expect(learnerReview).toBeEnabled();
 
-  await page.goto(`/teacher/assignments/${assignmentId}?lang=en`);
+  await page.goto(`/teacher/assignments/${assignmentId}?lang=en`, {
+    waitUntil: "domcontentloaded",
+  });
+  await expect(
+    page.locator('.workspace-sidebar-link[data-section="assignments"]'),
+  ).toHaveAttribute("aria-current", "page");
   await expect(
     page.getByRole("heading", { name: "Student assignment link" }),
   ).toBeVisible();
@@ -2209,7 +2228,9 @@ test("Teacher creates today's review assignment from learner detail", async ({
     }),
   );
 
-  await page.goto(`/teacher/learners/${learnerId}?lang=en`);
+  await page.goto(`/teacher/learners/${learnerId}?lang=en`, {
+    waitUntil: "domcontentloaded",
+  });
   await page.evaluate(() =>
     sessionStorage.setItem("mySpellingAssignmentEntryPoint", "copy_track"),
   );
@@ -2340,7 +2361,7 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
     json(route, { words: [] }),
   );
 
-  await page.goto("/teacher?lang=en");
+  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Parent Plan", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Children" })).toBeVisible();
   await expect(
@@ -2480,6 +2501,7 @@ test("Free assignment progress hides class-wide missed-word statistics", async (
 
   const navigation = await page.goto(
     `/teacher/assignments/${assignmentId}?lang=en`,
+    { waitUntil: "domcontentloaded" },
   );
   expect(navigation.headers()["x-robots-tag"]).toContain("noindex");
   await expect(
@@ -2549,12 +2571,19 @@ test("free assignment and learner previews avoid zero-value urgency", async ({
     }),
   );
 
-  await page.goto(`/teacher/assignments/${assignmentId}?lang=en`);
+  await page.goto(`/teacher/assignments/${assignmentId}?lang=en`, {
+    waitUntil: "domcontentloaded",
+  });
   await expect(
     page.getByRole("heading", { name: "Most commonly missed words" }),
   ).toHaveCount(0);
 
-  await page.goto(`/teacher/learners/${learnerId}?lang=en`);
+  await page.goto(`/teacher/learners/${learnerId}?lang=en`, {
+    waitUntil: "domcontentloaded",
+  });
+  await expect(
+    page.locator('.workspace-sidebar-link[data-section="progress"]'),
+  ).toHaveAttribute("aria-current", "page");
   const review = page.locator("section").filter({
     has: page.getByRole("heading", { name: "Smart missed-word review" }),
   });
@@ -2564,7 +2593,7 @@ test("free assignment and learner previews avoid zero-value urgency", async ({
   await expect(review.getByRole("link", { name: "View Plans" })).toHaveCount(1);
 
   needsReview = 0;
-  await page.reload();
+  await page.reload({ waitUntil: "domcontentloaded" });
   await expect(review).toContainText(
     "Smart Review is included in Parent and Teacher Plans. View plans.",
   );
@@ -2687,4 +2716,148 @@ test("deleting a result refreshes teacher summaries and reports failures", async
       .locator(".stat-value"),
   ).toHaveText("0%");
   await expect(page.getByText("banana · 1")).toHaveCount(0);
+});
+
+async function mockWorkspaceShell(page, plan) {
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "owner-a", name: "Owner A", email: "a@example.test" },
+        plan,
+      }),
+    }),
+  );
+  await page.route("**/api/assignments", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        assignments: [],
+        savedLists: [],
+        learners: [],
+        usage: {
+          limits: {
+            activeAssignments: plan === "free" ? 1 : 20,
+            monthlyAttempts: plan === "free" ? 8 : null,
+            savedLists: plan === "free" ? 1 : null,
+            learnerProfiles:
+              plan === "parent" ? 5 : plan === "teacher" ? 150 : 1,
+          },
+          activeAssignments: 0,
+          monthlyAttempts: 0,
+          savedLists: 0,
+          learnerProfiles: 0,
+        },
+      }),
+    }),
+  );
+}
+
+for (const [plan, learnerLabel, billingLabel] of [
+  ["free", "Learners", "View Plans"],
+  ["parent", "Children", "Manage billing"],
+  ["teacher", "Students", "Manage billing"],
+]) {
+  test(`${plan} workspace sidebar uses the plan-specific labels`, async ({
+    page,
+  }) => {
+    await mockWorkspaceShell(page, plan);
+    await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+
+    const sidebar = page.locator(".workspace-sidebar");
+    await expect(
+      sidebar.getByText(learnerLabel, { exact: true }),
+    ).toBeVisible();
+    await expect(
+      sidebar.getByText(billingLabel, { exact: true }),
+    ).toBeVisible();
+    await expect(sidebar.locator('[data-section="overview"]')).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await expect(sidebar.getByText("Class join", { exact: true })).toHaveCount(
+      0,
+    );
+    await expect(
+      sidebar.getByText("Smart missed-word review", { exact: true }),
+    ).toHaveCount(0);
+  });
+}
+
+test("desktop workspace sidebar collapses and restores", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await mockWorkspaceShell(page, "free");
+  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+
+  const sidebar = page.locator(".workspace-sidebar");
+  await page.getByRole("button", { name: "Collapse sidebar" }).click();
+  await expect(sidebar).toHaveClass(/is-collapsed/);
+  await expect(page.locator(".workspace-layout")).toHaveClass(
+    /is-sidebar-collapsed/,
+  );
+  await expect(
+    sidebar.locator('[data-section="assignments"] .workspace-sidebar-icon'),
+  ).toBeVisible();
+  await expect(
+    sidebar.locator('[data-section="assignments"] .workspace-sidebar-label'),
+  ).not.toBeVisible();
+
+  await page.getByRole("button", { name: "Expand sidebar" }).click();
+  await expect(sidebar).not.toHaveClass(/is-collapsed/);
+  await expect(
+    sidebar.locator('[data-section="assignments"] .workspace-sidebar-label'),
+  ).toBeVisible();
+});
+
+test("paid workspace sidebar keeps the existing billing portal flow", async ({
+  page,
+}) => {
+  await mockWorkspaceShell(page, "parent");
+  let portalCalls = 0;
+  await page.route("**/api/billing/portal", (route) => {
+    portalCalls += 1;
+    return route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ url: "/pricing?from=portal" }),
+    });
+  });
+  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+
+  await page.locator('.workspace-sidebar-link[data-section="billing"]').click();
+  await expect(page).toHaveURL(/\/pricing\?from=portal$/);
+  expect(portalCalls).toBe(1);
+});
+
+test("mobile workspace drawer opens, closes, navigates, and does not overflow", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await mockWorkspaceShell(page, "free");
+  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+
+  const shell = page.locator(".workspace-shell");
+  const menu = page.getByRole("button", { name: "Open workspace menu" });
+  await expect(menu).toBeVisible();
+  await expect(shell).not.toHaveClass(/is-drawer-open/);
+
+  await menu.click();
+  await expect(shell).toHaveClass(/is-drawer-open/);
+  await expect(menu).toHaveAttribute("aria-expanded", "true");
+  await page
+    .getByRole("button", { name: "Close workspace menu" })
+    .click({ position: { x: 370, y: 100 } });
+  await expect(shell).not.toHaveClass(/is-drawer-open/);
+
+  await menu.click();
+  await page
+    .locator('.workspace-sidebar-link[data-section="assignments"]')
+    .click();
+  await expect(shell).not.toHaveClass(/is-drawer-open/);
+  await expect(page).toHaveURL(/#assignments$/);
+  await expect(
+    page.locator('.workspace-sidebar-link[data-section="assignments"]'),
+  ).toHaveAttribute("aria-current", "page");
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(await page.evaluate(() => window.innerWidth));
 });

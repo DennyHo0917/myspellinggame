@@ -78,6 +78,20 @@ button:disabled {
 .button-secondary:hover {
   background: #d8e7e5;
 }
+.sentence-library-fill {
+  gap: 0.45rem;
+}
+.sentence-library-upgrade-badge {
+  border-radius: 999px;
+  padding: 0.18rem 0.42rem;
+  background: #f2c14e;
+  color: #4a3500;
+  font-size: 0.68rem;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 .button-danger {
   background: var(--red);
 }

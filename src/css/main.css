@@ -578,12 +578,17 @@ a {
   background: rgba(247, 250, 248, 0.82);
 }
 
-.return-menu-btn {
-  display: none;
+.game-toolbar-actions {
+  display: flex;
   align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.return-menu-btn,
+.game-sound-btn {
   justify-content: center;
   min-height: 34px;
-  margin-left: auto;
   padding: 0 11px;
   border: 1px solid rgba(47, 111, 115, 0.28);
   border-radius: 8px;
@@ -594,7 +599,17 @@ a {
   line-height: 1;
 }
 
-.return-menu-btn:hover {
+.return-menu-btn,
+.game-sound-btn {
+  display: none;
+}
+
+#game-container.typing-mode-active .game-sound-btn {
+  display: inline-flex;
+}
+
+.return-menu-btn:hover,
+.game-sound-btn:hover {
   background: #e6efee;
 }
 

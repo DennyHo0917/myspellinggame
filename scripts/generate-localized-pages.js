@@ -1129,7 +1129,6 @@ function body(page, code) {
         </a>
 ${languageMenu(code, nav)}
         <a class="teacher-nav-link" href="/teacher?lang=${encodeURIComponent(code)}">${nav.teacher}</a>
-        <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">${nav.sound}</button>
     </header>
 
     <div class="main-content-wrapper">
@@ -1147,7 +1146,10 @@ ${page.hero.flow.map((step) => `            <li>${step}</li>`).join("\n")}
 
             <div class="top-bar">
                 <div class="game-title">${game.round}</div>
-                <button type="button" class="return-menu-btn" id="return-menu-btn" onclick="returnToMainMenu()">${game.returnMenu}</button>
+                <div class="game-toolbar-actions">
+                    <button type="button" class="sound-btn game-sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">${nav.sound}</button>
+                    <button type="button" class="return-menu-btn" id="return-menu-btn" onclick="returnToMainMenu()">${game.returnMenu}</button>
+                </div>
                 <div class="combo-display" id="combo-display">
                     ${comboLabels[page.pageLocale]} <span id="combo-count">0</span>
                 </div>

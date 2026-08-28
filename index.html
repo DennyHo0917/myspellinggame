@@ -94,7 +94,6 @@
             </div>
         </details>
         <a class="teacher-nav-link" href="/teacher?lang=en">Workspace</a>
-        <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Sound</button>
     </header>
 
     <div class="main-content-wrapper">
@@ -116,7 +115,10 @@
 
             <div class="top-bar">
                 <div class="game-title">Practice Round</div>
-                <button type="button" class="return-menu-btn" id="return-menu-btn" onclick="returnToMainMenu()">Return to main menu</button>
+                <div class="game-toolbar-actions">
+                    <button type="button" class="sound-btn game-sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Sound</button>
+                    <button type="button" class="return-menu-btn" id="return-menu-btn" onclick="returnToMainMenu()">Return to main menu</button>
+                </div>
                 <div class="combo-display" id="combo-display">
                     Streak <span id="combo-count">0</span>
                 </div>

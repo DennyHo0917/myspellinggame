@@ -463,6 +463,19 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
   await page.goto("/teacher/assignments/new?lang=en");
   await expect(page.getByLabel("Selected learners")).toBeVisible();
   await expect(page.getByLabel("All students")).toHaveCount(0);
+  const sentenceLibraryButton = page.getByRole("button", {
+    name: /Auto-fill example sentences/,
+  });
+  await expect(sentenceLibraryButton).toBeVisible();
+  await expect(
+    sentenceLibraryButton.locator(".sentence-library-upgrade-badge"),
+  ).toHaveText("Upgrade");
+  await expect(sentenceLibraryButton).toHaveAttribute(
+    "title",
+    "Sentence library is included in Parent and Teacher Plans.",
+  );
+  await sentenceLibraryButton.click();
+  await expect(page).toHaveURL(/\/pricing#pricing$/);
 });
 
 const analyticsEvents = (page, name) =>
@@ -505,6 +518,7 @@ test("practice advises signed-in plans after 20 words and preserves hard limits"
   await expect(
     page.getByRole("button", { name: "Return to main menu" }),
   ).toBeVisible();
+  await expect(page.locator("#sound-toggle")).toBeHidden();
   await page.getByRole("button", { name: "Return to main menu" }).click();
 
   await page.locator("#custom-word-list").fill(limitWords(21));
@@ -605,14 +619,33 @@ for (const [locale, href, advice] of [
 }
 
 test("practice records a valid list and start separately", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await page.locator("#custom-word-list").fill("because\nfriend");
   await page.locator('input[name="practice-mode"][value="typing"]').check();
   await expect(page.locator("#custom-example-sentences")).toBeHidden();
   await page.getByRole("button", { name: "Start Typing Rain" }).click();
-  await expect(
-    page.getByRole("button", { name: "Return to main menu" }),
-  ).toBeVisible();
+  const sound = page.getByRole("button", { name: "Sound" });
+  const returnToMenu = page.getByRole("button", {
+    name: "Return to main menu",
+  });
+  await expect(sound).toBeVisible();
+  await expect(returnToMenu).toBeVisible();
+  await expect(page.locator(".game-toolbar-actions > button")).toHaveCount(2);
+  await expect(page.locator(".game-toolbar-actions > button").first()).toHaveId(
+    "sound-toggle",
+  );
+  expect(
+    await page.locator(".game-toolbar-actions").evaluate((toolbar) => {
+      const toolbarRect = toolbar.getBoundingClientRect();
+      const containerRect = document
+        .getElementById("game-container")
+        .getBoundingClientRect();
+      return toolbarRect.right <= containerRect.right + 1;
+    }),
+  ).toBe(true);
+  await sound.click();
+  await expect(page.getByRole("button", { name: "Muted" })).toBeVisible();
 
   await expect
     .poll(() => analyticsEvents(page, "practice_started"))
@@ -1778,7 +1811,8 @@ test("mobile conversion pages keep their key actions usable", async ({
   await expect(
     page.getByRole("link", { name: "Workspace", exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole("button", { name: /Sound/ })).toBeVisible();
+  await expect(page.locator("header #sound-toggle")).toHaveCount(0);
+  await expect(page.locator("#game-container #sound-toggle")).toBeHidden();
   await expect(page.locator("header").getByText("Privacy")).toHaveCount(0);
   const privacy = page
     .locator(".spelling-actions")

@@ -136,9 +136,21 @@ function attachSentenceLibraryControls(
   const fill = document.createElement("button");
   fill.type = "button";
   fill.className = "button-secondary sentence-library-fill";
-  fill.textContent = isPlusPlan(me)
-    ? copy.fillSentenceLibrary
-    : copy.fillSentenceLibraryPlus;
+  if (isPlusPlan(me)) {
+    fill.textContent = copy.fillSentenceLibrary;
+  } else {
+    fill.append(document.createTextNode(copy.fillSentenceLibraryPlus));
+    const upgradeBadge = document.createElement("span");
+    upgradeBadge.className = "sentence-library-upgrade-badge";
+    upgradeBadge.textContent = copy.upgradeBadge;
+    upgradeBadge.setAttribute("aria-hidden", "true");
+    fill.append(upgradeBadge);
+    fill.setAttribute(
+      "aria-label",
+      `${copy.fillSentenceLibraryPlus}. ${copy.sentenceLibraryRequired}`,
+    );
+    fill.title = copy.sentenceLibraryRequired;
+  }
   fill.addEventListener("click", async () => {
     if (!isPlusPlan(me)) {
       location.href = `${productPagePath("pricing", locale)}#pricing`;

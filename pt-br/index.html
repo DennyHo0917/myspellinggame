@@ -94,7 +94,6 @@
             </div>
         </details>
         <a class="teacher-nav-link" href="/teacher?lang=pt-BR">Espaço de trabalho</a>
-        <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Som</button>
     </header>
 
     <div class="main-content-wrapper">
@@ -116,7 +115,10 @@
 
             <div class="top-bar">
                 <div class="game-title">Rodada de prática</div>
-                <button type="button" class="return-menu-btn" id="return-menu-btn" onclick="returnToMainMenu()">Voltar ao menu principal</button>
+                <div class="game-toolbar-actions">
+                    <button type="button" class="sound-btn game-sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Som</button>
+                    <button type="button" class="return-menu-btn" id="return-menu-btn" onclick="returnToMainMenu()">Voltar ao menu principal</button>
+                </div>
                 <div class="combo-display" id="combo-display">
                     Sequência <span id="combo-count">0</span>
                 </div>
@@ -355,7 +357,7 @@
 
     <footer>
         <p>
-            <span class="footer-links"><a href="/pt-br/sight-word-typing-game">Palavras frequentes</a> &middot; <a href="/pt-br/homeschool-spelling-practice">Em casa</a> &middot; <a href="/pt-br/vocabulary-typing-game">Vocabulário</a> &middot; <a href="/pt-br/faq">Perguntas frequentes</a> &middot; <a href="/pt-br/privacy">Privacidade</a> &middot; <a href="/pt-br/about">Sobre</a> &middot; <a href="/pt-br/contact">Contato</a></span><br>
+            <span class="footer-links"><a href="/sight-word-typing-game">Palavras frequentes</a> &middot; <a href="/homeschool-spelling-practice">Em casa</a> &middot; <a href="/vocabulary-typing-game">Vocabulário</a> &middot; <a href="/pt-br/faq">Perguntas frequentes</a> &middot; <a href="/pt-br/privacy">Privacidade</a> &middot; <a href="/pt-br/about">Sobre</a> &middot; <a href="/pt-br/contact">Contato</a></span><br>
             &copy; 2026 My Spelling Game Todos os direitos reservados.
         </p>
     </footer>

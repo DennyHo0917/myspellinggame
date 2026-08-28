@@ -94,7 +94,6 @@
             </div>
         </details>
         <a class="teacher-nav-link" href="/teacher?lang=id">Ruang kerja</a>
-        <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Suara</button>
     </header>
 
     <div class="main-content-wrapper">
@@ -116,7 +115,10 @@
 
             <div class="top-bar">
                 <div class="game-title">Ronde latihan</div>
-                <button type="button" class="return-menu-btn" id="return-menu-btn" onclick="returnToMainMenu()">Kembali ke menu utama</button>
+                <div class="game-toolbar-actions">
+                    <button type="button" class="sound-btn game-sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Suara</button>
+                    <button type="button" class="return-menu-btn" id="return-menu-btn" onclick="returnToMainMenu()">Kembali ke menu utama</button>
+                </div>
                 <div class="combo-display" id="combo-display">
                     Rentetan <span id="combo-count">0</span>
                 </div>
@@ -355,7 +357,7 @@
 
     <footer>
         <p>
-            <span class="footer-links"><a href="/id/sight-word-typing-game">Kata umum</a> &middot; <a href="/id/homeschool-spelling-practice">Di rumah</a> &middot; <a href="/id/vocabulary-typing-game">Kosakata</a> &middot; <a href="/id/faq">Pertanyaan umum</a> &middot; <a href="/id/privacy">Privasi</a> &middot; <a href="/id/about">Tentang</a> &middot; <a href="/id/contact">Kontak</a></span><br>
+            <span class="footer-links"><a href="/sight-word-typing-game">Kata umum</a> &middot; <a href="/homeschool-spelling-practice">Di rumah</a> &middot; <a href="/vocabulary-typing-game">Kosakata</a> &middot; <a href="/id/faq">Pertanyaan umum</a> &middot; <a href="/id/privacy">Privasi</a> &middot; <a href="/id/about">Tentang</a> &middot; <a href="/id/contact">Kontak</a></span><br>
             &copy; 2026 My Spelling Game Hak cipta dilindungi.
         </p>
     </footer>

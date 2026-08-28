@@ -94,7 +94,6 @@
             </div>
         </details>
         <a class="teacher-nav-link" href="/teacher?lang=es">Espacio de trabajo</a>
-        <button class="sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Sonido</button>
     </header>
 
     <div class="main-content-wrapper">
@@ -116,7 +115,10 @@
 
             <div class="top-bar">
                 <div class="game-title">Ronda de práctica</div>
-                <button type="button" class="return-menu-btn" id="return-menu-btn" onclick="returnToMainMenu()">Volver al menú principal</button>
+                <div class="game-toolbar-actions">
+                    <button type="button" class="sound-btn game-sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Sonido</button>
+                    <button type="button" class="return-menu-btn" id="return-menu-btn" onclick="returnToMainMenu()">Volver al menú principal</button>
+                </div>
                 <div class="combo-display" id="combo-display">
                     Racha <span id="combo-count">0</span>
                 </div>
@@ -355,7 +357,7 @@
 
     <footer>
         <p>
-            <span class="footer-links"><a href="/es/sight-word-typing-game">Palabras frecuentes</a> &middot; <a href="/es/homeschool-spelling-practice">En casa</a> &middot; <a href="/es/vocabulary-typing-game">Vocabulario</a> &middot; <a href="/es/faq">Preguntas frecuentes</a> &middot; <a href="/es/privacy">Privacidad</a> &middot; <a href="/es/about">Acerca de</a> &middot; <a href="/es/contact">Contacto</a></span><br>
+            <span class="footer-links"><a href="/sight-word-typing-game">Palabras frecuentes</a> &middot; <a href="/homeschool-spelling-practice">En casa</a> &middot; <a href="/vocabulary-typing-game">Vocabulario</a> &middot; <a href="/es/faq">Preguntas frecuentes</a> &middot; <a href="/es/privacy">Privacidad</a> &middot; <a href="/es/about">Acerca de</a> &middot; <a href="/es/contact">Contacto</a></span><br>
             &copy; 2026 My Spelling Game Todos los derechos reservados.
         </p>
     </footer>

@@ -1772,6 +1772,7 @@ const SENTENCE_LIBRARY_COPY = {
     sentenceDifficult: "Difficult",
     fillSentenceLibrary: "Fill from sentence library",
     fillSentenceLibraryPlus: "Auto-fill example sentences",
+    upgradeBadge: "Upgrade",
     sentenceLibraryRequired:
       "Sentence library is included in Parent and Teacher Plans.",
     invalidSentenceLevel: "Choose simple or difficult sentences.",
@@ -1782,6 +1783,7 @@ const SENTENCE_LIBRARY_COPY = {
     sentenceDifficult: "Difícil",
     fillSentenceLibrary: "Completar desde la biblioteca",
     fillSentenceLibraryPlus: "Autocompletar frases",
+    upgradeBadge: "Mejorar",
     sentenceLibraryRequired:
       "La biblioteca de frases está incluida en los planes para familias y docentes.",
     invalidSentenceLevel: "Elige frases sencillas o difíciles.",
@@ -1792,6 +1794,7 @@ const SENTENCE_LIBRARY_COPY = {
     sentenceDifficult: "Difícil",
     fillSentenceLibrary: "Preencher pela biblioteca",
     fillSentenceLibraryPlus: "Preencher frases automaticamente",
+    upgradeBadge: "Upgrade",
     sentenceLibraryRequired:
       "A biblioteca de frases está incluída nos planos para Pais e Professores.",
     invalidSentenceLevel: "Escolha frases simples ou difíceis.",
@@ -1802,6 +1805,7 @@ const SENTENCE_LIBRARY_COPY = {
     sentenceDifficult: "Difficile",
     fillSentenceLibrary: "Remplir depuis la bibliothèque",
     fillSentenceLibraryPlus: "Remplir automatiquement",
+    upgradeBadge: "Améliorer",
     sentenceLibraryRequired:
       "La bibliothèque de phrases est incluse dans les offres Parents et Enseignants.",
     invalidSentenceLevel: "Choisissez des phrases simples ou difficiles.",
@@ -1812,6 +1816,7 @@ const SENTENCE_LIBRARY_COPY = {
     sentenceDifficult: "Sulit",
     fillSentenceLibrary: "Isi dari pustaka kalimat",
     fillSentenceLibraryPlus: "Isi otomatis kalimat",
+    upgradeBadge: "Upgrade",
     sentenceLibraryRequired:
       "Pustaka kalimat tersedia pada Paket Orang Tua dan Guru.",
     invalidSentenceLevel: "Pilih kalimat sederhana atau sulit.",
@@ -1822,6 +1827,7 @@ const SENTENCE_LIBRARY_COPY = {
     sentenceDifficult: "进阶",
     fillSentenceLibrary: "从例句库填充",
     fillSentenceLibraryPlus: "自动填充例句",
+    upgradeBadge: "升级",
     sentenceLibraryRequired: "例句库包含在家长套餐和教师套餐中。",
     invalidSentenceLevel: "请选择简单或进阶例句。",
   },

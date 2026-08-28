@@ -1438,14 +1438,15 @@ describe("cross-assignment mastery", () => {
       ).json()) as { historyDays: number; words: unknown[] };
       expect(free.historyDays).toBe(14);
       expect(free.words).toHaveLength(0);
-      expect(
-        (
-          await call(`/api/learners/${learner.body.id}/review`, {
-            method: "POST",
-            body: "{}",
-          })
-        ).status,
-      ).toBe(403);
+      const reviewResponse = await call(
+        `/api/learners/${learner.body.id}/review`,
+        { method: "POST", body: "{}" },
+      );
+      expect(reviewResponse.status).toBe(403);
+      expect(await reviewResponse.json()).toMatchObject({
+        error: "smart_review_required",
+        message: "Smart Review is included in Parent and Teacher Plans.",
+      });
 
       await insertSubscription({ plan, status: "active" });
       const paid = (await (
@@ -1908,7 +1909,21 @@ describe("assignment attempts", () => {
     const assignment = await publicWords(publicId);
     await submit(publicId, assignment.words, { answers: ["apple", "wrong"] });
 
-    expect((await call(`/api/assignments/${id}/export.csv`)).status).toBe(403);
+    const freeExport = await call(`/api/assignments/${id}/export.csv`);
+    expect(freeExport.status).toBe(403);
+    expect(await freeExport.json()).toMatchObject({
+      error: "pro_required",
+      message: "CSV export is included in the Teacher Plan.",
+    });
+    const freeSentenceLibrary = await call("/api/sentence-library/match", {
+      method: "POST",
+      body: JSON.stringify({ words: ["apple"] }),
+    });
+    expect(freeSentenceLibrary.status).toBe(403);
+    expect(await freeSentenceLibrary.json()).toMatchObject({
+      error: "sentence_library_required",
+      message: "Sentence library is included in Parent and Teacher Plans.",
+    });
     const freeDetail = (await (
       await call(`/api/assignments/${id}`)
     ).json()) as Record<string, unknown>;
@@ -1927,7 +1942,12 @@ describe("assignment attempts", () => {
       )
       .run();
 
-    expect((await call(`/api/assignments/${id}/export.csv`)).status).toBe(403);
+    const parentExport = await call(`/api/assignments/${id}/export.csv`);
+    expect(parentExport.status).toBe(403);
+    expect(await parentExport.json()).toMatchObject({
+      error: "pro_required",
+      message: "CSV export is included in the Teacher Plan.",
+    });
     const parentDetail = (await (
       await call(`/api/assignments/${id}`)
     ).json()) as Record<string, unknown>;

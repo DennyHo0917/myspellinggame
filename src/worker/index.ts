@@ -1023,7 +1023,7 @@ function requireSmartReview(plan: Plan) {
     throw new HttpError(
       403,
       "smart_review_required",
-      "Smart review is available on Plus.",
+      "Smart Review is included in Parent and Teacher Plans.",
     );
 }
 
@@ -1553,7 +1553,11 @@ async function exportCsv(
   plan: Plan,
 ) {
   if (!PLAN_LIMITS[plan].csvExport)
-    throw new HttpError(403, "pro_required", "CSV export requires Plus.");
+    throw new HttpError(
+      403,
+      "pro_required",
+      "CSV export is included in the Teacher Plan.",
+    );
   const detail = await assignmentDetail(db, assignment, plan);
   const lines = [
     [
@@ -1855,7 +1859,7 @@ export async function handleRequest(
       throw new HttpError(
         403,
         "sentence_library_required",
-        "Sentence library is available on Plus.",
+        "Sentence library is included in Parent and Teacher Plans.",
       );
     const body = await readJson(request);
     const words = parseWordList(body.words);

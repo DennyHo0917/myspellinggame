@@ -96,6 +96,8 @@ type LearnerRow = {
   archived: number;
   created_at: string;
   updated_at: string;
+  join_pin_hash?: string | null;
+  join_pin?: string | null;
 };
 
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
@@ -105,6 +107,74 @@ function json(data: unknown, status = 200, headers: HeadersInit = {}) {
     status,
     headers: { ...JSON_HEADERS, "cache-control": "no-store", ...headers },
   });
+}
+
+async function hashPin(pin: string) {
+  const bytes = new TextEncoder().encode(pin);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function randomPin() {
+  const bytes = new Uint32Array(1);
+  crypto.getRandomValues(bytes);
+  return String(bytes[0] % 10_000).padStart(4, "0");
+}
+
+async function ensureTeacherJoinIdentity(db: D1Database, userId: string) {
+  let user = await db
+    .prepare("SELECT class_public_id FROM user WHERE id = ?")
+    .bind(userId)
+    .first<{ class_public_id: string | null }>();
+  let classPublicId = user?.class_public_id ?? null;
+  if (!classPublicId) {
+    classPublicId = randomPublicId().slice(0, 12);
+    await db
+      .prepare(
+        "UPDATE user SET class_public_id = ? WHERE id = ? AND class_public_id IS NULL",
+      )
+      .bind(classPublicId, userId)
+      .run();
+    user = await db
+      .prepare("SELECT class_public_id FROM user WHERE id = ?")
+      .bind(userId)
+      .first<{ class_public_id: string | null }>();
+    classPublicId = user?.class_public_id ?? classPublicId;
+  }
+  const learners = await db
+    .prepare(
+      "SELECT id FROM learners WHERE owner_user_id = ? AND archived = 0 AND join_pin_hash IS NULL",
+    )
+    .bind(userId)
+    .all<{ id: string }>();
+  for (const learner of learners.results) {
+    let hash = "";
+    let pin = "";
+    for (let tries = 0; tries < 20; tries += 1) {
+      pin = randomPin();
+      const candidate = await hashPin(pin);
+      const exists = await db
+        .prepare(
+          "SELECT 1 FROM learners WHERE owner_user_id = ? AND join_pin_hash = ?",
+        )
+        .bind(userId, candidate)
+        .first();
+      if (!exists) {
+        hash = candidate;
+        break;
+      }
+    }
+    if (hash)
+      await db
+        .prepare(
+          "UPDATE learners SET join_pin_hash = ?, join_pin = ? WHERE id = ? AND owner_user_id = ? AND join_pin_hash IS NULL",
+        )
+        .bind(hash, pin, learner.id, userId)
+        .run();
+  }
+  return classPublicId;
 }
 
 async function readJson(request: Request): Promise<Record<string, unknown>> {
@@ -442,7 +512,7 @@ async function assignmentDetail(
   plan: Plan,
 ) {
   const cutoff = historyCutoff(plan);
-  const [wordRows, attemptRows, average] = await Promise.all([
+  const [wordRows, attemptRows, average, assignedLearners] = await Promise.all([
     db
       .prepare(
         "SELECT id, position, word, example_sentence FROM assignment_words WHERE assignment_id = ? ORDER BY position",
@@ -472,6 +542,14 @@ async function assignmentDetail(
       )
       .bind(assignment.id, cutoff)
       .first<Record<string, number>>(),
+    db
+      .prepare(
+        `SELECT l.id, l.name FROM assignment_learners al
+         JOIN learners l ON l.id = al.learner_id
+         WHERE al.assignment_id = ? ORDER BY l.name_key`,
+      )
+      .bind(assignment.id)
+      .all<{ id: string; name: string }>(),
   ]);
   let missedWords: unknown[] | null = null;
   if (PLAN_LIMITS[plan].missedWordStats) {
@@ -505,6 +583,7 @@ async function assignmentDetail(
       averageAccuracy: Number(average?.average_accuracy ?? 0),
     },
     missedWordStats: missedWords,
+    assignedLearners: assignedLearners.results,
   };
 }
 
@@ -687,9 +766,11 @@ async function createLearner(env: Env, request: Request, ownerUserId: string) {
   const publicId = randomPublicId();
   const nameKey = `learner:${id}`;
   const now = new Date().toISOString();
+  const joinPin = randomPin();
+  const joinPinHash = await hashPin(joinPin);
   const inserted = await env.DB.prepare(
-    `INSERT INTO learners (id, owner_user_id, name, name_key, public_id, archived, created_at, updated_at)
-     SELECT ?, ?, ?, ?, ?, 0, ?, ?
+    `INSERT INTO learners (id, owner_user_id, name, name_key, public_id, archived, created_at, updated_at, join_pin_hash, join_pin)
+     SELECT ?, ?, ?, ?, ?, 0, ?, ?, ?, ?
      WHERE (SELECT COUNT(*) FROM learners WHERE owner_user_id = ?) < ?`,
   )
     .bind(
@@ -700,6 +781,8 @@ async function createLearner(env: Env, request: Request, ownerUserId: string) {
       publicId,
       now,
       now,
+      joinPinHash,
+      joinPin,
       ownerUserId,
       limit,
     )
@@ -719,6 +802,8 @@ async function createLearner(env: Env, request: Request, ownerUserId: string) {
     archived: 0,
     created_at: now,
     updated_at: now,
+    join_pin_hash: joinPinHash,
+    join_pin: joinPin,
   } satisfies LearnerRow;
   return learner;
 }
@@ -950,6 +1035,27 @@ async function createAssignment(env: Env, request: Request, userId: string) {
   const mode = validateMode(body.mode);
   const maxAttempts = validateMaxAttempts(body.maxAttempts);
   const expiresAt = validateDeadline(body.expiresAt);
+  const learnerIds = body.learnerIds === undefined ? [] : body.learnerIds;
+  if (
+    !Array.isArray(learnerIds) ||
+    learnerIds.some((id) => typeof id !== "string")
+  )
+    throw new HttpError(400, "invalid_learners", "Choose valid students.");
+  const uniqueLearnerIds = [...new Set(learnerIds as string[])];
+  if (uniqueLearnerIds.length) {
+    const placeholders = uniqueLearnerIds.map(() => "?").join(",");
+    const owned = await env.DB.prepare(
+      `SELECT id FROM learners WHERE owner_user_id = ? AND archived = 0 AND id IN (${placeholders})`,
+    )
+      .bind(userId, ...uniqueLearnerIds)
+      .all<{ id: string }>();
+    if (owned.results.length !== uniqueLearnerIds.length)
+      throw new HttpError(
+        403,
+        "learner_forbidden",
+        "A selected student is not available.",
+      );
+  }
   const plan = await getPlan(env, userId);
   enforcePlanWordLimit(words, plan);
   const currentUsage = await usage(env.DB, userId, plan);
@@ -997,6 +1103,12 @@ async function createAssignment(env: Env, request: Request, userId: string) {
         id,
       ),
     ),
+    ...uniqueLearnerIds.map((learnerId) =>
+      env.DB.prepare(
+        `INSERT INTO assignment_learners (assignment_id, learner_id, created_at)
+         SELECT ?, ?, ? WHERE EXISTS (SELECT 1 FROM assignments WHERE id = ?)`,
+      ).bind(id, learnerId, createdAt, id),
+    ),
   ];
   await env.DB.batch(statements);
   const saved = await env.DB.prepare("SELECT id FROM assignments WHERE id = ?")
@@ -1018,6 +1130,40 @@ async function updateAssignment(
   userId: string,
 ) {
   const body = await readJson(request);
+  if (body.learnerIds !== undefined) {
+    if (
+      !Array.isArray(body.learnerIds) ||
+      body.learnerIds.some((id) => typeof id !== "string")
+    )
+      throw new HttpError(400, "invalid_learners", "Choose valid students.");
+    const ids = [...new Set(body.learnerIds as string[])];
+    if (ids.length) {
+      const placeholders = ids.map(() => "?").join(",");
+      const owned = await env.DB.prepare(
+        `SELECT id FROM learners WHERE owner_user_id = ? AND archived = 0 AND id IN (${placeholders})`,
+      )
+        .bind(userId, ...ids)
+        .all<{ id: string }>();
+      if (owned.results.length !== ids.length)
+        throw new HttpError(
+          403,
+          "learner_forbidden",
+          "A selected student is not available.",
+        );
+    }
+    const statements = [
+      env.DB.prepare(
+        "DELETE FROM assignment_learners WHERE assignment_id = ?",
+      ).bind(assignment.id),
+      ...ids.map((learnerId) =>
+        env.DB.prepare(
+          "INSERT INTO assignment_learners (assignment_id, learner_id, created_at) VALUES (?, ?, ?)",
+        ).bind(assignment.id, learnerId, new Date().toISOString()),
+      ),
+    ];
+    await env.DB.batch(statements);
+    return assignmentDetail(env.DB, assignment, await getPlan(env, userId));
+  }
   if (Object.hasOwn(body, "words")) {
     const title = validateTitle(body.title ?? assignment.title);
     const words = parseWordEntries(
@@ -1158,6 +1304,22 @@ async function publicAssignment(
         .first<Pick<LearnerRow, "id" | "public_id" | "name">>()) ?? undefined;
     if (!learner)
       throw new HttpError(404, "learner_not_found", "Learner not found.");
+    const relationCount = await db
+      .prepare(
+        "SELECT COUNT(*) AS count FROM assignment_learners WHERE assignment_id = ?",
+      )
+      .bind(assignment.id)
+      .first<{ count: number }>();
+    if (Number(relationCount?.count ?? 0) > 0) {
+      const bound = await db
+        .prepare(
+          "SELECT 1 FROM assignment_learners WHERE assignment_id = ? AND learner_id = ?",
+        )
+        .bind(assignment.id, learner.id)
+        .first();
+      if (!bound)
+        throw new HttpError(404, "learner_not_found", "Learner not found.");
+    }
   }
   const words = await db
     .prepare(
@@ -1506,19 +1668,68 @@ export async function handleRequest(
     if (!learner)
       throw new HttpError(404, "learner_not_found", "Learner not found.");
     const assignments = await env.DB.prepare(
-      `SELECT public_id, title, mode, expires_at
-       FROM assignments
-       WHERE owner_user_id = ? AND status = 'published' AND expires_at > ?
-       ORDER BY expires_at ASC, created_at DESC`,
+      `SELECT a.public_id, a.title, a.mode, a.expires_at,
+              CASE WHEN EXISTS (
+                SELECT 1 FROM attempts at WHERE at.assignment_id = a.id
+                  AND at.learner_id = ? AND at.status = 'completed'
+              ) THEN 1 ELSE 0 END AS completed
+       FROM assignments a
+       JOIN assignment_learners al ON al.assignment_id = a.id AND al.learner_id = ?
+       WHERE a.owner_user_id = ? AND a.status = 'published' AND a.expires_at > ?
+       ORDER BY completed, a.expires_at ASC, a.created_at DESC`,
     )
-      .bind(learner.owner_user_id, new Date().toISOString())
+      .bind(
+        learner.id,
+        learner.id,
+        learner.owner_user_id,
+        new Date().toISOString(),
+      )
       .all<
-        Pick<AssignmentRow, "public_id" | "title" | "mode" | "expires_at">
+        Pick<AssignmentRow, "public_id" | "title" | "mode" | "expires_at"> & {
+          completed: number;
+        }
       >();
     return json({
       learner: { name: learner.name },
       assignments: assignments.results,
     });
+  }
+
+  if (url.pathname === "/api/workspace" && method === "PATCH") {
+    requireSameOrigin(request);
+    const user = await requireTeacher(env, request, getSession);
+    const body = await readJson(request);
+    if (body.workspaceType !== "family" && body.workspaceType !== "teacher")
+      throw new HttpError(
+        400,
+        "invalid_workspace_type",
+        "Choose family or teacher.",
+      );
+    await env.DB.prepare("UPDATE user SET workspace_type = ? WHERE id = ?")
+      .bind(body.workspaceType, user.id)
+      .run();
+    return json({ workspaceType: body.workspaceType });
+  }
+
+  const joinMatch = url.pathname.match(
+    /^\/api\/public\/join\/([A-Za-z0-9_-]{8,24})$/,
+  );
+  if (joinMatch && method === "POST") {
+    requireSameOrigin(request);
+    const body = await readJson(request);
+    if (typeof body.pin !== "string" || !/^\d{4}$/.test(body.pin))
+      throw new HttpError(401, "invalid_join", "The PIN is invalid.");
+    const hash = await hashPin(body.pin);
+    const learner = await env.DB.prepare(
+      `SELECT l.public_id FROM learners l JOIN user u ON u.id = l.owner_user_id
+       WHERE u.class_public_id = ? AND u.workspace_type = 'teacher'
+         AND l.join_pin_hash = ? AND l.archived = 0`,
+    )
+      .bind(joinMatch[1], hash)
+      .first<{ public_id: string }>();
+    if (!learner)
+      throw new HttpError(401, "invalid_join", "The PIN is invalid.");
+    return json({ learnerPublicId: learner.public_id });
   }
 
   if (url.pathname === "/api/me" && method === "GET") {
@@ -1541,6 +1752,19 @@ export async function handleRequest(
     const plan = hasActiveSubscription(subscription ?? null, env)
       ? "plus"
       : "free";
+    const workspace = await env.DB.prepare(
+      "SELECT workspace_type, class_public_id FROM user WHERE id = ?",
+    )
+      .bind(user.id)
+      .first<{
+        workspace_type: "family" | "teacher" | null;
+        class_public_id: string | null;
+      }>();
+    if (workspace?.workspace_type === "teacher")
+      workspace.class_public_id = await ensureTeacherJoinIdentity(
+        env.DB,
+        user.id,
+      );
     return json({
       user: { id: user.id, name: user.name, email: user.email },
       billingInterval: subscription?.billing_interval || null,
@@ -1550,6 +1774,8 @@ export async function handleRequest(
         subscription?.status === "trialing"
           ? subscription.current_period_end
           : null,
+      workspaceType: workspace?.workspace_type ?? null,
+      classPublicId: workspace?.class_public_id ?? null,
       ...(await usage(env.DB, user.id, plan)),
     });
   }
@@ -1801,6 +2027,9 @@ export async function handleRequest(
   }
   if (/^\/l\/[A-Za-z0-9_-]{24}$/.test(url.pathname)) {
     return serveShell(env, request, "/src/pages/learner.html", true);
+  }
+  if (/^\/join\/[A-Za-z0-9_-]{8,24}$/.test(url.pathname)) {
+    return serveShell(env, request, "/src/pages/join.html", true);
   }
   return env.ASSETS.fetch(request);
 }

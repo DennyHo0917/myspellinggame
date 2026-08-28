@@ -154,7 +154,7 @@ function render(data) {
     title.textContent = assignment.title;
     const meta = document.createElement("p");
     meta.className = "assignment-meta";
-    meta.textContent = `${assignment.mode === "dictation" ? copy.dictation : copy.typing} · ${m("due", { date: new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(assignment.expires_at)) })}`;
+    meta.textContent = `${assignment.completed ? `${copy.completed} · ` : ""}${assignment.mode === "dictation" ? copy.dictation : copy.typing} · ${m("due", { date: new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(assignment.expires_at)) })}`;
     body.append(title, meta);
     const start = document.createElement("a");
     start.className = "button-link";

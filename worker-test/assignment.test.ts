@@ -925,6 +925,97 @@ describe("saved lists and learner profiles", () => {
   });
 });
 
+describe("assignment learner binding and class join", () => {
+  it("binds owned learners, filters learner home, and attributes submissions", async () => {
+    await insertSubscription({ plan: "pro", status: "active" });
+    const learnerA = await createLearner("Alice");
+    const learnerB = await createLearner("Bob");
+    const created = await createAssignment(teacherA, {
+      learnerIds: [learnerA.body.id, learnerA.body.id],
+    });
+    expect(created.response.status).toBe(201);
+
+    const detail = (await (
+      await call(`/api/assignments/${created.body.id}`)
+    ).json()) as { assignedLearners: Array<{ id: string; name: string }> };
+    expect(detail.assignedLearners).toEqual([
+      { id: learnerA.body.id, name: "Alice" },
+    ]);
+
+    const homeA = (await (
+      await call(`/api/public/learners/${learnerA.body.public_id}`, {}, null)
+    ).json()) as { assignments: Array<{ public_id: string }> };
+    const homeB = (await (
+      await call(`/api/public/learners/${learnerB.body.public_id}`, {}, null)
+    ).json()) as { assignments: Array<{ public_id: string }> };
+    expect(homeA.assignments.map((item) => item.public_id)).toContain(
+      created.body.publicId,
+    );
+    expect(homeB.assignments).toHaveLength(0);
+
+    const words = await publicWords(String(created.body.publicId));
+    expect(
+      (
+        await submit(String(created.body.publicId), words.words, {
+          learnerPublicId: String(learnerA.body.public_id),
+        })
+      ).status,
+    ).toBe(201);
+    const attempt = await bindings.DB.prepare(
+      "SELECT learner_id FROM attempts WHERE assignment_id = ?",
+    )
+      .bind(created.body.id)
+      .first<{ learner_id: string }>();
+    expect(attempt?.learner_id).toBe(learnerA.body.id);
+  });
+
+  it("rejects cross-owner learner bindings", async () => {
+    const foreign = await createLearner("Foreign", teacherB);
+    const created = await createAssignment(teacherA, {
+      learnerIds: [foreign.body.id],
+    });
+    expect(created.response.status).toBe(403);
+    expect(created.body.error).toBe("learner_forbidden");
+  });
+
+  it("persists workspace type and resolves a teacher class PIN without roster exposure", async () => {
+    const workspace = await call(
+      "/api/workspace",
+      { method: "PATCH", body: JSON.stringify({ workspaceType: "teacher" }) },
+      teacherA,
+    );
+    expect(workspace.status).toBe(200);
+    const learner = await createLearner("Alice");
+    const me = (await (await call("/api/me")).json()) as {
+      workspaceType: string;
+      classPublicId: string;
+    };
+    expect(me.workspaceType).toBe("teacher");
+    expect(me.classPublicId).toMatch(/^[A-Za-z0-9_-]{8,24}$/);
+    expect(learner.body.join_pin).toMatch(/^\d{4}$/);
+
+    const joined = await call(
+      `/api/public/join/${me.classPublicId}`,
+      { method: "POST", body: JSON.stringify({ pin: learner.body.join_pin }) },
+      null,
+    );
+    expect(joined.status).toBe(200);
+    expect(await joined.json()).toEqual({
+      learnerPublicId: learner.body.public_id,
+    });
+    const wrongPin = learner.body.join_pin === "0000" ? "0001" : "0000";
+    const wrong = await call(
+      `/api/public/join/${me.classPublicId}`,
+      { method: "POST", body: JSON.stringify({ pin: wrongPin }) },
+      null,
+    );
+    expect(wrong.status).toBe(401);
+    expect(await wrong.json()).toEqual(
+      expect.objectContaining({ error: "invalid_join" }),
+    );
+  });
+});
+
 describe("cross-assignment mastery", () => {
   const result = (correct: boolean, day: number) => ({
     correct,

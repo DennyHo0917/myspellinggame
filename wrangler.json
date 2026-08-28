@@ -12,7 +12,8 @@
       "/teacher/*",
       "/admin",
       "/a/*",
-      "/l/*"
+      "/l/*",
+      "/join/*"
     ]
   },
   "d1_databases": [

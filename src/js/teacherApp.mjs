@@ -653,13 +653,29 @@ function renderSavedLists(me, savedLists) {
 function renderLearners(me, learners) {
   const section = document.createElement("section");
   section.className = "product-card";
+  const learnerCopy =
+    me.workspaceType === "family"
+      ? {
+          heading: m("familyLearners"),
+          intro: m("familyLearnersCopy"),
+          name: m("familyLearnerName"),
+          placeholder: m("familyLearnerNamePlaceholder"),
+          add: m("addChild"),
+        }
+      : {
+          heading: copy.learners,
+          intro: copy.learnersCopy,
+          name: copy.learnerName,
+          placeholder: copy.learnerNamePlaceholder,
+          add: copy.addLearner,
+        };
   const heading = document.createElement("h2");
-  heading.textContent = copy.learners;
+  heading.textContent = learnerCopy.heading;
   const intro = document.createElement("p");
-  intro.textContent = copy.learnersCopy;
+  intro.textContent = learnerCopy.intro;
   const form = document.createElement("form");
   form.className = "product-form compact-form inline-form";
-  form.innerHTML = `<div class="field"><label for="learner-name">${copy.learnerName}</label><input id="learner-name" maxlength="32" required placeholder="${copy.learnerNamePlaceholder}"></div><div class="actions"><button type="submit">${copy.addLearner}</button></div>`;
+  form.innerHTML = `<div class="field"><label for="learner-name">${learnerCopy.name}</label><input id="learner-name" maxlength="32" required placeholder="${learnerCopy.placeholder}"></div><div class="actions"><button type="submit">${learnerCopy.add}</button></div>`;
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const button = form.querySelector('button[type="submit"]');
@@ -783,6 +799,12 @@ async function renderDashboard(me) {
   actions.append(create, billing);
   const submissionNotice = submissionLimitNotice(data.usage);
   card.append(heading, greeting, plan, usageCards(data.usage));
+  if (me.workspaceType === "teacher" && me.classPublicId) {
+    const join = document.createElement("p");
+    join.className = "notice";
+    join.textContent = `${copy.classJoinUrl}: ${location.origin}/join/${me.classPublicId}`;
+    card.append(join);
+  }
   if (submissionNotice) card.append(submissionNotice);
   card.append(actions);
   main.append(card);
@@ -944,6 +966,7 @@ async function renderNew(me) {
     <div class="field"><label for="assignment-words">${copy.words}</label><textarea id="assignment-words" required spellcheck="false"></textarea><small>${copy.wordsHelp}</small></div>
     <div class="field"><label for="assignment-sentences">${copy.exampleSentences}</label><textarea id="assignment-sentences" maxlength="30000" spellcheck="true" placeholder="${copy.exampleSentencesHelp}"></textarea></div>
     <fieldset><legend>${copy.mode}</legend><div class="radio-row"><label><input type="radio" name="mode" value="dictation"> ${copy.dictation}</label><label><input type="radio" name="mode" value="typing"> ${copy.typing}</label></div></fieldset>
+    <fieldset id="assignment-learners-field"><legend>${m("assignTo")}</legend><div class="radio-row"><label><input type="radio" name="learnerTarget" value="anyone" checked> ${m("anyoneWithLink")}</label>${me.workspaceType === "teacher" ? `<label><input type="radio" name="learnerTarget" value="all"> ${m("allStudents")}</label>` : ""}<label class="learner-target-option"><input type="radio" name="learnerTarget" value="selected"> ${m("selectedStudents")}</label></div><div id="assignment-learner-list"></div></fieldset>
     <div class="grid"><div class="field"><label for="assignment-deadline">${copy.deadline}</label><input id="assignment-deadline" type="datetime-local" required></div><div class="field"><label for="assignment-max">${copy.maxAttempts}</label><select id="assignment-max">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<option>${n}</option>`).join("")}</select></div></div>
     <div class="actions"><button type="submit">${copy.publish}</button></div>`;
   attachSentenceLibraryControls(
@@ -953,6 +976,34 @@ async function renderNew(me) {
     "#assignment-sentences",
     'input[name="mode"]',
   );
+  const roster = (await api("/api/assignments")).learners || [];
+  const learnerField = form.querySelector("#assignment-learners-field");
+  const learnerList = form.querySelector("#assignment-learner-list");
+  if (!roster.length) learnerField.hidden = true;
+  else {
+    learnerList.innerHTML = roster
+      .filter((learner) => !learner.archived)
+      .map(
+        (learner) =>
+          `<label><input type="checkbox" name="learnerId" value="${learner.id}"> ${learner.name}</label>`,
+      )
+      .join("");
+    if (
+      me.workspaceType === "family" &&
+      roster.filter((learner) => !learner.archived).length === 1
+    ) {
+      form.querySelector(
+        'input[name="learnerTarget"][value="selected"]',
+      ).checked = true;
+      learnerList.querySelector('input[name="learnerId"]').checked = true;
+    }
+    form.addEventListener("change", () => {
+      learnerList.hidden =
+        form.querySelector('input[name="learnerTarget"]:checked').value !==
+        "selected";
+    });
+    learnerList.hidden = true;
+  }
   form.querySelector("#assignment-words").value = draftWords;
   form.querySelector("#assignment-sentences").value = draftSentences;
   form.querySelector("#assignment-title").value = draftTitle;
@@ -985,6 +1036,18 @@ async function renderNew(me) {
             form.querySelector("#assignment-deadline").value,
           ).toISOString(),
           maxAttempts: Number(form.querySelector("#assignment-max").value),
+          learnerIds:
+            form.querySelector('input[name="learnerTarget"]:checked')?.value ===
+            "all"
+              ? [
+                  ...learnerList.querySelectorAll('input[name="learnerId"]'),
+                ].map((input) => input.value)
+              : form.querySelector('input[name="learnerTarget"]:checked')
+                    ?.value === "selected"
+                ? [
+                    ...form.querySelectorAll('input[name="learnerId"]:checked'),
+                  ].map((input) => input.value)
+                : [],
         }),
       });
       try {
@@ -1585,6 +1648,33 @@ function activationCard(message) {
   return card;
 }
 
+function renderWorkspaceChooser(me) {
+  const main = shell();
+  const card = document.createElement("section");
+  card.className = "product-card auth-card";
+  const heading = document.createElement("h1");
+  heading.textContent = copy.workspaceTypeTitle;
+  const actions = document.createElement("div");
+  actions.className = "actions";
+  for (const type of ["family", "teacher"]) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = copy[type];
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      await api("/api/workspace", {
+        method: "PATCH",
+        body: JSON.stringify({ workspaceType: type }),
+      });
+      me.workspaceType = type;
+      await renderTeacherRoute(me);
+    });
+    actions.append(button);
+  }
+  card.append(heading, actions);
+  main.append(card);
+}
+
 async function pollForPro() {
   for (let attempt = 0; attempt < ACTIVATION_POLL_ATTEMPTS; attempt += 1) {
     await new Promise((resolve) => setTimeout(resolve, 1_000));
@@ -1740,7 +1830,8 @@ async function init() {
     }
     await finishProActivation(me);
   } else {
-    await renderTeacherRoute(me);
+    if (!me.workspaceType) renderWorkspaceChooser(me);
+    else await renderTeacherRoute(me);
   }
   if (pendingCheckoutError)
     showCheckoutRetry(pendingInterval, pendingCheckoutError);

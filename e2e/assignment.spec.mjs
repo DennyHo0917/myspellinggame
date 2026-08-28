@@ -296,6 +296,10 @@ test("practice enforces anonymous, Free, Plus, and practice-link word limits", a
   await expect(page.locator("#spelling-status")).toContainText(
     "Free accounts support up to 40 words",
   );
+  await expect(page.locator("#spelling-limit-cta")).toHaveAttribute(
+    "href",
+    "/pricing#pricing",
+  );
 
   account.plan = "plus";
   await page.reload();
@@ -305,6 +309,32 @@ test("practice enforces anonymous, Free, Plus, and practice-link word limits", a
     page.getByRole("button", { name: "Return to main menu" }),
   ).toBeVisible();
 });
+
+for (const [locale, href] of [
+  ["es", "/es/pricing#pricing"],
+  ["zh", "/zh/pricing#pricing"],
+]) {
+  test(`${locale} Free word-limit upgrade stays in the active locale`, async ({
+    page,
+  }) => {
+    await page.route("**/api/me", (route) =>
+      route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          plan: "free",
+          user: { id: "teacher-a", name: "Teacher A" },
+        }),
+      }),
+    );
+    await page.goto(`/${locale}/`);
+    await page.locator("#custom-word-list").fill(limitWords(41));
+    await page.locator("#start-practice-btn").click();
+    await expect(page.locator("#spelling-limit-cta")).toHaveAttribute(
+      "href",
+      href,
+    );
+  });
+}
 
 test("practice records a valid list and start separately", async ({ page }) => {
   await page.goto("/");
@@ -1472,7 +1502,9 @@ test("mobile conversion pages keep their key actions usable", async ({
   await page.goto("/");
   await expect(page.locator(".brand-logo")).toBeVisible();
   await expect(page.locator(".lang-btn")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Workspace" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Workspace", exact: true }),
+  ).toBeVisible();
   await expect(page.getByRole("button", { name: /Sound/ })).toBeVisible();
   await expect(page.locator("header").getByText("Privacy")).toHaveCount(0);
   const privacy = page
@@ -1906,7 +1938,7 @@ test("free teacher results preview distinct missed words as inert text", async (
     "3 words have been missed in this assignment.",
   );
   await expect(
-    misses.getByRole("link", { name: "Upgrade to Pro" }),
+    misses.getByRole("link", { name: "Upgrade to Plus" }),
   ).toBeVisible();
   expect(await page.evaluate(() => globalThis.pwned)).toBeUndefined();
   expect(await analyticsEvents(page, "assignment_results_viewed")).toEqual([
@@ -1971,7 +2003,7 @@ test("free assignment and learner previews avoid zero-value urgency", async ({
     has: page.getByRole("heading", { name: "Most commonly missed words" }),
   });
   await expect(misses).toContainText(
-    "Upgrade to Pro for assignment-wide missed-word statistics",
+    "Upgrade to Plus for assignment-wide missed-word statistics",
   );
   await expect(misses).not.toContainText("0 words");
 
@@ -1980,16 +2012,16 @@ test("free assignment and learner previews avoid zero-value urgency", async ({
     has: page.getByRole("heading", { name: "Smart missed-word review" }),
   });
   await expect(review).toContainText(
-    "4 words currently need review. Upgrade to Pro to turn them into a focused review assignment.",
+    "4 words currently need review. Upgrade to Plus to turn them into a focused review assignment.",
   );
   await expect(
-    review.getByRole("link", { name: "Upgrade to Pro" }),
+    review.getByRole("link", { name: "Upgrade to Plus" }),
   ).toHaveCount(1);
 
   needsReview = 0;
   await page.reload();
   await expect(review).toContainText(
-    "Upgrade to Pro to create smart review assignments.",
+    "Upgrade to Plus to create smart review assignments.",
   );
   await expect(review).not.toContainText("0 words");
 });

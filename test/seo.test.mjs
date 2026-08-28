@@ -196,7 +196,7 @@ test('localized home pages expose the Workspace section without changing practic
   const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   assert.match(home, /<title>Free Spelling Test With Your Own Words — No Login<\/title>/);
   assert.match(home, /<h1[^>]*>Free Spelling Test With Your Own Words<\/h1>/);
-  assert.doesNotMatch(home, /365 days on Pro/);
+  assert.doesNotMatch(home, /365 days on P(?:ro)/);
 });
 
 test('FAQ, About, and Homeschool pages describe current product capabilities', () => {
@@ -247,6 +247,13 @@ test('llms.txt publishes the current product summary and canonical sources', () 
   assert.ok(content.includes('up to 20 words'));
   assert.ok(content.includes('up to 40 words'));
   assert.ok(content.includes('up to 80 words'));
+  const anonymousIndex = content.indexOf('### Anonymous practice');
+  const freeIndex = content.indexOf('### Free');
+  const plusIndex = content.indexOf('### Plus');
+  const workspaceIndex = content.indexOf('Free workspace includes:');
+  assert.ok(anonymousIndex >= 0 && anonymousIndex < freeIndex);
+  assert.ok(freeIndex < plusIndex);
+  assert.ok(freeIndex < workspaceIndex && workspaceIndex < plusIndex);
   assert.ok(!content.includes('30-day free trial'));
   assert.ok(!content.includes('30 days of progress history'));
   assert.doesNotMatch(content, /workers\.dev|localhost|\.html/);

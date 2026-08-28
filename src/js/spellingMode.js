@@ -12,6 +12,7 @@ import {
 import { speakWord as speak } from './speech.js';
 import { entryPage, pageLocale, setAssignmentEntryPoint, trackEvent } from './analytics.mjs';
 import { buildShareHash, readShareState } from './shareState.mjs';
+import { productPagePath } from './productLocale.mjs';
 
 const STORAGE_KEY = 'mySpellingGameSpellingWords';
 const SENTENCES_STORAGE_KEY = 'mySpellingGameExampleSentences';
@@ -88,11 +89,11 @@ export async function canStartPractice({ anonymousOnly = false } = {}) {
     status(t('invalidWords'));
     return false;
   }
-  const lang = encodeURIComponent(pageLocale());
   if (anonymous || !account) {
+    const lang = encodeURIComponent(pageLocale());
     showLimitCta('anonymousWordLimit', `/teacher?lang=${lang}#teacher-sign-in`, 'signInFree');
   } else {
-    showLimitCta('freeWordLimit', `/pricing?lang=${lang}#pricing`, 'upgradePlus');
+    showLimitCta('freeWordLimit', `${productPagePath('pricing', pageLocale())}#pricing`, 'upgradePlus');
   }
   track('word_limit_hit', {
     limit,

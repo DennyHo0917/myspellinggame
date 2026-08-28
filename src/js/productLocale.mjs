@@ -40,7 +40,7 @@ const PACKS = {
     due: "Due {date}",
     open: "View results",
     manageBilling: "Manage billing",
-    upgrade: "Upgrade to Pro",
+    upgrade: "Upgrade to Plus",
     newTitle: "Create a spelling assignment",
     assignmentTitle: "Assignment title",
     titlePlaceholder: "Week 3 spelling practice",
@@ -85,9 +85,9 @@ const PACKS = {
     deleteResultFailed: "The result could not be deleted. Try again.",
     commonMisses: "Most commonly missed words",
     proStatsLocked:
-      "Upgrade to Pro for assignment-wide missed-word statistics and CSV export.",
+      "Upgrade to Plus for assignment-wide missed-word statistics and CSV export.",
     missedWordsPreview:
-      "{count} words have been missed in this assignment. Upgrade to Pro to see which words are missed most often.",
+      "{count} words have been missed in this assignment. Upgrade to Plus to see which words are missed most often.",
     copied: "Student link copied.",
     learnerHome: "Student home",
     learnerGreeting: "Hi, {name}",
@@ -143,14 +143,14 @@ const PACKS = {
     checkoutRetry:
       "We couldn’t open Stripe Checkout. Your selected plan is still saved.",
     retryCheckout: "Try checkout again",
-    activatingPro: "Activating your Pro plan…",
+    activatingPro: "Activating your Plus plan…",
     activationDelayed:
-      "Checkout completed. Pro activation is still processing.",
+      "Checkout completed. Plus activation is still processing.",
     checkAgain: "Check again",
     invalidTitle: "Use an assignment title with 1–80 characters.",
     invalidWords: "Use 1–80 words, each 2–24 characters long.",
     wordLimit:
-      "This account's word-list limit was reached. Shorten the list or upgrade to Plus.",
+      "Free accounts support up to 40 words per list. Upgrade to Plus for up to 80.",
     invalidExampleSentence:
       "Example sentences must be 300 characters or fewer.",
     invalidDeadline: "Choose a future deadline within the next year.",
@@ -199,13 +199,13 @@ const PACKS = {
     needsReview: "Needs review",
     historyWindow: "Progress from the last {days} days",
     masteryHistoryUpgrade:
-      "Free includes 14 days of mastery history. Upgrade to Pro for 365 days.",
+      "Free includes 14 days of mastery history. Upgrade to Plus for 365 days.",
     smartReview: "Smart missed-word review",
     smartReviewValue:
       "Turn missed words across assignments into a focused review list in one click.",
-    smartReviewUpgrade: "Upgrade to Pro to create smart review assignments.",
+    smartReviewUpgrade: "Upgrade to Plus to create smart review assignments.",
     smartReviewPreview:
-      "{count} words currently need review. Upgrade to Pro to turn them into a focused review assignment.",
+      "{count} words currently need review. Upgrade to Plus to turn them into a focused review assignment.",
     createReview: "Create review assignment",
     noReviewWords: "There are no missed words that need review yet.",
     reviewDraftTitle: "Review: {name}",
@@ -223,15 +223,15 @@ const PACKS = {
     invalidListTitle: "Use a saved-list title with 1–80 characters.",
     savedListNotFound: "This saved list could not be found.",
     savedListLimit:
-      "You’ve reached the Free plan limit of 1 saved list. Upgrade to Pro for unlimited saved lists.",
+      "You’ve reached the Free plan limit of 1 saved list. Upgrade to Plus for unlimited saved lists.",
     learnerNotFound: "This student profile could not be found.",
     learnerExists:
       "A student profile with that nickname or number already exists.",
     learnerLimit:
-      "You’ve reached the Free plan limit of 1 student profile. Upgrade to Pro for up to 150 students.",
-    smartReviewRequired: "Smart review is available on Pro.",
+      "You’ve reached the Free plan limit of 1 student profile. Upgrade to Plus for up to 150 students.",
+    smartReviewRequired: "Smart review is available on Plus.",
     proActive:
-      "Pro is active. Saved lists, long-term mastery, and smart review are now unlocked.",
+      "Plus is active. Saved lists, long-term mastery, and smart review are now unlocked.",
     trialActiveMonth:
       "Your 14-day Plus trial is active. Your card will be charged $5.99/month on {date} unless you cancel first.",
     trialActiveYear:
@@ -283,7 +283,7 @@ const PACKS = {
     due: "Entrega: {date}",
     open: "Ver resultados",
     manageBilling: "Gestionar suscripción",
-    upgrade: "Pasar a Pro",
+    upgrade: "Pasar a Plus",
     newTitle: "Crear una tarea de spelling",
     assignmentTitle: "Título de la tarea",
     titlePlaceholder: "Práctica de spelling, semana 3",
@@ -328,9 +328,9 @@ const PACKS = {
     deleteResultFailed: "No se pudo eliminar el resultado. Inténtalo de nuevo.",
     commonMisses: "Palabras con más errores",
     proStatsLocked:
-      "Pasa a Pro para ver estadísticas de errores de toda la tarea y exportar CSV.",
+      "Pasa a Plus para ver estadísticas de errores de toda la tarea y exportar CSV.",
     missedWordsPreview:
-      "En esta tarea se han fallado {count} palabras. Pásate a Pro para ver cuáles se fallan con más frecuencia.",
+      "En esta tarea se han fallado {count} palabras. Pásate a Plus para ver cuáles se fallan con más frecuencia.",
     copied: "Enlace para estudiantes copiado.",
     learnerHome: "Inicio del estudiante",
     learnerGreeting: "Hola, {name}",
@@ -387,14 +387,14 @@ const PACKS = {
     checkoutRetry:
       "No pudimos abrir el pago seguro. El plan que elegiste sigue guardado.",
     retryCheckout: "Reintentar el pago",
-    activatingPro: "Activando tu plan Pro…",
+    activatingPro: "Activando tu plan Plus…",
     activationDelayed:
-      "El pago seguro se completó. La activación de Pro todavía se está procesando.",
+      "El pago seguro se completó. La activación de Plus todavía se está procesando.",
     checkAgain: "Comprobar de nuevo",
     invalidTitle: "Usa un título de entre 1 y 80 caracteres.",
     invalidWords: "Usa entre 1 y 80 palabras, de 2 a 24 caracteres cada una.",
     wordLimit:
-      "Se alcanzó el límite de palabras de esta cuenta. Acorta la lista o pásate a Plus.",
+      "Las cuentas gratuitas admiten hasta 40 palabras por lista. Pásate a Plus para usar hasta 80.",
     invalidExampleSentence:
       "Las frases de ejemplo deben tener 300 caracteres o menos.",
     invalidDeadline: "Elige una fecha futura dentro del próximo año.",
@@ -443,13 +443,14 @@ const PACKS = {
     needsReview: "Necesita repaso",
     historyWindow: "Progreso de los últimos {days} días",
     masteryHistoryUpgrade:
-      "Gratis incluye 14 días de historial de dominio. Pásate a Pro para consultar 365 días.",
+      "Gratis incluye 14 días de historial de dominio. Pásate a Plus para consultar 365 días.",
     smartReview: "Repaso inteligente de errores",
     smartReviewValue:
       "Convierte en un clic los errores de varias tareas en una lista de repaso específica.",
-    smartReviewUpgrade: "Pásate a Pro para crear tareas de repaso inteligente.",
+    smartReviewUpgrade:
+      "Pásate a Plus para crear tareas de repaso inteligente.",
     smartReviewPreview:
-      "Ahora mismo hay {count} palabras que necesitan repaso. Pásate a Pro para convertirlas en una tarea de repaso específica.",
+      "Ahora mismo hay {count} palabras que necesitan repaso. Pásate a Plus para convertirlas en una tarea de repaso específica.",
     createReview: "Crear tarea de repaso",
     noReviewWords: "Todavía no hay palabras falladas que necesiten repaso.",
     reviewDraftTitle: "Repaso: {name}",
@@ -467,14 +468,14 @@ const PACKS = {
       "El título de la lista debe tener entre 1 y 80 caracteres.",
     savedListNotFound: "No se encontró esta lista guardada.",
     savedListLimit:
-      "Has alcanzado el límite de 1 lista guardada del plan Gratis. Pásate a Pro para guardar listas ilimitadas.",
+      "Has alcanzado el límite de 1 lista guardada del plan Gratis. Pásate a Plus para guardar listas ilimitadas.",
     learnerNotFound: "No se encontró este perfil.",
     learnerExists: "Ya existe un perfil con ese apodo o número.",
     learnerLimit:
-      "Has alcanzado el límite de 1 perfil del plan Gratis. Pásate a Pro para gestionar hasta 150 estudiantes.",
-    smartReviewRequired: "El repaso inteligente está disponible con Pro.",
+      "Has alcanzado el límite de 1 perfil del plan Gratis. Pásate a Plus para gestionar hasta 150 estudiantes.",
+    smartReviewRequired: "El repaso inteligente está disponible con Plus.",
     proActive:
-      "Pro está activo. Ya están disponibles las listas guardadas, el historial de dominio a largo plazo y el repaso inteligente.",
+      "Plus está activo. Ya están disponibles las listas guardadas, el historial de dominio a largo plazo y el repaso inteligente.",
     trialActiveMonth:
       "Tu prueba Plus de 14 días está activa. Se cargarán $5.99 al mes en tu tarjeta el {date}, salvo que canceles antes.",
     trialActiveYear:
@@ -526,7 +527,7 @@ const PACKS = {
     due: "Prazo: {date}",
     open: "Ver resultados",
     manageBilling: "Gerenciar assinatura",
-    upgrade: "Assinar Pro",
+    upgrade: "Assinar Plus",
     newTitle: "Criar tarefa de spelling",
     assignmentTitle: "Título da tarefa",
     titlePlaceholder: "Spelling da semana 3",
@@ -572,9 +573,9 @@ const PACKS = {
       "Não foi possível excluir o resultado. Tente novamente.",
     commonMisses: "Palavras mais erradas",
     proStatsLocked:
-      "Assine o Pro para ver erros de toda a tarefa e exportar CSV.",
+      "Assine o Plus para ver erros de toda a tarefa e exportar CSV.",
     missedWordsPreview:
-      "Nesta tarefa, {count} palavras foram erradas. Passe para o Pro para ver quais aparecem mais nos erros.",
+      "Nesta tarefa, {count} palavras foram erradas. Passe para o Plus para ver quais aparecem mais nos erros.",
     copied: "Link para alunos copiado.",
     learnerHome: "Página do aluno",
     learnerGreeting: "Olá, {name}",
@@ -630,14 +631,14 @@ const PACKS = {
     checkoutRetry:
       "Não foi possível abrir o checkout. O plano escolhido continua salvo.",
     retryCheckout: "Tentar o checkout novamente",
-    activatingPro: "Ativando seu plano Pro…",
+    activatingPro: "Ativando seu plano Plus…",
     activationDelayed:
-      "Checkout concluído. A ativação do Pro ainda está sendo processada.",
+      "Checkout concluído. A ativação do Plus ainda está sendo processada.",
     checkAgain: "Verificar novamente",
     invalidTitle: "Use um título com 1 a 80 caracteres.",
     invalidWords: "Use de 1 a 80 palavras, cada uma com 2 a 24 caracteres.",
     wordLimit:
-      "O limite de palavras desta conta foi atingido. Encurte a lista ou passe para o Plus.",
+      "As contas gratuitas aceitam até 40 palavras por lista. Passe para o Plus para usar até 80.",
     invalidExampleSentence:
       "As frases de exemplo devem ter no máximo 300 caracteres.",
     invalidDeadline: "Escolha um prazo futuro dentro do próximo ano.",
@@ -685,14 +686,14 @@ const PACKS = {
     needsReview: "Precisa de revisão",
     historyWindow: "Progresso dos últimos {days} dias",
     masteryHistoryUpgrade:
-      "O plano Grátis inclui 14 dias de histórico de domínio. Passe para o Pro para acessar 365 dias.",
+      "O plano Grátis inclui 14 dias de histórico de domínio. Passe para o Plus para acessar 365 dias.",
     smartReview: "Revisão inteligente de erros",
     smartReviewValue:
       "Transforme em um clique os erros de várias tarefas em uma lista de revisão focada.",
     smartReviewUpgrade:
-      "Passe para o Pro para criar tarefas de revisão inteligente.",
+      "Passe para o Plus para criar tarefas de revisão inteligente.",
     smartReviewPreview:
-      "Atualmente, {count} palavras precisam de revisão. Passe para o Pro para transformá-las em uma tarefa de revisão focada.",
+      "Atualmente, {count} palavras precisam de revisão. Passe para o Plus para transformá-las em uma tarefa de revisão focada.",
     createReview: "Criar tarefa de revisão",
     noReviewWords: "Ainda não há palavras erradas que precisem de revisão.",
     reviewDraftTitle: "Revisão: {name}",
@@ -709,14 +710,14 @@ const PACKS = {
     invalidListTitle: "Use um título de lista com 1 a 80 caracteres.",
     savedListNotFound: "Esta lista salva não foi encontrada.",
     savedListLimit:
-      "Você atingiu o limite de 1 lista salva do plano Grátis. Passe para o Pro para ter listas ilimitadas.",
+      "Você atingiu o limite de 1 lista salva do plano Grátis. Passe para o Plus para ter listas ilimitadas.",
     learnerNotFound: "Este perfil não foi encontrado.",
     learnerExists: "Já existe um perfil com esse apelido ou número.",
     learnerLimit:
-      "Você atingiu o limite de 1 perfil do plano Grátis. Passe para o Pro para acompanhar até 150 alunos.",
-    smartReviewRequired: "A revisão inteligente está disponível no Pro.",
+      "Você atingiu o limite de 1 perfil do plano Grátis. Passe para o Plus para acompanhar até 150 alunos.",
+    smartReviewRequired: "A revisão inteligente está disponível no Plus.",
     proActive:
-      "O Pro está ativo. Listas salvas, histórico de domínio de longo prazo e revisão inteligente já estão liberados.",
+      "O Plus está ativo. Listas salvas, histórico de domínio de longo prazo e revisão inteligente já estão liberados.",
     trialActiveMonth:
       "Seu teste grátis do Plus por 14 dias está ativo. Seu cartão será cobrado em $5.99 por mês em {date}, a menos que você cancele antes.",
     trialActiveYear:
@@ -768,7 +769,7 @@ const PACKS = {
     due: "Échéance : {date}",
     open: "Voir les résultats",
     manageBilling: "Gérer l’abonnement",
-    upgrade: "Passer à Pro",
+    upgrade: "Passer à Plus",
     newTitle: "Créer un devoir d’orthographe",
     assignmentTitle: "Titre du devoir",
     titlePlaceholder: "Orthographe – semaine 3",
@@ -814,9 +815,9 @@ const PACKS = {
       "Impossible de supprimer le résultat. Veuillez réessayer.",
     commonMisses: "Mots les plus souvent manqués",
     proStatsLocked:
-      "Passez à Pro pour les statistiques de l’ensemble du devoir et l’export CSV.",
+      "Passez à Plus pour les statistiques de l’ensemble du devoir et l’export CSV.",
     missedWordsPreview:
-      "{count} mots ont été manqués dans ce devoir. Passez à Pro pour voir lesquels sont le plus souvent manqués.",
+      "{count} mots ont été manqués dans ce devoir. Passez à Plus pour voir lesquels sont le plus souvent manqués.",
     copied: "Lien pour les élèves copié.",
     learnerHome: "Accueil de l’élève",
     learnerGreeting: "Bonjour, {name}",
@@ -873,14 +874,14 @@ const PACKS = {
     checkoutRetry:
       "Impossible d’ouvrir le paiement sécurisé. Votre offre reste enregistrée.",
     retryCheckout: "Réessayer le paiement",
-    activatingPro: "Activation de votre offre Pro…",
+    activatingPro: "Activation de votre offre Plus…",
     activationDelayed:
-      "Paiement sécurisé terminé. L’activation de Pro est encore en cours.",
+      "Paiement sécurisé terminé. L’activation de Plus est encore en cours.",
     checkAgain: "Vérifier à nouveau",
     invalidTitle: "Utilisez un titre de 1 à 80 caractères.",
     invalidWords: "Utilisez 1 à 80 mots de 2 à 24 caractères chacun.",
     wordLimit:
-      "La limite de mots de ce compte est atteinte. Raccourcissez la liste ou passez à Plus.",
+      "Les comptes gratuits acceptent jusqu’à 40 mots par liste. Passez à Plus pour aller jusqu’à 80.",
     invalidExampleSentence:
       "Les phrases d’exemple doivent contenir au plus 300 caractères.",
     invalidDeadline: "Choisissez une échéance future dans l’année à venir.",
@@ -929,14 +930,14 @@ const PACKS = {
     needsReview: "À revoir",
     historyWindow: "Progression des {days} derniers jours",
     masteryHistoryUpgrade:
-      "L’offre gratuite comprend 14 jours d’historique. Passez à Pro pour accéder à 365 jours.",
+      "L’offre gratuite comprend 14 jours d’historique. Passez à Plus pour accéder à 365 jours.",
     smartReview: "Révision intelligente des erreurs",
     smartReviewValue:
       "Transformez en un clic les erreurs de plusieurs devoirs en une liste de révision ciblée.",
     smartReviewUpgrade:
-      "Passez à Pro pour créer des devoirs de révision intelligente.",
+      "Passez à Plus pour créer des devoirs de révision intelligente.",
     smartReviewPreview:
-      "{count} mots nécessitent actuellement une révision. Passez à Pro pour en faire un devoir de révision ciblé.",
+      "{count} mots nécessitent actuellement une révision. Passez à Plus pour en faire un devoir de révision ciblé.",
     createReview: "Créer un devoir de révision",
     noReviewWords: "Aucun mot manqué ne nécessite encore de révision.",
     reviewDraftTitle: "Révision : {name}",
@@ -955,14 +956,14 @@ const PACKS = {
       "Le titre de la liste doit contenir entre 1 et 80 caractères.",
     savedListNotFound: "Cette liste enregistrée est introuvable.",
     savedListLimit:
-      "Vous avez atteint la limite gratuite de 1 liste. Passez à Pro pour enregistrer un nombre illimité de listes.",
+      "Vous avez atteint la limite gratuite de 1 liste. Passez à Plus pour enregistrer un nombre illimité de listes.",
     learnerNotFound: "Ce profil est introuvable.",
     learnerExists: "Un profil avec ce pseudo ou ce numéro existe déjà.",
     learnerLimit:
-      "Vous avez atteint la limite gratuite de 1 profil. Passez à Pro pour suivre jusqu’à 150 élèves.",
-    smartReviewRequired: "La révision intelligente est disponible avec Pro.",
+      "Vous avez atteint la limite gratuite de 1 profil. Passez à Plus pour suivre jusqu’à 150 élèves.",
+    smartReviewRequired: "La révision intelligente est disponible avec Plus.",
     proActive:
-      "Pro est actif. Les listes enregistrées, l’historique de maîtrise à long terme et la révision intelligente sont maintenant disponibles.",
+      "Plus est actif. Les listes enregistrées, l’historique de maîtrise à long terme et la révision intelligente sont maintenant disponibles.",
     trialActiveMonth:
       "Votre essai Plus de 14 jours est actif. Votre carte sera débitée de 5,99 $ par mois le {date}, sauf résiliation préalable.",
     trialActiveYear:
@@ -1012,7 +1013,7 @@ const PACKS = {
     due: "Batas waktu {date}",
     open: "Lihat hasil",
     manageBilling: "Kelola langganan",
-    upgrade: "Naik ke Pro",
+    upgrade: "Naik ke Plus",
     newTitle: "Buat tugas spelling",
     assignmentTitle: "Judul tugas",
     titlePlaceholder: "Latihan spelling minggu ke-3",
@@ -1057,9 +1058,9 @@ const PACKS = {
     deleteResultFailed: "Hasil tidak dapat dihapus. Coba lagi.",
     commonMisses: "Kata yang paling sering salah",
     proStatsLocked:
-      "Naik ke Pro untuk statistik kesalahan seluruh tugas dan ekspor CSV.",
+      "Naik ke Plus untuk statistik kesalahan seluruh tugas dan ekspor CSV.",
     missedWordsPreview:
-      "{count} kata telah salah dalam tugas ini. Pilih Pro untuk melihat kata mana yang paling sering salah.",
+      "{count} kata telah salah dalam tugas ini. Pilih Plus untuk melihat kata mana yang paling sering salah.",
     copied: "Link untuk siswa disalin.",
     learnerHome: "Beranda siswa",
     learnerGreeting: "Hai, {name}",
@@ -1115,13 +1116,13 @@ const PACKS = {
     checkoutRetry:
       "Checkout belum dapat dibuka. Paket yang dipilih tetap tersimpan.",
     retryCheckout: "Coba checkout lagi",
-    activatingPro: "Mengaktifkan paket Pro Anda…",
-    activationDelayed: "Checkout selesai. Aktivasi Pro masih diproses.",
+    activatingPro: "Mengaktifkan paket Plus Anda…",
+    activationDelayed: "Checkout selesai. Aktivasi Plus masih diproses.",
     checkAgain: "Periksa lagi",
     invalidTitle: "Gunakan judul sepanjang 1–80 karakter.",
     invalidWords: "Gunakan 1–80 kata, masing-masing sepanjang 2–24 karakter.",
     wordLimit:
-      "Batas kata untuk akun ini sudah tercapai. Pendekkan daftar atau gunakan Plus.",
+      "Akun Gratis mendukung hingga 40 kata per daftar. Gunakan Plus hingga 80 kata.",
     invalidExampleSentence:
       "Kalimat contoh harus terdiri dari paling banyak 300 karakter.",
     invalidDeadline:
@@ -1172,13 +1173,13 @@ const PACKS = {
     needsReview: "Perlu diulang",
     historyWindow: "Perkembangan dalam {days} hari terakhir",
     masteryHistoryUpgrade:
-      "Paket Gratis mencakup riwayat penguasaan 14 hari. Pilih Pro untuk melihat riwayat 365 hari.",
+      "Paket Gratis mencakup riwayat penguasaan 14 hari. Pilih Plus untuk melihat riwayat 365 hari.",
     smartReview: "Ulasan pintar kata yang salah",
     smartReviewValue:
       "Ubah kata yang salah dari berbagai tugas menjadi daftar latihan terarah dalam satu klik.",
-    smartReviewUpgrade: "Pilih Pro untuk membuat tugas ulasan pintar.",
+    smartReviewUpgrade: "Pilih Plus untuk membuat tugas ulasan pintar.",
     smartReviewPreview:
-      "Saat ini ada {count} kata yang perlu diulas. Pilih Pro untuk mengubahnya menjadi tugas ulasan terarah.",
+      "Saat ini ada {count} kata yang perlu diulas. Pilih Plus untuk mengubahnya menjadi tugas ulasan terarah.",
     createReview: "Buat tugas ulasan",
     noReviewWords: "Belum ada kata salah yang perlu diulang.",
     reviewDraftTitle: "Ulasan: {name}",
@@ -1195,15 +1196,15 @@ const PACKS = {
     invalidListTitle: "Gunakan judul daftar sepanjang 1–80 karakter.",
     savedListNotFound: "Daftar tersimpan ini tidak ditemukan.",
     savedListLimit:
-      "Anda telah mencapai batas 1 daftar tersimpan pada paket Gratis. Pilih Pro untuk daftar tanpa batas.",
+      "Anda telah mencapai batas 1 daftar tersimpan pada paket Gratis. Pilih Plus untuk daftar tanpa batas.",
     learnerNotFound: "Profil siswa ini tidak ditemukan.",
     learnerExists:
       "Profil dengan nama panggilan atau nomor tersebut sudah ada.",
     learnerLimit:
-      "Anda telah mencapai batas 1 profil pada paket Gratis. Pilih Pro untuk menyimpan hingga 150 profil siswa.",
-    smartReviewRequired: "Ulasan pintar tersedia pada paket Pro.",
+      "Anda telah mencapai batas 1 profil pada paket Gratis. Pilih Plus untuk menyimpan hingga 150 profil siswa.",
+    smartReviewRequired: "Ulasan pintar tersedia pada paket Plus.",
     proActive:
-      "Pro sudah aktif. Daftar tersimpan, riwayat penguasaan jangka panjang, dan ulasan pintar kini terbuka.",
+      "Plus sudah aktif. Daftar tersimpan, riwayat penguasaan jangka panjang, dan ulasan pintar kini terbuka.",
     trialActiveMonth:
       "Uji coba Plus 14 hari Anda aktif. Kartu Anda akan ditagih $5.99 per bulan pada {date}, kecuali Anda membatalkannya lebih dahulu.",
     trialActiveYear:
@@ -1252,7 +1253,7 @@ const PACKS = {
     due: "截止时间：{date}",
     open: "查看结果",
     manageBilling: "管理订阅",
-    upgrade: "升级 Pro",
+    upgrade: "升级 Plus",
     newTitle: "创建拼写作业",
     assignmentTitle: "作业标题",
     titlePlaceholder: "第 3 周拼写练习",
@@ -1294,9 +1295,9 @@ const PACKS = {
     deleteResult: "删除结果",
     deleteResultFailed: "删除结果失败，请重试。",
     commonMisses: "整份作业最容易拼错的单词",
-    proStatsLocked: "升级 Pro 后可查看整份作业的错词统计并导出 CSV。",
+    proStatsLocked: "升级 Plus 后可查看整份作业的错词统计并导出 CSV。",
     missedWordsPreview:
-      "这份作业中已有 {count} 个不同单词被拼错。升级 Pro 可查看全班最常拼错的单词。",
+      "这份作业中已有 {count} 个不同单词被拼错。升级 Plus 可查看全班最常拼错的单词。",
     copied: "学生链接已复制。",
     learnerHome: "学生主页",
     learnerGreeting: "你好，{name}",
@@ -1348,12 +1349,13 @@ const PACKS = {
     billingUnavailable: "当前环境尚未配置付费功能。",
     checkoutRetry: "暂时无法打开 Stripe 结账页，你选择的方案仍已保留。",
     retryCheckout: "重新尝试结账",
-    activatingPro: "正在激活 Pro 套餐…",
-    activationDelayed: "结账已完成，Pro 套餐仍在激活中。",
+    activatingPro: "正在激活 Plus 套餐…",
+    activationDelayed: "结账已完成，Plus 套餐仍在激活中。",
     checkAgain: "再次检查",
     invalidTitle: "作业标题需为 1～80 个字符。",
     invalidWords: "请输入 1～80 个单词，每个单词 2～24 个字符。",
-    wordLimit: "已达到此账号的单词数量上限。请缩短词表或升级 Plus。",
+    wordLimit:
+      "免费账号每份词表最多支持 40 个单词。升级到 Plus 后最多支持 80 个。",
     invalidExampleSentence: "例句长度不能超过 300 个字符。",
     invalidDeadline: "请选择未来一年内的截止时间。",
     invalidMaxAttempts: "最多尝试次数需为 1～10 次。",
@@ -1398,12 +1400,12 @@ const PACKS = {
     needsReview: "需要复习",
     historyWindow: "最近 {days} 天的学习进度",
     masteryHistoryUpgrade:
-      "免费版包含 14 天掌握度历史；升级 Pro 可查看 365 天。",
+      "免费版包含 14 天掌握度历史；升级 Plus 可查看 365 天。",
     smartReview: "智能错词复习",
     smartReviewValue: "一键汇总多次作业中的错词，生成针对性的复习词表。",
-    smartReviewUpgrade: "升级 Pro 后可创建智能错词复习作业。",
+    smartReviewUpgrade: "升级 Plus 后可创建智能错词复习作业。",
     smartReviewPreview:
-      "当前有 {count} 个单词需要复习。升级 Pro 可一键生成针对性复习作业。",
+      "当前有 {count} 个单词需要复习。升级 Plus 可一键生成针对性复习作业。",
     createReview: "创建复习作业",
     noReviewWords: "目前没有需要复习的错词。",
     reviewDraftTitle: "复习：{name}",
@@ -1420,13 +1422,13 @@ const PACKS = {
     invalidListTitle: "词表标题需为 1～80 个字符。",
     savedListNotFound: "找不到这个已保存词表。",
     savedListLimit:
-      "你已达到免费版 1 个词表的上限。升级 Pro 可不限量保存词表。",
+      "你已达到免费版 1 个词表的上限。升级 Plus 可不限量保存词表。",
     learnerNotFound: "找不到这个学生档案。",
     learnerExists: "相同昵称或编号的学生档案已存在。",
     learnerLimit:
-      "你已达到免费版 1 个学生档案的上限。升级 Pro 最多可管理 150 名学生。",
-    smartReviewRequired: "智能错词复习仅 Pro 可用。",
-    proActive: "Pro 已激活。已解锁词表保存、长期掌握度和智能错词复习。",
+      "你已达到免费版 1 个学生档案的上限。升级 Plus 最多可管理 150 名学生。",
+    smartReviewRequired: "智能错词复习仅 Plus 可用。",
+    proActive: "Plus 已激活。已解锁词表保存、长期掌握度和智能错词复习。",
     trialActiveMonth:
       "你的 14 天 Plus 免费试用已激活。若未提前取消，将于 {date} 从已绑定的付款方式扣取每月 $5.99。",
     trialActiveYear:

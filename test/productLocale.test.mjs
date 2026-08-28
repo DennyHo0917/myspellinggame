@@ -1,7 +1,36 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { PRODUCT_LOCALES, productMessages } from "../src/js/productLocale.mjs";
+import {
+  PRODUCT_LOCALES,
+  productMessages,
+  productPagePath,
+} from "../src/js/productLocale.mjs";
+
+test("pricing paths stay inside the active product locale", () => {
+  assert.equal(productPagePath("pricing", "en"), "/pricing");
+  assert.equal(productPagePath("pricing", "es"), "/es/pricing");
+  assert.equal(productPagePath("pricing", "pt-BR"), "/pt-br/pricing");
+  assert.equal(productPagePath("pricing", "fr"), "/fr/pricing");
+  assert.equal(productPagePath("pricing", "id"), "/id/pricing");
+  assert.equal(productPagePath("pricing", "zh"), "/zh/pricing");
+});
+
+test("word-limit copy states Free and Plus list limits in every locale", () => {
+  for (const [locale] of PRODUCT_LOCALES) {
+    const copy = productMessages(locale);
+    assert.match(copy.wordLimit, /40/);
+    assert.match(copy.wordLimit, /80/);
+    assert.match(copy.wordLimit, /Plus/);
+    assert.doesNotMatch(copy.wordLimit, /Pro/);
+  }
+});
+
+test("paid workspace copy uses Plus as the visible product name", () => {
+  for (const [locale] of PRODUCT_LOCALES) {
+    assert.doesNotMatch(JSON.stringify(productMessages(locale)), /\bPro\b/);
+  }
+});
 
 test("every product locale keeps the brand and has a distinct student-limit message", () => {
   for (const [locale] of PRODUCT_LOCALES) {

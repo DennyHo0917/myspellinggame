@@ -91,7 +91,7 @@ const copy = {
     freeItems: [
       "Up to 40 words per list",
       "1 active assignment",
-      "15 student submissions per month",
+      "8 student submissions per month",
       "14-day mastery history",
       "1 saved list",
       "1 student profile",
@@ -149,7 +149,7 @@ const copy = {
     freeItems: [
       "Hasta 40 palabras por lista",
       "1 tarea activa",
-      "15 entregas de estudiantes al mes",
+      "8 entregas de estudiantes al mes",
       "14 días de historial de dominio",
       "1 lista guardada",
       "1 perfil de estudiante",
@@ -208,7 +208,7 @@ const copy = {
     freeItems: [
       "Até 40 palavras por lista",
       "1 tarefa ativa",
-      "15 envios de alunos por mês",
+      "8 envios de alunos por mês",
       "14 dias de histórico de domínio",
       "1 lista salva",
       "1 perfil de aluno",
@@ -267,7 +267,7 @@ const copy = {
     freeItems: [
       "Jusqu’à 40 mots par liste",
       "1 devoir actif",
-      "15 remises d’élèves par mois",
+      "8 remises d’élèves par mois",
       "14 jours d’historique de maîtrise",
       "1 liste enregistrée",
       "1 profil d’élève",
@@ -326,7 +326,7 @@ const copy = {
     freeItems: [
       "Hingga 40 kata per daftar",
       "1 tugas aktif",
-      "15 kiriman siswa per bulan",
+      "8 kiriman siswa per bulan",
       "Riwayat penguasaan 14 hari",
       "1 daftar tersimpan",
       "1 profil siswa",
@@ -384,7 +384,7 @@ const copy = {
     freeItems: [
       "每份词表最多 40 个单词",
       "最多 1 个活跃作业",
-      "每月 15 份学生提交",
+      "每月 8 份学生提交",
       "14 天掌握度历史",
       "保存 1 个词表",
       "创建 1 个学生档案",

@@ -196,11 +196,12 @@ export async function createCheckout(
   if (existingLock) {
     if (existingLock.interval === interval && existingLock.session_url)
       return { url: existingLock.session_url };
-    throw new HttpError(
-      409,
-      "checkout_pending",
-      "A subscription checkout is already being created.",
-    );
+    if (existingLock.interval === interval)
+      throw new HttpError(
+        409,
+        "checkout_pending",
+        "A subscription checkout is already being created.",
+      );
   }
   const token = crypto.randomUUID();
   const sessionExpiresAt =
@@ -215,7 +216,8 @@ export async function createCheckout(
          stripe_session_id = NULL, session_url = NULL,
          expires_at = excluded.expires_at,
          created_at = excluded.created_at
-       WHERE checkout_locks.expires_at <= ?`,
+       WHERE checkout_locks.expires_at <= ?
+          OR checkout_locks.interval <> excluded.interval`,
     )
     .bind(user.id, token, interval, expiresAt, nowIso, nowIso)
     .run();

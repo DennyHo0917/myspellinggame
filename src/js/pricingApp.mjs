@@ -102,7 +102,9 @@ confirmButton.addEventListener("click", async () => {
           ? productMessage("billingUnavailable", {}, locale)
           : data.error === "already_subscribed"
             ? productMessage("alreadySubscribed", {}, locale)
-            : productMessage("error", {}, locale),
+            : data.error === "checkout_pending"
+              ? productMessage("checkoutPending", {}, locale)
+              : productMessage("error", {}, locale),
       );
     trackEvent("checkout_redirected", { billing_interval: interval });
     try {

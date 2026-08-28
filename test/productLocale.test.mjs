@@ -39,7 +39,13 @@ test("every product locale keeps the brand and has a distinct student-limit mess
     assert.ok(copy.studentLimit);
     assert.notEqual(copy.studentLimit, copy.teacherLimit);
     assert.ok(copy.checkoutRetry);
+    assert.ok(copy.checkoutPending);
     assert.ok(copy.retryCheckout);
+    assert.match(copy.submissionLimitWarning, /\{used\}/);
+    assert.match(copy.submissionLimitWarning, /\{limit\}/);
+    assert.match(copy.submissionLimitReached, /\{limit\}/);
+    assert.match(copy.activeLimit, /1/);
+    assert.match(copy.activeLimit, /20/);
     assert.ok(copy.activatingPro);
     assert.ok(copy.activationDelayed);
     assert.ok(copy.checkAgain);

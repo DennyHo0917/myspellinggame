@@ -646,6 +646,8 @@ test("practice records a valid list and start separately", async ({ page }) => {
   await expect(page.locator(".game-toolbar-actions > button").first()).toHaveId(
     "sound-toggle",
   );
+  await expect(sound).toHaveCSS("align-items", "center");
+  await expect(returnToMenu).toHaveCSS("align-items", "center");
   expect(
     await page.locator(".game-toolbar-actions").evaluate((toolbar) => {
       const toolbarRect = toolbar.getBoundingClientRect();

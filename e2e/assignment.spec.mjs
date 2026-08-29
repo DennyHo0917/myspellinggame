@@ -3423,10 +3423,12 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   expect(layout.sidebarRadius).toBe("0px");
   expect(layout.mainPadding).toBe("32px");
 
-  const shellHandle = await page.locator(".workspace-shell").elementHandle();
-  await page.locator(".teacher-product-nav .product-brand").click();
-  await expect(page).toHaveURL(/\/teacher\?lang=en$/);
-  expect(await shellHandle.evaluate((shell) => shell.isConnected)).toBe(true);
+  const brand = page.locator(".teacher-product-nav .product-brand");
+  await expect(brand).toHaveAttribute("href", "/");
+  await brand.click();
+  await expect(page).toHaveURL(/\/$/);
+  await page.goBack({ waitUntil: "domcontentloaded" });
+  await expect(page).toHaveURL(/\/teacher\/assignments\?lang=en$/);
   await expect(
     page.locator(".teacher-product-nav > .product-nav-actions > a"),
   ).toHaveCount(0);

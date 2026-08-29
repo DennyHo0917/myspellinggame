@@ -249,25 +249,18 @@ function nav({ workspace = false, me = null } = {}) {
   const element = document.createElement("nav");
   element.className = "product-nav teacher-product-nav";
   const homeHref = productPagePath("", locale);
-  const brandHref = workspace
-    ? `/teacher?lang=${encodeURIComponent(locale)}`
-    : homeHref;
   const languageOptions = PRODUCT_LOCALES.map(
     ([value, label]) =>
       `<a class="lang-option" href="?lang=${encodeURIComponent(value)}"${value === locale ? ' aria-current="page"' : ""}>${label}</a>`,
   ).join("");
   element.innerHTML = `
-    <a class="product-brand" href="${brandHref}"><img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span>${copy.brand}</span></a>
+    <a class="product-brand" href="${homeHref}"><img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span>${copy.brand}</span></a>
     ${workspace ? `<button class="workspace-drawer-toggle" id="workspace-menu-toggle" type="button" aria-label="${copy.openWorkspaceMenu}" aria-expanded="false"><span aria-hidden="true">☰</span></button>` : ""}
     <div class="product-nav-actions">
       <details class="language-switcher"><summary class="lang-btn" aria-label="${copy.language}">${copy.language}</summary><div class="lang-menu">${languageOptions}</div></details>
       ${workspace ? "" : `<a class="button-link button-secondary" href="${homeHref}">${copy.homePage}</a>`}
     </div>`;
   if (!workspace || !me) return element;
-  element.querySelector(".product-brand").addEventListener("click", (event) => {
-    event.preventDefault();
-    navigateWorkspace("overview");
-  });
   const actions = element.querySelector(".product-nav-actions");
   const languageSwitcher = element.querySelector(".language-switcher");
   const userMenu = document.createElement("details");

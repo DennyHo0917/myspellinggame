@@ -3401,6 +3401,7 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   await expect(sidebar.getByText("Sign out", { exact: true })).toHaveCount(0);
   const layout = await page.evaluate(() => {
     const nav = document.querySelector(".teacher-product-nav");
+    const logo = nav.querySelector(".brand-logo");
     const sidebar = document.querySelector(".workspace-sidebar");
     const main = document.querySelector(".workspace-layout .teacher-main");
     return {
@@ -3415,7 +3416,13 @@ test("workspace header owns account actions and keeps the desktop layout full wi
       sidebarRadius: getComputedStyle(sidebar).borderRadius,
       sidebarBottom: sidebar.getBoundingClientRect().bottom,
       navPosition: getComputedStyle(nav).position,
+      navBackground: getComputedStyle(nav).backgroundColor,
       navTop: nav.getBoundingClientRect().top,
+      logoSize: [
+        logo.getBoundingClientRect().width,
+        logo.getBoundingClientRect().height,
+      ],
+      logoRadius: getComputedStyle(logo).borderRadius,
       footerBottom: document.querySelector("footer").getBoundingClientRect()
         .bottom,
       viewportHeight: window.innerHeight,
@@ -3432,7 +3439,10 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   expect(layout.sidebarTop).toBe(60);
   expect(layout.sidebarBottom).toBeCloseTo(layout.viewportHeight, 0);
   expect(layout.navPosition).toBe("sticky");
+  expect(layout.navBackground).toBe("rgba(0, 0, 0, 0)");
   expect(layout.navTop).toBe(0);
+  expect(layout.logoSize).toEqual([32, 32]);
+  expect(layout.logoRadius).toBe("7px");
   expect(layout.footerBottom).toBeCloseTo(layout.viewportHeight, 0);
   expect(layout.mainPadding).toBe("32px");
 

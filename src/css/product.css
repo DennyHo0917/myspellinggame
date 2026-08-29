@@ -937,6 +937,14 @@ body.workspace-page {
   padding: 0;
 }
 
+.product-shell.workspace-shell {
+  display: grid;
+  min-height: 100vh;
+  min-height: 100dvh;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding-bottom: 0;
+}
+
 .workspace-shell .teacher-product-nav {
   grid-template-columns: 1fr auto auto;
   min-height: 60px;

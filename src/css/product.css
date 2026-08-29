@@ -981,8 +981,7 @@ body.workspace-page {
   top: 0;
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 60px);
-  max-height: calc(100vh - 60px);
+  align-self: stretch;
   padding: 16px 10px;
   overflow-y: auto;
   border-right: 1px solid var(--line);

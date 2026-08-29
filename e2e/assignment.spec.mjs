@@ -3411,6 +3411,8 @@ test("workspace header owns account actions and keeps the desktop layout full wi
       sidebarWidth: sidebar.getBoundingClientRect().width,
       sidebarPosition: getComputedStyle(sidebar).position,
       sidebarRadius: getComputedStyle(sidebar).borderRadius,
+      sidebarBottom: sidebar.getBoundingClientRect().bottom,
+      mainBottom: main.getBoundingClientRect().bottom,
       mainPadding: getComputedStyle(main).paddingLeft,
     };
   });
@@ -3421,6 +3423,7 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   expect(layout.sidebarWidth).toBeLessThanOrEqual(240);
   expect(layout.sidebarPosition).toBe("sticky");
   expect(layout.sidebarRadius).toBe("0px");
+  expect(layout.sidebarBottom).toBeCloseTo(layout.mainBottom, 0);
   expect(layout.mainPadding).toBe("32px");
 
   const brand = page.locator(".teacher-product-nav .product-brand");

@@ -2270,8 +2270,13 @@ for (const path of ["/", "/es/", "/pt-br/", "/fr/", "/id/", "/zh/"]) {
 test("homepage header shows language and workspace icons", async ({ page }) => {
   await page.goto("/");
   const headerIcons = await page.evaluate(() => ({
+    brandColor: getComputedStyle(
+      document.querySelector(".top-right-nav .brand-link"),
+    ).color,
     language: getComputedStyle(
-      document.querySelector(".top-right-nav .lang-btn"),
+      document.querySelector(
+        ".top-right-nav .language-switcher > summary.lang-btn",
+      ),
       "::before",
     ).maskImage,
     workspace: getComputedStyle(
@@ -2279,8 +2284,78 @@ test("homepage header shows language and workspace icons", async ({ page }) => {
       "::before",
     ).maskImage,
   }));
+  expect(headerIcons.brandColor).toBe("rgb(47, 111, 115)");
   expect(headerIcons.language).toContain("data:image/svg+xml");
   expect(headerIcons.workspace).toContain("data:image/svg+xml");
+
+  await page.goto("/privacy", { waitUntil: "domcontentloaded" });
+  const home = page.locator(".top-right-nav > .header-home-link");
+  await expect(home).toHaveCSS("border-radius", "999px");
+  const buttonTypography = await page.evaluate(() => {
+    const language = document.querySelector(
+      ".language-switcher > summary.lang-btn",
+    );
+    const homeLink = document.querySelector(".header-home-link");
+    const styles = (element) => {
+      const style = getComputedStyle(element);
+      return [style.fontFamily, style.fontSize, style.fontWeight, style.color];
+    };
+    return { language: styles(language), home: styles(homeLink) };
+  });
+  expect(buttonTypography.home).toEqual(buttonTypography.language);
+  const homeDecoration = await page
+    .locator(".top-right-nav > .header-home-link")
+    .evaluate((home) => ({
+      before: getComputedStyle(home, "::before").content,
+      after: getComputedStyle(home, "::after").content,
+    }));
+  expect(homeDecoration).toEqual({ before: "none", after: "none" });
+});
+
+test("shared site and product headers stay fixed while scrolling", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  for (const [path, selector] of [
+    ["/", ".top-right-nav"],
+    ["/pricing", ".product-nav"],
+  ]) {
+    await page.goto(path);
+    const header = page.locator(selector);
+    await expect(header).toHaveCSS("position", "fixed");
+    await expect(header).toHaveCSS("background-image", "none");
+    await expect(header).toHaveCSS("box-shadow", "none");
+    await page.evaluate(() => {
+      document.body.style.minHeight = "1800px";
+      scrollTo(0, 700);
+    });
+    expect((await header.boundingBox()).y).toBe(0);
+  }
+});
+
+test("manual Chinese choice keeps footer navigation in Chinese", async ({
+  page,
+}) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.locator(".language-switcher").click();
+  await page.locator('.lang-option[hreflang="zh-CN"]').click();
+  await expect(page).toHaveURL(/\/zh\/$/);
+  await page.locator("footer").getByRole("link", { name: "隐私" }).click();
+  await expect(page).toHaveURL(/\/zh\/privacy$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
+});
+
+test("browser language is used when no manual choice exists", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.removeItem("mySpellingGamePreferredLocale");
+    Object.defineProperty(navigator, "languages", { value: ["zh-CN"] });
+    Object.defineProperty(navigator, "language", { value: "zh-CN" });
+  });
+  await page.goto("/privacy");
+  await expect(page).toHaveURL(/\/zh\/privacy$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
 });
 
 test("mobile conversion pages keep their key actions usable", async ({
@@ -3483,10 +3558,10 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   expect(layout.sidebarHomeBottom).toBeCloseTo(layout.sidebarCollapseTop, 0);
   expect(layout.sidebarLinkHeight).toBe(38);
   expect(layout.mainActionHeight).toBeLessThanOrEqual(40);
-  expect(layout.navPosition).toBe("sticky");
-  expect(layout.navBackgroundImage).toContain("linear-gradient");
-  expect(layout.navBackdrop).toContain("blur(18px)");
-  expect(layout.navShadow).not.toBe("none");
+  expect(layout.navPosition).toBe("fixed");
+  expect(layout.navBackgroundImage).toBe("none");
+  expect(layout.navBackdrop).toContain("blur(14px)");
+  expect(layout.navShadow).toBe("none");
   expect(layout.navTop).toBe(0);
   expect(layout.logoSize).toEqual([32, 32]);
   expect(layout.logoRadius).toBe("7px");

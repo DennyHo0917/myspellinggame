@@ -486,6 +486,7 @@ function render(locale) {
   <link rel="alternate" hreflang="x-default" href="${baseUrl}/pricing">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="stylesheet" href="/src/css/product.css?v=teacher-shell3">
+  <script src="/src/js/localeRedirect.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VYF1V40KVS"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-VYF1V40KVS',{page_location: window.location.origin + window.location.pathname,page_path: window.location.pathname});</script>
   <script type="module" src="/src/js/analytics.mjs"></script>

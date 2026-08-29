@@ -2115,6 +2115,16 @@ function productUrlLocale(value) {
   return Object.hasOwn(URL_LOCALES, key) ? URL_LOCALES[key] : "";
 }
 
+const PREFERRED_LOCALE_KEY = "mySpellingGamePreferredLocale";
+
+export function rememberProductLocale(locale) {
+  const normalized = normalizeProductLocale(locale);
+  try {
+    localStorage.setItem(PREFERRED_LOCALE_KEY, normalized);
+  } catch {}
+  return normalized;
+}
+
 export function normalizeProductLocale(value) {
   const raw = String(value || "en").toLowerCase();
   return (
@@ -2149,13 +2159,20 @@ export function productLocale() {
     } catch {}
   }
   try {
-    stored = localStorage.getItem("mySpellingGamePreferredLocale") || "";
+    stored = localStorage.getItem(PREFERRED_LOCALE_KEY) || "";
   } catch {}
   const pendingLocale = productUrlLocale(pending);
   const queryLocale = productUrlLocale(query);
+  const storedLocale = productUrlLocale(stored);
   const pathLocale = path === "en" ? "" : productUrlLocale(path);
+  if (queryLocale) rememberProductLocale(queryLocale);
   return normalizeProductLocale(
-    pendingLocale || queryLocale || pathLocale || stored || navigator.language,
+    pendingLocale ||
+      queryLocale ||
+      storedLocale ||
+      pathLocale ||
+      navigator.languages?.[0] ||
+      navigator.language,
   );
 }
 
@@ -2176,13 +2193,17 @@ export function productMessage(key, vars = {}, locale = productLocale()) {
 }
 
 export function setProductLocale(locale) {
-  const normalized = normalizeProductLocale(locale);
-  try {
-    localStorage.setItem("mySpellingGamePreferredLocale", normalized);
-  } catch {}
+  const normalized = rememberProductLocale(locale);
   const url = new URL(location.href);
   url.searchParams.set("lang", normalized);
   location.href = url.toString();
+}
+
+if (typeof document !== "undefined") {
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest?.("a.lang-option[hreflang]");
+    if (link) rememberProductLocale(link.getAttribute("hreflang"));
+  });
 }
 
 export const PRODUCT_LOCALES = [

@@ -2393,7 +2393,7 @@ ${links}
             </div>
         </details>
         <a class="teacher-nav-link" href="/teacher?lang=${encodeURIComponent(currentCode)}">${langCodeLabel(currentCode)}</a>
-        <button class="lang-btn" onclick="window.location.href='${dirPath(lang)}'" id="back-home" title="${escapeAttr(lang.home)}">${lang.home}</button>
+        <button class="header-home-link" onclick="window.location.href='${dirPath(lang)}'" id="back-home" title="${escapeAttr(lang.home)}">${lang.home}</button>
     </header>`;
 }
 

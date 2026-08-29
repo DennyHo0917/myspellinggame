@@ -62,21 +62,23 @@ test("ordinary teacher routes do not override the stored locale", async ({
   page,
 }) => {
   await mockSignedOut(page);
-  await page.goto("/");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.evaluate(() =>
     localStorage.setItem("mySpellingGamePreferredLocale", "es"),
   );
 
-  await page.goto("/teacher");
+  await page.goto("/teacher", { waitUntil: "domcontentloaded" });
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
 
-  await page.goto("/teacher?lang=__proto__");
+  await page.goto("/teacher?lang=__proto__", {
+    waitUntil: "domcontentloaded",
+  });
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
 
   await page.evaluate(() =>
     sessionStorage.setItem("pendingCheckoutLocale", "zh"),
   );
-  await page.goto("/teacher?lang=es");
+  await page.goto("/teacher?lang=es", { waitUntil: "domcontentloaded" });
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
 });
 
@@ -436,8 +438,12 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await mockSignedOut(page);
-    await page.goto("/teacher?lang=en");
+    await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
     await expect(page.locator("#teacher-sign-in")).toBeVisible();
+    await expect(page.locator(".product-brand")).toHaveCSS(
+      "color",
+      "rgb(47, 111, 115)",
+    );
     await expect(page.locator(".teacher-pricing")).toHaveCount(0);
     await expect(
       page.getByRole("button", { name: "Continue with Google" }),
@@ -448,6 +454,7 @@ for (const viewport of [
       const cardBox = card.getBoundingClientRect();
       const buttonBox = button.getBoundingClientRect();
       const copyBox = copy.getBoundingClientRect();
+      const notice = copy.querySelector(".notice");
       return {
         buttonBelowCopy: buttonBox.top >= copyBox.bottom,
         buttonCenterOffset: Math.abs(
@@ -455,14 +462,24 @@ for (const viewport of [
             buttonBox.width / 2 -
             (cardBox.left + cardBox.width / 2),
         ),
+        copyCenterOffset: Math.abs(
+          copyBox.left + copyBox.width / 2 - (cardBox.left + cardBox.width / 2),
+        ),
+        copyTextAlign: getComputedStyle(copy).textAlign,
+        noticeTextAlign: getComputedStyle(notice).textAlign,
+        cardWidth: cardBox.width,
+        copyWidth: copyBox.width,
         cardHeight: cardBox.height,
       };
     });
     expect(layout.buttonBelowCopy).toBe(true);
     expect(layout.buttonCenterOffset).toBeLessThanOrEqual(1);
-    expect(layout.cardHeight).toBeGreaterThanOrEqual(
-      viewport.name === "desktop" ? 480 : 300,
-    );
+    expect(layout.copyCenterOffset).toBeLessThanOrEqual(1);
+    expect(layout.copyTextAlign).toBe("center");
+    expect(layout.noticeTextAlign).toBe("center");
+    expect(layout.cardWidth).toBeLessThanOrEqual(760);
+    expect(layout.copyWidth).toBeLessThanOrEqual(608);
+    expect(layout.cardHeight).toBeGreaterThanOrEqual(300);
   });
 }
 

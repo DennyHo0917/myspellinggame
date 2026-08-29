@@ -733,6 +733,43 @@ th {
   }
 }
 
+/* Product, learner, admin, and signed-out headers share the fixed glass bar. */
+body.product-page:not(.workspace-page) {
+  padding-top: 88px;
+}
+
+body.product-page:not(.workspace-page) .product-nav {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  padding: 10px 28px;
+  border-bottom-color: rgba(87, 137, 142, 0.16);
+  background: transparent;
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+  backdrop-filter: blur(14px) saturate(125%);
+  box-shadow: none;
+}
+
+@media (max-width: 700px) {
+  body.product-page:not(.workspace-page) {
+    padding-top: 74px;
+  }
+
+  body.product-page:not(.workspace-page) .product-nav {
+    width: 100%;
+    margin: 0;
+    padding: 8px 14px;
+  }
+}
+
+.product-shell.workspace-shell {
+  padding-top: 60px;
+}
+
 @media (max-width: 1000px) {
   .pricing-grid {
     grid-template-columns: 1fr;
@@ -930,28 +967,25 @@ body.workspace-page {
   grid-template-columns: minmax(0, 1fr);
   min-height: 100vh;
   min-height: 100dvh;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   padding-bottom: 0;
 }
 
 .workspace-shell .teacher-product-nav {
-  position: sticky;
+  position: fixed;
   z-index: 99;
   top: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
   grid-template-columns: 1fr auto auto;
   min-height: 60px;
   padding: 8px 24px;
-  border-bottom-color: rgba(220, 232, 228, 0.72);
-  background: linear-gradient(
-    90deg,
-    rgba(246, 250, 248, 0.88),
-    rgba(238, 246, 248, 0.78)
-  );
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
-  backdrop-filter: blur(18px) saturate(135%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.82),
-    0 8px 24px rgba(39, 62, 70, 0.1);
+  border-bottom-color: rgba(87, 137, 142, 0.16);
+  background: transparent;
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+  backdrop-filter: blur(14px) saturate(125%);
+  box-shadow: none;
 }
 
 .workspace-shell .product-nav-actions {
@@ -1344,7 +1378,7 @@ body.workspace-page {
     padding: 0;
   }
 
-  .workspace-shell .product-nav .lang-btn::after {
+  .workspace-shell .product-nav .language-switcher > summary.lang-btn::after {
     display: none;
   }
 
@@ -1467,23 +1501,26 @@ body.workspace-page {
 
 /* Keep the signed-out teacher entry focused while leaving the standalone pricing page unchanged. */
 .teacher-login-main {
-  width: min(1080px, 100%);
+  width: min(820px, 100%);
   gap: 1.25rem;
 }
 
 .teacher-login-main .auth-card {
   width: 100%;
-  max-width: 1000px;
-  min-height: 480px;
+  max-width: 760px;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  padding: clamp(2rem, 5vw, 4rem);
-  text-align: left;
+  align-items: center;
+  padding: clamp(2rem, 4vw, 3rem);
+  text-align: center;
 }
 
 .teacher-login-copy {
   width: 100%;
+  max-width: 38rem;
+  margin-inline: auto;
+  text-align: center;
 }
 
 .teacher-login-copy h1 {
@@ -1492,13 +1529,13 @@ body.workspace-page {
 }
 
 .teacher-login-copy h2 {
-  margin: 1.75rem 0 0.45rem;
+  margin: 1.4rem 0 0.45rem;
   font-size: clamp(1.25rem, 2.4vw, 1.65rem);
 }
 
 .teacher-login-copy p {
   margin: 0;
-  max-width: 46rem;
+  max-width: none;
 }
 
 .teacher-login-copy .notice {
@@ -1509,12 +1546,13 @@ body.workspace-page {
 .teacher-login-main .auth-card .google-sign-in {
   width: min(320px, 100%);
   min-width: 0;
-  margin: auto auto 0;
+  margin: 1.5rem auto 0;
 }
 
 .teacher-login-main .auth-card .status {
-  width: 100%;
-  margin: 1rem 0;
+  width: min(38rem, 100%);
+  margin: 1rem 0 0;
+  text-align: center;
 }
 
 .teacher-login-main .auth-card .status:empty {
@@ -1580,7 +1618,8 @@ body.assignment-page {
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  color: var(--brand-dark);
+  color: var(--brand);
+  font-size: 1rem;
 }
 
 .brand-mark {
@@ -1611,7 +1650,7 @@ body.assignment-page {
   box-shadow: none !important;
 }
 
-.product-nav .lang-btn::before {
+.product-nav .language-switcher > summary.lang-btn::before {
   content: "";
   width: 15px;
   height: 15px;
@@ -1623,7 +1662,7 @@ body.assignment-page {
     center / contain no-repeat;
 }
 
-.product-nav .lang-btn::after {
+.product-nav .language-switcher > summary.lang-btn::after {
   content: "⌄";
   color: var(--muted);
   font-size: 0.75em;

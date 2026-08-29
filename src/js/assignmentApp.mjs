@@ -92,7 +92,7 @@ function shell() {
   }
   language.append(summary, menu);
   const home = document.createElement("a");
-  home.className = "teacher-nav-link";
+  home.className = "header-home-link";
   home.href = productPagePath("", locale);
   home.textContent = copy.home;
   nav.append(brand, language, home);

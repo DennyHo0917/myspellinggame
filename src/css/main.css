@@ -1643,7 +1643,7 @@ textarea:focus-visible,
   align-items: center;
   gap: 9px;
   margin-right: auto;
-  color: var(--ink);
+  color: var(--primary);
   font-size: 1rem;
   font-weight: 800;
   text-decoration: none;
@@ -1668,6 +1668,7 @@ textarea:focus-visible,
 .top-right-nav .privacy-btn,
 .top-right-nav .sound-btn,
 .top-right-nav .lang-btn,
+.top-right-nav .header-home-link,
 .top-right-nav .teacher-nav-link {
   min-height: 34px;
   padding: 0 10px;
@@ -1926,6 +1927,39 @@ textarea:focus-visible,
   }
 }
 
+/* Keep the shared site header visible while the page scrolls. */
+body {
+  padding-top: 88px;
+}
+
+.top-right-nav {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  padding: 10px 28px;
+  border-bottom-color: rgba(87, 137, 142, 0.16);
+  background: transparent;
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+  backdrop-filter: blur(14px) saturate(125%);
+  box-shadow: none;
+}
+
+@media (max-width: 720px) {
+  body {
+    padding-top: 74px;
+  }
+
+  .top-right-nav {
+    width: 100%;
+    margin: 0;
+    padding: 8px 14px;
+  }
+}
+
 /* Final homepage polish: use the real mark, framed controls, and a visible setup card. */
 .brand-logo {
   display: block;
@@ -1939,6 +1973,7 @@ textarea:focus-visible,
 .top-right-nav .privacy-btn,
 .top-right-nav .sound-btn,
 .top-right-nav .lang-btn,
+.top-right-nav .header-home-link,
 .top-right-nav .teacher-nav-link {
   gap: 7px;
   min-height: 36px;
@@ -1957,7 +1992,7 @@ textarea:focus-visible,
   border-color: rgba(47, 111, 115, 0.22);
 }
 
-.top-right-nav .lang-btn::before,
+.top-right-nav .language-switcher > summary.lang-btn::before,
 .top-right-nav .teacher-nav-link::before {
   content: "";
   width: 15px;
@@ -1968,7 +2003,7 @@ textarea:focus-visible,
   mask: var(--header-action-icon) center / contain no-repeat;
 }
 
-.top-right-nav .lang-btn::before {
+.top-right-nav .language-switcher > summary.lang-btn::before {
   --header-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 0c2.5 2.74 3.92 6.3 4 10-.08 3.7-1.5 7.26-4 10m0-20C9.5 4.74 8.08 8.3 8 12c.08 3.7 1.5 7.26 4 10M2 12h20' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
@@ -1976,7 +2011,7 @@ textarea:focus-visible,
   --header-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z' fill='black'/%3E%3C/svg%3E");
 }
 
-.top-right-nav .lang-btn::after {
+.top-right-nav .language-switcher > summary.lang-btn::after {
   content: "⌄";
   color: var(--muted);
   font-size: 0.75em;
@@ -1984,7 +2019,8 @@ textarea:focus-visible,
 
 .top-right-nav .privacy-btn:hover,
 .top-right-nav .sound-btn:hover,
-.top-right-nav .lang-btn:hover {
+.top-right-nav .lang-btn:hover,
+.top-right-nav .header-home-link:hover {
   background: rgba(255, 255, 255, 0.88);
 }
 
@@ -1992,11 +2028,20 @@ textarea:focus-visible,
   background: #dceee8;
 }
 
-.top-right-nav .lang-btn {
+.top-right-nav .lang-btn,
+.top-right-nav .header-home-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
+}
+
+.top-right-nav .header-home-link {
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .start-screen-content {
@@ -2020,6 +2065,7 @@ textarea:focus-visible,
   .top-right-nav .privacy-btn,
   .top-right-nav .sound-btn,
   .top-right-nav .lang-btn,
+  .top-right-nav .header-home-link,
   .top-right-nav .teacher-nav-link {
     min-height: 34px;
     padding: 0 8px;

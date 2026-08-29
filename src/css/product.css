@@ -1141,6 +1141,12 @@ th {
   color: var(--red);
 }
 
+.workspace-inline-loading {
+  width: auto;
+  margin: 0;
+  box-shadow: none;
+}
+
 .workspace-layout section[id] {
   scroll-margin-top: 14px;
 }

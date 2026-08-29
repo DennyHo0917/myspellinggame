@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { PLAN_LIMITS } from "../src/worker/domain.ts";
 
 const teacher = {
   user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
@@ -14,7 +15,7 @@ function account(plan, billingInterval = null) {
   };
 }
 
-async function mockAssignments(page, plan = "pro") {
+async function mockAssignments(page, plan = "teacher") {
   await page.route("**/api/assignments", (route) =>
     route.fulfill({
       contentType: "application/json",
@@ -23,11 +24,9 @@ async function mockAssignments(page, plan = "pro") {
         usage: {
           activeAssignments: 0,
           monthlyAttempts: 0,
-          studentNicknames: 0,
-          limits: {
-            activeAssignments: plan === "pro" ? 20 : 1,
-            monthlyAttempts: plan === "pro" ? null : 8,
-          },
+          savedLists: 0,
+          learnerProfiles: 0,
+          limits: PLAN_LIMITS[plan],
         },
       }),
     }),
@@ -81,7 +80,7 @@ test("ordinary teacher routes do not override the stored locale", async ({
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
 });
 
-test("Checkout success waits for Free to become Pro and records once", async ({
+test("Checkout success waits for Free to become Teacher and records once", async ({
   page,
 }) => {
   await page.addInitScript(() =>
@@ -94,7 +93,7 @@ test("Checkout success waits for Free to become Pro and records once", async ({
     return route.fulfill({
       contentType: "application/json",
       body: JSON.stringify(
-        calls === 1 ? account("free") : account("pro", "year"),
+        calls === 1 ? account("free") : account("teacher", "year"),
       ),
     });
   });
@@ -183,7 +182,7 @@ test("Teacher Checkout success waits for Teacher activation and records the Teac
   ).toEqual({ billing_interval: "month", value: 9.99, currency: "USD" });
 });
 
-test("Checkout success handles an account that is already Pro", async ({
+test("Checkout success handles an account that is already Teacher", async ({
   page,
 }) => {
   await page.addInitScript(() =>
@@ -194,7 +193,7 @@ test("Checkout success handles an account that is already Pro", async ({
     calls += 1;
     return route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify(account("pro", "month")),
+      body: JSON.stringify(account("teacher", "month")),
     });
   });
   await mockAssignments(page);
@@ -218,7 +217,7 @@ test("a historical trialing subscription stays usable without trial UI", async (
     route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
-        ...account("pro", "year"),
+        ...account("teacher", "year"),
         subscriptionStatus: "trialing",
       }),
     }),
@@ -227,10 +226,10 @@ test("a historical trialing subscription stays usable without trial UI", async (
 
   await page.goto("/teacher?lang=en&checkout=success");
 
-  await expect(page.getByText(/paid plan is active/)).toBeVisible();
+  await expect(page.getByText("Teacher Plan is active.")).toBeVisible();
   await expect(page.locator("body")).not.toContainText(/trial/i);
   await expect(
-    page.getByRole("button", { name: "Manage billing" }),
+    page.locator("#overview").getByRole("button", { name: "Manage billing" }),
   ).toBeVisible();
   expect(await conversionEvents(page)).toEqual([]);
 });
@@ -241,7 +240,7 @@ test("an arbitrary Checkout success URL does not record a purchase", async ({
   await page.route("**/api/me", (route) =>
     route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify(account("pro", "month")),
+      body: JSON.stringify(account("teacher", "month")),
     }),
   );
   await mockAssignments(page);
@@ -257,7 +256,7 @@ test("Checkout success restores supported locales and cleans its URL", async ({
   await page.route("**/api/me", (route) =>
     route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify(account("pro", "year")),
+      body: JSON.stringify(account("teacher", "year")),
     }),
   );
   await mockAssignments(page);
@@ -282,7 +281,7 @@ test("Checkout success prefers its pending locale and preserves unrelated URL st
   await page.route("**/api/me", (route) =>
     route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify(account("pro", "year")),
+      body: JSON.stringify(account("teacher", "year")),
     }),
   );
   await mockAssignments(page);
@@ -307,7 +306,7 @@ test("an invalid pending Checkout locale cannot override the URL locale", async 
   await page.route("**/api/me", (route) =>
     route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify(account("pro", "month")),
+      body: JSON.stringify(account("teacher", "month")),
     }),
   );
   await mockAssignments(page);
@@ -331,7 +330,7 @@ test("Checkout success times out safely and can be checked again", async ({
     return route.fulfill({
       contentType: "application/json",
       body: JSON.stringify(
-        activated ? account("pro", "month") : account("free"),
+        activated ? account("teacher", "month") : account("free"),
       ),
     });
   });
@@ -370,7 +369,7 @@ test("the teacher sends its locale when opening Billing Portal", async ({
   await page.route("**/api/me", (route) =>
     route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify(account("pro", "month")),
+      body: JSON.stringify(account("teacher", "month")),
     }),
   );
   await mockAssignments(page);
@@ -413,7 +412,7 @@ test("Checkout activation recovers from a temporary network error", async ({
     return route.fulfill({
       contentType: "application/json",
       body: JSON.stringify(
-        calls === 1 ? account("free") : account("pro", "month"),
+        calls === 1 ? account("free") : account("teacher", "month"),
       ),
     });
   });

@@ -1018,6 +1018,92 @@ async function learnerMastery(db: D1Database, learner: LearnerRow, plan: Plan) {
   };
 }
 
+async function workspaceProgress(
+  db: D1Database,
+  learners: LearnerRow[],
+  plan: Plan,
+) {
+  const result = new Map<
+    string,
+    {
+      mastery: { mastered: number; learning: number; needsReview: number };
+      missedWords: Array<{ word: string; misses: number }>;
+    }
+  >();
+  for (const learner of learners)
+    result.set(learner.id, {
+      mastery: { mastered: 0, learning: 0, needsReview: 0 },
+      missedWords: [],
+    });
+  if (!learners.length) return result;
+  const placeholders = learners.map(() => "?").join(",");
+  const rows = await db
+    .prepare(
+      `SELECT at.learner_id, at.completed_at, aw.word, aw.position, ai.is_correct
+       FROM attempts at
+       JOIN assignments a ON a.id = at.assignment_id
+       JOIN attempt_items ai ON ai.attempt_id = at.id
+       JOIN assignment_words aw ON aw.id = ai.word_id
+       WHERE at.learner_id IN (${placeholders}) AND a.owner_user_id = ?
+         AND at.status = 'completed' AND at.completed_at >= ?
+       ORDER BY at.learner_id, at.completed_at, at.rowid, aw.position`,
+    )
+    .bind(
+      ...learners.map((learner) => learner.id),
+      learners[0].owner_user_id,
+      historyCutoff(plan),
+    )
+    .all<{
+      learner_id: string;
+      completed_at: string;
+      word: string;
+      position: number;
+      is_correct: number;
+    }>();
+  const grouped = new Map<
+    string,
+    Map<
+      string,
+      {
+        word: string;
+        results: Array<{ correct: boolean; practicedAt: string }>;
+        misses: number;
+      }
+    >
+  >();
+  for (const row of rows.results) {
+    const words = grouped.get(row.learner_id) ?? new Map();
+    const key = normalizeWord(row.word);
+    const current = words.get(key) ?? {
+      word: row.word,
+      results: [],
+      misses: 0,
+    };
+    const correct = row.is_correct === 1;
+    current.word = row.word;
+    current.results.push({ correct, practicedAt: row.completed_at });
+    if (!correct) current.misses += 1;
+    words.set(key, current);
+    grouped.set(row.learner_id, words);
+  }
+  for (const learner of learners) {
+    const summary = result.get(learner.id)!;
+    for (const word of grouped.get(learner.id)?.values() ?? []) {
+      const status = masteryEvidence(word.results).status;
+      if (status === "mastered") summary.mastery.mastered += 1;
+      else if (status === "needs_review") summary.mastery.needsReview += 1;
+      else summary.mastery.learning += 1;
+      if (word.misses)
+        summary.missedWords.push({ word: word.word, misses: word.misses });
+    }
+    summary.missedWords.sort(
+      (a, b) => b.misses - a.misses || a.word.localeCompare(b.word),
+    );
+    summary.missedWords = summary.missedWords.slice(0, 20);
+  }
+  return result;
+}
+
 function requireSmartReview(plan: Plan) {
   if (!PLAN_LIMITS[plan].smartReview)
     throw new HttpError(
@@ -1962,21 +2048,46 @@ export async function handleRequest(
     if (method === "GET") {
       const plan = await getPlan(env, user.id);
       const learners = await listLearners(env.DB, user.id, plan);
-      const learnersWithReviewCounts =
-        request.headers.get("x-workspace-review-counts") === "1"
-          ? await Promise.all(
-              learners.map(async (learner) => ({
-                ...learner,
-                needs_review_count: (
-                  await learnerMastery(env.DB, learner, plan)
-                ).summary.needsReview,
-              })),
-            )
-          : learners;
+      const includeProgress =
+        request.headers.get("x-workspace-review-counts") === "1";
+      const progress = includeProgress
+        ? await workspaceProgress(env.DB, learners, plan)
+        : null;
+      const learnersWithProgress = includeProgress
+        ? learners.map((learner) => {
+            const current = progress!.get(learner.id)!;
+            return {
+              ...learner,
+              needs_review_count: current.mastery.needsReview,
+              mastery: current.mastery,
+              missed_words: current.missedWords,
+            };
+          })
+        : learners;
       return json({
         assignments: await listAssignments(env.DB, user.id, plan),
         savedLists: await listSavedLists(env.DB, user.id),
-        learners: learnersWithReviewCounts,
+        learners: learnersWithProgress,
+        missedWords: includeProgress
+          ? [...progress!.values()]
+              .flatMap((value) => value.missedWords)
+              .reduce(
+                (all, item) => {
+                  const existing = all.find(
+                    (entry) =>
+                      normalizeWord(entry.word) === normalizeWord(item.word),
+                  );
+                  if (existing) existing.misses += item.misses;
+                  else all.push({ ...item });
+                  return all;
+                },
+                [] as Array<{ word: string; misses: number }>,
+              )
+              .sort(
+                (a, b) => b.misses - a.misses || a.word.localeCompare(b.word),
+              )
+              .slice(0, 20)
+          : undefined,
         usage: await usage(env.DB, user.id, plan),
       });
     }

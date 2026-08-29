@@ -22,6 +22,13 @@ const PURCHASE_RECORDED_KEY = "teacherPurchaseRecorded";
 const AUTH_PENDING_KEY = "teacherOAuthPending";
 const ACTIVATION_POLL_ATTEMPTS = 10;
 let assignmentResultsViewed = false;
+let workspaceState = null;
+const workspaceCache = {
+  data: null,
+  promise: null,
+  reviewCounts: false,
+};
+let workspaceNavigationBound = false;
 document.documentElement.lang = locale;
 document.title = copy.dashboardTitle;
 
@@ -299,7 +306,113 @@ function workspaceRoute(pathname = location.pathname) {
   );
 }
 
+function workspacePath(section) {
+  return (
+    {
+      overview: "/teacher",
+      assignments: "/teacher/assignments",
+      learners: "/teacher/learners",
+      savedLists: "/teacher/saved-lists",
+      progress: "/teacher/progress",
+    }[section] || "/teacher"
+  );
+}
+
+function updateWorkspaceActive(section = workspaceRoute()) {
+  const active = workspaceSection(section);
+  root
+    .querySelectorAll(".workspace-sidebar-link[data-section]")
+    .forEach((link) => {
+      if (link.dataset.section === active)
+        link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    });
+}
+
+function invalidateWorkspaceCache() {
+  workspaceCache.data = null;
+  workspaceCache.reviewCounts = false;
+}
+
+async function refreshWorkspace(me) {
+  invalidateWorkspaceCache();
+  return renderDashboard(me, { force: true });
+}
+
+async function loadWorkspaceData(section, { force = false } = {}) {
+  const needsReviewCounts = section === "overview" || section === "progress";
+  if (
+    !force &&
+    workspaceCache.data &&
+    (!needsReviewCounts || workspaceCache.reviewCounts)
+  )
+    return workspaceCache.data;
+  if (!force && workspaceCache.promise) {
+    await workspaceCache.promise;
+    return loadWorkspaceData(section);
+  }
+  workspaceCache.promise = api("/api/assignments", {
+    headers: needsReviewCounts
+      ? { "x-workspace-review-counts": "1" }
+      : undefined,
+  })
+    .then((data) => {
+      workspaceCache.data = data;
+      workspaceCache.reviewCounts = needsReviewCounts;
+      return data;
+    })
+    .finally(() => {
+      workspaceCache.promise = null;
+    });
+  return workspaceCache.promise;
+}
+
+function revalidateWorkspaceData(me, section) {
+  if (
+    !["overview", "progress"].includes(section) ||
+    workspaceCache.reviewCounts
+  )
+    return;
+  loadWorkspaceData(section)
+    .then(() => {
+      if (workspaceRoute() === section) renderDashboard(me);
+    })
+    .catch(() => null);
+}
+
+async function navigateWorkspace(section, { replace = false } = {}) {
+  const path = workspacePath(section);
+  const target = `${path}?lang=${encodeURIComponent(locale)}`;
+  if (location.pathname !== path || location.search !== `?lang=${locale}`) {
+    history[replace ? "replaceState" : "pushState"]({}, "", target);
+  }
+  updateWorkspaceActive(section);
+  if (workspaceState?.me) await renderDashboard(workspaceState.me);
+}
+
+function bindWorkspaceNavigation() {
+  if (workspaceNavigationBound) return;
+  workspaceNavigationBound = true;
+  window.addEventListener("popstate", () => {
+    if (!workspaceState?.me) return;
+    if (workspaceRoute()) renderDashboard(workspaceState.me);
+    else renderTeacherRoute(workspaceState.me);
+  });
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted && workspaceState?.me && workspaceRoute())
+      refreshWorkspace(workspaceState.me);
+  });
+}
+
 function shell(me = null, activeSection = "overview") {
+  if (me) {
+    const existing = root.querySelector(".workspace-shell");
+    if (existing) {
+      const main = existing.querySelector(".teacher-main");
+      updateWorkspaceActive(workspaceRoute() || activeSection);
+      return main;
+    }
+  }
   root.replaceChildren();
   const wrapper = document.createElement("div");
   wrapper.className = `product-shell${me ? " workspace-shell" : ""}`;
@@ -369,13 +482,11 @@ function shell(me = null, activeSection = "overview") {
         event.preventDefault();
         openPortal();
       });
-    link.addEventListener("click", () => {
+    link.addEventListener("click", (event) => {
       closeWorkspaceDrawer();
-      if (key === "billing" || href) return;
-      menu
-        .querySelector('[aria-current="page"]')
-        ?.removeAttribute("aria-current");
-      link.setAttribute("aria-current", "page");
+      if (key === "billing") return;
+      event.preventDefault();
+      navigateWorkspace(key);
     });
     menu.append(link);
   }
@@ -727,7 +838,7 @@ function renderSavedLists(me, savedLists) {
           exampleSentences: form.querySelector("#saved-list-sentences").value,
         }),
       });
-      await renderDashboard(me);
+      await refreshWorkspace(me);
     } catch (error) {
       button.disabled = false;
       showSectionError(
@@ -812,7 +923,7 @@ function renderSavedLists(me, savedLists) {
             exampleSentences: editedSentences,
           }),
         });
-        await renderDashboard(me);
+        await refreshWorkspace(me);
       } catch (error) {
         showSectionError(section, error);
       }
@@ -833,7 +944,7 @@ function renderSavedLists(me, savedLists) {
             ),
           }),
         });
-        await renderDashboard(me);
+        await refreshWorkspace(me);
       } catch (error) {
         showSectionError(
           section,
@@ -849,7 +960,7 @@ function renderSavedLists(me, savedLists) {
     remove.addEventListener("click", async () => {
       if (!confirm(copy.deleteListConfirm)) return;
       await api(`/api/saved-lists/${savedList.id}`, { method: "DELETE" });
-      await renderDashboard(me);
+      await refreshWorkspace(me);
     });
     actions.append(use, edit, duplicate, remove);
     row.append(body, actions);
@@ -938,7 +1049,7 @@ function renderLearners(me, learners) {
           name: form.querySelector("#learner-name").value,
         }),
       });
-      await renderDashboard(me);
+      await refreshWorkspace(me);
     } catch (error) {
       button.disabled = false;
       showSectionError(
@@ -1018,7 +1129,7 @@ function renderLearners(me, learners) {
           method: "PATCH",
           body: JSON.stringify({ name }),
         });
-        await renderDashboard(me);
+        await refreshWorkspace(me);
       } catch (error) {
         showSectionError(section, error);
       }
@@ -1034,7 +1145,7 @@ function renderLearners(me, learners) {
         method: "PATCH",
         body: JSON.stringify({ archived: !learner.archived }),
       });
-      await renderDashboard(me);
+      await refreshWorkspace(me);
     });
     actions.append(open);
     if (isTeacherPlan(me) && !learner.archived && learner.join_pin)
@@ -1116,7 +1227,12 @@ function renderAssignmentsCard(
 
 function renderProgressCard(
   learners,
-  { recentOnly = false, headingText = null, id = "progress" } = {},
+  {
+    recentOnly = false,
+    masteryOnly = false,
+    headingText = null,
+    id = "progress",
+  } = {},
 ) {
   const card = document.createElement("section");
   card.className = "product-card";
@@ -1152,16 +1268,34 @@ function renderProgressCard(
     title.textContent = learner.name;
     const summary = document.createElement("p");
     summary.className = "assignment-meta";
-    summary.textContent = m("learnerSummary", {
-      count: learner.completed_attempts,
-      accuracy: learner.accuracy,
-    });
-    const review = document.createElement("p");
-    review.className = "assignment-meta";
-    review.textContent = m("needsReviewWords", {
-      count: learner.needs_review_count || 0,
-    });
-    body.append(title, summary, review);
+    if (masteryOnly) {
+      summary.className = "assignment-meta mastery-summary";
+      const mastery = learner.mastery || {};
+      for (const [label, value] of [
+        [copy.mastered, mastery.mastered || 0],
+        [copy.learning, mastery.learning || 0],
+        [copy.needsReview, mastery.needsReview || 0],
+      ]) {
+        const item = document.createElement("span");
+        item.textContent = `${label} ${value}`;
+        summary.append(item);
+      }
+    } else {
+      summary.textContent = m("learnerSummary", {
+        count: learner.completed_attempts,
+        accuracy: learner.accuracy,
+      });
+    }
+    if (!masteryOnly) {
+      const review = document.createElement("p");
+      review.className = "assignment-meta";
+      review.textContent = m("needsReviewWords", {
+        count: learner.needs_review_count || 0,
+      });
+      body.append(title, summary, review);
+    } else {
+      body.append(title, summary);
+    }
     const open = document.createElement("a");
     open.className = "button-link button-secondary";
     open.href = `/teacher/learners/${learner.id}?lang=${encodeURIComponent(locale)}`;
@@ -1274,8 +1408,7 @@ function progressLearnerRows(learners, { reviewActions = false } = {}) {
   return list;
 }
 
-async function renderProgressCenter(me, data) {
-  const main = shell(me, "progress");
+async function renderProgressCenter(me, data, main = shell(me, "progress")) {
   const learners = data.learners || [];
   const completed = learners.reduce(
     (sum, learner) => sum + Number(learner.completed_attempts || 0),
@@ -1331,7 +1464,18 @@ async function renderProgressCenter(me, data) {
   const missedTitle = document.createElement("h2");
   missedTitle.textContent = copy.commonMisses;
   missed.append(missedTitle);
-  if (isTeacherPlan(me)) {
+  const missedWords = Array.isArray(data.missedWords) ? data.missedWords : null;
+  if (missedWords?.length) {
+    const list = document.createElement("div");
+    list.className = "word-list";
+    for (const item of missedWords) {
+      const chip = document.createElement("span");
+      chip.className = "word-chip";
+      chip.textContent = `${item.word} · ${item.misses}`;
+      list.append(chip);
+    }
+    missed.append(list);
+  } else if (missedWords === null && isTeacherPlan(me)) {
     const details = await Promise.all(
       (data.assignments || [])
         .slice(0, 5)
@@ -1360,12 +1504,10 @@ async function renderProgressCenter(me, data) {
       empty.textContent = copy.noReviewWords;
       missed.append(empty);
     }
-  } else if (learners.length) {
-    missed.append(progressLearnerRows(learners));
   } else {
     const empty = document.createElement("p");
     empty.className = "empty-state";
-    empty.textContent = copy.noRecentProgress;
+    empty.textContent = copy.noReviewWords;
     missed.append(empty);
   }
   overview.append(missed);
@@ -1374,6 +1516,7 @@ async function renderProgressCenter(me, data) {
   mastery.append(
     renderProgressCard(learners, {
       headingText: `${copy.mastery} · ${workspaceLearnerLabel(me)}`,
+      masteryOnly: true,
       id: "progress-mastery",
     }),
   );
@@ -1413,37 +1556,49 @@ async function renderProgressCenter(me, data) {
   main.append(header, overview, mastery, smartReview);
 }
 
-async function renderDashboard(me) {
+async function renderDashboard(me, { force = false } = {}) {
   const params = new URLSearchParams(location.search);
   const section = workspaceSection(
     workspaceRoute() ||
       params.get("section") ||
       location.hash.replace(/^#/, ""),
   );
-  const data = await api("/api/assignments", {
-    headers:
-      section === "overview" || section === "progress"
-        ? { "x-workspace-review-counts": "1" }
-        : undefined,
-  });
+  const main = shell(me, section);
+  let data = workspaceCache.data;
+  if (!data || force) {
+    let loading = main.querySelector(".workspace-loading");
+    if (!loading) {
+      loading = document.createElement("p");
+      loading.className = "workspace-loading workspace-inline-loading";
+      loading.setAttribute("role", "status");
+      loading.textContent = copy.loading;
+      main.append(loading);
+    }
+    try {
+      data = await loadWorkspaceData(section, { force });
+    } catch (error) {
+      if (workspaceRoute() !== section) return;
+      loading.className = "workspace-loading workspace-inline-loading error";
+      loading.textContent = error.message;
+      return;
+    }
+    if (workspaceRoute() !== section) return;
+    main.replaceChildren();
+  }
+  if (data && !force) main.replaceChildren();
   if (section === "savedLists") {
-    const main = shell(me, "savedLists");
     main.append(renderSavedLists(me, data.savedLists || []));
     return;
   }
   if (section === "learners") {
-    const main = shell(me, "learners");
     main.append(renderLearners(me, data.learners || []));
     return;
   }
   if (section === "progress") {
-    await renderProgressCenter(me, data);
+    await renderProgressCenter(me, data, main);
+    revalidateWorkspaceData(me, section);
     return;
   }
-  const main = shell(
-    me,
-    section === "assignments" ? "assignments" : "overview",
-  );
   if (section === "assignments") {
     main.append(renderAssignmentsCard(me, data.assignments || []));
     return;
@@ -1503,6 +1658,7 @@ async function renderDashboard(me) {
     }),
     renderProgressCard(data.learners || [], { recentOnly: true }),
   );
+  revalidateWorkspaceData(me, section);
 }
 
 async function openPortal() {
@@ -2380,6 +2536,8 @@ function clearCheckoutParam() {
 }
 
 async function renderTeacherRoute(me) {
+  workspaceState = { me };
+  bindWorkspaceNavigation();
   const detail = location.pathname.match(
     /^\/teacher\/assignments\/([0-9a-f-]{36})$/i,
   );
@@ -2469,6 +2627,8 @@ async function init() {
       sessionStorage.removeItem(AUTH_PENDING_KEY);
     }
   } catch {}
+  workspaceState = { me };
+  bindWorkspaceNavigation();
   let pendingInterval = null;
   let pendingPlan = "teacher";
   let pendingCheckoutError = null;

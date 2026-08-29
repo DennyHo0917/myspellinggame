@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { PLAN_LIMITS } from "../src/worker/domain.ts";
 
 const publicId = "abcdefghijklmnopqrstuvwx";
 const words = [
@@ -290,12 +291,7 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
         },
       ],
       usage: {
-        limits: {
-          activeAssignments: 5,
-          monthlyAttempts: null,
-          savedLists: null,
-          learnerProfiles: 40,
-        },
+        limits: PLAN_LIMITS.teacher,
         activeAssignments: 1,
         monthlyAttempts: 0,
         savedLists: 0,
@@ -442,6 +438,7 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
         },
       ],
       savedLists: [],
+      missedWords: [{ word: "because", misses: 2 }],
       learners: [
         {
           id: learnerId,
@@ -450,15 +447,11 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
           join_pin: "1842",
           completed_attempts: 0,
           accuracy: 0,
+          mastery: { mastered: 3, learning: 1, needsReview: 1 },
         },
       ],
       usage: {
-        limits: {
-          activeAssignments: 1,
-          monthlyAttempts: 8,
-          savedLists: 1,
-          learnerProfiles: 1,
-        },
+        limits: PLAN_LIMITS.free,
         activeAssignments: 1,
         monthlyAttempts: 0,
         savedLists: 0,
@@ -496,6 +489,16 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
     await expect(page.getByText(/Class URL:/)).toHaveCount(0);
     await expect(page.getByText(/Student PIN:/)).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Copy PIN" })).toHaveCount(0);
+    await page
+      .locator('.workspace-sidebar-link[data-section="progress"]')
+      .click();
+    await expect(page.getByText("because · 2", { exact: true })).toBeVisible();
+    await page.getByRole("tab", { name: "Mastery" }).click();
+    await expect(page.getByText("Mastered 3", { exact: true })).toBeVisible();
+    await expect(page.getByText("Learning 1", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText("Needs review 1", { exact: true }),
+    ).toBeVisible();
   };
 
   await expectNeutralWorkspace();
@@ -1270,8 +1273,9 @@ test("teacher creates an assignment with an example sentence and the student pla
           usage: {
             activeAssignments: 0,
             monthlyAttempts: 0,
-            studentNicknames: 0,
-            limits: { activeAssignments: 1, monthlyAttempts: 8 },
+            savedLists: 1,
+            learnerProfiles: 0,
+            limits: PLAN_LIMITS.free,
           },
         }),
       });
@@ -1717,8 +1721,9 @@ test("failed automatic Checkout stays retryable on the teacher page", async ({
         usage: {
           activeAssignments: 0,
           monthlyAttempts: 0,
-          studentNicknames: 0,
-          limits: { activeAssignments: 1, monthlyAttempts: 8 },
+          savedLists: 0,
+          learnerProfiles: 0,
+          limits: PLAN_LIMITS.free,
         },
       }),
     }),
@@ -1921,12 +1926,7 @@ test("Free workspace warns before the submission limit and paid plans do not", a
       savedLists: [],
       learners: [],
       usage: {
-        limits: {
-          activeAssignments: plan === "free" ? 1 : 5,
-          monthlyAttempts: plan === "free" ? 8 : null,
-          savedLists: plan === "free" ? 1 : null,
-          learnerProfiles: plan === "free" ? 1 : 40,
-        },
+        limits: PLAN_LIMITS[plan],
         activeAssignments: 0,
         monthlyAttempts,
         savedLists: 0,
@@ -2071,12 +2071,7 @@ test("workspace P0 flow keeps empty smart review actions retryable", async ({
     json(route, {
       user: { id: "teacher-a", name: "Account A", email: "a@example.test" },
       plan: "teacher",
-      limits: {
-        activeAssignments: 20,
-        monthlyAttempts: null,
-        savedLists: null,
-        learnerProfiles: 150,
-      },
+      limits: PLAN_LIMITS.teacher,
     }),
   );
   await page.route("**/api/assignments", (route) =>
@@ -2085,12 +2080,7 @@ test("workspace P0 flow keeps empty smart review actions retryable", async ({
       savedLists,
       learners,
       usage: {
-        limits: {
-          activeAssignments: 20,
-          monthlyAttempts: null,
-          savedLists: null,
-          learnerProfiles: 150,
-        },
+        limits: PLAN_LIMITS.teacher,
         activeAssignments: 0,
         monthlyAttempts: 0,
         savedLists: savedLists.length,
@@ -2241,7 +2231,7 @@ test("Teacher creates today's review assignment from learner detail", async ({
     json(route, {
       user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
       plan: "teacher",
-      limits: { activeAssignments: 20, monthlyAttempts: null },
+      limits: PLAN_LIMITS.teacher,
     }),
   );
   await page.route(`**/api/learners/${learnerId}`, (route) =>
@@ -2336,14 +2326,10 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
     return json(route, {
       assignments: [],
       savedLists: [],
+      missedWords: [{ word: "because", misses: 2 }],
       learners: children,
       usage: {
-        limits: {
-          activeAssignments: 3,
-          monthlyAttempts: null,
-          savedLists: null,
-          learnerProfiles: 5,
-        },
+        limits: PLAN_LIMITS.parent,
         activeAssignments: 0,
         monthlyAttempts: 0,
         savedLists: 0,
@@ -2361,6 +2347,7 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
       join_pin: String(1842 + children.length),
       completed_attempts: 0,
       accuracy: 0,
+      mastery: { mastered: 2, learning: 1, needsReview: 1 },
     };
     children = [...children, child];
     return json(route, child, 201);
@@ -2456,7 +2443,11 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
   await page
     .locator('.workspace-sidebar-link[data-section="progress"]')
     .click();
-  const alice = page.locator("article", { hasText: "Alice" });
+  await expect(page.getByText("because · 2", { exact: true })).toBeVisible();
+  await page.getByRole("tab", { name: "Mastery" }).click();
+  const alice = page.locator("#progress-mastery article", {
+    hasText: "Alice",
+  });
   await alice.getByRole("link", { name: "View progress" }).click();
   await expect(page.getByText("Progress from the last 365 days")).toBeVisible();
   await expect(
@@ -2485,14 +2476,11 @@ test("Free assignment progress hides class-wide missed-word statistics", async (
       body: JSON.stringify({
         user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
         plan: "free",
-        limits: {
-          activeAssignments: 1,
-          monthlyAttempts: 8,
-          studentNicknames: 30,
-        },
+        limits: PLAN_LIMITS.free,
         activeAssignments: 1,
         monthlyAttempts: 1,
-        studentNicknames: 1,
+        savedLists: 0,
+        learnerProfiles: 1,
       }),
     }),
   );
@@ -2587,11 +2575,7 @@ test("free assignment and learner previews avoid zero-value urgency", async ({
     json(route, {
       user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
       plan: "free",
-      limits: {
-        activeAssignments: 1,
-        monthlyAttempts: 8,
-        learnerProfiles: 1,
-      },
+      limits: PLAN_LIMITS.free,
     }),
   );
   await page.route(`**/api/assignments/${assignmentId}`, (route) =>
@@ -2665,14 +2649,11 @@ test("deleting a result refreshes teacher summaries and reports failures", async
       body: JSON.stringify({
         user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
         plan: "teacher",
-        limits: {
-          activeAssignments: 20,
-          monthlyAttempts: null,
-          studentNicknames: 150,
-        },
+        limits: PLAN_LIMITS.teacher,
         activeAssignments: 1,
         monthlyAttempts: 1,
-        studentNicknames: 1,
+        savedLists: 0,
+        learnerProfiles: 1,
       }),
     }),
   );
@@ -2787,14 +2768,9 @@ async function mockWorkspaceShell(page, plan, overrides = {}) {
         assignments: overrides.assignments || [],
         savedLists: overrides.savedLists || [],
         learners: overrides.learners || [],
+        missedWords: overrides.missedWords || [],
         usage: {
-          limits: {
-            activeAssignments: plan === "free" ? 1 : 20,
-            monthlyAttempts: plan === "free" ? 8 : null,
-            savedLists: plan === "free" ? 1 : null,
-            learnerProfiles:
-              plan === "parent" ? 5 : plan === "teacher" ? 150 : 1,
-          },
+          limits: PLAN_LIMITS[plan],
           activeAssignments: overrides.activeAssignments || 0,
           monthlyAttempts: overrides.monthlyAttempts || 0,
           savedLists: (overrides.savedLists || []).length,
@@ -2808,7 +2784,7 @@ async function mockWorkspaceShell(page, plan, overrides = {}) {
 for (const [plan, learnerLabel, billingLabel, usageLabel] of [
   ["free", "Learners", "View Plans", "0 of 1 learner profiles"],
   ["parent", "Children", "Manage billing", "0 of 5 child profiles"],
-  ["teacher", "Students", "Manage billing", "0 of 150 student profiles"],
+  ["teacher", "Students", "Manage billing", "0 of 40 student profiles"],
 ]) {
   test(`${plan} workspace sidebar uses the plan-specific labels`, async ({
     page,
@@ -2918,6 +2894,7 @@ test("workspace overview stays lightweight and links to full management views", 
       accuracy: 80,
       last_practiced_at: "2026-08-28T10:00:00.000Z",
       needs_review_count: 3,
+      mastery: { mastered: 4, learning: 2, needsReview: 1 },
     },
     {
       id: "22222222-2222-4222-8222-222222222222",
@@ -2927,9 +2904,17 @@ test("workspace overview stays lightweight and links to full management views", 
       accuracy: 0,
       last_practiced_at: null,
       needs_review_count: 2,
+      mastery: { mastered: 0, learning: 0, needsReview: 0 },
     },
   ];
-  await mockWorkspaceShell(page, "teacher", { assignments, learners });
+  await mockWorkspaceShell(page, "teacher", {
+    assignments,
+    learners,
+    missedWords: [
+      { word: "because", misses: 5 },
+      { word: "friend", misses: 3 },
+    ],
+  });
   await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
 
   await expect(
@@ -2957,8 +2942,12 @@ test("workspace overview stays lightweight and links to full management views", 
   await expect(page.locator("#saved-list-title")).toBeVisible();
   await page.locator('[data-section="progress"]').click();
   await expect(page).toHaveURL(/\/teacher\/progress\?lang=en$/);
-  await expect(page.getByRole("heading", { name: "Alice" })).toBeVisible();
+  await expect(page.getByText("because · 5", { exact: true })).toBeVisible();
+  await expect(page.getByText("friend · 3", { exact: true })).toBeVisible();
   await page.getByRole("tab", { name: "Mastery" }).click();
+  await expect(page.getByText("Mastered 4", { exact: true })).toBeVisible();
+  await expect(page.getByText("Learning 2", { exact: true })).toBeVisible();
+  await expect(page.getByText("Needs review 1", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Bob" })).toBeVisible();
 
   for (const [path, section] of [
@@ -2974,6 +2963,105 @@ test("workspace overview stays lightweight and links to full management views", 
       page.locator(`.workspace-sidebar-link[data-section="${section}"]`),
     ).toHaveAttribute("aria-current", "page");
   }
+});
+
+test("workspace sidebar uses cached client navigation without reloading the shell", async ({
+  page,
+}) => {
+  let meCalls = 0;
+  let assignmentCalls = 0;
+  await page.route("**/api/me", (route) => {
+    meCalls += 1;
+    return route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: {
+          id: "teacher-a",
+          name: "Teacher A",
+          email: "a@example.test",
+        },
+        plan: "teacher",
+        classPublicId: "abcdefghijklmnopqrstuvwx",
+      }),
+    });
+  });
+  await page.route("**/api/assignments", (route) => {
+    assignmentCalls += 1;
+    return route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        assignments: [],
+        savedLists: [],
+        learners: [],
+        missedWords: [],
+        usage: {
+          limits: PLAN_LIMITS.teacher,
+          activeAssignments: 0,
+          monthlyAttempts: 0,
+          savedLists: 0,
+          learnerProfiles: 0,
+        },
+      }),
+    });
+  });
+
+  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".workspace-shell")).toBeVisible();
+  const navigationEntries = await page.evaluate(
+    () => performance.getEntriesByType("navigation").length,
+  );
+  await page.evaluate(() => {
+    window.workspaceShellMarker = document.querySelector(".workspace-shell");
+  });
+  const shell = page.locator(".workspace-shell");
+  const sections = [
+    ["assignments", "/teacher/assignments", "#assignments"],
+    ["learners", "/teacher/learners", "#learners"],
+    ["savedLists", "/teacher/saved-lists", "#saved-lists"],
+    ["progress", "/teacher/progress", "#progress-panel-overview"],
+    ["overview", "/teacher", "#overview"],
+  ];
+  for (const [section, path, selector] of sections) {
+    await shell.locator(`[data-section="${section}"]`).click();
+    await expect(page).toHaveURL(new RegExp(`${path}\\?lang=en$`));
+    await expect(shell.locator(`[data-section="${section}"]`)).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await expect(page.locator(selector)).toBeVisible();
+    expect(
+      await page.evaluate(
+        () =>
+          window.workspaceShellMarker ===
+          document.querySelector(".workspace-shell"),
+      ),
+    ).toBe(true);
+    await expect(page.locator("#product-app > .workspace-loading")).toHaveCount(
+      0,
+    );
+    expect(
+      await page.evaluate(
+        () => performance.getEntriesByType("navigation").length,
+      ),
+    ).toBe(navigationEntries);
+  }
+  expect(meCalls).toBe(1);
+  expect(assignmentCalls).toBe(1);
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/teacher\/progress\?lang=en$/);
+  await expect(shell.locator('[data-section="progress"]')).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  await page.goForward();
+  await expect(page).toHaveURL(/\/teacher\?lang=en$/);
+  await expect(shell.locator('[data-section="overview"]')).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  expect(meCalls).toBe(1);
+  expect(assignmentCalls).toBe(1);
 });
 
 test("desktop workspace sidebar collapses and restores", async ({ page }) => {
@@ -3076,6 +3164,9 @@ test("mobile workspace drawer opens, closes, navigates, and does not overflow", 
   await expect(shell).not.toHaveClass(/is-drawer-open/);
 
   await menu.click();
+  await page.evaluate(() => {
+    window.mobileWorkspaceMarker = "stable";
+  });
   await page
     .locator('.workspace-sidebar-link[data-section="assignments"]')
     .click();
@@ -3084,6 +3175,12 @@ test("mobile workspace drawer opens, closes, navigates, and does not overflow", 
   await expect(
     page.locator('.workspace-sidebar-link[data-section="assignments"]'),
   ).toHaveAttribute("aria-current", "page");
+  expect(await page.evaluate(() => window.mobileWorkspaceMarker)).toBe(
+    "stable",
+  );
+  await expect(page.locator("#product-app > .workspace-loading")).toHaveCount(
+    0,
+  );
   expect(
     await page
       .locator(".assignment-row .button-link")

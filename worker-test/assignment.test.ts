@@ -482,7 +482,7 @@ describe("teacher authorization and quotas", () => {
   });
 
   it("keeps a legacy over-limit assignment readable after Free downgrade", async () => {
-    await insertSubscription({ plan: "pro", status: "active" });
+    await insertSubscription({ plan: "teacher", status: "active" });
     const created = await createAssignment(teacherA, { words: testWords(40) });
     expect(created.response.status).toBe(201);
     await bindings.DB.prepare(
@@ -543,7 +543,7 @@ describe("teacher authorization and quotas", () => {
   );
 
   it("stores optional example sentences and returns null for old-style words", async () => {
-    await insertSubscription({ plan: "pro", status: "active" });
+    await insertSubscription({ plan: "teacher", status: "active" });
     const created = await createAssignment(teacherA, {
       words: ["because", "friend"],
       exampleSentences: ["I stayed inside because it was raining.", ""],
@@ -912,7 +912,7 @@ describe("saved lists and learner profiles", () => {
   });
 
   it("retains over-limit data after downgrade but blocks new records", async () => {
-    await insertSubscription({ plan: "pro", status: "active" });
+    await insertSubscription({ plan: "teacher", status: "active" });
     for (const title of ["One", "Two", "Three", "Four"]) {
       expect((await createSavedList(title)).response.status).toBe(201);
     }
@@ -954,7 +954,7 @@ describe("saved lists and learner profiles", () => {
   });
 
   it("allows duplicate learner names with distinct public identities", async () => {
-    await insertSubscription({ plan: "pro", status: "active" });
+    await insertSubscription({ plan: "teacher", status: "active" });
     const first = await createLearner("Emily");
     const second = await createLearner("Emily");
     expect(first.response.status).toBe(201);
@@ -983,7 +983,7 @@ describe("saved lists and learner profiles", () => {
   });
 
   it("isolates duplicate-name magic learners and rejects cross-owner tokens", async () => {
-    await insertSubscription({ plan: "pro", status: "active" });
+    await insertSubscription({ plan: "teacher", status: "active" });
     const learnerA = await createLearner("Emily");
     const learnerB = await createLearner("Emily");
     const assignment = await createAssignment(teacherA);
@@ -1104,7 +1104,7 @@ describe("assignment learner binding and class join", () => {
   });
 
   it("binds owned learners, filters learner home, and attributes submissions", async () => {
-    await insertSubscription({ plan: "pro", status: "active" });
+    await insertSubscription({ plan: "teacher", status: "active" });
     const learnerA = await createLearner("Alice");
     const learnerB = await createLearner("Bob");
     const created = await createAssignment(teacherA, {
@@ -1359,12 +1359,18 @@ describe("cross-assignment mastery", () => {
       })
     ).json()) as {
       learners: Array<Record<string, unknown>>;
+      missedWords: Array<{ word: string; misses: number }>;
     };
-    expect(overview.learners[0]).toMatchObject({ needs_review_count: 1 });
+    expect(overview.learners[0]).toMatchObject({
+      needs_review_count: 1,
+      mastery: { mastered: 0, learning: 1, needsReview: 1 },
+      missed_words: [{ word: "apple", misses: 1 }],
+    });
+    expect(overview.missedWords).toEqual([{ word: "apple", misses: 1 }]);
   });
 
-  it("aggregates completed attempts and builds a focused Pro review", async () => {
-    await insertSubscription({ plan: "pro", status: "active" });
+  it("aggregates completed attempts and builds a focused Teacher review", async () => {
+    await insertSubscription({ plan: "teacher", status: "active" });
     const learner = await createLearner("Learner 01");
     const learnerPublicId = String(learner.body.public_id);
     const first = await createAssignment(teacherA, {
@@ -1462,6 +1468,18 @@ describe("cross-assignment mastery", () => {
       ).json()) as { historyDays: number; words: unknown[] };
       expect(free.historyDays).toBe(14);
       expect(free.words).toHaveLength(0);
+      const freeWorkspace = (await (
+        await call("/api/assignments", {
+          headers: { "x-workspace-review-counts": "1" },
+        })
+      ).json()) as {
+        learners: Array<Record<string, unknown>>;
+        missedWords: Array<{ word: string; misses: number }>;
+      };
+      expect(freeWorkspace.learners[0]).toMatchObject({
+        mastery: { mastered: 0, learning: 0, needsReview: 0 },
+      });
+      expect(freeWorkspace.missedWords).toEqual([]);
       const reviewResponse = await call(
         `/api/learners/${learner.body.id}/review`,
         { method: "POST", body: "{}" },
@@ -1478,6 +1496,18 @@ describe("cross-assignment mastery", () => {
       ).json()) as { historyDays: number; words: unknown[] };
       expect(paid.historyDays).toBe(365);
       expect(paid.words).toHaveLength(2);
+      const paidWorkspace = (await (
+        await call("/api/assignments", {
+          headers: { "x-workspace-review-counts": "1" },
+        })
+      ).json()) as {
+        learners: Array<Record<string, unknown>>;
+        missedWords: Array<{ word: string; misses: number }>;
+      };
+      expect(paidWorkspace.learners[0]).toMatchObject({
+        mastery: { mastered: 0, learning: 1, needsReview: 1 },
+      });
+      expect(paidWorkspace.missedWords).toEqual([{ word: "apple", misses: 1 }]);
       expect(
         (
           await call(`/api/learners/${learner.body.id}/review`, {
@@ -1542,7 +1572,7 @@ describe("today's review state", () => {
     ).toBeNull();
   });
 
-  it("hides words from Free and returns them to Plus", async () => {
+  it("hides words from Free and returns them to Teacher", async () => {
     const learner = await createLearner("Learner 01");
     const assignment = await createAssignment(teacherA, {
       words: ["because"],
@@ -1561,8 +1591,8 @@ describe("today's review state", () => {
     };
     expect(free.todaysReview).toEqual({ count: 1, words: null });
 
-    await insertSubscription({ plan: "pro", status: "active" });
-    const plus = (await (
+    await insertSubscription({ plan: "teacher", status: "active" });
+    const teacher = (await (
       await call(`/api/learners/${learner.body.id}`)
     ).json()) as {
       todaysReview: {
@@ -1570,8 +1600,8 @@ describe("today's review state", () => {
         words: Array<{ word: string; exampleSentence: string | null }>;
       };
     };
-    expect(plus.todaysReview.count).toBe(1);
-    expect(plus.todaysReview.words).toEqual([
+    expect(teacher.todaysReview.count).toBe(1);
+    expect(teacher.todaysReview.words).toEqual([
       expect.objectContaining({
         word: "because",
         exampleSentence: "I stayed inside because it was raining.",
@@ -2409,7 +2439,7 @@ describe("Stripe checkout", () => {
     ["teacher", "en"],
     [undefined, "en"],
   ])("uses only a supported Portal locale for %s", async (locale, expected) => {
-    await insertSubscription({ plan: "pro", status: "active" });
+    await insertSubscription({ plan: "teacher", status: "active" });
     await bindings.DB.prepare(
       "UPDATE subscriptions SET stripe_customer_id = ? WHERE user_id = ?",
     )

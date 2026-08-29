@@ -261,6 +261,40 @@ beforeEach(async () => {
 });
 
 describe("teacher auth callback", () => {
+  it("starts Microsoft sign-in when Microsoft is the only configured provider", async () => {
+    const env = testEnv({
+      GOOGLE_CLIENT_ID: undefined,
+      GOOGLE_CLIENT_SECRET: undefined,
+      MICROSOFT_CLIENT_ID: "microsoft-test",
+      MICROSOFT_CLIENT_SECRET: "microsoft-test-secret",
+    });
+    const config = await call("/api/config", {}, null, env);
+    await expect(config.json()).resolves.toMatchObject({
+      googleAuthConfigured: false,
+      microsoftAuthConfigured: true,
+    });
+
+    const response = await call(
+      "/api/auth/sign-in/social",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          provider: "microsoft",
+          callbackURL: "/teacher?lang=en",
+        }),
+      },
+      null,
+      env,
+    );
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      redirect: true,
+      url: expect.stringContaining(
+        "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+      ),
+    });
+  });
+
   it("allows only same-origin teacher paths", () => {
     const origin = "https://example.test";
     expect(

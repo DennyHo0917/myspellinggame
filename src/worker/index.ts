@@ -279,6 +279,7 @@ async function adminStats(env: Env, now = new Date()) {
     `SELECT
        (SELECT COUNT(*) FROM user) AS totalUsers,
        (SELECT COUNT(DISTINCT userId) FROM account WHERE providerId = 'google') AS googleUsers,
+       (SELECT COUNT(DISTINCT userId) FROM account WHERE providerId = 'microsoft') AS microsoftUsers,
        (SELECT COUNT(*) FROM user WHERE createdAt >= ?) AS todayUsers,
        (SELECT COUNT(*) FROM user WHERE createdAt >= ?) AS last7DaysUsers`,
   )
@@ -286,6 +287,7 @@ async function adminStats(env: Env, now = new Date()) {
     .first<{
       totalUsers: number;
       googleUsers: number;
+      microsoftUsers: number;
       todayUsers: number;
       last7DaysUsers: number;
     }>();
@@ -312,6 +314,7 @@ async function adminStats(env: Env, now = new Date()) {
   return {
     totalUsers: Number(summary?.totalUsers ?? 0),
     googleUsers: Number(summary?.googleUsers ?? 0),
+    microsoftUsers: Number(summary?.microsoftUsers ?? 0),
     proUsers,
     activePaidUsers,
     monthlyUsers,
@@ -1781,8 +1784,10 @@ export async function handleRequest(
   if (url.pathname.startsWith("/api/auth/")) {
     if (
       !env.BETTER_AUTH_SECRET ||
-      !env.GOOGLE_CLIENT_ID ||
-      !env.GOOGLE_CLIENT_SECRET
+      !(
+        (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) ||
+        (env.MICROSOFT_CLIENT_ID && env.MICROSOFT_CLIENT_SECRET)
+      )
     ) {
       throw new HttpError(
         503,
@@ -1803,6 +1808,11 @@ export async function handleRequest(
         env.BETTER_AUTH_SECRET &&
         env.GOOGLE_CLIENT_ID &&
         env.GOOGLE_CLIENT_SECRET,
+      ),
+      microsoftAuthConfigured: Boolean(
+        env.BETTER_AUTH_SECRET &&
+        env.MICROSOFT_CLIENT_ID &&
+        env.MICROSOFT_CLIENT_SECRET,
       ),
       billingConfigured: Boolean(
         env.STRIPE_SECRET_KEY &&

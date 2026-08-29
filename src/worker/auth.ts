@@ -4,8 +4,10 @@ export interface AuthEnv {
   DB: D1Database;
   BETTER_AUTH_URL?: string;
   BETTER_AUTH_SECRET: string;
-  GOOGLE_CLIENT_ID: string;
-  GOOGLE_CLIENT_SECRET: string;
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+  MICROSOFT_CLIENT_ID?: string;
+  MICROSOFT_CLIENT_SECRET?: string;
 }
 
 export function safeTeacherCallbackURL(value: unknown, origin: string) {
@@ -62,11 +64,24 @@ export function createAuth(env: AuthEnv, request: Request) {
     database: env.DB,
     trustedOrigins: [origin, baseURL],
     socialProviders: {
-      google: {
-        clientId: env.GOOGLE_CLIENT_ID,
-        clientSecret: env.GOOGLE_CLIENT_SECRET,
-        prompt: "select_account",
-      },
+      ...(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
+        ? {
+            google: {
+              clientId: env.GOOGLE_CLIENT_ID,
+              clientSecret: env.GOOGLE_CLIENT_SECRET,
+              prompt: "select_account" as const,
+            },
+          }
+        : {}),
+      ...(env.MICROSOFT_CLIENT_ID && env.MICROSOFT_CLIENT_SECRET
+        ? {
+            microsoft: {
+              clientId: env.MICROSOFT_CLIENT_ID,
+              clientSecret: env.MICROSOFT_CLIENT_SECRET,
+              prompt: "select_account" as const,
+            },
+          }
+        : {}),
     },
     advanced: {
       useSecureCookies: secure,
@@ -94,8 +109,10 @@ export function createAuth(env: AuthEnv, request: Request) {
 export async function getTeacherSession(env: AuthEnv, request: Request) {
   if (
     !env.BETTER_AUTH_SECRET ||
-    !env.GOOGLE_CLIENT_ID ||
-    !env.GOOGLE_CLIENT_SECRET
+    !(
+      (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) ||
+      (env.MICROSOFT_CLIENT_ID && env.MICROSOFT_CLIENT_SECRET)
+    )
   ) {
     return null;
   }

@@ -241,9 +241,9 @@ test("pricing shows the Free, Parent, and Teacher plans in every locale", () => 
       "$99.99 per tahun",
     ],
     zh: [
-      "免费套餐",
-      "家长套餐",
-      "教师套餐",
+      "免费方案",
+      "家长方案",
+      "教师方案",
       "每月 $4.99",
       "每年 $49.99",
       "每月 $9.99",

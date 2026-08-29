@@ -486,8 +486,11 @@ test("new assignment keeps learner assignment area visible when no learners exis
   ).toBeVisible();
   await expect(page.getByRole("link", { name: "Add student" })).toHaveAttribute(
     "href",
-    "/teacher?lang=en#learners",
+    "/teacher/learners?lang=en",
   );
+  await page.getByRole("link", { name: "Add student" }).click();
+  await expect(page).toHaveURL(/\/teacher\/learners\?lang=en$/);
+  await expect(page.getByLabel("Student nickname or number")).toBeVisible();
   await page.goto(`/teacher/assignments/${assignmentId}?lang=en`);
   await expect(
     page.getByText("Link sharing only", { exact: true }),
@@ -571,7 +574,7 @@ test("assignments page owns assignment management and overview adapts to work", 
   await page.reload();
   await expect(
     page.getByRole("link", { name: "Create your first assignment" }),
-  ).toBeVisible();
+  ).toHaveCount(0);
 });
 
 test("assignment edit form prefills fields and submits a combined patch", async ({
@@ -1552,7 +1555,9 @@ test("signed-in result keeps the CTA without signup copy or signup analytics", a
   await expect(
     page.getByRole("button", { name: "Continue in Workspace" }),
   ).toBeVisible();
-  await expect(page.getByText("Free account · Google sign-in")).toBeHidden();
+  await expect(
+    page.getByText("Free account · Google or Microsoft sign-in"),
+  ).toBeHidden();
   expect(await analyticsEvents(page, "signup_cta_viewed")).toEqual([]);
 
   await page.evaluate(() => {
@@ -3894,13 +3899,13 @@ test("desktop workspace sidebar collapses and restores", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("paid workspace user menu keeps the existing billing portal flow", async ({
+test("paid workspace user menu opens pricing and allows plan changes", async ({
   page,
 }) => {
   await mockWorkspaceShell(page, "parent");
-  let portalCalls = 0;
+  let portalBody;
   await page.route("**/api/billing/portal", (route) => {
-    portalCalls += 1;
+    portalBody = route.request().postDataJSON();
     return route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({ url: "/pricing?from=portal" }),
@@ -3909,9 +3914,22 @@ test("paid workspace user menu keeps the existing billing portal flow", async ({
   await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
 
   await page.getByRole("button", { name: /Owner A/ }).click();
+  await expect(
+    page.getByRole("menuitem", { name: "Back to website home" }),
+  ).toHaveCount(0);
   await page.getByRole("menuitem", { name: "Plans & billing" }).click();
+  await expect(page).toHaveURL(/\/pricing$/);
+  await expect(page.locator(".pricing-grid .pricing-card")).toHaveCount(3);
+  await expect(page.locator('[data-plan-card="parent"]')).toHaveAttribute(
+    "aria-current",
+    "true",
+  );
+  await expect(page.locator('[data-plan-card="parent"]')).toContainText(
+    "Current plan",
+  );
+  await page.getByRole("button", { name: "Select Teacher Plan" }).click();
   await expect(page).toHaveURL(/\/pricing\?from=portal$/);
-  expect(portalCalls).toBe(1);
+  expect(portalBody).toEqual({ locale: "en" });
 });
 
 test("mobile workspace drawer opens, closes, navigates, and does not overflow", async ({

@@ -44,7 +44,11 @@ function formatProvider(value) {
   return value
     ? value
         .split(",")
-        .map((provider) => (provider === "google" ? "Google" : provider))
+        .map(
+          (provider) =>
+            ({ google: "Google", microsoft: "Microsoft" })[provider] ||
+            provider,
+        )
         .join("、")
     : "-";
 }
@@ -72,6 +76,7 @@ function renderStats(stats) {
   const labels = [
     ["注册用户总数", stats.totalUsers],
     ["Google 用户", stats.googleUsers],
+    ["Microsoft 用户", stats.microsoftUsers],
     ["当前付费用户", stats.proUsers],
     ["正式付费", stats.activePaidUsers],
     ["月付用户", stats.monthlyUsers],
@@ -105,12 +110,12 @@ async function loadUsers() {
         user.email,
         formatProvider(user.loginProvider),
         {
-          free: "免费套餐",
-          parent: "家长套餐",
-          teacher: "教师套餐",
-          plus: "家长套餐（历史兼容）",
-          pro: "教师套餐（历史兼容）",
-        }[user.plan] || "免费套餐",
+          free: "免费方案",
+          parent: "家长方案",
+          teacher: "教师方案",
+          plus: "家长方案（历史兼容）",
+          pro: "教师方案（历史兼容）",
+        }[user.plan] || "免费方案",
         formatSubscriptionStatus(user.subscriptionStatus),
         formatBillingInterval(user.billingInterval),
         formatDate(user.currentPeriodEnd),
@@ -165,26 +170,30 @@ document.getElementById("admin-refresh").addEventListener("click", async () => {
   );
 });
 
-document.getElementById("admin-sign-in").addEventListener("click", async () => {
-  const button = document.getElementById("admin-sign-in");
-  const status = document.getElementById("admin-login-status");
-  button.disabled = true;
-  status.textContent = "正在打开 Google 登录……";
-  try {
-    const config = await api("/api/config");
-    if (!config.googleAuthConfigured) throw new Error("Google 登录尚未配置。");
-    const result = await api("/api/auth/sign-in/social", {
-      method: "POST",
-      body: JSON.stringify({ provider: "google", callbackURL: "/admin" }),
-    });
-    if (!result.url) throw new Error("Google 登录暂不可用。");
-    location.href = result.url;
-  } catch (error) {
-    status.textContent = error.message;
-    status.className = "status error";
-    button.disabled = false;
-  }
-});
+for (const button of document.querySelectorAll("[data-auth-provider]")) {
+  button.addEventListener("click", async () => {
+    const provider = button.dataset.authProvider;
+    const providerName = provider === "microsoft" ? "Microsoft" : "Google";
+    const status = document.getElementById("admin-login-status");
+    button.disabled = true;
+    status.textContent = `正在打开 ${providerName} 登录……`;
+    try {
+      const config = await api("/api/config");
+      if (!config[`${provider}AuthConfigured`])
+        throw new Error(`${providerName} 登录尚未配置。`);
+      const result = await api("/api/auth/sign-in/social", {
+        method: "POST",
+        body: JSON.stringify({ provider, callbackURL: "/admin" }),
+      });
+      if (!result.url) throw new Error(`${providerName} 登录暂不可用。`);
+      location.href = result.url;
+    } catch (error) {
+      status.textContent = error.message;
+      status.className = "status error";
+      button.disabled = false;
+    }
+  });
+}
 
 signOut.addEventListener("click", async () => {
   await api("/api/auth/sign-out", { method: "POST", body: "{}" }).catch(

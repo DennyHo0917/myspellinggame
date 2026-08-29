@@ -282,27 +282,18 @@ function nav({ workspace = false, me = null } = {}) {
   const menu = document.createElement("div");
   menu.className = "workspace-user-dropdown";
   menu.setAttribute("role", "menu");
-  const websiteHome = document.createElement("a");
-  websiteHome.href = homeHref;
-  websiteHome.textContent = copy.websiteHome;
-  websiteHome.setAttribute("role", "menuitem");
-  const billing = document.createElement(isPlusPlan(me) ? "button" : "a");
+  const billing = document.createElement("a");
   billing.className = "workspace-user-action";
   billing.textContent = copy.plansAndBilling;
   billing.setAttribute("role", "menuitem");
-  if (isPlusPlan(me)) {
-    billing.type = "button";
-    billing.addEventListener("click", openPortal);
-  } else {
-    billing.href = productPagePath("pricing", locale);
-  }
+  billing.href = productPagePath("pricing", locale);
   const logout = document.createElement("button");
   logout.type = "button";
   logout.className = "workspace-user-action";
   logout.textContent = copy.signOut;
   logout.setAttribute("role", "menuitem");
   logout.addEventListener("click", signOut);
-  menu.append(websiteHome, billing, logout);
+  menu.append(billing, logout);
   userMenu.append(userToggle, menu);
   userMenu.addEventListener("toggle", () => {
     userToggle.setAttribute("aria-expanded", String(userMenu.open));
@@ -722,7 +713,9 @@ function teacherCallbackURL() {
 
 function focusTeacherSignIn() {
   const card = document.getElementById("teacher-sign-in");
-  const button = card?.querySelector(".google-sign-in");
+  const button = card?.querySelector(
+    ".social-sign-in:not(:disabled), .social-sign-in",
+  );
   if (!card || !button) return;
   card.scrollIntoView({ behavior: "smooth", block: "center" });
   button.focus({ preventScroll: true });
@@ -731,6 +724,7 @@ function focusTeacherSignIn() {
 async function renderLogin() {
   const config = await api("/api/config").catch(() => ({
     googleAuthConfigured: false,
+    microsoftAuthConfigured: false,
   }));
   root.innerHTML = "";
   const wrapper = document.createElement("div");
@@ -755,44 +749,63 @@ async function renderLogin() {
   const cardCopy = document.createElement("div");
   cardCopy.className = "teacher-login-copy";
   cardCopy.append(title, text, benefitTitle, benefitText, privacyNote);
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "google-sign-in";
-  button.innerHTML = `<svg class="google-logo" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.482h4.844a4.14 4.14 0 0 1-1.796 2.716v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.258c-.807.54-1.836.86-3.048.86-2.345 0-4.332-1.584-5.044-3.715H.95v2.332A9 9 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.956 10.707A5.4 5.4 0 0 1 3.674 9c0-.592.102-1.167.282-1.707V4.96H.95A9 9 0 0 0 0 9c0 1.454.348 2.832.95 4.04l3.006-2.333Z"/><path fill="#EA4335" d="M9 3.578c1.322 0 2.508.454 3.442 1.345l2.582-2.582C13.463.89 11.426 0 9 0A9 9 0 0 0 .95 4.96l3.006 2.333C4.668 5.162 6.655 3.578 9 3.578Z"/></svg><span>${copy.signIn}</span>`;
   const status = statusElement(card);
-  card.append(cardCopy, status, button);
-  button.disabled = !config.googleAuthConfigured;
-  if (!config.googleAuthConfigured) {
+  const buttons = document.createElement("div");
+  buttons.className = "social-sign-in-buttons";
+  const providers = [
+    {
+      id: "google",
+      label: copy.signIn,
+      configured: config.googleAuthConfigured,
+      icon: `<svg class="provider-logo" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.482h4.844a4.14 4.14 0 0 1-1.796 2.716v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.258c-.807.54-1.836.86-3.048.86-2.345 0-4.332-1.584-5.044-3.715H.95v2.332A9 9 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.956 10.707A5.4 5.4 0 0 1 3.674 9c0-.592.102-1.167.282-1.707V4.96H.95A9 9 0 0 0 0 9c0 1.454.348 2.832.95 4.04l3.006-2.333Z"/><path fill="#EA4335" d="M9 3.578c1.322 0 2.508.454 3.442 1.345l2.582-2.582C13.463.89 11.426 0 9 0A9 9 0 0 0 .95 4.96l3.006 2.333C4.668 5.162 6.655 3.578 9 3.578Z"/></svg>`,
+    },
+    {
+      id: "microsoft",
+      label: copy.signInMicrosoft,
+      configured: config.microsoftAuthConfigured,
+      icon: `<svg class="provider-logo" viewBox="0 0 18 18" aria-hidden="true"><path fill="#F25022" d="M0 0h8.5v8.5H0z"/><path fill="#7FBA00" d="M9.5 0H18v8.5H9.5z"/><path fill="#00A4EF" d="M0 9.5h8.5V18H0z"/><path fill="#FFB900" d="M9.5 9.5H18V18H9.5z"/></svg>`,
+    },
+  ];
+  for (const provider of providers) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `social-sign-in ${provider.id}-sign-in`;
+    button.innerHTML = `${provider.icon}<span>${provider.label}</span>`;
+    button.disabled = !provider.configured;
+    button.addEventListener("click", async () => {
+      const entryPoint = getAssignmentEntryPoint();
+      trackEvent(
+        "teacher_auth_started",
+        entryPoint ? { entry_point: entryPoint } : {},
+      );
+      button.disabled = true;
+      status.textContent = copy.loading;
+      try {
+        const response = await api("/api/auth/sign-in/social", {
+          method: "POST",
+          body: JSON.stringify({
+            provider: provider.id,
+            callbackURL: teacherCallbackURL(),
+          }),
+        });
+        if (!response.url) throw new Error(copy.error);
+        try {
+          sessionStorage.setItem(AUTH_PENDING_KEY, "1");
+        } catch {}
+        location.href = response.url;
+      } catch (error) {
+        status.textContent = error.message;
+        status.className = "status error";
+        button.disabled = false;
+      }
+    });
+    buttons.append(button);
+  }
+  card.append(cardCopy, status, buttons);
+  if (!config.googleAuthConfigured && !config.microsoftAuthConfigured) {
     status.textContent = copy.authMissing;
     status.className = "status error";
   }
-  button.addEventListener("click", async () => {
-    const entryPoint = getAssignmentEntryPoint();
-    trackEvent(
-      "teacher_auth_started",
-      entryPoint ? { entry_point: entryPoint } : {},
-    );
-    button.disabled = true;
-    status.textContent = copy.loading;
-    try {
-      const response = await api("/api/auth/sign-in/social", {
-        method: "POST",
-        body: JSON.stringify({
-          provider: "google",
-          callbackURL: teacherCallbackURL(),
-        }),
-      });
-      if (!response.url) throw new Error(copy.error);
-      try {
-        sessionStorage.setItem(AUTH_PENDING_KEY, "1");
-      } catch {}
-      location.href = response.url;
-    } catch (error) {
-      status.textContent = error.message;
-      status.className = "status error";
-      button.disabled = false;
-    }
-  });
   main.append(card);
   wrapper.append(main, footer());
   root.append(wrapper);
@@ -876,7 +889,7 @@ function showSectionError(section, error, ctaLocation) {
   section.append(notice);
 }
 
-function renderSavedLists(me, savedLists) {
+function renderSavedListsLegacy(me, savedLists) {
   const section = document.createElement("section");
   section.className = "product-card";
   section.id = "saved-lists";
@@ -1044,7 +1057,240 @@ function renderSavedLists(me, savedLists) {
   return section;
 }
 
-function renderLearners(me, learners) {
+function renderSavedLists(me, savedLists) {
+  const section = document.createElement("section");
+  section.className = "product-card saved-lists-card";
+  section.id = "saved-lists";
+  void renderSavedListsLegacy;
+  const newListLabel = locale === "zh" ? "新建词表" : copy.saveList;
+  const editListLabel = locale === "zh" ? "编辑词表" : copy.edit;
+  const backListLabel =
+    locale === "zh" ? "← 返回已保存词表" : "← " + copy.freeSavedLists;
+  let mode = "list";
+  let editingList = null;
+  const render = () => {
+    section.replaceChildren();
+    if (mode === "list") {
+      const heading = document.createElement("div");
+      heading.className = "saved-lists-heading";
+      const copyBlock = document.createElement("div");
+      const title = document.createElement("h1");
+      title.textContent = copy.freeSavedLists;
+      const intro = document.createElement("p");
+      intro.textContent = copy.savedListsCopy;
+      copyBlock.append(title, intro);
+      const add = document.createElement("button");
+      add.type = "button";
+      add.className = "saved-lists-add";
+      add.textContent = "+ " + newListLabel;
+      add.addEventListener("click", () => {
+        mode = "new";
+        editingList = null;
+        render();
+      });
+      heading.append(copyBlock, add);
+      section.append(heading);
+      if (!savedLists.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state saved-lists-empty";
+        const emptyTitle = document.createElement("strong");
+        emptyTitle.textContent =
+          locale === "zh" ? "还没有保存词表" : copy.freeSavedLists;
+        const emptyCopy = document.createElement("p");
+        emptyCopy.textContent =
+          locale === "zh"
+            ? "保存常用单词后，可以快速创建新的拼写作业。"
+            : copy.savedListsCopy;
+        const emptyAction = document.createElement("button");
+        emptyAction.type = "button";
+        emptyAction.textContent = "+ " + newListLabel;
+        emptyAction.addEventListener("click", () => {
+          mode = "new";
+          editingList = null;
+          render();
+        });
+        empty.append(emptyTitle, emptyCopy, emptyAction);
+        section.append(empty);
+        return;
+      }
+      const list = document.createElement("div");
+      list.className = "assignment-list workspace-list saved-lists-grid";
+      for (const savedList of savedLists) {
+        const row = document.createElement("article");
+        row.className = "assignment-row saved-list-row";
+        const body = document.createElement("div");
+        const itemTitle = document.createElement("h2");
+        itemTitle.textContent = savedList.title;
+        const summary = document.createElement("p");
+        summary.className = "assignment-meta";
+        const preview = savedList.words.slice(0, 4).join(" · ");
+        summary.textContent = [
+          m("wordCount", { count: savedList.words.length }),
+          preview + (savedList.words.length > 4 ? " · ..." : ""),
+        ]
+          .filter(Boolean)
+          .join(" · ");
+        body.append(itemTitle, summary);
+        const actions = document.createElement("div");
+        actions.className = "actions compact-actions saved-list-actions";
+        const use = document.createElement("button");
+        use.type = "button";
+        use.textContent = copy.useList;
+        use.addEventListener("click", () =>
+          saveAssignmentDraft(
+            savedList.words,
+            savedList.title,
+            (savedList.word_details || []).map((word) => word.example_sentence),
+          ),
+        );
+        const edit = document.createElement("button");
+        edit.type = "button";
+        edit.className = "button-secondary";
+        edit.textContent = editListLabel;
+        edit.addEventListener("click", () => {
+          mode = "edit";
+          editingList = savedList;
+          render();
+        });
+        actions.append(use, edit);
+        const duplicate = document.createElement("button");
+        duplicate.type = "button";
+        duplicate.className = "button-secondary";
+        duplicate.textContent = copy.copyList;
+        duplicate.addEventListener("click", async () => {
+          try {
+            await api("/api/saved-lists", {
+              method: "POST",
+              body: JSON.stringify({
+                title: m("copyListTitle", { title: savedList.title }).slice(
+                  0,
+                  80,
+                ),
+                words: savedList.words,
+                exampleSentences: (savedList.word_details || []).map(
+                  (word) => word.example_sentence,
+                ),
+              }),
+            });
+            await refreshWorkspace(me);
+          } catch (error) {
+            showSectionError(
+              section,
+              error,
+              error.code === "saved_list_limit" ? "saved_list_limit" : null,
+            );
+          }
+        });
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "button-danger";
+        remove.textContent = copy.deleteList;
+        remove.addEventListener("click", async () => {
+          if (!confirm(copy.deleteListConfirm)) return;
+          await api("/api/saved-lists/" + savedList.id, { method: "DELETE" });
+          await refreshWorkspace(me);
+        });
+        actions.append(duplicate, remove);
+        row.append(body, actions);
+        list.append(row);
+      }
+      section.append(list);
+      return;
+    }
+    const heading = document.createElement("div");
+    heading.className = "saved-lists-form-heading";
+    const back = document.createElement("button");
+    back.type = "button";
+    back.className = "button-secondary";
+    back.textContent = backListLabel;
+    back.addEventListener("click", () => {
+      mode = "list";
+      editingList = null;
+      render();
+    });
+    const title = document.createElement("h1");
+    title.textContent = mode === "edit" ? editListLabel : newListLabel;
+    heading.append(back, title);
+    const form = document.createElement("form");
+    form.className = "product-form compact-form saved-list-form";
+    form.innerHTML =
+      '<div class="field"><label for="saved-list-title">' +
+      copy.listTitle +
+      '</label><input id="saved-list-title" maxlength="80" required placeholder="' +
+      copy.listTitlePlaceholder +
+      '"></div><div class="field saved-list-words-field"><label for="saved-list-words">' +
+      copy.words +
+      '</label><textarea id="saved-list-words" required spellcheck="false" placeholder="' +
+      copy.wordsHelp +
+      '"></textarea></div><div class="field saved-list-sentences-field"><div class="saved-list-field-heading"><label for="saved-list-sentences">' +
+      copy.exampleSentences +
+      '</label></div><textarea id="saved-list-sentences" maxlength="30000" spellcheck="true" placeholder="' +
+      copy.exampleSentencesHelp +
+      '"></textarea></div><div class="actions saved-list-form-actions"><button type="button" class="button-secondary saved-list-cancel">' +
+      copy.cancel +
+      '</button><button type="submit">' +
+      copy.saveList +
+      "</button></div>";
+    if (editingList) {
+      form.querySelector("#saved-list-title").value = editingList.title;
+      form.querySelector("#saved-list-words").value =
+        editingList.words.join("\n");
+      form.querySelector("#saved-list-sentences").value = (
+        editingList.word_details || []
+      )
+        .map((word) => word.example_sentence || "")
+        .join("\n");
+    }
+    attachSentenceLibraryControls(
+      form,
+      me,
+      "#saved-list-words",
+      "#saved-list-sentences",
+    );
+    attachWordLimit(form, me, "#saved-list-words");
+    form.querySelector(".saved-list-cancel").addEventListener("click", () => {
+      mode = "list";
+      editingList = null;
+      render();
+    });
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (form.querySelector('[aria-invalid="true"]')) return;
+      const button = form.querySelector('button[type="submit"]');
+      button.disabled = true;
+      const payload = {
+        title: form.querySelector("#saved-list-title").value,
+        words: form.querySelector("#saved-list-words").value,
+        exampleSentences: form.querySelector("#saved-list-sentences").value,
+      };
+      try {
+        await api(
+          editingList
+            ? "/api/saved-lists/" + editingList.id
+            : "/api/saved-lists",
+          {
+            method: editingList ? "PATCH" : "POST",
+            body: JSON.stringify(payload),
+          },
+        );
+        await refreshWorkspace(me);
+      } catch (error) {
+        button.disabled = form.querySelector('[aria-invalid="true"]') !== null;
+        showSectionError(
+          section,
+          error,
+          error.code === "saved_list_limit" ? "saved_list_limit" : null,
+        );
+      }
+    });
+    section.append(heading, form);
+    form.querySelector("#saved-list-title").focus();
+  };
+  render();
+  return section;
+}
+
+function renderLearnersLegacy(me, learners) {
   const section = document.createElement("section");
   section.className = "product-card";
   section.id = "learners";
@@ -1232,6 +1478,239 @@ function renderLearners(me, learners) {
   return section;
 }
 
+function renderLearners(me, learners) {
+  const section = document.createElement("section");
+  section.className = "product-card learners-card";
+  section.id = "learners";
+  void renderLearnersLegacy;
+  const learnerCopy =
+    me.plan === "free"
+      ? {
+          heading: m("freeLearners"),
+          intro: m("freeLearnersCopy"),
+          name: m("freeLearnerName"),
+          placeholder: m("freeLearnerNamePlaceholder"),
+          add: m("freeAddLearner"),
+          progress: m("freeProgress"),
+          namePrompt: m("freeLearnerNamePrompt"),
+        }
+      : isParentPlan(me)
+        ? {
+            heading: m("familyLearners"),
+            intro: m("familyLearnersCopy"),
+            name: m("familyLearnerName"),
+            placeholder: m("familyLearnerNamePlaceholder"),
+            add: m("addChild"),
+            progress: copy.freeProgress,
+            namePrompt: copy.familyLearnerNamePrompt,
+          }
+        : {
+            heading: copy.learners,
+            intro: copy.learnersCopy,
+            name: copy.learnerName,
+            placeholder: copy.learnerNamePlaceholder,
+            add: copy.addLearner,
+            progress: copy.freeProgress,
+            namePrompt: copy.learnerNamePrompt,
+          };
+  const heading = document.createElement("div");
+  heading.className = "learners-heading";
+  const headingCopy = document.createElement("div");
+  const title = document.createElement("h1");
+  title.textContent = learnerCopy.heading;
+  const intro = document.createElement("p");
+  intro.textContent = learnerCopy.intro;
+  headingCopy.append(title, intro);
+  const addButton = document.createElement("button");
+  addButton.type = "button";
+  addButton.className = "learners-add";
+  addButton.textContent = "+ " + learnerCopy.add;
+  heading.append(headingCopy, addButton);
+  section.append(heading);
+
+  const dialog = document.createElement("dialog");
+  dialog.className = "learner-dialog";
+  const dialogTitle = document.createElement("h2");
+  dialogTitle.textContent = learnerCopy.add;
+  const form = document.createElement("form");
+  form.className = "product-form compact-form";
+  form.method = "dialog";
+  form.innerHTML = `<div class="field"><label for="learner-name">${learnerCopy.name}</label><input id="learner-name" maxlength="32" required placeholder="${learnerCopy.placeholder}"></div><div class="actions learner-dialog-actions"><button type="button" class="button-secondary learner-dialog-cancel">${copy.cancel}</button><button type="submit">${learnerCopy.add}</button></div>`;
+  const closeDialog = () => dialog.close();
+  form
+    .querySelector(".learner-dialog-cancel")
+    .addEventListener("click", closeDialog);
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    try {
+      await api("/api/learners", {
+        method: "POST",
+        body: JSON.stringify({
+          name: form.querySelector("#learner-name").value,
+        }),
+      });
+      dialog.close();
+      await refreshWorkspace(me);
+    } catch (error) {
+      button.disabled = false;
+      showSectionError(
+        section,
+        error,
+        error.code === "learner_limit" ? "learner_limit" : null,
+      );
+    }
+  });
+  dialog.append(dialogTitle, form);
+  section.append(dialog);
+  addButton.addEventListener("click", () => {
+    form.reset();
+    dialog.showModal();
+    form.querySelector("#learner-name").focus();
+  });
+
+  const classUrl =
+    isTeacherPlan(me) && me.classPublicId
+      ? `${location.origin}/join/${me.classPublicId}`
+      : null;
+  if (classUrl) {
+    const join = document.createElement("div");
+    join.className = "notice workspace-class-join";
+    const label = document.createElement("strong");
+    label.textContent = copy.classJoin;
+    const url = document.createElement("p");
+    url.textContent = `${copy.classJoinUrl}: ${classUrl}`;
+    const copyUrl = document.createElement("button");
+    copyUrl.type = "button";
+    copyUrl.className = "button-secondary";
+    copyUrl.setAttribute("aria-live", "polite");
+    copyUrl.textContent = copy.copyClassUrl;
+    copyUrl.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(classUrl);
+        copyUrl.textContent = copy.classUrlCopied;
+        copyUrl.classList.add("is-success");
+      } catch {
+        prompt(copy.copyClassUrl, classUrl);
+      }
+    });
+    join.append(label, url, copyUrl);
+    section.append(join);
+  }
+
+  if (!learners.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty-state learners-empty";
+    const emptyTitle = document.createElement("strong");
+    emptyTitle.textContent = learnerCopy.heading;
+    const emptyCopy = document.createElement("p");
+    emptyCopy.textContent = learnerCopy.intro;
+    const emptyAction = document.createElement("button");
+    emptyAction.type = "button";
+    emptyAction.textContent = "+ " + learnerCopy.add;
+    emptyAction.addEventListener("click", () => addButton.click());
+    empty.append(emptyTitle, emptyCopy, emptyAction);
+    section.append(empty);
+    return section;
+  }
+
+  const list = document.createElement("div");
+  list.className = "assignment-list workspace-list learners-list";
+  for (const learner of learners) {
+    const row = document.createElement("article");
+    row.className = "assignment-row learner-row";
+    const body = document.createElement("div");
+    const rowTitle = document.createElement("div");
+    rowTitle.className = "assignment-title-row";
+    const learnerTitle = document.createElement("h2");
+    learnerTitle.textContent = learner.name;
+    rowTitle.append(learnerTitle);
+    if (learner.archived) {
+      const badge = document.createElement("span");
+      badge.className = "badge closed";
+      badge.textContent = copy.archived;
+      rowTitle.append(badge);
+    }
+    body.append(rowTitle);
+    if (learner.last_practiced_at) {
+      const activity = document.createElement("p");
+      activity.className = "assignment-meta learner-activity";
+      activity.textContent = date(learner.last_practiced_at);
+      body.append(activity);
+    }
+    const actions = document.createElement("div");
+    actions.className = "actions compact-actions learner-actions";
+    const open = document.createElement("a");
+    open.className = "button-link learner-progress-link";
+    open.href = `/teacher/learners/${learner.id}?lang=${encodeURIComponent(locale)}`;
+    open.textContent = m("viewLearner") + " >";
+    const menu = document.createElement("details");
+    menu.className = "learner-menu";
+    const menuSummary = document.createElement("summary");
+    menuSummary.textContent = "…";
+    menuSummary.title = learnerCopy.namePrompt;
+    const menuItems = document.createElement("div");
+    menuItems.className = "learner-menu-items";
+    const rename = document.createElement("button");
+    rename.type = "button";
+    rename.className = "button-secondary";
+    rename.textContent = copy.rename;
+    rename.addEventListener("click", async () => {
+      const name = prompt(learnerCopy.namePrompt, learner.name);
+      if (name === null) return;
+      try {
+        await api(`/api/learners/${learner.id}`, {
+          method: "PATCH",
+          body: JSON.stringify({ name }),
+        });
+        await refreshWorkspace(me);
+      } catch (error) {
+        showSectionError(section, error);
+      }
+    });
+    const archive = document.createElement("button");
+    archive.type = "button";
+    archive.className = "button-secondary";
+    archive.textContent = learner.archived
+      ? copy.restoreLearner
+      : copy.archiveLearner;
+    archive.addEventListener("click", async () => {
+      await api(`/api/learners/${learner.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ archived: !learner.archived }),
+      });
+      await refreshWorkspace(me);
+    });
+    menuItems.append(rename, archive);
+    if (isTeacherPlan(me) && !learner.archived && learner.join_pin) {
+      const copyPin = document.createElement("button");
+      copyPin.type = "button";
+      copyPin.className = "button-secondary";
+      copyPin.textContent = copy.copyPin;
+      copyPin.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(learner.join_pin);
+          copyPin.textContent = copy.pinCopied;
+        } catch {
+          prompt(copy.copyPin, learner.join_pin);
+        }
+      });
+      menuItems.append(copyPin);
+    }
+    menu.append(menuSummary, menuItems);
+    actions.append(open, menu);
+    row.append(body, actions);
+    row.addEventListener("click", (event) => {
+      if (event.target.closest("a,button,summary,details")) return;
+      location.href = open.href;
+    });
+    list.append(row);
+  }
+  section.append(list);
+  return section;
+}
+
 function renderAssignmentsCard(
   me,
   assignments,
@@ -1248,8 +1727,10 @@ function renderAssignmentsCard(
   listCard.id = id;
   const listHeading = document.createElement(fullPage ? "h1" : "h2");
   listHeading.textContent = heading;
-  listCard.append(listHeading);
   if (fullPage) {
+    const headingRow = document.createElement("div");
+    headingRow.className = "assignment-list-heading";
+    const headingCopy = document.createElement("div");
     const intro = document.createElement("p");
     intro.textContent = copy.assignmentsPageCopy;
     const create = document.createElement("a");
@@ -1259,7 +1740,11 @@ function renderAssignmentsCard(
     create.addEventListener("click", () =>
       setAssignmentEntryPoint("workspace"),
     );
-    listCard.append(intro, create);
+    headingCopy.append(listHeading, intro);
+    headingRow.append(headingCopy, create);
+    listCard.append(headingRow);
+  } else {
+    listCard.append(listHeading);
   }
   const visibleAssignments = limit ? assignments.slice(0, limit) : assignments;
   if (!visibleAssignments.length) {
@@ -1267,14 +1752,6 @@ function renderAssignmentsCard(
     empty.className = "empty-state";
     empty.textContent = copy.noAssignments;
     listCard.append(empty);
-    const create = document.createElement("a");
-    create.className = "button-link button-secondary";
-    create.href = `/teacher/assignments/new?lang=${encodeURIComponent(locale)}`;
-    create.textContent = copy.createFirstAssignment;
-    create.addEventListener("click", () =>
-      setAssignmentEntryPoint("workspace"),
-    );
-    listCard.append(create);
   } else {
     const list = document.createElement("div");
     list.className = "assignment-list";
@@ -1344,10 +1821,11 @@ function renderProgressCard(
     masteryOnly = false,
     headingText = null,
     id = "progress",
+    plain = false,
   } = {},
 ) {
   const card = document.createElement("section");
-  card.className = "product-card";
+  card.className = plain ? "progress-section" : "product-card";
   card.id = id;
   const heading = document.createElement("h2");
   heading.textContent =
@@ -1417,47 +1895,6 @@ function renderProgressCard(
   }
   card.append(list);
   return card;
-}
-
-function progressTabs(panels) {
-  const tabs = document.createElement("div");
-  tabs.className = "workspace-tabs";
-  tabs.setAttribute("role", "tablist");
-  const initial = panels.some(([key]) => `#${key}` === location.hash)
-    ? location.hash.slice(1)
-    : panels[0][0];
-  const select = (selected) => {
-    for (const [key, , panel, button] of panels) {
-      const active = key === selected;
-      button.setAttribute("aria-selected", String(active));
-      button.tabIndex = active ? 0 : -1;
-      panel.hidden = !active;
-    }
-  };
-  for (const [key, label, panel] of panels) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "workspace-tab";
-    button.id = `progress-tab-${key}`;
-    button.setAttribute("role", "tab");
-    button.setAttribute("aria-controls", `progress-panel-${key}`);
-    button.textContent = label;
-    panel.id = `progress-panel-${key}`;
-    panel.setAttribute("role", "tabpanel");
-    panel.setAttribute("aria-labelledby", button.id);
-    button.addEventListener("click", () => {
-      select(key);
-      history.replaceState(
-        {},
-        "",
-        `${location.pathname}${location.search}#${key}`,
-      );
-    });
-    panels.find(([panelKey]) => panelKey === key).push(button);
-    tabs.append(button);
-  }
-  select(initial);
-  return tabs;
 }
 
 function progressLearnerRows(learners, { reviewActions = false } = {}) {
@@ -1540,8 +1977,11 @@ async function renderProgressCenter(me, data, main = shell(me, "progress")) {
     0,
   );
 
-  const header = document.createElement("section");
-  header.className = "product-card";
+  const page = document.createElement("section");
+  page.className = "product-card progress-center-card";
+  page.id = "progress-center";
+  const header = document.createElement("div");
+  header.className = "progress-center-heading";
   const title = document.createElement("h1");
   title.textContent = copy.freeProgress;
   const historyCopy = document.createElement("p");
@@ -1549,10 +1989,10 @@ async function renderProgressCenter(me, data, main = shell(me, "progress")) {
     days: me.plan === "free" ? 14 : 365,
   });
   header.append(title, historyCopy);
+  page.append(header);
 
-  const overview = document.createElement("div");
-  const overviewCard = document.createElement("section");
-  overviewCard.className = "product-card";
+  const overview = document.createElement("section");
+  overview.className = "progress-section progress-overview-section";
   const overviewTitle = document.createElement("h2");
   overviewTitle.textContent = copy.progressOverview;
   const grid = document.createElement("div");
@@ -1562,17 +2002,25 @@ async function renderProgressCenter(me, data, main = shell(me, "progress")) {
     statCard(copy.summaryAverage, `${accuracy}%`),
     statCard(copy.needsReview, needsReview),
   );
-  overviewCard.append(overviewTitle, grid);
-  overview.append(
-    overviewCard,
+  overview.append(overviewTitle, grid);
+  page.append(overview);
+
+  page.append(
+    renderProgressCard(learners, {
+      headingText: copy.mastery,
+      masteryOnly: true,
+      id: "progress-mastery",
+      plain: true,
+    }),
     renderProgressCard(learners, {
       recentOnly: true,
       id: "recent-progress",
+      plain: true,
     }),
   );
 
   const missed = document.createElement("section");
-  missed.className = "product-card";
+  missed.className = "progress-section";
   const missedTitle = document.createElement("h2");
   missedTitle.textContent = copy.commonMisses;
   missed.append(missedTitle);
@@ -1622,25 +2070,15 @@ async function renderProgressCenter(me, data, main = shell(me, "progress")) {
     empty.textContent = copy.noReviewWords;
     missed.append(empty);
   }
-  overview.append(missed);
+  page.append(missed);
 
-  const mastery = document.createElement("div");
-  mastery.append(
-    renderProgressCard(learners, {
-      headingText: `${copy.mastery} · ${workspaceLearnerLabel(me)}`,
-      masteryOnly: true,
-      id: "progress-mastery",
-    }),
-  );
-
-  const smartReview = document.createElement("div");
-  const smartReviewCard = document.createElement("section");
-  smartReviewCard.className = "product-card";
+  const smartReview = document.createElement("section");
+  smartReview.className = "progress-section";
   const smartReviewTitle = document.createElement("h2");
   smartReviewTitle.textContent = copy.smartReview;
   const smartReviewCopy = document.createElement("p");
   smartReviewCopy.textContent = copy.smartReviewValue;
-  smartReviewCard.append(smartReviewTitle, smartReviewCopy);
+  smartReview.append(smartReviewTitle, smartReviewCopy);
   if (!isPlusPlan(me) && needsReview) {
     const preview = document.createElement("p");
     preview.textContent = m("needsReviewWords", { count: needsReview });
@@ -1650,34 +2088,23 @@ async function renderProgressCenter(me, data, main = shell(me, "progress")) {
     locked.textContent = copy.createReview;
     locked.addEventListener("click", () =>
       showLockedFeaturePlan(
-        smartReviewCard,
+        smartReview,
         copy.smartReviewUpgrade,
         "smart_review",
       ),
     );
-    smartReviewCard.append(preview, locked);
+    smartReview.append(preview, locked);
   } else if (learners.length) {
-    smartReviewCard.append(
-      progressLearnerRows(learners, { reviewActions: true }),
-    );
+    smartReview.append(progressLearnerRows(learners, { reviewActions: true }));
   } else {
     const empty = document.createElement("p");
     empty.className = "empty-state";
     empty.textContent = copy.noRecentProgress;
-    smartReviewCard.append(empty);
+    smartReview.append(empty);
   }
   const showSmartReview = isPlusPlan(me) || needsReview > 0;
-  if (showSmartReview) smartReview.append(smartReviewCard);
-
-  const panels = [
-    ["overview", copy.overview, overview],
-    ["mastery", copy.mastery, mastery],
-  ];
-  if (showSmartReview)
-    panels.push(["smart-review", copy.smartReview, smartReview]);
-  header.append(progressTabs(panels));
-  main.append(header, overview, mastery);
-  if (showSmartReview) main.append(smartReview);
+  if (showSmartReview) page.append(smartReview);
+  main.append(page);
 }
 
 async function renderDashboard(me, { force = false } = {}) {
@@ -1768,18 +2195,6 @@ async function renderDashboard(me, { force = false } = {}) {
   revalidateWorkspaceData(me, section);
 }
 
-async function openPortal() {
-  try {
-    const data = await api("/api/billing/portal", {
-      method: "POST",
-      body: JSON.stringify({ locale }),
-    });
-    if (data.url) location.href = data.url;
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
 async function startCheckout(interval, plan = "teacher") {
   try {
     sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
@@ -1835,7 +2250,7 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
   const editing = Boolean(assignment);
   const main = shell(me, "assignments");
   const card = document.createElement("section");
-  card.className = "product-card";
+  card.className = "product-card assignment-form-card";
   const heading = document.createElement("h1");
   heading.textContent = editing ? copy.editAssignment : copy.newTitle;
   const headingRow = document.createElement("div");
@@ -1846,7 +2261,10 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
     ? `/teacher/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`
     : `/teacher/assignments?lang=${encodeURIComponent(locale)}`;
   backLink.textContent = editing ? copy.cancel : copy.backToDashboard;
-  headingRow.append(heading, backLink);
+  const backWrap = document.createElement("div");
+  backWrap.className = "assignment-form-back";
+  backWrap.append(backLink);
+  headingRow.append(heading, backWrap);
   const form = document.createElement("form");
   form.className = "product-form";
   const defaultDeadline = new Date(
@@ -1870,13 +2288,19 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
     } catch {}
   }
   form.innerHTML = `
-    <div class="field"><label for="assignment-title">${copy.assignmentTitle}</label><input id="assignment-title" maxlength="80" required placeholder="${copy.titlePlaceholder}"></div>
-    <div class="field"><label for="assignment-words">${copy.words}</label><textarea id="assignment-words" required spellcheck="false"></textarea><small>${copy.wordsHelp}</small></div>
-    <div class="field"><label for="assignment-sentences">${copy.exampleSentences}</label><textarea id="assignment-sentences" maxlength="30000" spellcheck="true" placeholder="${copy.exampleSentencesHelp}"></textarea></div>
-    <fieldset><legend>${copy.mode}</legend><div class="radio-row"><label><input type="radio" name="mode" value="dictation"> ${copy.dictation}</label><label><input type="radio" name="mode" value="typing"> ${copy.typing}</label></div></fieldset>
-    <fieldset id="assignment-learners-field"><legend>${m("assignTo")}</legend><div class="radio-row"><label><input type="radio" name="learnerTarget" value="all"> ${m(me.plan === "free" ? "allLearners" : isParentPlan(me) ? "allChildren" : "allStudents")}</label><label><input type="radio" name="learnerTarget" value="selected"> ${m(me.plan === "free" ? "freeSelectedLearners" : isParentPlan(me) ? "selectedChildren" : "selectedStudents")}</label><label><input type="radio" name="learnerTarget" value="anyone" checked> ${m("linkOnly")}</label></div><div id="assignment-learner-list"></div></fieldset>
-    <div class="grid"><div class="field"><label for="assignment-deadline">${copy.deadline}</label><input id="assignment-deadline" type="datetime-local" required></div><div class="field"><label for="assignment-max">${copy.maxAttempts}</label><select id="assignment-max">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<option>${n}</option>`).join("")}</select></div></div>
-    <div class="actions"><button type="submit">${editing ? copy.saveChanges : copy.publish}</button></div>`;
+    <div class="assignment-form-layout">
+      <div class="assignment-content-column">
+        <div class="field"><label for="assignment-title">${copy.assignmentTitle}</label><input id="assignment-title" maxlength="80" required placeholder="${copy.titlePlaceholder}"></div>
+        <div class="field"><label for="assignment-words">${copy.words}</label><textarea id="assignment-words" required spellcheck="false"></textarea><small>${copy.wordsHelp}</small></div>
+        <div class="field assignment-sentences-field"><label for="assignment-sentences">${copy.exampleSentences}</label><textarea id="assignment-sentences" maxlength="30000" spellcheck="true" placeholder="${copy.exampleSentencesHelp}"></textarea></div>
+      </div>
+      <aside class="assignment-settings-panel">
+        <fieldset class="assignment-mode-field"><legend>${copy.mode}</legend><div class="radio-row assignment-mode-options"><label class="assignment-mode-option"><input type="radio" name="mode" value="dictation"><span class="assignment-mode-icon" aria-hidden="true">◉</span><span>${copy.dictation}</span><span class="assignment-target-check" aria-hidden="true">✓</span></label><label class="assignment-mode-option"><input type="radio" name="mode" value="typing"><span class="assignment-mode-icon" aria-hidden="true">⌨</span><span>${copy.typing}</span><span class="assignment-target-check" aria-hidden="true">✓</span></label></div></fieldset>
+        <fieldset id="assignment-learners-field"><legend>${m("assignTo")}</legend><div class="radio-row assignment-target-options"><label class="assignment-target-option" data-target-option="all"><input type="radio" name="learnerTarget" value="all"><span class="assignment-target-icon" aria-hidden="true">◉</span><span class="assignment-target-copy"><strong>${m(me.plan === "free" ? "allLearners" : isParentPlan(me) ? "allChildren" : "allStudents")}</strong><small>${m("allLearnersHelp")}</small></span><span class="assignment-target-check" aria-hidden="true">✓</span></label><label class="assignment-target-option" data-target-option="selected"><input type="radio" name="learnerTarget" value="selected"><span class="assignment-target-icon" aria-hidden="true">☷</span><span class="assignment-target-copy"><strong>${m(me.plan === "free" ? "freeSelectedLearners" : isParentPlan(me) ? "selectedChildren" : "selectedStudents")}</strong><small>${m("selectedLearnersHelp")}</small></span><span class="assignment-target-check" aria-hidden="true">✓</span></label><label class="assignment-target-option" data-target-option="anyone"><input type="radio" name="learnerTarget" value="anyone" checked><span class="assignment-target-icon" aria-hidden="true">↗</span><span class="assignment-target-copy"><strong>${m("linkOnly")}</strong><small>${m("linkOnlyHelp")}</small></span><span class="assignment-target-check" aria-hidden="true">✓</span></label></div><div id="assignment-learner-list"></div></fieldset>
+        <div class="assignment-settings-fields"><div class="field"><label for="assignment-deadline">${copy.deadline}</label><input id="assignment-deadline" type="datetime-local" required></div><div class="field"><label for="assignment-max">${copy.maxAttempts}</label><select id="assignment-max">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<option>${n}</option>`).join("")}</select></div></div>
+        <div class="actions assignment-submit-actions"><button type="submit">${editing ? copy.saveChanges : copy.publish}</button></div>
+      </aside>
+    </div>`;
   attachSentenceLibraryControls(
     form,
     me,
@@ -1898,7 +2322,7 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
     empty.textContent = m("noLearnersForAssignment");
     const add = document.createElement("a");
     add.className = "button-link button-secondary";
-    add.href = `/teacher?lang=${encodeURIComponent(locale)}#learners`;
+    add.href = `/teacher/learners?lang=${encodeURIComponent(locale)}`;
     add.textContent = m(
       me.plan === "free"
         ? "freeAddLearner"
@@ -1908,17 +2332,43 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
     );
     learnerList.replaceChildren(empty, add);
   } else {
-    learnerList.replaceChildren(
-      ...activeLearners.map((learner) => {
-        const label = document.createElement("label");
-        const input = document.createElement("input");
-        input.type = "checkbox";
-        input.name = "learnerId";
-        input.value = learner.id;
-        label.append(input, document.createTextNode(` ${learner.name}`));
-        return label;
-      }),
-    );
+    const picker = document.createElement("details");
+    picker.className = "learner-picker";
+    const pickerSummary = document.createElement("summary");
+    pickerSummary.className = "learner-picker-summary";
+    const pickerPopover = document.createElement("div");
+    pickerPopover.className = "learner-picker-popover";
+    const search = document.createElement("input");
+    search.type = "search";
+    search.className = "learner-picker-search";
+    search.placeholder = m("searchLearners");
+    search.setAttribute("aria-label", m("searchLearners"));
+    const options = document.createElement("div");
+    options.className = "learner-picker-options";
+    const pickerFooter = document.createElement("div");
+    pickerFooter.className = "learner-picker-footer";
+    const pickerCount = document.createElement("span");
+    const pickerDone = document.createElement("button");
+    pickerDone.type = "button";
+    pickerDone.className = "button-secondary";
+    pickerDone.textContent = m("done");
+    pickerFooter.append(pickerCount, pickerDone);
+    pickerPopover.append(search, options, pickerFooter);
+    picker.append(pickerSummary, pickerPopover);
+    learnerList.replaceChildren(picker);
+    activeLearners.forEach((learner) => {
+      const label = document.createElement("label");
+      label.className = "learner-picker-option";
+      label.dataset.learnerName = learner.name.toLocaleLowerCase(locale);
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.name = "learnerId";
+      input.value = learner.id;
+      const name = document.createElement("span");
+      name.textContent = learner.name;
+      label.append(input, name);
+      options.append(label);
+    });
     const selectedRadio = form.querySelector(
       'input[name="learnerTarget"][value="selected"]',
     );
@@ -1934,6 +2384,41 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
         input.checked = assignedIds.has(input.value);
       });
     }
+    const updatePickerSummary = () => {
+      const selected = checkboxes
+        .filter((input) => input.checked)
+        .map(
+          (input) =>
+            input.closest("label")?.querySelector("span")?.textContent || "",
+        )
+        .filter(Boolean);
+      pickerSummary.textContent = selected.length
+        ? selected.length === 1
+          ? m("selectedLearnersCount", { count: 1 })
+          : m("selectedLearnersPlus", {
+              name: selected[0],
+              count: selected.length - 1,
+            })
+        : m("selectLearners");
+      pickerCount.textContent = m("selectedLearnersCount", {
+        count: selected.length,
+      });
+      options.querySelectorAll(".learner-picker-option").forEach((option) => {
+        option.classList.toggle(
+          "is-selected",
+          option.querySelector('input[name="learnerId"]')?.checked === true,
+        );
+      });
+    };
+    search.addEventListener("input", () => {
+      const query = search.value.trim().toLocaleLowerCase(locale);
+      options.querySelectorAll(".learner-picker-option").forEach((option) => {
+        option.hidden = !option.dataset.learnerName.includes(query);
+      });
+    });
+    pickerDone.addEventListener("click", () => {
+      picker.open = false;
+    });
     learnerError = document.createElement("small");
     learnerError.className = "assignment-learners-error";
     learnerError.setAttribute("role", "alert");
@@ -1963,10 +2448,12 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
       }
       if (event.target.name === "learnerTarget" && event.target.value === "all")
         checkboxes.forEach((input) => (input.checked = true));
+      updatePickerSummary();
       updateLearnerVisibility();
       updateLearnerValidation();
     });
     updateLearnerVisibility();
+    updatePickerSummary();
     updateLearnerValidation();
   }
   form.querySelector("#assignment-words").value = draftWords;
@@ -2013,7 +2500,9 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
     .toISOString()
     .slice(0, 16);
   form.querySelector("#assignment-deadline").value = local;
-  const status = statusElement(form);
+  const status = statusElement(
+    form.querySelector(".assignment-submit-actions"),
+  );
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const learnerTarget = form.querySelector(

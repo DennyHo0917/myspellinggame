@@ -384,7 +384,7 @@ const copy = {
     heading: "保存每周词表，持续追踪真实进步",
     intro:
       "重复使用词表，跨作业查看每位学生的进度，并把错词转成针对性的复习练习。",
-    free: "免费套餐",
+    free: "免费方案",
     freePrice: "$0",
     freeBilling: "永久免费",
     freeItems: [
@@ -396,7 +396,7 @@ const copy = {
       "查看 14 天学习记录",
       "不含智能复习",
     ],
-    parent: "家长套餐",
+    parent: "家长方案",
     parentMonth: "每月 $4.99",
     parentYear: "每年 $49.99",
     parentItems: [
@@ -408,7 +408,7 @@ const copy = {
       "查看 365 天学习记录",
       "智能复习",
     ],
-    teacher: "教师套餐",
+    teacher: "教师方案",
     teacherMonth: "每月 $9.99",
     teacherYear: "每年 $99.99",
     teacherItems: [
@@ -427,12 +427,12 @@ const copy = {
     monthly: "月付方案",
     yearly: "年付方案",
     billingPeriod: "计费周期",
-    selectParent: "选择家长套餐",
-    selectTeacher: "选择教师套餐",
+    selectParent: "选择家长方案",
+    selectTeacher: "选择教师方案",
     signIn: "登录工作台",
     practice: "免费练习",
     freeTeacher: "免费创建账号",
-    currentPlan: "当前套餐",
+    currentPlan: "当前方案",
     secureCheckout: "Stripe 安全结账 · 可随时取消",
     language: "语言",
     note: "教师登录，学生通过链接加入，无需学生账号和密码。",

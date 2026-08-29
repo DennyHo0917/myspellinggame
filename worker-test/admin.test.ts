@@ -166,6 +166,7 @@ describe("read-only admin dashboard", () => {
     await insertAccount(admin.id, "google", "google-1");
     await insertAccount(admin.id, "google", "google-2");
     await insertAccount(trial.id, "google");
+    await insertAccount(free.id, "microsoft");
     await insertSubscription(
       admin.id,
       "active",
@@ -194,6 +195,7 @@ describe("read-only admin dashboard", () => {
     expect(await response.json()).toEqual({
       totalUsers: 4,
       googleUsers: 2,
+      microsoftUsers: 1,
       proUsers: 2,
       activePaidUsers: 1,
       monthlyUsers: 1,

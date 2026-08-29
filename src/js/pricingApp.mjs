@@ -10,6 +10,10 @@ const planOptions = document.querySelectorAll("[data-plan-option]");
 const planPrices = document.querySelectorAll("[data-plan-price]");
 const planChoices = document.querySelectorAll("[data-plan-choice]");
 const pricingGrid = document.querySelector(".pricing-grid");
+const freeChoice = document.querySelector('[data-plan-cta="free"]');
+const accountPromise = fetch("/api/me", { credentials: "same-origin" })
+  .then((response) => (response.ok ? response.json() : null))
+  .catch(() => null);
 
 try {
   if (new URLSearchParams(location.search).get("checkout") === "cancelled") {
@@ -47,6 +51,34 @@ function selectPlan(plan) {
     card.classList.toggle("selected", card.dataset.planCard === plan);
 }
 
+async function openBillingPortal(control) {
+  const label = control.textContent;
+  if (control instanceof HTMLButtonElement) control.disabled = true;
+  else control.setAttribute("aria-disabled", "true");
+  control.textContent = productMessage("loading", {}, locale);
+  try {
+    const response = await fetch("/api/billing/portal", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ locale }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      location.href = `/teacher?lang=${encodeURIComponent(locale)}`;
+      return;
+    }
+    if (!response.ok || !data.url)
+      throw new Error(productMessage("error", {}, locale));
+    location.href = data.url;
+  } catch (error) {
+    control.textContent = label;
+    if (control instanceof HTMLButtonElement) control.disabled = false;
+    else control.removeAttribute("aria-disabled");
+    alert(error.message);
+  }
+}
+
 for (const option of planOptions)
   option.addEventListener("click", () =>
     selectInterval(option.dataset.planOption),
@@ -56,6 +88,12 @@ for (const choice of planChoices)
     const plan = choice.dataset.planChoice;
     selectPlan(plan);
     if (!["parent", "teacher"].includes(plan) || choice.disabled) return;
+    const me = await accountPromise;
+    if (me?.plan === plan) return;
+    if (["parent", "teacher"].includes(me?.plan)) {
+      await openBillingPortal(choice);
+      return;
+    }
     const interval = document.querySelector(
       '[data-plan-option][aria-pressed="true"]',
     )?.dataset.planOption;
@@ -103,11 +141,13 @@ for (const choice of planChoices)
     }
   });
 
-fetch("/api/me", { credentials: "same-origin" })
-  .then((response) => (response.ok ? response.json() : null))
+accountPromise
   .then((me) => {
     const current = document.querySelector(`[data-plan-cta="${me?.plan}"]`);
     if (!current) return;
+    const currentCard = document.querySelector(`[data-plan-card="${me.plan}"]`);
+    currentCard?.classList.add("current-plan");
+    currentCard?.setAttribute("aria-current", "true");
     current.textContent = current.dataset.currentPlanLabel;
     current.classList.add("current-plan-cta");
     if (current instanceof HTMLAnchorElement) {
@@ -115,6 +155,15 @@ fetch("/api/me", { credentials: "same-origin" })
       current.setAttribute("aria-disabled", "true");
     } else {
       current.disabled = true;
+    }
+    if (me.billingInterval === "month" || me.billingInterval === "year")
+      selectInterval(me.billingInterval);
+    if (["parent", "teacher"].includes(me.plan) && freeChoice) {
+      freeChoice.textContent = productMessage("manageBilling", {}, locale);
+      freeChoice.addEventListener("click", (event) => {
+        event.preventDefault();
+        void openBillingPortal(freeChoice);
+      });
     }
   })
   .catch(() => null);

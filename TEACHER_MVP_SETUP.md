@@ -34,9 +34,18 @@ Create a Google OAuth web client and configure:
 
 Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a high-entropy `BETTER_AUTH_SECRET` of at least 32 characters.
 
+## Microsoft OAuth
+
+Create a Microsoft Entra web app registration that supports the intended account types and configure:
+
+- Local redirect URI: `http://localhost:5173/api/auth/callback/microsoft`
+- Production redirect URI: `https://myspellinggame.com/api/auth/callback/microsoft`
+
+Set `MICROSOFT_CLIENT_ID` and `MICROSOFT_CLIENT_SECRET`. Google and Microsoft login can be configured independently.
+
 ## Admin dashboard
 
-Set `ADMIN_EMAIL` in the Cloudflare Worker variables (or with `wrangler secret put ADMIN_EMAIL`) to the Google login email allowed to open `/admin`. Do not commit the real email. If this variable is missing, all Admin API requests are denied.
+Set `ADMIN_EMAIL` in the Cloudflare Worker variables (or with `wrangler secret put ADMIN_EMAIL`) to the login email allowed to open `/admin`. Do not commit the real email. If this variable is missing, all Admin API requests are denied.
 
 ## Stripe
 
@@ -56,7 +65,7 @@ Set `ADMIN_EMAIL` in the Cloudflare Worker variables (or with `wrangler secret p
    - `invoice.payment_failed`
 9. Store the API key and webhook signing secret as `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` Cloudflare secrets.
 
-Confirm that the Customer Portal allows subscription cancellation, and verify the Parent Prices remain USD 4.99/month and USD 49.99/year and the Teacher Prices remain USD 9.99/month and USD 99.99/year. Keep the legacy Prices configured for existing subscriptions.
+Confirm that the Customer Portal allows switching between the Parent and Teacher products and subscription cancellation, and verify the Parent Prices remain USD 4.99/month and USD 49.99/year and the Teacher Prices remain USD 9.99/month and USD 99.99/year. Keep the legacy Prices configured for existing subscriptions.
 
 For local webhook testing, run Stripe CLI forwarding to `http://localhost:5173/api/stripe/webhook` and use its temporary `whsec_...` value only in `.dev.vars`.
 

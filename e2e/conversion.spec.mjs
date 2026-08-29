@@ -37,7 +37,10 @@ async function mockSignedOut(page) {
   await page.route("**/api/config", (route) =>
     route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify({ googleAuthConfigured: true }),
+      body: JSON.stringify({
+        googleAuthConfigured: true,
+        microsoftAuthConfigured: true,
+      }),
     }),
   );
   await page.route("**/api/me", (route) =>
@@ -433,7 +436,7 @@ for (const viewport of [
   { name: "desktop", width: 1280, height: 900 },
   { name: "mobile", width: 390, height: 844 },
 ]) {
-  test(`${viewport.name} signed-out workspace keeps copy and Google sign-in in one card`, async ({
+  test(`${viewport.name} signed-out workspace keeps copy and social sign-in in one card`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
@@ -448,20 +451,28 @@ for (const viewport of [
     await expect(
       page.getByRole("button", { name: "Continue with Google" }),
     ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Continue with Microsoft" }),
+    ).toBeVisible();
     const layout = await page.locator("#teacher-sign-in").evaluate((card) => {
-      const button = card.querySelector(".google-sign-in");
+      const buttons = card.querySelector(".social-sign-in-buttons");
+      const googleButton = card.querySelector(".google-sign-in");
+      const microsoftButton = card.querySelector(".microsoft-sign-in");
       const copy = card.querySelector(".teacher-login-copy");
       const cardBox = card.getBoundingClientRect();
-      const buttonBox = button.getBoundingClientRect();
+      const buttonsBox = buttons.getBoundingClientRect();
+      const googleBox = googleButton.getBoundingClientRect();
+      const microsoftBox = microsoftButton.getBoundingClientRect();
       const copyBox = copy.getBoundingClientRect();
       const notice = copy.querySelector(".notice");
       return {
-        buttonBelowCopy: buttonBox.top >= copyBox.bottom,
-        buttonCenterOffset: Math.abs(
-          buttonBox.left +
-            buttonBox.width / 2 -
+        buttonsBelowCopy: buttonsBox.top >= copyBox.bottom,
+        buttonsCenterOffset: Math.abs(
+          buttonsBox.left +
+            buttonsBox.width / 2 -
             (cardBox.left + cardBox.width / 2),
         ),
+        buttonsShareRow: Math.abs(googleBox.top - microsoftBox.top) <= 1,
         copyCenterOffset: Math.abs(
           copyBox.left + copyBox.width / 2 - (cardBox.left + cardBox.width / 2),
         ),
@@ -472,8 +483,9 @@ for (const viewport of [
         cardHeight: cardBox.height,
       };
     });
-    expect(layout.buttonBelowCopy).toBe(true);
-    expect(layout.buttonCenterOffset).toBeLessThanOrEqual(1);
+    expect(layout.buttonsBelowCopy).toBe(true);
+    expect(layout.buttonsCenterOffset).toBeLessThanOrEqual(1);
+    expect(layout.buttonsShareRow).toBe(viewport.name === "desktop");
     expect(layout.copyCenterOffset).toBeLessThanOrEqual(1);
     expect(layout.copyTextAlign).toBe("center");
     expect(layout.noticeTextAlign).toBe("center");
@@ -482,6 +494,25 @@ for (const viewport of [
     expect(layout.cardHeight).toBeGreaterThanOrEqual(300);
   });
 }
+
+test("Microsoft sign-in submits the Microsoft provider", async ({ page }) => {
+  await mockSignedOut(page);
+  await page.route("**/api/auth/sign-in/social", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ url: "/teacher?lang=en" }),
+    }),
+  );
+  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+  const requestPromise = page.waitForRequest("**/api/auth/sign-in/social");
+  await page
+    .getByRole("button", { name: "Continue with Microsoft" })
+    .click({ noWaitAfter: true });
+  expect((await requestPromise).postDataJSON()).toMatchObject({
+    provider: "microsoft",
+    callbackURL: "/teacher?lang=en",
+  });
+});
 
 test("standalone Free CTA opens the matching teacher sign-in area", async ({
   page,

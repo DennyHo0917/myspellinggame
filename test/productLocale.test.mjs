@@ -56,7 +56,6 @@ test("every product locale keeps the brand and has a distinct student-limit mess
     assert.ok(copy.longListAdvice);
     for (const key of [
       "plansAndBilling",
-      "websiteHome",
       "selectAtLeastOneLearner",
       "duplicateWords",
       "shortWords",
@@ -65,7 +64,6 @@ test("every product locale keeps the brand and has a distinct student-limit mess
       "saveChanges",
       "savingChanges",
       "assignmentsPageCopy",
-      "createFirstAssignment",
       "viewAllAssignments",
       "workspaceBenefitTitle",
       "workspaceBenefitCopy",

@@ -3394,7 +3394,12 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   });
 
   const sidebar = page.locator(".workspace-sidebar");
-  await expect(sidebar.locator(".workspace-sidebar-link")).toHaveCount(5);
+  await expect(
+    sidebar.locator(".workspace-sidebar-link[data-section]"),
+  ).toHaveCount(5);
+  await expect(
+    sidebar.getByRole("link", { name: "Home", exact: true }),
+  ).toHaveAttribute("href", "/");
   await expect(
     sidebar.getByText("Plans & billing", { exact: true }),
   ).toHaveCount(0);
@@ -3403,7 +3408,15 @@ test("workspace header owns account actions and keeps the desktop layout full wi
     const nav = document.querySelector(".teacher-product-nav");
     const logo = nav.querySelector(".brand-logo");
     const sidebar = document.querySelector(".workspace-sidebar");
+    const sidebarHome = sidebar.querySelector(".workspace-sidebar-home");
+    const sidebarCollapse = sidebar.querySelector(
+      ".workspace-sidebar-collapse",
+    );
+    const sidebarLink = sidebar.querySelector(
+      ".workspace-sidebar-link[data-section]",
+    );
     const main = document.querySelector(".workspace-layout .teacher-main");
+    const mainAction = main.querySelector("button, .button-link");
     return {
       bodyPadding: getComputedStyle(document.body).padding,
       layoutWidth: document
@@ -3415,6 +3428,10 @@ test("workspace header owns account actions and keeps the desktop layout full wi
       sidebarPosition: getComputedStyle(sidebar).position,
       sidebarRadius: getComputedStyle(sidebar).borderRadius,
       sidebarBottom: sidebar.getBoundingClientRect().bottom,
+      sidebarHomeBottom: sidebarHome.getBoundingClientRect().bottom,
+      sidebarCollapseTop: sidebarCollapse.getBoundingClientRect().top,
+      sidebarLinkHeight: sidebarLink.getBoundingClientRect().height,
+      mainActionHeight: mainAction.getBoundingClientRect().height,
       navPosition: getComputedStyle(nav).position,
       navBackground: getComputedStyle(nav).backgroundColor,
       navTop: nav.getBoundingClientRect().top,
@@ -3438,6 +3455,9 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   expect(layout.sidebarRadius).toBe("0px");
   expect(layout.sidebarTop).toBe(60);
   expect(layout.sidebarBottom).toBeCloseTo(layout.viewportHeight, 0);
+  expect(layout.sidebarHomeBottom).toBeCloseTo(layout.sidebarCollapseTop, 0);
+  expect(layout.sidebarLinkHeight).toBe(38);
+  expect(layout.mainActionHeight).toBeLessThanOrEqual(40);
   expect(layout.navPosition).toBe("sticky");
   expect(layout.navBackground).toBe("rgba(0, 0, 0, 0)");
   expect(layout.navTop).toBe(0);
@@ -3741,6 +3761,10 @@ test("desktop workspace sidebar collapses and restores", async ({ page }) => {
   await expect(
     sidebar.locator('[data-section="assignments"] .workspace-sidebar-label'),
   ).not.toBeVisible();
+  await expect(page.getByRole("button", { name: "Expand sidebar" })).toHaveCSS(
+    "justify-content",
+    "flex-start",
+  );
   expect(await main.boundingBox()).toMatchObject({
     x: expandedMainBox.x,
     y: expandedMainBox.y,

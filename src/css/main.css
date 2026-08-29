@@ -1918,14 +1918,34 @@ textarea:focus-visible,
   min-height: 36px;
   padding: 0 11px;
   border: 1px solid var(--line);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.86);
-  box-shadow: 0 6px 18px rgba(35, 56, 64, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: none;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease;
 }
 
 .top-right-nav .teacher-nav-link {
-  background: #e8f3ef;
+  background: rgba(232, 243, 239, 0.9);
   border-color: rgba(47, 111, 115, 0.22);
+}
+
+.top-right-nav .lang-btn::after {
+  content: "⌄";
+  margin-left: 6px;
+  color: var(--muted);
+  font-size: 0.75em;
+}
+
+.top-right-nav .privacy-btn:hover,
+.top-right-nav .sound-btn:hover,
+.top-right-nav .lang-btn:hover {
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.top-right-nav .teacher-nav-link:hover {
+  background: #dceee8;
 }
 
 .top-right-nav .lang-btn {

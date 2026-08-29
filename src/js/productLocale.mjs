@@ -30,6 +30,11 @@ const PACKS = {
     signInTitle: "Workspace",
     signInCopy:
       "Sign in to assign spelling practice and review results for a child or student.",
+    workspaceBenefitTitle: "Save weekly lists. Track real progress.",
+    workspaceBenefitCopy:
+      "Reuse word lists, follow each learner across assignments, and turn missed words into focused review practice.",
+    workspacePrivacyNote:
+      "Adults sign in. Learners join by link, without accounts or passwords.",
     authMissing: "Google sign-in is not configured in this environment yet.",
     dashboardTitle: "Workspace",
     greeting: "Welcome, {name}",
@@ -354,6 +359,12 @@ const PACKS = {
     signInTitle: "Espacio de trabajo",
     signInCopy:
       "Inicia sesión para asignar prácticas de spelling y consultar los resultados de tus hijos o estudiantes.",
+    workspaceBenefitTitle:
+      "Guarda las listas semanales y sigue el progreso real",
+    workspaceBenefitCopy:
+      "Reutiliza listas de palabras, sigue a cada estudiante entre tareas y convierte los errores en prácticas de repaso específicas.",
+    workspacePrivacyNote:
+      "Los adultos inician sesión. Los estudiantes entran mediante un enlace, sin cuentas ni contraseñas.",
     authMissing:
       "El acceso con Google aún no está configurado en este entorno.",
     dashboardTitle: "Espacio de trabajo",
@@ -681,6 +692,11 @@ const PACKS = {
     signInTitle: "Espaço de trabalho",
     signInCopy:
       "Entre para criar atividades de spelling e acompanhar os resultados de crianças ou alunos.",
+    workspaceBenefitTitle: "Salve listas semanais e acompanhe o progresso real",
+    workspaceBenefitCopy:
+      "Reutilize listas de palavras, acompanhe cada aluno em várias tarefas e transforme erros em práticas de revisão focadas.",
+    workspacePrivacyNote:
+      "Os adultos entram com sua conta. Os alunos participam por link, sem conta ou senha.",
     authMissing: "O login com Google ainda não foi configurado neste ambiente.",
     dashboardTitle: "Espaço de trabalho",
     greeting: "Olá, {name}",
@@ -1005,6 +1021,11 @@ const PACKS = {
     signInTitle: "Espace de travail",
     signInCopy:
       "Connectez-vous pour donner des exercices d’orthographe et consulter les résultats d’un enfant ou d’un élève.",
+    workspaceBenefitTitle: "Enregistrez vos listes et suivez les vrais progrès",
+    workspaceBenefitCopy:
+      "Réutilisez vos listes de mots, suivez chaque élève d’un devoir à l’autre et transformez les erreurs en exercices de révision ciblés.",
+    workspacePrivacyNote:
+      "Les adultes se connectent. Les élèves rejoignent l’activité par lien, sans compte ni mot de passe.",
     authMissing:
       "La connexion Google n’est pas encore configurée dans cet environnement.",
     dashboardTitle: "Espace de travail",
@@ -1335,6 +1356,12 @@ const PACKS = {
     signInTitle: "Ruang kerja",
     signInCopy:
       "Masuk untuk memberikan latihan ejaan dan melihat hasil anak atau siswa.",
+    workspaceBenefitTitle:
+      "Simpan daftar mingguan dan pantau perkembangan nyata",
+    workspaceBenefitCopy:
+      "Gunakan kembali daftar kata, ikuti perkembangan setiap siswa di berbagai tugas, dan ubah kata yang salah menjadi latihan ulasan terarah.",
+    workspacePrivacyNote:
+      "Orang dewasa cukup masuk. Siswa bergabung lewat tautan, tanpa akun atau kata sandi.",
     authMissing: "Login Google belum dikonfigurasi di lingkungan ini.",
     dashboardTitle: "Ruang kerja",
     greeting: "Selamat datang, {name}",
@@ -1657,6 +1684,11 @@ const PACKS = {
     signOut: "退出登录",
     signInTitle: "工作台",
     signInCopy: "登录后即可布置拼写作业，并查看孩子或学生的练习结果。",
+    workspaceBenefitTitle: "保存每周词表，持续追踪真实进步",
+    workspaceBenefitCopy:
+      "重复使用词表，跨作业查看每位学习者的进度，并把错词转成针对性的复习练习。",
+    workspacePrivacyNote:
+      "家长或教师登录，学习者通过链接加入，无需账号和密码。",
     authMissing: "当前环境尚未配置 Google 登录。",
     dashboardTitle: "工作台",
     greeting: "{name}，你好",

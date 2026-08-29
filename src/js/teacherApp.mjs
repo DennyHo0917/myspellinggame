@@ -581,12 +581,18 @@ function shell(me = null, activeSection = "overview") {
     });
     menu.append(link);
   }
+  const websiteHome = document.createElement("a");
+  websiteHome.className = "workspace-sidebar-link workspace-sidebar-home";
+  websiteHome.href = productPagePath("", locale);
+  websiteHome.innerHTML = `<span class="workspace-sidebar-icon" aria-hidden="true">${workspaceIcon("overview")}</span><span class="workspace-sidebar-label">${copy.homePage}</span>`;
+  websiteHome.setAttribute("aria-label", copy.homePage);
+  websiteHome.title = copy.homePage;
   const collapse = document.createElement("button");
   collapse.className = "workspace-sidebar-collapse";
   collapse.type = "button";
   collapse.setAttribute("aria-expanded", "true");
   collapse.setAttribute("aria-label", copy.collapseSidebar);
-  collapse.innerHTML = `<span aria-hidden="true">‹</span><span class="workspace-sidebar-label">${copy.collapseSidebar}</span>`;
+  collapse.innerHTML = `<span class="workspace-sidebar-icon" aria-hidden="true">‹</span><span class="workspace-sidebar-label">${copy.collapseSidebar}</span>`;
   collapse.addEventListener("click", () => {
     const collapsed = sidebar.classList.toggle("is-collapsed");
     layout.classList.toggle("is-sidebar-collapsed", collapsed);
@@ -595,12 +601,12 @@ function shell(me = null, activeSection = "overview") {
       "aria-label",
       collapsed ? copy.expandSidebar : copy.collapseSidebar,
     );
-    collapse.innerHTML = `<span aria-hidden="true">${collapsed ? "›" : "‹"}</span><span class="workspace-sidebar-label">${collapsed ? copy.expandSidebar : copy.collapseSidebar}</span>`;
+    collapse.innerHTML = `<span class="workspace-sidebar-icon" aria-hidden="true">${collapsed ? "›" : "‹"}</span><span class="workspace-sidebar-label">${collapsed ? copy.expandSidebar : copy.collapseSidebar}</span>`;
     try {
       localStorage.setItem("workspaceSidebarCollapsed", collapsed ? "1" : "0");
     } catch {}
   });
-  sidebar.append(menu, collapse);
+  sidebar.append(menu, websiteHome, collapse);
   try {
     if (localStorage.getItem("workspaceSidebarCollapsed") === "1")
       collapse.click();
@@ -714,45 +720,6 @@ function focusTeacherSignIn() {
   button.focus({ preventScroll: true });
 }
 
-async function appendPricing(main, { signInTarget = false } = {}) {
-  const pricing = document.createElement("section");
-  pricing.id = "pricing";
-  pricing.className = "teacher-pricing";
-  try {
-    const response = await fetch(productPagePath("pricing", locale));
-    if (!response.ok) throw new Error("pricing unavailable");
-    const html = await response.text();
-    const documentCopy = new DOMParser().parseFromString(html, "text/html");
-    const source = documentCopy.querySelector("main");
-    if (!source) throw new Error("pricing unavailable");
-    pricing.innerHTML = source.innerHTML;
-    const freeCta = pricing.querySelector("[data-free-teacher-cta]");
-    const proSecurity = pricing.querySelector(".checkout-security");
-    if (freeCta && proSecurity) {
-      const securitySpacer = proSecurity.cloneNode(true);
-      securitySpacer.classList.add("pricing-card-spacer");
-      securitySpacer.setAttribute("aria-hidden", "true");
-      const statusSpacer = document.createElement("p");
-      statusSpacer.className = "status pricing-card-spacer";
-      statusSpacer.setAttribute("aria-hidden", "true");
-      freeCta.after(securitySpacer, statusSpacer);
-    }
-    if (freeCta && signInTarget) {
-      freeCta.addEventListener("click", (event) => {
-        event.preventDefault();
-        history.replaceState({}, "", freeCta.href);
-        focusTeacherSignIn();
-      });
-    }
-    main.append(pricing);
-    document.body.dataset.productLocale = locale;
-    await import("./pricingApp.mjs");
-    if (location.hash === "#pricing") pricing.scrollIntoView();
-  } catch {
-    // Pricing remains available as a standalone page if this optional section fails.
-  }
-}
-
 async function renderLogin() {
   const config = await api("/api/config").catch(() => ({
     googleAuthConfigured: false,
@@ -762,7 +729,7 @@ async function renderLogin() {
   wrapper.className = "product-shell teacher-login-shell";
   wrapper.append(nav());
   const main = document.createElement("main");
-  main.className = "product-main teacher-main teacher-login-main has-pricing";
+  main.className = "product-main teacher-main teacher-login-main";
   const card = document.createElement("section");
   card.id = "teacher-sign-in";
   card.className = "product-card auth-card";
@@ -770,12 +737,22 @@ async function renderLogin() {
   title.textContent = copy.signInTitle;
   const text = document.createElement("p");
   text.textContent = copy.signInCopy;
+  const benefitTitle = document.createElement("h2");
+  benefitTitle.textContent = copy.workspaceBenefitTitle;
+  const benefitText = document.createElement("p");
+  benefitText.textContent = copy.workspaceBenefitCopy;
+  const privacyNote = document.createElement("p");
+  privacyNote.className = "notice";
+  privacyNote.textContent = copy.workspacePrivacyNote;
+  const cardCopy = document.createElement("div");
+  cardCopy.className = "teacher-login-copy";
+  cardCopy.append(title, text, benefitTitle, benefitText, privacyNote);
   const button = document.createElement("button");
   button.type = "button";
   button.className = "google-sign-in";
   button.innerHTML = `<svg class="google-logo" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.482h4.844a4.14 4.14 0 0 1-1.796 2.716v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.258c-.807.54-1.836.86-3.048.86-2.345 0-4.332-1.584-5.044-3.715H.95v2.332A9 9 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.956 10.707A5.4 5.4 0 0 1 3.674 9c0-.592.102-1.167.282-1.707V4.96H.95A9 9 0 0 0 0 9c0 1.454.348 2.832.95 4.04l3.006-2.333Z"/><path fill="#EA4335" d="M9 3.578c1.322 0 2.508.454 3.442 1.345l2.582-2.582C13.463.89 11.426 0 9 0A9 9 0 0 0 .95 4.96l3.006 2.333C4.668 5.162 6.655 3.578 9 3.578Z"/></svg><span>${copy.signIn}</span>`;
   const status = statusElement(card);
-  card.prepend(title, text, button);
+  card.append(cardCopy, status, button);
   button.disabled = !config.googleAuthConfigured;
   if (!config.googleAuthConfigured) {
     status.textContent = copy.authMissing;
@@ -811,7 +788,6 @@ async function renderLogin() {
   main.append(card);
   wrapper.append(main, footer());
   root.append(wrapper);
-  await appendPricing(main, { signInTarget: true });
   if (location.hash === "#teacher-sign-in") focusTeacherSignIn();
 }
 

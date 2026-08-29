@@ -67,6 +67,9 @@ test("every product locale keeps the brand and has a distinct student-limit mess
       "assignmentsPageCopy",
       "createFirstAssignment",
       "viewAllAssignments",
+      "workspaceBenefitTitle",
+      "workspaceBenefitCopy",
+      "workspacePrivacyNote",
     ]) {
       assert.ok(copy[key], `${locale}: ${key}`);
     }

@@ -431,57 +431,39 @@ for (const viewport of [
   { name: "desktop", width: 1280, height: 900 },
   { name: "mobile", width: 390, height: 844 },
 ]) {
-  test(`${viewport.name} embedded Free CTA focuses sign-in without reloading`, async ({
+  test(`${viewport.name} signed-out workspace keeps copy and Google sign-in in one card`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
     await mockSignedOut(page);
     await page.goto("/teacher?lang=en");
     await expect(page.locator("#teacher-sign-in")).toBeVisible();
-    await expect(page.locator(".teacher-pricing .plan-selector")).toBeVisible();
-    await expect(page.locator(".teacher-pricing .pricing-card")).toHaveCount(3);
-    await page.evaluate(() => {
-      window.teacherPageMarker = "still-here";
-    });
-
-    await page.locator("[data-free-teacher-cta]").click();
-
-    await expect(page).toHaveURL(/#teacher-sign-in$/);
+    await expect(page.locator(".teacher-pricing")).toHaveCount(0);
     await expect(
       page.getByRole("button", { name: "Continue with Google" }),
-    ).toBeFocused();
-    expect(await page.evaluate(() => window.teacherPageMarker)).toBe(
-      "still-here",
+    ).toBeVisible();
+    const layout = await page.locator("#teacher-sign-in").evaluate((card) => {
+      const button = card.querySelector(".google-sign-in");
+      const copy = card.querySelector(".teacher-login-copy");
+      const cardBox = card.getBoundingClientRect();
+      const buttonBox = button.getBoundingClientRect();
+      const copyBox = copy.getBoundingClientRect();
+      return {
+        buttonBelowCopy: buttonBox.top >= copyBox.bottom,
+        buttonCenterOffset: Math.abs(
+          buttonBox.left +
+            buttonBox.width / 2 -
+            (cardBox.left + cardBox.width / 2),
+        ),
+        cardHeight: cardBox.height,
+      };
+    });
+    expect(layout.buttonBelowCopy).toBe(true);
+    expect(layout.buttonCenterOffset).toBeLessThanOrEqual(1);
+    expect(layout.cardHeight).toBeGreaterThanOrEqual(
+      viewport.name === "desktop" ? 480 : 300,
     );
   });
-}
-
-for (const viewport of [
-  { name: "desktop", width: 1280, height: 900, desktop: true },
-  { name: "mobile", width: 390, height: 844, desktop: false },
-]) {
-  for (const locale of ["en", "es", "pt-BR", "fr", "id", "zh"]) {
-    test(`${viewport.name} ${locale} pricing stays aligned without crowding`, async ({
-      page,
-    }) => {
-      await mockSignedOut(page);
-      await page.setViewportSize(viewport);
-      await page.goto(`/teacher?lang=${encodeURIComponent(locale)}`);
-      const layout = await page.locator(".teacher-pricing").evaluate((root) => {
-        const cards = [...root.querySelectorAll(".pricing-card")];
-        return {
-          count: cards.length,
-          overflow: cards.some(
-            (card) => card.scrollWidth > card.clientWidth + 1,
-          ),
-          selectorVisible: Boolean(root.querySelector(".plan-selector")),
-        };
-      });
-      expect(layout.count, locale).toBe(3);
-      expect(layout.overflow, locale).toBe(false);
-      expect(layout.selectorVisible, locale).toBe(true);
-    });
-  }
 }
 
 test("standalone Free CTA opens the matching teacher sign-in area", async ({

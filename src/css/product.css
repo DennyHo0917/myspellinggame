@@ -862,18 +862,6 @@ th {
   align-content: center;
 }
 
-.teacher-login-main.has-pricing {
-  min-height: 0;
-  align-content: start;
-}
-
-.teacher-pricing {
-  display: grid;
-  gap: 18px;
-  width: 100%;
-  scroll-margin-top: 20px;
-}
-
 .auth-card h1 {
   margin-bottom: 10px;
   font-size: clamp(1.85rem, 4vw, 2.6rem);
@@ -1063,9 +1051,14 @@ body.workspace-page {
 }
 
 .workspace-sidebar-collapse {
-  margin-top: auto;
+  justify-content: flex-start;
   border-top: 1px solid var(--line);
   border-radius: 0 0 8px 8px;
+}
+
+.workspace-sidebar-home {
+  border-top: 1px solid var(--line);
+  border-radius: 8px 8px 0 0;
 }
 
 .workspace-user-menu {
@@ -1149,6 +1142,10 @@ body.workspace-page {
 .workspace-sidebar.is-collapsed .workspace-sidebar-collapse {
   justify-content: center;
   padding-inline: 8px;
+}
+
+.workspace-sidebar.is-collapsed .workspace-sidebar-collapse {
+  justify-content: flex-start;
 }
 
 .workspace-drawer-toggle,
@@ -1238,6 +1235,34 @@ body.workspace-page {
 
 .workspace-layout section[id] {
   scroll-margin-top: 14px;
+}
+
+@media (min-width: 801px) {
+  .workspace-layout .teacher-main :is(button, .button-link) {
+    min-height: 38px;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+  }
+
+  .workspace-sidebar {
+    padding: 12px 8px;
+  }
+
+  .workspace-sidebar-link,
+  .workspace-sidebar-collapse {
+    min-height: 38px;
+    gap: 8px;
+    padding: 7px 9px;
+    font-size: 0.86rem;
+  }
+
+  .workspace-sidebar-icon {
+    width: 20px;
+    min-width: 20px;
+    height: 20px;
+    font-size: 1rem;
+  }
 }
 
 @media (max-width: 800px) {
@@ -1376,7 +1401,7 @@ body.workspace-page {
   }
 }
 
-/* Keep the signed-out teacher entry compact while leaving the standalone pricing page unchanged. */
+/* Keep the signed-out teacher entry focused while leaving the standalone pricing page unchanged. */
 .teacher-login-main {
   width: min(1080px, 100%);
   gap: 1.25rem;
@@ -1384,135 +1409,75 @@ body.workspace-page {
 
 .teacher-login-main .auth-card {
   width: 100%;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
-  grid-template-rows: auto auto;
-  column-gap: clamp(1.5rem, 5vw, 4rem);
-  align-items: center;
-  padding: clamp(1.25rem, 3vw, 2rem);
+  max-width: 1000px;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: clamp(2rem, 5vw, 4rem);
   text-align: left;
 }
 
-.teacher-login-main .auth-card h1 {
-  grid-column: 1;
-  grid-row: 1;
+.teacher-login-copy {
+  width: 100%;
+}
+
+.teacher-login-copy h1 {
   margin: 0 0 0.45rem;
   font-size: clamp(1.7rem, 3vw, 2.35rem);
 }
 
-.teacher-login-main .auth-card p {
-  grid-column: 1;
-  grid-row: 2;
+.teacher-login-copy h2 {
+  margin: 1.75rem 0 0.45rem;
+  font-size: clamp(1.25rem, 2.4vw, 1.65rem);
+}
+
+.teacher-login-copy p {
   margin: 0;
-  max-width: 42rem;
+  max-width: 46rem;
+}
+
+.teacher-login-copy .notice {
+  max-width: none;
+  margin-top: 1rem;
 }
 
 .teacher-login-main .auth-card .google-sign-in {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  width: 100%;
+  width: min(320px, 100%);
   min-width: 0;
-  margin: 0;
+  margin: auto auto 0;
 }
 
 .teacher-login-main .auth-card .status {
-  grid-column: 1 / -1;
-  grid-row: 3;
-  margin: 1rem 0 0;
+  width: 100%;
+  margin: 1rem 0;
 }
 
 .teacher-login-main .auth-card .status:empty {
   display: none;
 }
 
-.teacher-login-main .teacher-pricing {
-  gap: 1rem;
-}
-
-.teacher-login-main .teacher-pricing > .product-card:first-child {
-  padding: 0 0.25rem;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-.teacher-login-main .teacher-pricing > .product-card:first-child h1 {
-  margin-bottom: 0.45rem;
-  font-size: clamp(1.45rem, 3vw, 1.9rem);
-}
-
-.teacher-login-main .teacher-pricing > .product-card:first-child p {
-  margin: 0;
-}
-
-.teacher-login-main .teacher-pricing > .product-card:first-child .notice {
-  margin-top: 0.85rem;
-}
-
-.teacher-pricing .pricing-grid {
-  gap: 1rem;
-}
-
-.teacher-pricing .pricing-card {
-  min-height: 500px;
-  display: flex;
-  flex-direction: column;
-  padding: clamp(1rem, 2.5vw, 1.35rem);
-}
-
-@media (min-width: 701px) {
-  .teacher-pricing .selected-plan .plan-description {
-    font-size: 0.9rem;
-    line-height: 1.45;
-  }
-}
-
-.teacher-pricing .pricing-card-spacer {
-  visibility: hidden;
-}
-
-.teacher-pricing .pricing-card > .button-link,
-.teacher-pricing .pricing-card > .current-plan-cta,
-.teacher-pricing .pricing-card > .actions {
-  margin-top: auto;
-}
-
 @media (max-width: 700px) {
-  .teacher-pricing .pricing-card {
-    min-height: 0;
-  }
-
   .teacher-login-shell .product-brand span:last-child {
     display: inline;
     font-size: 0.95rem;
   }
 
   .teacher-login-main .auth-card {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-    row-gap: 0.85rem;
+    min-height: 0;
     text-align: center;
   }
 
-  .teacher-login-main .auth-card h1,
-  .teacher-login-main .auth-card p,
-  .teacher-login-main .auth-card .google-sign-in,
-  .teacher-login-main .auth-card .status {
-    grid-column: 1;
-    grid-row: auto;
-  }
-
-  .teacher-login-main .auth-card h1 {
+  .teacher-login-copy h1 {
     margin-bottom: 0;
   }
 
-  .teacher-login-main .auth-card p {
-    justify-self: center;
+  .teacher-login-copy p {
+    margin-inline: auto;
   }
 
   .teacher-login-main .auth-card .google-sign-in {
     width: min(100%, 280px);
-    justify-self: center;
   }
 
   .teacher-login-main .auth-card .status {

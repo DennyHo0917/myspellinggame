@@ -927,6 +927,7 @@ body.workspace-page {
 
 .product-shell.workspace-shell {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   min-height: 100vh;
   min-height: 100dvh;
   grid-template-rows: auto minmax(0, 1fr) auto;
@@ -940,6 +941,17 @@ body.workspace-page {
   grid-template-columns: 1fr auto auto;
   min-height: 60px;
   padding: 8px 24px;
+  border-bottom-color: rgba(220, 232, 228, 0.72);
+  background: linear-gradient(
+    90deg,
+    rgba(246, 250, 248, 0.88),
+    rgba(238, 246, 248, 0.78)
+  );
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  backdrop-filter: blur(18px) saturate(135%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 8px 24px rgba(39, 62, 70, 0.1);
 }
 
 .workspace-shell .product-nav-actions {
@@ -1046,8 +1058,35 @@ body.workspace-page {
   min-width: 24px;
   height: 24px;
   place-items: center;
-  font-size: 1.15rem;
+  border-radius: 6px;
+  color: #4f6468;
   line-height: 1;
+  transition:
+    color 140ms ease,
+    background-color 140ms ease;
+}
+
+.workspace-sidebar-icon svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.workspace-sidebar-link:hover .workspace-sidebar-icon,
+.workspace-sidebar-link:focus-visible .workspace-sidebar-icon,
+.workspace-sidebar-collapse:hover .workspace-sidebar-icon,
+.workspace-sidebar-collapse:focus-visible .workspace-sidebar-icon {
+  color: var(--brand-dark);
+}
+
+.workspace-sidebar-link[aria-current="page"] .workspace-sidebar-icon {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
 }
 
 .workspace-sidebar-collapse {
@@ -1079,6 +1118,12 @@ body.workspace-page {
   font-weight: 700;
   list-style: none;
   cursor: pointer;
+}
+
+.workspace-user-toggle::after {
+  content: "⌄";
+  color: var(--muted);
+  font-size: 0.75em;
 }
 
 .workspace-user-toggle::-webkit-details-marker {
@@ -1261,7 +1306,6 @@ body.workspace-page {
     width: 20px;
     min-width: 20px;
     height: 20px;
-    font-size: 1rem;
   }
 }
 
@@ -1275,13 +1319,33 @@ body.workspace-page {
   }
 
   .workspace-shell .teacher-product-nav {
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: minmax(0, 1fr) 44px auto;
+    min-width: 0;
   }
 
   .workspace-shell .product-nav-actions {
     grid-column: 3;
     grid-row: 1;
+    min-width: 0;
     gap: 0.35rem;
+  }
+
+  .workspace-shell .product-brand {
+    min-width: 32px;
+  }
+
+  .workspace-shell .product-brand span:last-child,
+  .workspace-shell .lang-btn {
+    font-size: 0;
+  }
+
+  .workspace-shell .product-nav .lang-btn {
+    width: 40px;
+    padding: 0;
+  }
+
+  .workspace-shell .product-nav .lang-btn::after {
+    display: none;
   }
 
   .workspace-shell .teacher-product-nav {
@@ -1538,12 +1602,35 @@ body.assignment-page {
 
 .product-nav .lang-btn,
 .product-nav .button-secondary {
+  gap: 7px;
   min-height: 36px;
   padding: 0 11px;
   border: 1px solid var(--line) !important;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.86) !important;
-  box-shadow: 0 6px 18px rgba(35, 56, 64, 0.08) !important;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62) !important;
+  box-shadow: none !important;
+}
+
+.product-nav .lang-btn::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 0c2.5 2.74 3.92 6.3 4 10-.08 3.7-1.5 7.26-4 10m0-20C9.5 4.74 8.08 8.3 8 12c.08 3.7 1.5 7.26 4 10M2 12h20' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 0c2.5 2.74 3.92 6.3 4 10-.08 3.7-1.5 7.26-4 10m0-20C9.5 4.74 8.08 8.3 8 12c.08 3.7 1.5 7.26 4 10M2 12h20' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+.product-nav .lang-btn::after {
+  content: "⌄";
+  color: var(--muted);
+  font-size: 0.75em;
+}
+
+.workspace-shell .product-nav .lang-btn {
+  min-height: 40px;
 }
 
 .product-main {

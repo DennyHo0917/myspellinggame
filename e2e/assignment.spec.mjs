@@ -2267,6 +2267,22 @@ for (const path of ["/", "/es/", "/pt-br/", "/fr/", "/id/", "/zh/"]) {
   });
 }
 
+test("homepage header shows language and workspace icons", async ({ page }) => {
+  await page.goto("/");
+  const headerIcons = await page.evaluate(() => ({
+    language: getComputedStyle(
+      document.querySelector(".top-right-nav .lang-btn"),
+      "::before",
+    ).maskImage,
+    workspace: getComputedStyle(
+      document.querySelector(".top-right-nav .teacher-nav-link"),
+      "::before",
+    ).maskImage,
+  }));
+  expect(headerIcons.language).toContain("data:image/svg+xml");
+  expect(headerIcons.workspace).toContain("data:image/svg+xml");
+});
+
 test("mobile conversion pages keep their key actions usable", async ({
   page,
 }) => {
@@ -3397,6 +3413,7 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   await expect(
     sidebar.locator(".workspace-sidebar-link[data-section]"),
   ).toHaveCount(5);
+  await expect(sidebar.locator(".workspace-sidebar-icon svg")).toHaveCount(7);
   await expect(
     sidebar.getByRole("link", { name: "Home", exact: true }),
   ).toHaveAttribute("href", "/");
@@ -3407,6 +3424,8 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   const layout = await page.evaluate(() => {
     const nav = document.querySelector(".teacher-product-nav");
     const logo = nav.querySelector(".brand-logo");
+    const language = nav.querySelector(".lang-btn");
+    const userToggle = nav.querySelector(".workspace-user-toggle");
     const sidebar = document.querySelector(".workspace-sidebar");
     const sidebarHome = sidebar.querySelector(".workspace-sidebar-home");
     const sidebarCollapse = sidebar.querySelector(
@@ -3434,12 +3453,18 @@ test("workspace header owns account actions and keeps the desktop layout full wi
       mainActionHeight: mainAction.getBoundingClientRect().height,
       navPosition: getComputedStyle(nav).position,
       navBackground: getComputedStyle(nav).backgroundColor,
+      navBackgroundImage: getComputedStyle(nav).backgroundImage,
+      navBackdrop: getComputedStyle(nav).backdropFilter,
+      navShadow: getComputedStyle(nav).boxShadow,
       navTop: nav.getBoundingClientRect().top,
       logoSize: [
         logo.getBoundingClientRect().width,
         logo.getBoundingClientRect().height,
       ],
       logoRadius: getComputedStyle(logo).borderRadius,
+      languageIcon: getComputedStyle(language, "::before").maskImage,
+      languageRadius: getComputedStyle(language).borderRadius,
+      userChevron: getComputedStyle(userToggle, "::after").content,
       footerBottom: document.querySelector("footer").getBoundingClientRect()
         .bottom,
       viewportHeight: window.innerHeight,
@@ -3459,10 +3484,15 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   expect(layout.sidebarLinkHeight).toBe(38);
   expect(layout.mainActionHeight).toBeLessThanOrEqual(40);
   expect(layout.navPosition).toBe("sticky");
-  expect(layout.navBackground).toBe("rgba(0, 0, 0, 0)");
+  expect(layout.navBackgroundImage).toContain("linear-gradient");
+  expect(layout.navBackdrop).toContain("blur(18px)");
+  expect(layout.navShadow).not.toBe("none");
   expect(layout.navTop).toBe(0);
   expect(layout.logoSize).toEqual([32, 32]);
   expect(layout.logoRadius).toBe("7px");
+  expect(layout.languageIcon).toContain("data:image/svg+xml");
+  expect(layout.languageRadius).toBe("999px");
+  expect(layout.userChevron).toBe('"⌄"');
   expect(layout.footerBottom).toBeCloseTo(layout.viewportHeight, 0);
   expect(layout.mainPadding).toBe("32px");
 

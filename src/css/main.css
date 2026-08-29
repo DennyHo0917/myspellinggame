@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-@import url('./footer.css');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("./footer.css");
 
 :root {
   --bg: #f6faf8;
@@ -33,11 +33,26 @@ body {
   margin: 0;
   padding: 28px;
   background:
-    radial-gradient(circle at 12% 8%, rgba(242, 193, 78, 0.16), transparent 28%),
-    radial-gradient(circle at 88% 4%, rgba(52, 104, 194, 0.12), transparent 26%),
+    radial-gradient(
+      circle at 12% 8%,
+      rgba(242, 193, 78, 0.16),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 88% 4%,
+      rgba(52, 104, 194, 0.12),
+      transparent 26%
+    ),
     linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
   color: var(--ink);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   letter-spacing: 0;
   overflow-x: hidden;
 }
@@ -185,7 +200,7 @@ a {
 .practice-flow li:not(:last-child)::after {
   margin-left: 8px;
   color: var(--primary);
-  content: '→';
+  content: "→";
 }
 
 .main-content-wrapper {
@@ -225,8 +240,17 @@ a {
 #game-canvas {
   z-index: 2;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 252, 251, 0.96)),
-    repeating-linear-gradient(0deg, transparent 0, transparent 58px, rgba(47, 111, 115, 0.05) 59px);
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(248, 252, 251, 0.96)
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 58px,
+      rgba(47, 111, 115, 0.05) 59px
+    );
   cursor: none;
 }
 
@@ -283,7 +307,9 @@ a {
 
 #word-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(47, 111, 115, 0.14), 0 10px 24px rgba(39, 62, 70, 0.1);
+  box-shadow:
+    0 0 0 4px rgba(47, 111, 115, 0.14),
+    0 10px 24px rgba(39, 62, 70, 0.1);
 }
 
 #word-input::placeholder {
@@ -1594,7 +1620,6 @@ textarea:focus-visible,
   .clear-data-btn {
     width: 100%;
   }
-
 }
 
 /* Homepage shell: a calm workspace around the practice tool. */
@@ -1915,6 +1940,7 @@ textarea:focus-visible,
 .top-right-nav .sound-btn,
 .top-right-nav .lang-btn,
 .top-right-nav .teacher-nav-link {
+  gap: 7px;
   min-height: 36px;
   padding: 0 11px;
   border: 1px solid var(--line);
@@ -1931,9 +1957,27 @@ textarea:focus-visible,
   border-color: rgba(47, 111, 115, 0.22);
 }
 
+.top-right-nav .lang-btn::before,
+.top-right-nav .teacher-nav-link::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  background: currentColor;
+  -webkit-mask: var(--header-action-icon) center / contain no-repeat;
+  mask: var(--header-action-icon) center / contain no-repeat;
+}
+
+.top-right-nav .lang-btn::before {
+  --header-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 0c2.5 2.74 3.92 6.3 4 10-.08 3.7-1.5 7.26-4 10m0-20C9.5 4.74 8.08 8.3 8 12c.08 3.7 1.5 7.26 4 10M2 12h20' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.top-right-nav .teacher-nav-link::before {
+  --header-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z' fill='black'/%3E%3C/svg%3E");
+}
+
 .top-right-nav .lang-btn::after {
   content: "⌄";
-  margin-left: 6px;
   color: var(--muted);
   font-size: 0.75em;
 }
@@ -2083,13 +2127,13 @@ textarea:focus-visible,
 .faq-item summary::after {
   float: right;
   color: var(--primary);
-  content: '+';
+  content: "+";
   font-size: 1.2rem;
   line-height: 1;
 }
 
 .faq-item[open] summary::after {
-  content: '−';
+  content: "−";
 }
 
 .faq-item p {

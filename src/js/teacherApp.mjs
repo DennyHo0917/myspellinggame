@@ -270,6 +270,7 @@ function nav({ workspace = false, me = null } = {}) {
   userToggle.setAttribute("role", "button");
   userToggle.setAttribute("aria-haspopup", "menu");
   userToggle.setAttribute("aria-expanded", "false");
+  userToggle.setAttribute("aria-label", me.user.name);
   const avatar = document.createElement("span");
   avatar.className = "workspace-user-avatar";
   avatar.setAttribute("aria-hidden", "true");
@@ -371,15 +372,22 @@ function footer() {
 
 function workspaceIcon(name) {
   const icons = {
-    overview: "⌂",
-    assignments: "✓",
-    learners: "♙",
-    savedLists: "▤",
-    progress: "↗",
-    billing: "$",
-    signOut: "↪",
+    overview:
+      '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10Z"/><path d="M9 21v-7h6v7"/></svg>',
+    assignments:
+      '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>',
+    learners:
+      '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="7" r="3"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>',
+    savedLists:
+      '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h8"/></svg>',
+    progress:
+      '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m4 16 6-6 4 4 7-7"/><path d="M15 7h6v6"/></svg>',
   };
   return icons[name] || "•";
+}
+
+function workspaceChevron(direction = "left") {
+  return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${direction === "left" ? "m15 18-6-6 6-6" : "m9 18 6-6-6-6"}"/></svg>`;
 }
 
 function workspaceSection(value, fallback = "overview") {
@@ -592,7 +600,7 @@ function shell(me = null, activeSection = "overview") {
   collapse.type = "button";
   collapse.setAttribute("aria-expanded", "true");
   collapse.setAttribute("aria-label", copy.collapseSidebar);
-  collapse.innerHTML = `<span class="workspace-sidebar-icon" aria-hidden="true">‹</span><span class="workspace-sidebar-label">${copy.collapseSidebar}</span>`;
+  collapse.innerHTML = `<span class="workspace-sidebar-icon">${workspaceChevron("left")}</span><span class="workspace-sidebar-label">${copy.collapseSidebar}</span>`;
   collapse.addEventListener("click", () => {
     const collapsed = sidebar.classList.toggle("is-collapsed");
     layout.classList.toggle("is-sidebar-collapsed", collapsed);
@@ -601,7 +609,7 @@ function shell(me = null, activeSection = "overview") {
       "aria-label",
       collapsed ? copy.expandSidebar : copy.collapseSidebar,
     );
-    collapse.innerHTML = `<span class="workspace-sidebar-icon" aria-hidden="true">${collapsed ? "›" : "‹"}</span><span class="workspace-sidebar-label">${collapsed ? copy.expandSidebar : copy.collapseSidebar}</span>`;
+    collapse.innerHTML = `<span class="workspace-sidebar-icon">${workspaceChevron(collapsed ? "right" : "left")}</span><span class="workspace-sidebar-label">${collapsed ? copy.expandSidebar : copy.collapseSidebar}</span>`;
     try {
       localStorage.setItem("workspaceSidebarCollapsed", collapsed ? "1" : "0");
     } catch {}

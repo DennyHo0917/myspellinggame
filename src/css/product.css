@@ -946,6 +946,9 @@ body.workspace-page {
 }
 
 .workspace-shell .teacher-product-nav {
+  position: sticky;
+  z-index: 99;
+  top: 0;
   grid-template-columns: 1fr auto auto;
   min-height: 60px;
   padding: 8px 24px;
@@ -965,6 +968,7 @@ body.workspace-page {
 }
 
 .workspace-layout .teacher-main {
+  grid-column: 2;
   width: min(1280px, 100%);
   min-width: 0;
   margin: 0 auto;
@@ -985,11 +989,12 @@ body.workspace-page {
 }
 
 .workspace-sidebar {
-  position: sticky;
-  top: 0;
+  position: fixed;
+  z-index: 98;
+  inset: 60px auto 0 0;
   display: flex;
+  width: 232px;
   flex-direction: column;
-  align-self: stretch;
   padding: 16px 10px;
   overflow-y: auto;
   border-right: 1px solid var(--line);

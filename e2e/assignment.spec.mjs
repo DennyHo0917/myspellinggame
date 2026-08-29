@@ -3400,6 +3400,7 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   ).toHaveCount(0);
   await expect(sidebar.getByText("Sign out", { exact: true })).toHaveCount(0);
   const layout = await page.evaluate(() => {
+    const nav = document.querySelector(".teacher-product-nav");
     const sidebar = document.querySelector(".workspace-sidebar");
     const main = document.querySelector(".workspace-layout .teacher-main");
     return {
@@ -3408,13 +3409,13 @@ test("workspace header owns account actions and keeps the desktop layout full wi
         .querySelector(".workspace-layout")
         .getBoundingClientRect().width,
       sidebarLeft: sidebar.getBoundingClientRect().left,
+      sidebarTop: sidebar.getBoundingClientRect().top,
       sidebarWidth: sidebar.getBoundingClientRect().width,
       sidebarPosition: getComputedStyle(sidebar).position,
       sidebarRadius: getComputedStyle(sidebar).borderRadius,
       sidebarBottom: sidebar.getBoundingClientRect().bottom,
-      layoutBottom: document
-        .querySelector(".workspace-layout")
-        .getBoundingClientRect().bottom,
+      navPosition: getComputedStyle(nav).position,
+      navTop: nav.getBoundingClientRect().top,
       footerBottom: document.querySelector("footer").getBoundingClientRect()
         .bottom,
       viewportHeight: window.innerHeight,
@@ -3426,9 +3427,12 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   expect(layout.sidebarLeft).toBe(0);
   expect(layout.sidebarWidth).toBeGreaterThanOrEqual(220);
   expect(layout.sidebarWidth).toBeLessThanOrEqual(240);
-  expect(layout.sidebarPosition).toBe("sticky");
+  expect(layout.sidebarPosition).toBe("fixed");
   expect(layout.sidebarRadius).toBe("0px");
-  expect(layout.sidebarBottom).toBeCloseTo(layout.layoutBottom, 0);
+  expect(layout.sidebarTop).toBe(60);
+  expect(layout.sidebarBottom).toBeCloseTo(layout.viewportHeight, 0);
+  expect(layout.navPosition).toBe("sticky");
+  expect(layout.navTop).toBe(0);
   expect(layout.footerBottom).toBeCloseTo(layout.viewportHeight, 0);
   expect(layout.mainPadding).toBe("32px");
 
@@ -3707,6 +3711,15 @@ test("desktop workspace sidebar collapses and restores", async ({ page }) => {
     1600 - (expandedMainBox.x + expandedMainBox.width),
     0,
   );
+  await main.evaluate((element) => {
+    element.style.minHeight = "1800px";
+  });
+  await page.evaluate(() => scrollTo(0, 700));
+  expect(await sidebar.boundingBox()).toEqual(expandedSidebarBox);
+  expect(
+    await page.locator(".teacher-product-nav").boundingBox(),
+  ).toMatchObject({ y: 0 });
+  await page.evaluate(() => scrollTo(0, 0));
   await page.getByRole("button", { name: "Collapse sidebar" }).click();
   await expect(sidebar).toHaveClass(/is-collapsed/);
   await expect(page.locator(".workspace-layout")).toHaveClass(
@@ -3718,7 +3731,11 @@ test("desktop workspace sidebar collapses and restores", async ({ page }) => {
   await expect(
     sidebar.locator('[data-section="assignments"] .workspace-sidebar-label'),
   ).not.toBeVisible();
-  expect(await main.boundingBox()).toEqual(expandedMainBox);
+  expect(await main.boundingBox()).toMatchObject({
+    x: expandedMainBox.x,
+    y: expandedMainBox.y,
+    width: expandedMainBox.width,
+  });
 
   await page.getByRole("button", { name: "Expand sidebar" }).click();
   await expect(sidebar).not.toHaveClass(/is-collapsed/);

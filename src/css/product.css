@@ -933,24 +933,39 @@ th {
 }
 
 /* Workspace navigation keeps the existing page sections and routes intact. */
+body.workspace-page {
+  padding: 0;
+}
+
+.workspace-shell .teacher-product-nav {
+  grid-template-columns: 1fr auto auto;
+  min-height: 60px;
+  padding: 8px 24px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.workspace-shell .product-nav-actions {
+  grid-column: 3;
+}
+
 .workspace-layout {
   display: grid;
-  grid-template-columns: 224px minmax(0, 960px);
-  gap: 20px;
-  width: min(1204px, 100%);
-  margin: 22px auto 0;
+  grid-template-columns: 232px minmax(0, 1fr);
+  width: 100%;
+  margin: 0;
   align-items: start;
   transition: grid-template-columns 160ms ease;
 }
 
 .workspace-layout.is-sidebar-collapsed {
-  grid-template-columns: 68px minmax(0, 1080px);
+  grid-template-columns: 68px minmax(0, 1fr);
 }
 
 .workspace-layout .teacher-main {
-  width: 100%;
+  width: min(1280px, 100%);
   min-width: 0;
   margin: 0;
+  padding: 28px 32px 40px;
   gap: 16px;
 }
 
@@ -968,17 +983,16 @@ th {
 
 .workspace-sidebar {
   position: sticky;
-  top: 14px;
+  top: 0;
   display: flex;
   flex-direction: column;
-  min-height: min(620px, calc(100vh - 28px));
-  max-height: calc(100vh - 28px);
-  padding: 10px;
+  min-height: calc(100vh - 60px);
+  max-height: calc(100vh - 60px);
+  padding: 16px 10px;
   overflow-y: auto;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 8px 24px rgba(39, 62, 70, 0.07);
+  border-right: 1px solid var(--line);
+  background: rgba(241, 247, 245, 0.88);
+  box-shadow: none;
   transition:
     width 160ms ease,
     box-shadow 160ms ease;
@@ -1042,20 +1056,83 @@ th {
   line-height: 1;
 }
 
-.workspace-sidebar-link[data-section="billing"] {
+.workspace-sidebar-collapse {
   margin-top: auto;
   border-top: 1px solid var(--line);
   border-radius: 0 0 8px 8px;
 }
 
-.workspace-sidebar-signout {
-  color: var(--muted);
+.workspace-user-menu {
+  position: relative;
 }
 
-.workspace-sidebar-collapse {
-  margin-top: 8px;
-  border-top: 1px solid var(--line);
-  border-radius: 0 0 8px 8px;
+.workspace-user-toggle {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 9px 4px 5px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--brand-dark);
+  font-size: 0.86rem;
+  font-weight: 700;
+  list-style: none;
+  cursor: pointer;
+}
+
+.workspace-user-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.workspace-user-avatar {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+}
+
+.workspace-user-dropdown {
+  position: absolute;
+  z-index: 1000;
+  top: calc(100% + 6px);
+  right: 0;
+  display: none;
+  width: max-content;
+  min-width: 210px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  box-shadow: 0 18px 45px rgba(39, 62, 70, 0.12);
+}
+
+.workspace-user-menu[open] .workspace-user-dropdown {
+  display: grid;
+}
+
+.workspace-user-dropdown :is(a, button) {
+  width: 100%;
+  min-height: 40px;
+  justify-content: flex-start;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--brand-dark);
+  font-size: 0.88rem;
+  text-align: left;
+  text-decoration: none;
+}
+
+.workspace-user-dropdown :is(a, button):hover,
+.workspace-user-dropdown :is(a, button):focus-visible {
+  background: #e6efee;
 }
 
 .workspace-sidebar.is-collapsed .workspace-sidebar-label {
@@ -1173,6 +1250,15 @@ th {
   .workspace-shell .product-nav-actions {
     grid-column: 3;
     grid-row: 1;
+    gap: 0.35rem;
+  }
+
+  .workspace-shell .teacher-product-nav {
+    padding-inline: 14px;
+  }
+
+  .workspace-user-name {
+    display: none;
   }
 
   .workspace-drawer-toggle {
@@ -1193,7 +1279,11 @@ th {
   .workspace-layout {
     display: block;
     width: 100%;
-    margin-top: 16px;
+    margin-top: 0;
+  }
+
+  .workspace-layout .teacher-main {
+    padding: 20px 16px 32px;
   }
 
   .workspace-sidebar,
@@ -1546,6 +1636,10 @@ body.assignment-page {
   body.product-page,
   body.assignment-page {
     padding: 14px;
+  }
+
+  body.product-page.workspace-page {
+    padding: 0;
   }
 
   .product-nav {

@@ -117,6 +117,12 @@ function workspaceLearnerLabel(me) {
       : copy.learners;
 }
 
+function syncFormSubmit(form) {
+  form.querySelector('button[type="submit"]').disabled = Boolean(
+    form.querySelector('[aria-invalid="true"]'),
+  );
+}
+
 function attachWordLimit(form, me, wordsSelector, { locked = false } = {}) {
   const input = form.querySelector(wordsSelector);
   if (!input) return;
@@ -154,7 +160,7 @@ function attachWordLimit(form, me, wordsSelector, { locked = false } = {}) {
     error.hidden = !invalid;
     error.textContent = messages.join(" ");
     input.setAttribute("aria-invalid", String(invalid));
-    form.querySelector('button[type="submit"]').disabled = invalid;
+    syncFormSubmit(form);
     upgrade.hidden = locked || me.plan !== "free" || !overLimit;
   };
   input.addEventListener("input", update);
@@ -239,22 +245,100 @@ function attachSentenceLibraryControls(
   }
 }
 
-function nav({ workspace = false } = {}) {
+function nav({ workspace = false, me = null } = {}) {
   const element = document.createElement("nav");
   element.className = "product-nav teacher-product-nav";
   const homeHref = productPagePath("", locale);
+  const brandHref = workspace
+    ? `/teacher?lang=${encodeURIComponent(locale)}`
+    : homeHref;
   const languageOptions = PRODUCT_LOCALES.map(
     ([value, label]) =>
       `<a class="lang-option" href="?lang=${encodeURIComponent(value)}"${value === locale ? ' aria-current="page"' : ""}>${label}</a>`,
   ).join("");
   element.innerHTML = `
-    <a class="product-brand" href="${homeHref}"><img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span>${copy.brand}</span></a>
+    <a class="product-brand" href="${brandHref}"><img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span>${copy.brand}</span></a>
     ${workspace ? `<button class="workspace-drawer-toggle" id="workspace-menu-toggle" type="button" aria-label="${copy.openWorkspaceMenu}" aria-expanded="false"><span aria-hidden="true">☰</span></button>` : ""}
     <div class="product-nav-actions">
       <details class="language-switcher"><summary class="lang-btn" aria-label="${copy.language}">${copy.language}</summary><div class="lang-menu">${languageOptions}</div></details>
-      <a class="button-link button-secondary" href="${homeHref}">${copy.homePage}</a>
+      ${workspace ? "" : `<a class="button-link button-secondary" href="${homeHref}">${copy.homePage}</a>`}
     </div>`;
+  if (!workspace || !me) return element;
+  element.querySelector(".product-brand").addEventListener("click", (event) => {
+    event.preventDefault();
+    navigateWorkspace("overview");
+  });
+  const actions = element.querySelector(".product-nav-actions");
+  const languageSwitcher = element.querySelector(".language-switcher");
+  const userMenu = document.createElement("details");
+  userMenu.className = "workspace-user-menu";
+  const userToggle = document.createElement("summary");
+  userToggle.className = "workspace-user-toggle";
+  userToggle.setAttribute("role", "button");
+  userToggle.setAttribute("aria-haspopup", "menu");
+  userToggle.setAttribute("aria-expanded", "false");
+  const avatar = document.createElement("span");
+  avatar.className = "workspace-user-avatar";
+  avatar.setAttribute("aria-hidden", "true");
+  avatar.textContent = me.user.name.trim().charAt(0).toUpperCase() || "?";
+  const userName = document.createElement("span");
+  userName.className = "workspace-user-name";
+  userName.textContent = me.user.name;
+  userToggle.append(avatar, userName);
+  const menu = document.createElement("div");
+  menu.className = "workspace-user-dropdown";
+  menu.setAttribute("role", "menu");
+  const websiteHome = document.createElement("a");
+  websiteHome.href = homeHref;
+  websiteHome.textContent = copy.websiteHome;
+  websiteHome.setAttribute("role", "menuitem");
+  const billing = document.createElement(isPlusPlan(me) ? "button" : "a");
+  billing.className = "workspace-user-action";
+  billing.textContent = copy.plansAndBilling;
+  billing.setAttribute("role", "menuitem");
+  if (isPlusPlan(me)) {
+    billing.type = "button";
+    billing.addEventListener("click", openPortal);
+  } else {
+    billing.href = productPagePath("pricing", locale);
+  }
+  const logout = document.createElement("button");
+  logout.type = "button";
+  logout.className = "workspace-user-action";
+  logout.textContent = copy.signOut;
+  logout.setAttribute("role", "menuitem");
+  logout.addEventListener("click", signOut);
+  menu.append(websiteHome, billing, logout);
+  userMenu.append(userToggle, menu);
+  userMenu.addEventListener("toggle", () => {
+    userToggle.setAttribute("aria-expanded", String(userMenu.open));
+    if (userMenu.open) languageSwitcher.open = false;
+  });
+  languageSwitcher.addEventListener("toggle", () => {
+    if (languageSwitcher.open) userMenu.open = false;
+  });
+  userMenu.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      userMenu.open = false;
+      userToggle.focus();
+    } else if (event.key === "ArrowDown" && event.target === userToggle) {
+      event.preventDefault();
+      userMenu.open = true;
+      menu.querySelector('[role="menuitem"]').focus();
+    }
+  });
+  document.addEventListener("click", (event) => {
+    if (!userMenu.contains(event.target)) userMenu.open = false;
+  });
+  actions.append(userMenu);
   return element;
+}
+
+async function signOut() {
+  await api("/api/auth/sign-out", { method: "POST", body: "{}" }).catch(
+    () => null,
+  );
+  location.href = productPagePath("", locale);
 }
 
 const FOOTER_PAGES = [
@@ -429,6 +513,7 @@ function bindWorkspaceNavigation() {
 }
 
 function shell(me = null, activeSection = "overview") {
+  document.body.classList.toggle("workspace-page", Boolean(me));
   if (me) {
     const existing = root.querySelector(".workspace-shell");
     if (existing) {
@@ -440,7 +525,7 @@ function shell(me = null, activeSection = "overview") {
   root.replaceChildren();
   const wrapper = document.createElement("div");
   wrapper.className = `product-shell${me ? " workspace-shell" : ""}`;
-  wrapper.append(nav({ workspace: Boolean(me) }));
+  wrapper.append(nav({ workspace: Boolean(me), me }));
   if (!me) {
     const main = document.createElement("main");
     main.className = "product-main teacher-main";
@@ -482,11 +567,6 @@ function shell(me = null, activeSection = "overview") {
       copy.freeProgress,
       `/teacher/progress?lang=${encodeURIComponent(locale)}`,
     ],
-    [
-      "billing",
-      copy.plansAndBilling,
-      isPlusPlan(me) ? "" : productPagePath("pricing", locale),
-    ],
   ];
   const menu = document.createElement("div");
   menu.className = "workspace-sidebar-menu";
@@ -501,33 +581,13 @@ function shell(me = null, activeSection = "overview") {
     link.title = label;
     if (current === key || (key === "overview" && !current))
       link.setAttribute("aria-current", "page");
-    if (key === "billing" && isPlusPlan(me))
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-        openPortal();
-      });
     link.addEventListener("click", (event) => {
       closeWorkspaceDrawer();
-      if (key === "billing") return;
       event.preventDefault();
       navigateWorkspace(key);
     });
     menu.append(link);
   }
-  const signOut = document.createElement("button");
-  signOut.className = "workspace-sidebar-link workspace-sidebar-signout";
-  signOut.type = "button";
-  signOut.dataset.section = "signOut";
-  signOut.innerHTML = `<span class="workspace-sidebar-icon" aria-hidden="true">${workspaceIcon("signOut")}</span><span class="workspace-sidebar-label">${copy.signOut}</span>`;
-  signOut.setAttribute("aria-label", copy.signOut);
-  signOut.title = copy.signOut;
-  signOut.addEventListener("click", async () => {
-    await api("/api/auth/sign-out", { method: "POST", body: "{}" }).catch(
-      () => null,
-    );
-    location.href = productPagePath("", locale);
-  });
-  menu.append(signOut);
   const collapse = document.createElement("button");
   collapse.className = "workspace-sidebar-collapse";
   collapse.type = "button";
@@ -1853,6 +1913,7 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
   const learnerOptions = learnerField.querySelector(".radio-row");
   const activeLearners = roster.filter((learner) => !learner.archived);
   let learnerAssignmentChanged = !editing;
+  let learnerError = null;
   if (!activeLearners.length) {
     learnerOptions.hidden = true;
     const empty = document.createElement("p");
@@ -1881,9 +1942,6 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
         return label;
       }),
     );
-    const allRadio = form.querySelector(
-      'input[name="learnerTarget"][value="all"]',
-    );
     const selectedRadio = form.querySelector(
       'input[name="learnerTarget"][value="selected"]',
     );
@@ -1898,15 +1956,22 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
       checkboxes.forEach((input) => {
         input.checked = assignedIds.has(input.value);
       });
-    } else if (!editing && isParentPlan(me) && activeLearners.length === 1) {
-      selectedRadio.checked = true;
-      checkboxes[0].checked = true;
-    } else if (!editing) {
-      allRadio.checked = true;
-      checkboxes.forEach((input) => {
-        input.checked = true;
-      });
     }
+    learnerError = document.createElement("small");
+    learnerError.className = "assignment-learners-error";
+    learnerError.setAttribute("role", "alert");
+    learnerError.textContent = m("selectAtLeastOneLearner");
+    learnerField.append(learnerError);
+    const updateLearnerValidation = () => {
+      const invalid =
+        learnerAssignmentChanged &&
+        form.querySelector('input[name="learnerTarget"]:checked').value ===
+          "selected" &&
+        !learnerList.querySelector('input[name="learnerId"]:checked');
+      learnerField.setAttribute("aria-invalid", String(invalid));
+      learnerError.hidden = !invalid;
+      syncFormSubmit(form);
+    };
     const updateLearnerVisibility = () => {
       learnerList.hidden =
         form.querySelector('input[name="learnerTarget"]:checked').value !==
@@ -1919,9 +1984,13 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
       ) {
         learnerAssignmentChanged = true;
       }
+      if (event.target.name === "learnerTarget" && event.target.value === "all")
+        checkboxes.forEach((input) => (input.checked = true));
       updateLearnerVisibility();
+      updateLearnerValidation();
     });
     updateLearnerVisibility();
+    updateLearnerValidation();
   }
   form.querySelector("#assignment-words").value = draftWords;
   form.querySelector("#assignment-sentences").value = draftSentences;
@@ -1970,6 +2039,19 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
   const status = statusElement(form);
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    const learnerTarget = form.querySelector(
+      'input[name="learnerTarget"]:checked',
+    )?.value;
+    if (
+      learnerTarget === "selected" &&
+      !learnerList.querySelector('input[name="learnerId"]:checked') &&
+      learnerAssignmentChanged
+    ) {
+      learnerField.setAttribute("aria-invalid", "true");
+      if (learnerError) learnerError.hidden = false;
+      syncFormSubmit(form);
+      return;
+    }
     if (form.querySelector('[aria-invalid="true"]')) return;
     form.querySelector(".section-error")?.remove();
     const button = form.querySelector('button[type="submit"]');
@@ -1977,9 +2059,6 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
     button.textContent = editing ? copy.savingChanges : copy.creating;
     try {
       const mode = form.querySelector('input[name="mode"]:checked').value;
-      const learnerTarget = form.querySelector(
-        'input[name="learnerTarget"]:checked',
-      )?.value;
       const learnerIds =
         learnerTarget === "all"
           ? [...learnerList.querySelectorAll('input[name="learnerId"]')].map(

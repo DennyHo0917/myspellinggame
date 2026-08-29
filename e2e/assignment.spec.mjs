@@ -394,7 +394,8 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
   ).toHaveAttribute("aria-current", "page");
   await expect(page.getByLabel("All students")).toBeVisible();
   await expect(page.getByLabel("Selected students")).toBeVisible();
-  await expect(page.getByLabel("All students")).toBeChecked();
+  await expect(page.getByLabel("Link sharing only")).toBeChecked();
+  await page.getByLabel("All students").check();
   await expect(page.getByLabel("Alice")).toBeChecked();
   await page.getByLabel("Assignment title").fill("Alice's spelling assignment");
   await page.getByLabel("Spelling words").fill("apple\nbanana");
@@ -757,6 +758,62 @@ test("editing a link-only assignment keeps link sharing selected", async ({
   expect(patches[0]).not.toHaveProperty("learnerIds");
 });
 
+test("new assignment validates learner selection before submitting", async ({
+  page,
+}) => {
+  const learnerId = "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee";
+  let postCount = 0;
+  let postBody;
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "teacher-a", name: "Teacher A" },
+        plan: "teacher",
+      }),
+    }),
+  );
+  await page.route("**/api/assignments", async (route) => {
+    if (route.request().method() === "POST") {
+      postCount += 1;
+      postBody = route.request().postDataJSON();
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ id: "ffffffff-ffff-4fff-8fff-ffffffffffff" }),
+      });
+      return;
+    }
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        assignments: [],
+        learners: [{ id: learnerId, name: "Alice", archived: false }],
+      }),
+    });
+  });
+
+  await page.goto("/teacher/assignments/new?lang=en");
+  await expect(page.getByLabel("Link sharing only")).toBeChecked();
+  await page.getByLabel("Selected students").check();
+  await expect(page.locator(".assignment-learners-error")).toHaveText(
+    "Select at least one learner.",
+  );
+  await expect(
+    page.getByRole("button", { name: "Create and publish" }),
+  ).toBeDisabled();
+  await page.getByLabel("Assignment title").fill("Learner validation");
+  await page.getByLabel("Spelling words").fill("apple");
+  expect(postCount).toBe(0);
+  await page.getByLabel("Alice").check();
+  await expect(page.locator(".assignment-learners-error")).toBeHidden();
+  await expect(
+    page.getByRole("button", { name: "Create and publish" }),
+  ).toBeEnabled();
+  await page.getByRole("button", { name: "Create and publish" }).click();
+  await expect.poll(() => postCount).toBe(1);
+  expect(postBody.learnerIds).toEqual([learnerId]);
+});
+
 test("assignment learner names render as text", async ({ page }) => {
   const assignmentId = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
   const learnerId = "dddddddd-dddd-4ddd-8ddd-dddddddddddd";
@@ -914,7 +971,7 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
   });
   await expect(page.getByLabel("Selected learners")).toBeVisible();
   await expect(page.getByLabel("All learners")).toBeVisible();
-  await expect(page.getByLabel("All learners")).toBeChecked();
+  await expect(page.getByLabel("Link sharing only")).toBeChecked();
   const sentenceLibraryButton = page.getByRole("button", {
     name: /Auto-fill example sentences/,
   });
@@ -2889,8 +2946,7 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
     .locator('.workspace-sidebar-link[data-section="overview"]')
     .click();
   await page.getByRole("link", { name: "Create assignment" }).click();
-  await expect(page.getByLabel("Selected children")).toBeChecked();
-  await expect(page.getByLabel("Alice")).toBeChecked();
+  await expect(page.getByLabel("Link sharing only")).toBeChecked();
   await page.getByRole("link", { name: "Back to workspace" }).click();
   await page
     .locator('.workspace-sidebar-link[data-section="learners"]')
@@ -2907,7 +2963,8 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
   await page.getByRole("link", { name: "Create assignment" }).click();
   await expect(page.getByLabel("Selected children")).toBeVisible();
   await expect(page.getByLabel("All children")).toBeVisible();
-  await expect(page.getByLabel("All children")).toBeChecked();
+  await expect(page.getByLabel("Link sharing only")).toBeChecked();
+  await page.getByLabel("All children").check();
   await expect(page.getByLabel("Alice")).toBeChecked();
   await expect(page.getByLabel("Bob")).toBeChecked();
   await page.getByLabel("Assignment title").fill("Family spelling");
@@ -3283,9 +3340,10 @@ for (const [plan, learnerLabel, billingLabel, usageLabel] of [
     await expect(
       sidebar.getByText(learnerLabel, { exact: true }),
     ).toBeVisible();
-    await expect(
-      sidebar.getByText(billingLabel, { exact: true }),
-    ).toBeVisible();
+    await expect(sidebar.getByText(billingLabel, { exact: true })).toHaveCount(
+      0,
+    );
+    await expect(page.getByRole("button", { name: /Owner A/ })).toBeVisible();
     await expect(page.getByText(usageLabel, { exact: true })).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "Recent assignments" }),
@@ -3320,6 +3378,77 @@ for (const [plan, learnerLabel, billingLabel, usageLabel] of [
     ).toHaveAttribute("aria-current", "page");
   });
 }
+
+test("workspace header owns account actions and keeps the desktop layout full width", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await mockWorkspaceShell(page, "free");
+  let signOutCalls = 0;
+  await page.route("**/api/auth/sign-out", (route) => {
+    signOutCalls += 1;
+    return route.fulfill({ contentType: "application/json", body: "{}" });
+  });
+  await page.goto("/teacher/assignments?lang=en", {
+    waitUntil: "domcontentloaded",
+  });
+
+  const sidebar = page.locator(".workspace-sidebar");
+  await expect(sidebar.locator(".workspace-sidebar-link")).toHaveCount(5);
+  await expect(
+    sidebar.getByText("Plans & billing", { exact: true }),
+  ).toHaveCount(0);
+  await expect(sidebar.getByText("Sign out", { exact: true })).toHaveCount(0);
+  const layout = await page.evaluate(() => {
+    const sidebar = document.querySelector(".workspace-sidebar");
+    const main = document.querySelector(".workspace-layout .teacher-main");
+    return {
+      bodyPadding: getComputedStyle(document.body).padding,
+      layoutWidth: document
+        .querySelector(".workspace-layout")
+        .getBoundingClientRect().width,
+      sidebarLeft: sidebar.getBoundingClientRect().left,
+      sidebarWidth: sidebar.getBoundingClientRect().width,
+      sidebarPosition: getComputedStyle(sidebar).position,
+      sidebarRadius: getComputedStyle(sidebar).borderRadius,
+      mainPadding: getComputedStyle(main).paddingLeft,
+    };
+  });
+  expect(layout.bodyPadding).toBe("0px");
+  expect(layout.layoutWidth).toBe(1440);
+  expect(layout.sidebarLeft).toBe(0);
+  expect(layout.sidebarWidth).toBeGreaterThanOrEqual(220);
+  expect(layout.sidebarWidth).toBeLessThanOrEqual(240);
+  expect(layout.sidebarPosition).toBe("sticky");
+  expect(layout.sidebarRadius).toBe("0px");
+  expect(layout.mainPadding).toBe("32px");
+
+  const shellHandle = await page.locator(".workspace-shell").elementHandle();
+  await page.locator(".teacher-product-nav .product-brand").click();
+  await expect(page).toHaveURL(/\/teacher\?lang=en$/);
+  expect(await shellHandle.evaluate((shell) => shell.isConnected)).toBe(true);
+  await expect(
+    page.locator(".teacher-product-nav > .product-nav-actions > a"),
+  ).toHaveCount(0);
+
+  const userMenu = page.getByRole("button", { name: /Owner A/ });
+  await expect(userMenu).toHaveAttribute("aria-expanded", "false");
+  await userMenu.focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(userMenu).toHaveAttribute("aria-expanded", "true");
+  await expect(
+    page.getByRole("menuitem", { name: "Back to website home" }),
+  ).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(userMenu).toHaveAttribute("aria-expanded", "false");
+  await userMenu.click();
+  await expect(
+    page.getByRole("menuitem", { name: "Plans & billing" }),
+  ).toHaveAttribute("href", "/pricing");
+  await page.getByRole("menuitem", { name: "Sign out" }).click();
+  await expect.poll(() => signOutCalls).toBe(1);
+  await expect(page).toHaveURL(/\/$/);
+});
 
 test("learner management keeps progress, rename, archive, and restore actions", async ({
   page,
@@ -3579,7 +3708,7 @@ test("desktop workspace sidebar collapses and restores", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("paid workspace sidebar keeps the existing billing portal flow", async ({
+test("paid workspace user menu keeps the existing billing portal flow", async ({
   page,
 }) => {
   await mockWorkspaceShell(page, "parent");
@@ -3593,7 +3722,8 @@ test("paid workspace sidebar keeps the existing billing portal flow", async ({
   });
   await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
 
-  await page.locator('.workspace-sidebar-link[data-section="billing"]').click();
+  await page.getByRole("button", { name: /Owner A/ }).click();
+  await page.getByRole("menuitem", { name: "Plans & billing" }).click();
   await expect(page).toHaveURL(/\/pricing\?from=portal$/);
   expect(portalCalls).toBe(1);
 });

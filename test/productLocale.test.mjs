@@ -56,6 +56,8 @@ test("every product locale keeps the brand and has a distinct student-limit mess
     assert.ok(copy.longListAdvice);
     for (const key of [
       "plansAndBilling",
+      "websiteHome",
+      "selectAtLeastOneLearner",
       "duplicateWords",
       "shortWords",
       "longWords",

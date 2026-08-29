@@ -954,17 +954,12 @@ body.workspace-page {
   width: 100%;
   margin: 0;
   align-items: start;
-  transition: grid-template-columns 160ms ease;
-}
-
-.workspace-layout.is-sidebar-collapsed {
-  grid-template-columns: 68px minmax(0, 1fr);
 }
 
 .workspace-layout .teacher-main {
   width: min(1280px, 100%);
   min-width: 0;
-  margin: 0;
+  margin: 0 auto;
   padding: 28px 32px 40px;
   gap: 16px;
 }

@@ -3684,11 +3684,18 @@ test("workspace sidebar uses cached client navigation without reloading the shel
 });
 
 test("desktop workspace sidebar collapses and restores", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.setViewportSize({ width: 1600, height: 800 });
   await mockWorkspaceShell(page, "free");
   await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
 
   const sidebar = page.locator(".workspace-sidebar");
+  const main = page.locator(".workspace-layout .teacher-main");
+  const expandedMainBox = await main.boundingBox();
+  const expandedSidebarBox = await sidebar.boundingBox();
+  expect(expandedMainBox.x - expandedSidebarBox.width).toBeCloseTo(
+    1600 - (expandedMainBox.x + expandedMainBox.width),
+    0,
+  );
   await page.getByRole("button", { name: "Collapse sidebar" }).click();
   await expect(sidebar).toHaveClass(/is-collapsed/);
   await expect(page.locator(".workspace-layout")).toHaveClass(
@@ -3700,6 +3707,7 @@ test("desktop workspace sidebar collapses and restores", async ({ page }) => {
   await expect(
     sidebar.locator('[data-section="assignments"] .workspace-sidebar-label'),
   ).not.toBeVisible();
+  expect(await main.boundingBox()).toEqual(expandedMainBox);
 
   await page.getByRole("button", { name: "Expand sidebar" }).click();
   await expect(sidebar).not.toHaveClass(/is-collapsed/);

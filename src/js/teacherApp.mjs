@@ -1852,6 +1852,7 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
   const learnerList = form.querySelector("#assignment-learner-list");
   const learnerOptions = learnerField.querySelector(".radio-row");
   const activeLearners = roster.filter((learner) => !learner.archived);
+  let learnerAssignmentChanged = !editing;
   if (!activeLearners.length) {
     learnerOptions.hidden = true;
     const empty = document.createElement("p");
@@ -1869,12 +1870,17 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
     );
     learnerList.replaceChildren(empty, add);
   } else {
-    learnerList.innerHTML = activeLearners
-      .map(
-        (learner) =>
-          `<label><input type="checkbox" name="learnerId" value="${learner.id}"> ${learner.name}</label>`,
-      )
-      .join("");
+    learnerList.replaceChildren(
+      ...activeLearners.map((learner) => {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.name = "learnerId";
+        input.value = learner.id;
+        label.append(input, document.createTextNode(` ${learner.name}`));
+        return label;
+      }),
+    );
     const allRadio = form.querySelector(
       'input[name="learnerTarget"][value="all"]',
     );
@@ -1895,7 +1901,7 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
     } else if (!editing && isParentPlan(me) && activeLearners.length === 1) {
       selectedRadio.checked = true;
       checkboxes[0].checked = true;
-    } else {
+    } else if (!editing) {
       allRadio.checked = true;
       checkboxes.forEach((input) => {
         input.checked = true;
@@ -1906,7 +1912,15 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
         form.querySelector('input[name="learnerTarget"]:checked').value !==
         "selected";
     };
-    form.addEventListener("change", updateLearnerVisibility);
+    form.addEventListener("change", (event) => {
+      if (
+        event.target.name === "learnerTarget" ||
+        event.target.name === "learnerId"
+      ) {
+        learnerAssignmentChanged = true;
+      }
+      updateLearnerVisibility();
+    });
     updateLearnerVisibility();
   }
   form.querySelector("#assignment-words").value = draftWords;
@@ -1982,8 +1996,8 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
           form.querySelector("#assignment-deadline").value,
         ).toISOString(),
         maxAttempts: Number(form.querySelector("#assignment-max").value),
-        learnerIds,
       };
+      if (learnerAssignmentChanged) body.learnerIds = learnerIds;
       if (!editing || !assignment.hasAttempts) {
         body.words = form.querySelector("#assignment-words").value;
         body.exampleSentences = form.querySelector(

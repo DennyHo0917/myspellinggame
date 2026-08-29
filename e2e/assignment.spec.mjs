@@ -628,9 +628,11 @@ test("assignment edit form prefills fields and submits a combined patch", async 
       detail.title = patchBody.title;
       detail.mode = patchBody.mode || detail.mode;
       detail.max_attempts = patchBody.maxAttempts;
-      detail.assignedLearners = patchBody.learnerIds.length
-        ? [{ id: learnerId, name: "Alice" }]
-        : [];
+      if ("learnerIds" in patchBody) {
+        detail.assignedLearners = patchBody.learnerIds.length
+          ? [{ id: learnerId, name: "Alice" }]
+          : [];
+      }
       await route.fulfill({
         contentType: "application/json",
         body: JSON.stringify(detail),
@@ -655,6 +657,7 @@ test("assignment edit form prefills fields and submits a combined patch", async 
     "An apple.\n",
   );
   await expect(page.getByLabel("Dictation")).toBeChecked();
+  await expect(page.getByLabel("Selected students")).toBeChecked();
   await expect(page.getByLabel("Alice")).toBeChecked();
   await page.getByLabel("Assignment title").fill("Updated assignment");
   await page.getByLabel("Typing").check();
@@ -665,8 +668,8 @@ test("assignment edit form prefills fields and submits a combined patch", async 
     title: "Updated assignment",
     mode: "typing",
     maxAttempts: 5,
-    learnerIds: [learnerId],
   });
+  expect(patches[0]).not.toHaveProperty("learnerIds");
   expect(patches[0].words).toBe("apple\nbanana");
 
   detail.hasAttempts = true;
@@ -687,6 +690,124 @@ test("assignment edit form prefills fields and submits a combined patch", async 
   });
   expect(patches[1]).not.toHaveProperty("words");
   expect(patches[1]).not.toHaveProperty("mode");
+});
+
+test("editing a link-only assignment keeps link sharing selected", async ({
+  page,
+}) => {
+  const assignmentId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+  const learnerId = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+  const patches = [];
+  const detail = {
+    id: assignmentId,
+    title: "Link-only assignment",
+    mode: "dictation",
+    status: "published",
+    max_attempts: 1,
+    expires_at: new Date(Date.now() + 86_400_000).toISOString(),
+    words,
+    assignedLearners: [],
+    hasAttempts: false,
+    summary: { students: 0, attempts: 0, averageAccuracy: 0 },
+    attempts: [],
+    missedWordStats: [],
+  };
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "teacher-a", name: "Teacher A" },
+        plan: "teacher",
+      }),
+    }),
+  );
+  await page.route("**/api/assignments", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        assignments: [],
+        learners: [{ id: learnerId, name: "Alice", archived: false }],
+      }),
+    }),
+  );
+  await page.route(`**/api/assignments/${assignmentId}`, async (route) => {
+    if (route.request().method() === "PATCH") {
+      patches.push(route.request().postDataJSON());
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify(detail),
+      });
+      return;
+    }
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(detail),
+    });
+  });
+
+  await page.goto(`/teacher/assignments/${assignmentId}/edit?lang=en`);
+  await expect(page.getByLabel("Link sharing only")).toBeChecked();
+  await expect(page.getByLabel("All students")).not.toBeChecked();
+  await expect(page.getByLabel("Selected students")).not.toBeChecked();
+  await page
+    .getByLabel("Assignment title")
+    .fill("Renamed link-only assignment");
+  await page.getByRole("button", { name: "Save changes" }).click();
+  await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
+  expect(patches[0]).not.toHaveProperty("learnerIds");
+});
+
+test("assignment learner names render as text", async ({ page }) => {
+  const assignmentId = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
+  const learnerId = "dddddddd-dddd-4ddd-8ddd-dddddddddddd";
+  const unsafeName = '<img src=x onerror="window.__learnerXss=1">';
+  const detail = {
+    id: assignmentId,
+    title: "Safe assignment",
+    mode: "dictation",
+    status: "published",
+    max_attempts: 1,
+    expires_at: new Date(Date.now() + 86_400_000).toISOString(),
+    words,
+    assignedLearners: [{ id: learnerId, name: unsafeName }],
+    hasAttempts: false,
+    summary: { students: 0, attempts: 0, averageAccuracy: 0 },
+    attempts: [],
+    missedWordStats: [],
+  };
+  await page.addInitScript(() => {
+    window.__learnerXss = 0;
+  });
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "teacher-a", name: "Teacher A" },
+        plan: "teacher",
+      }),
+    }),
+  );
+  await page.route("**/api/assignments", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        assignments: [],
+        learners: [{ id: learnerId, name: unsafeName, archived: false }],
+      }),
+    }),
+  );
+  await page.route(`**/api/assignments/${assignmentId}`, (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(detail),
+    }),
+  );
+
+  await page.goto(`/teacher/assignments/${assignmentId}/edit?lang=en`);
+  const learnerList = page.locator("#assignment-learner-list");
+  await expect(learnerList).toContainText(unsafeName);
+  await expect(learnerList.locator("img")).toHaveCount(0);
+  expect(await page.evaluate(() => window.__learnerXss)).toBe(0);
 });
 
 test("Free workspace stays neutral regardless of legacy workspace type", async ({

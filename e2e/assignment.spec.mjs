@@ -2333,6 +2333,17 @@ test("shared site and product headers stay fixed while scrolling", async ({
   }
 });
 
+test("language menus close when clicking outside", async ({ page }) => {
+  for (const path of ["/", "/teacher?lang=en"]) {
+    await page.goto(path, { waitUntil: "domcontentloaded" });
+    const menu = page.locator("details.language-switcher");
+    await menu.locator("summary").click();
+    await expect(menu).toHaveAttribute("open", "");
+    await page.locator("h1").click();
+    await expect(menu).not.toHaveAttribute("open", "");
+  }
+});
+
 test("manual Chinese choice keeps footer navigation in Chinese", async ({
   page,
 }) => {

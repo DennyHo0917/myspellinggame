@@ -2201,6 +2201,11 @@ export function setProductLocale(locale) {
 
 if (typeof document !== "undefined") {
   document.addEventListener("click", (event) => {
+    for (const menu of document.querySelectorAll(
+      "details.language-switcher[open]",
+    )) {
+      if (menu.contains && !menu.contains(event.target)) menu.open = false;
+    }
     const link = event.target.closest?.("a.lang-option[hreflang]");
     if (link) rememberProductLocale(link.getAttribute("hreflang"));
   });

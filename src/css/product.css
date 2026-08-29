@@ -1663,9 +1663,13 @@ body.assignment-page {
 }
 
 .product-nav .language-switcher > summary.lang-btn::after {
-  content: "⌄";
-  color: var(--muted);
-  font-size: 0.75em;
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-left: 2px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
 }
 
 .workspace-shell .product-nav .lang-btn {

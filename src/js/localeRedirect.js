@@ -111,6 +111,11 @@
   }
 
   document.addEventListener("click", function (event) {
+    for (const menu of document.querySelectorAll(
+      "details.language-switcher[open]",
+    )) {
+      if (menu.contains && !menu.contains(event.target)) menu.open = false;
+    }
     const link = event.target.closest && event.target.closest("a[href]");
     if (!link) return;
     if (link.matches(".lang-option[hreflang]")) {

@@ -54,6 +54,21 @@ test("every product locale keeps the brand and has a distinct student-limit mess
     assert.match(copy.activeLimit, /1/);
     assert.doesNotMatch(copy.activeLimit, /20/);
     assert.ok(copy.longListAdvice);
+    for (const key of [
+      "plansAndBilling",
+      "duplicateWords",
+      "shortWords",
+      "longWords",
+      "currentWordLimit",
+      "saveChanges",
+      "savingChanges",
+      "assignmentsPageCopy",
+      "createFirstAssignment",
+      "viewAllAssignments",
+    ]) {
+      assert.ok(copy[key], `${locale}: ${key}`);
+    }
+    assert.match(copy.currentWordLimit, /\{limit\}/);
     assert.ok(copy.activatingPro);
     assert.ok(copy.activationDelayed);
     assert.ok(copy.checkAgain);

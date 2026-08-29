@@ -278,7 +278,20 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
       return json(route, { id: assignmentId, publicId });
     }
     return json(route, {
-      assignments: [],
+      assignments: createdBody
+        ? [
+            {
+              id: assignmentId,
+              title: "Alice's spelling assignment",
+              status: "published",
+              expires_at: expiresAt,
+              student_count: 0,
+              attempt_count: 0,
+              average_accuracy: 0,
+              assigned_learner_names: "Alice",
+            },
+          ]
+        : [],
       savedLists: [],
       learners: [
         {
@@ -381,17 +394,24 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
   ).toHaveAttribute("aria-current", "page");
   await expect(page.getByLabel("All students")).toBeVisible();
   await expect(page.getByLabel("Selected students")).toBeVisible();
+  await expect(page.getByLabel("All students")).toBeChecked();
+  await expect(page.getByLabel("Alice")).toBeChecked();
   await page.getByLabel("Assignment title").fill("Alice's spelling assignment");
   await page.getByLabel("Spelling words").fill("apple\nbanana");
   await page.getByLabel("Typing").check();
-  await page.getByLabel("Selected students").check();
-  await page.getByLabel("Alice").check();
   await page.getByRole("button", { name: "Create and publish" }).click();
   await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
   expect(createdBody.learnerIds).toEqual([learnerId]);
   await expect(page.getByRole("link", { name: "Export CSV" })).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Most commonly missed words" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Assigned to Alice", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Back to workspace" }).click();
+  await expect(
+    page.getByText("Assigned to Alice", { exact: true }),
   ).toBeVisible();
 
   await page.goto(`${classUrl}?lang=en`);
@@ -404,6 +424,269 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
     page.getByRole("heading", { name: "Alice's spelling assignment" }),
   ).toBeVisible();
   expect(submittedPin).toBe(visiblePin);
+});
+
+test("new assignment keeps learner assignment area visible when no learners exist", async ({
+  page,
+}) => {
+  const assignmentId = "99999999-9999-4999-8999-999999999999";
+  const expiresAt = new Date(Date.now() + 86_400_000).toISOString();
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
+        plan: "teacher",
+      }),
+    }),
+  );
+  await page.route("**/api/assignments", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        assignments: [
+          {
+            id: assignmentId,
+            title: "Link-only practice",
+            status: "published",
+            expires_at: expiresAt,
+            student_count: 0,
+            attempt_count: 0,
+            average_accuracy: 0,
+            assigned_learner_names: null,
+          },
+        ],
+        learners: [],
+      }),
+    }),
+  );
+  await page.route(`**/api/assignments/${assignmentId}`, (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        id: assignmentId,
+        public_id: publicId,
+        title: "Link-only practice",
+        mode: "dictation",
+        status: "published",
+        words,
+        assignedLearners: [],
+        summary: { students: 0, attempts: 0, averageAccuracy: 0 },
+        attempts: [],
+        missedWordStats: [],
+      }),
+    }),
+  );
+
+  await page.goto("/teacher/assignments/new?lang=en");
+  await expect(page.locator("#assignment-learners-field")).toBeVisible();
+  await expect(
+    page.getByText("Add a learner profile to assign this practice."),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Add student" })).toHaveAttribute(
+    "href",
+    "/teacher?lang=en#learners",
+  );
+  await page.goto(`/teacher/assignments/${assignmentId}?lang=en`);
+  await expect(
+    page.getByText("Link sharing only", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Back to workspace" }).click();
+  await expect(
+    page.getByText("Link sharing only", { exact: true }),
+  ).toBeVisible();
+});
+
+test("assignments page owns assignment management and overview adapts to work", async ({
+  page,
+}) => {
+  let assignments = [
+    {
+      id: "66666666-6666-4666-8666-666666666666",
+      title: "Week one",
+      status: "published",
+      expires_at: new Date(Date.now() + 86_400_000).toISOString(),
+      student_count: 0,
+      attempt_count: 0,
+      average_accuracy: 0,
+      assigned_learner_names: null,
+    },
+  ];
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "teacher-a", name: "Teacher A" },
+        plan: "teacher",
+      }),
+    }),
+  );
+  await page.route("**/api/assignments", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        assignments,
+        savedLists: [],
+        learners: [],
+        usage: {
+          activeAssignments: 1,
+          monthlyAttempts: 0,
+          learnerProfiles: 0,
+          limits: {
+            activeAssignments: 5,
+            monthlyAttempts: null,
+            learnerProfiles: 40,
+          },
+        },
+      }),
+    }),
+  );
+
+  await page.goto("/teacher/assignments?lang=en");
+  await expect(
+    page.getByRole("heading", { name: "Assignments" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "Create, share, and manage all of your spelling assignments in one place.",
+    ),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Create assignment" }),
+  ).toBeVisible();
+
+  await page.goto("/teacher?lang=en");
+  await expect(
+    page.getByRole("heading", { name: "Recent assignments" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "View all assignments" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Create your first assignment" }),
+  ).toHaveCount(0);
+
+  assignments = [];
+  await page.reload();
+  await expect(
+    page.getByRole("link", { name: "Create your first assignment" }),
+  ).toBeVisible();
+});
+
+test("assignment edit form prefills fields and submits a combined patch", async ({
+  page,
+}) => {
+  const assignmentId = "88888888-8888-4888-8888-888888888888";
+  const learnerId = "77777777-7777-4777-8777-777777777777";
+  const expiresAt = new Date(Date.now() + 86_400_000).toISOString();
+  const patches = [];
+  const detail = {
+    id: assignmentId,
+    public_id: publicId,
+    title: "Original assignment",
+    mode: "dictation",
+    status: "published",
+    max_attempts: 3,
+    expires_at: expiresAt,
+    words: [
+      {
+        id: words[0].id,
+        position: 0,
+        word: "apple",
+        example_sentence: "An apple.",
+      },
+      { id: words[1].id, position: 1, word: "banana", example_sentence: null },
+    ],
+    assignedLearners: [{ id: learnerId, name: "Alice" }],
+    hasAttempts: false,
+    summary: { students: 0, attempts: 0, averageAccuracy: 0 },
+    attempts: [],
+    missedWordStats: [],
+  };
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "teacher-a", name: "Teacher A" },
+        plan: "teacher",
+      }),
+    }),
+  );
+  await page.route("**/api/assignments", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        assignments: [],
+        learners: [{ id: learnerId, name: "Alice", archived: 0 }],
+      }),
+    }),
+  );
+  await page.route(`**/api/assignments/${assignmentId}`, async (route) => {
+    if (route.request().method() === "PATCH") {
+      const patchBody = route.request().postDataJSON();
+      patches.push(patchBody);
+      detail.title = patchBody.title;
+      detail.mode = patchBody.mode || detail.mode;
+      detail.max_attempts = patchBody.maxAttempts;
+      detail.assignedLearners = patchBody.learnerIds.length
+        ? [{ id: learnerId, name: "Alice" }]
+        : [];
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify(detail),
+      });
+      return;
+    }
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(detail),
+    });
+  });
+
+  await page.goto(`/teacher/assignments/${assignmentId}/edit?lang=en`);
+  await expect(
+    page.getByRole("heading", { name: "Edit assignment" }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Assignment title")).toHaveValue(
+    "Original assignment",
+  );
+  await expect(page.getByLabel("Spelling words")).toHaveValue("apple\nbanana");
+  await expect(page.getByLabel("Example sentences (optional)")).toHaveValue(
+    "An apple.\n",
+  );
+  await expect(page.getByLabel("Dictation")).toBeChecked();
+  await expect(page.getByLabel("Alice")).toBeChecked();
+  await page.getByLabel("Assignment title").fill("Updated assignment");
+  await page.getByLabel("Typing").check();
+  await page.getByLabel("Maximum attempts per nickname").selectOption("5");
+  await page.getByRole("button", { name: "Save changes" }).click();
+  await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
+  expect(patches[0]).toMatchObject({
+    title: "Updated assignment",
+    mode: "typing",
+    maxAttempts: 5,
+    learnerIds: [learnerId],
+  });
+  expect(patches[0].words).toBe("apple\nbanana");
+
+  detail.hasAttempts = true;
+  await page.goto(`/teacher/assignments/${assignmentId}/edit?lang=en`);
+  await expect(page.getByLabel("Spelling words")).toBeDisabled();
+  await expect(page.getByLabel("Typing")).toBeDisabled();
+  await expect(page.locator(".field-lock").first()).toContainText(
+    "student attempts",
+  );
+  await page.getByLabel("Assignment title").fill("Metadata only");
+  await page.getByLabel("Link sharing only").check();
+  await page.getByRole("button", { name: "Save changes" }).click();
+  await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
+  expect(patches[1]).toMatchObject({
+    title: "Metadata only",
+    maxAttempts: 5,
+    learnerIds: [],
+  });
+  expect(patches[1]).not.toHaveProperty("words");
+  expect(patches[1]).not.toHaveProperty("mode");
 });
 
 test("Free workspace stays neutral regardless of legacy workspace type", async ({
@@ -509,20 +792,21 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
     waitUntil: "domcontentloaded",
   });
   await expect(page.getByLabel("Selected learners")).toBeVisible();
-  await expect(page.getByLabel("All students")).toHaveCount(0);
+  await expect(page.getByLabel("All learners")).toBeVisible();
+  await expect(page.getByLabel("All learners")).toBeChecked();
   const sentenceLibraryButton = page.getByRole("button", {
     name: /Auto-fill example sentences/,
   });
   await expect(sentenceLibraryButton).toBeVisible();
-  await expect(
-    sentenceLibraryButton.locator(".sentence-library-upgrade-badge"),
-  ).toHaveText("Upgrade");
-  await expect(sentenceLibraryButton).toHaveAttribute(
-    "title",
-    "Sentence library is included in Parent and Teacher Plans.",
-  );
+  await expect(page.locator(".locked-feature-plan")).toHaveCount(0);
   await sentenceLibraryButton.click();
-  await expect(page).toHaveURL(/\/pricing#pricing$/);
+  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
+  await expect(page.locator(".locked-feature-plan")).toHaveCount(1);
+  await expect(
+    page
+      .locator(".locked-feature-plan")
+      .getByRole("link", { name: "View Plans" }),
+  ).toHaveCount(1);
 });
 
 const analyticsEvents = (page, name) =>
@@ -1980,7 +2264,7 @@ test("Free workspace warns before the submission limit and paid plans do not", a
   await expect(page.locator(".submission-limit-notice")).toHaveCount(0);
 });
 
-test("active assignment limit offers a clear locale-aware upgrade", async ({
+test("new assignment validates Free word-count boundaries before submit", async ({
   page,
 }) => {
   await page.route("**/api/me", (route) =>
@@ -2010,16 +2294,50 @@ test("active assignment limit offers a clear locale-aware upgrade", async ({
   );
 
   await page.goto("/teacher/assignments/new?lang=en");
-  await page.getByLabel("Spelling words").fill(limitWords(20));
+  const wordsInput = page.getByLabel("Spelling words");
+  const submit = page.getByRole("button", { name: "Create and publish" });
+  await wordsInput.fill(limitWords(20));
+  await expect(page.locator(".word-count")).toHaveText("20 / 30");
   await expect(page.locator(".long-list-advice")).toBeHidden();
-  await page.getByLabel("Spelling words").fill(limitWords(21));
+  await wordsInput.fill(limitWords(21));
   await expect(page.locator(".long-list-advice")).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Create and publish" }),
-  ).toBeEnabled();
+  await expect(page.locator(".long-list-advice")).toHaveCSS(
+    "background-color",
+    "rgb(255, 248, 220)",
+  );
+  await expect(page.locator(".word-count")).toHaveText("21 / 30");
+  await expect(page.locator(".word-limit-upgrade")).toBeHidden();
+  await expect(submit).toBeEnabled();
+
+  await wordsInput.fill(limitWords(30));
+  await expect(page.locator(".word-count")).toHaveText("30 / 30");
+  await expect(submit).toBeEnabled();
+  await wordsInput.fill(limitWords(31));
+  await expect(page.locator(".word-count")).toHaveText("31 / 30");
+  await expect(page.locator(".word-count")).toHaveClass(/error/);
+  await expect(wordsInput).toHaveAttribute("aria-invalid", "true");
+  await expect(submit).toBeDisabled();
+  await expect(page.locator(".word-limit-upgrade")).toBeVisible();
+  await expect(page.locator(".word-limit-upgrade")).toHaveCount(1);
+
+  await wordsInput.fill(`Apple\napple\na\n${"x".repeat(25)}`);
+  await expect(page.locator(".word-count")).toHaveText("1 / 30");
+  await expect(page.locator(".word-list-error")).toContainText(
+    "Repeated words: apple",
+  );
+  await expect(page.locator(".word-list-error")).toContainText(
+    "at least 2 characters: a",
+  );
+  await expect(page.locator(".word-list-error")).toContainText(
+    "24 characters or fewer",
+  );
+  await expect(page.locator(".word-limit-upgrade")).toBeHidden();
+  await expect(submit).toBeDisabled();
+
   await page.getByLabel("Assignment title").fill("Week two");
-  await page.getByLabel("Spelling words").fill("apple\nbanana");
-  await page.getByRole("button", { name: "Create and publish" }).click();
+  await wordsInput.fill("apple\nbanana");
+  await expect(wordsInput).toHaveAttribute("aria-invalid", "false");
+  await submit.click();
 
   const notice = page.locator(".section-error");
   await expect(notice).toContainText(
@@ -2034,6 +2352,44 @@ test("active assignment limit offers a clear locale-aware upgrade", async ({
   await expect(
     page.getByRole("link", { name: "Back to workspace" }),
   ).toBeVisible();
+});
+
+test("saved lists enforce the paid 40-word boundary", async ({ page }) => {
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: {
+          id: "teacher-a",
+          name: "Teacher A",
+          email: "a@example.test",
+        },
+        plan: "teacher",
+      }),
+    }),
+  );
+  await page.route("**/api/assignments", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ assignments: [], savedLists: [], learners: [] }),
+    }),
+  );
+
+  await page.goto("/teacher/saved-lists?lang=en");
+  const wordsInput = page.getByLabel("Spelling words");
+  const submit = page.getByRole("button", { name: "Save list" });
+  await wordsInput.fill(limitWords(40));
+  await expect(page.locator(".word-count")).toHaveText("40 / 40");
+  await expect(wordsInput).toHaveAttribute("aria-invalid", "false");
+  await expect(submit).toBeEnabled();
+  await wordsInput.fill(limitWords(41));
+  await expect(page.locator(".word-count")).toHaveText("41 / 40");
+  await expect(wordsInput).toHaveAttribute("aria-invalid", "true");
+  await expect(page.locator(".word-list-error")).toContainText(
+    "exceeds the 40-word limit",
+  );
+  await expect(submit).toBeDisabled();
+  await expect(page.locator(".word-limit-upgrade")).toBeHidden();
 });
 
 test("localized FAQ home control is centered and returns home", async ({
@@ -2406,10 +2762,20 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
   await page
     .locator('.workspace-sidebar-link[data-section="learners"]')
     .click();
-  for (const name of ["Alice", "Bob"]) {
-    await page.getByLabel("Child nickname or number").fill(name);
-    await page.getByRole("button", { name: "Add child" }).click();
-  }
+  await page.getByLabel("Child nickname or number").fill("Alice");
+  await page.getByRole("button", { name: "Add child" }).click();
+  await page
+    .locator('.workspace-sidebar-link[data-section="overview"]')
+    .click();
+  await page.getByRole("link", { name: "Create assignment" }).click();
+  await expect(page.getByLabel("Selected children")).toBeChecked();
+  await expect(page.getByLabel("Alice")).toBeChecked();
+  await page.getByRole("link", { name: "Back to workspace" }).click();
+  await page
+    .locator('.workspace-sidebar-link[data-section="learners"]')
+    .click();
+  await page.getByLabel("Child nickname or number").fill("Bob");
+  await page.getByRole("button", { name: "Add child" }).click();
   await expect(page.getByText(/Student PIN:/)).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Copy PIN" })).toHaveCount(0);
 
@@ -2419,10 +2785,10 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
   await expect(page.getByText("2 of 5 child profiles")).toBeVisible();
   await page.getByRole("link", { name: "Create assignment" }).click();
   await expect(page.getByLabel("Selected children")).toBeVisible();
-  await expect(page.getByLabel("All students")).toHaveCount(0);
-  await page.getByLabel("Selected children").check();
-  await page.getByLabel("Alice").check();
-  await page.getByLabel("Bob").check();
+  await expect(page.getByLabel("All children")).toBeVisible();
+  await expect(page.getByLabel("All children")).toBeChecked();
+  await expect(page.getByLabel("Alice")).toBeChecked();
+  await expect(page.getByLabel("Bob")).toBeChecked();
   await page.getByLabel("Assignment title").fill("Family spelling");
   await page.getByLabel("Spelling words").fill(limitWords(40));
   await page.getByLabel("Typing").check();
@@ -2623,16 +2989,16 @@ test("free assignment and learner previews avoid zero-value urgency", async ({
   const review = page.locator("section").filter({
     has: page.getByRole("heading", { name: "Smart missed-word review" }),
   });
-  await expect(review).toContainText(
-    "4 words currently need review. Parent and Teacher Plans can turn them into a focused review assignment. View plans.",
-  );
+  await expect(review).toContainText("4 words need review");
+  await expect(review.getByRole("link", { name: "View Plans" })).toHaveCount(0);
+  await review
+    .getByRole("button", { name: "Create review assignment" })
+    .click();
   await expect(review.getByRole("link", { name: "View Plans" })).toHaveCount(1);
 
   needsReview = 0;
   await page.reload({ waitUntil: "domcontentloaded" });
-  await expect(review).toContainText(
-    "Smart Review is included in Parent and Teacher Plans. View plans.",
-  );
+  await expect(review).toHaveCount(0);
   await expect(review).not.toContainText("0 words");
 });
 
@@ -2782,9 +3148,9 @@ async function mockWorkspaceShell(page, plan, overrides = {}) {
 }
 
 for (const [plan, learnerLabel, billingLabel, usageLabel] of [
-  ["free", "Learners", "View Plans", "0 of 1 learner profiles"],
-  ["parent", "Children", "Manage billing", "0 of 5 child profiles"],
-  ["teacher", "Students", "Manage billing", "0 of 40 student profiles"],
+  ["free", "Learners", "Plans & billing", "0 of 1 learner profiles"],
+  ["parent", "Children", "Plans & billing", "0 of 5 child profiles"],
+  ["teacher", "Students", "Plans & billing", "0 of 40 student profiles"],
 ]) {
   test(`${plan} workspace sidebar uses the plan-specific labels`, async ({
     page,
@@ -2806,6 +3172,9 @@ for (const [plan, learnerLabel, billingLabel, usageLabel] of [
     await expect(
       page.getByRole("heading", { name: "Recent progress" }),
     ).toBeVisible();
+    await expect(
+      page.locator("#overview").getByRole("link", { name: "View Plans" }),
+    ).toHaveCount(0);
     await expect(page.locator("#saved-list-title")).toHaveCount(0);
     await expect(page.locator("#learner-name")).toHaveCount(0);
     await expect(sidebar.locator('[data-section="overview"]')).toHaveAttribute(

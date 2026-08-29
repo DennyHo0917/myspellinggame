@@ -13,7 +13,7 @@ import {
   productMessage,
   productMessages,
 } from "./productLocale.mjs";
-import { parseWords } from "./spellingCore.mjs";
+import { analyzeWords } from "./spellingCore.mjs";
 
 const root = document.getElementById("product-app");
 const locale = productLocale();
@@ -117,15 +117,45 @@ function workspaceLearnerLabel(me) {
       : copy.learners;
 }
 
-function attachLongListAdvice(form, wordsSelector) {
+function attachWordLimit(form, me, wordsSelector, { locked = false } = {}) {
   const input = form.querySelector(wordsSelector);
   if (!input) return;
+  const limit = isPlusPlan(me) ? 40 : 30;
+  const field = input.closest(".field");
+  const count = document.createElement("small");
+  count.className = "word-count";
+  count.setAttribute("aria-live", "polite");
   const advice = document.createElement("small");
   advice.className = "long-list-advice";
   advice.textContent = copy.longListAdvice;
-  input.closest(".field").append(advice);
+  const error = document.createElement("small");
+  error.className = "word-list-error";
+  error.setAttribute("role", "alert");
+  const upgrade = upgradeLink("word_limit");
+  upgrade.classList.add("word-limit-upgrade");
+  field.append(count, advice, error, upgrade);
   const update = () => {
-    advice.hidden = parseWords(input.value).length <= 20;
+    const analysis = analyzeWords(input.value);
+    const overLimit = analysis.words.length > limit;
+    const messages = [];
+    if (analysis.duplicates.length)
+      messages.push(
+        m("duplicateWords", { words: analysis.duplicates.join(", ") }),
+      );
+    if (analysis.tooShort.length)
+      messages.push(m("shortWords", { words: analysis.tooShort.join(", ") }));
+    if (analysis.tooLong.length)
+      messages.push(m("longWords", { words: analysis.tooLong.join(", ") }));
+    if (overLimit) messages.push(m("currentWordLimit", { limit }));
+    const invalid = !locked && messages.length > 0;
+    count.textContent = `${analysis.words.length} / ${limit}`;
+    count.classList.toggle("error", overLimit && !locked);
+    advice.hidden = analysis.words.length <= 20;
+    error.hidden = !invalid;
+    error.textContent = messages.join(" ");
+    input.setAttribute("aria-invalid", String(invalid));
+    form.querySelector('button[type="submit"]').disabled = invalid;
+    upgrade.hidden = locked || me.plan !== "free" || !overLimit;
   };
   input.addEventListener("input", update);
   update();
@@ -154,21 +184,15 @@ function attachSentenceLibraryControls(
   if (isPlusPlan(me)) {
     fill.textContent = copy.fillSentenceLibrary;
   } else {
-    fill.append(document.createTextNode(copy.fillSentenceLibraryPlus));
-    const upgradeBadge = document.createElement("span");
-    upgradeBadge.className = "sentence-library-upgrade-badge";
-    upgradeBadge.textContent = copy.upgradeBadge;
-    upgradeBadge.setAttribute("aria-hidden", "true");
-    fill.append(upgradeBadge);
-    fill.setAttribute(
-      "aria-label",
-      `${copy.fillSentenceLibraryPlus}. ${copy.sentenceLibraryRequired}`,
-    );
-    fill.title = copy.sentenceLibraryRequired;
+    fill.textContent = copy.fillSentenceLibraryPlus;
   }
   fill.addEventListener("click", async () => {
     if (!isPlusPlan(me)) {
-      location.href = `${productPagePath("pricing", locale)}#pricing`;
+      showLockedFeaturePlan(
+        sentenceField,
+        copy.sentenceLibraryRequired,
+        "sentence_library",
+      );
       return;
     }
     const words = form.querySelector(wordsSelector).value;
@@ -460,7 +484,7 @@ function shell(me = null, activeSection = "overview") {
     ],
     [
       "billing",
-      isPlusPlan(me) ? copy.manageBilling : copy.upgrade,
+      copy.plansAndBilling,
       isPlusPlan(me) ? "" : productPagePath("pricing", locale),
     ],
   ];
@@ -587,6 +611,18 @@ function upgradeLink(ctaLocation) {
     trackEvent("upgrade_cta_clicked", { cta_location: ctaLocation });
   });
   return link;
+}
+
+function showLockedFeaturePlan(host, message, ctaLocation) {
+  root
+    .querySelectorAll(".locked-feature-plan")
+    .forEach((notice) => notice.remove());
+  const notice = document.createElement("div");
+  notice.className = "notice locked-feature-plan";
+  const text = document.createElement("p");
+  text.textContent = message;
+  notice.append(text, upgradeLink(ctaLocation));
+  host.append(notice);
 }
 
 function saveAssignmentDraft(words, title = "", exampleSentences = "") {
@@ -824,9 +860,10 @@ function renderSavedLists(me, savedLists) {
     "#saved-list-words",
     "#saved-list-sentences",
   );
-  attachLongListAdvice(form, "#saved-list-words");
+  attachWordLimit(form, me, "#saved-list-words");
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (form.querySelector('[aria-invalid="true"]')) return;
     const button = form.querySelector('button[type="submit"]');
     button.disabled = true;
     try {
@@ -840,7 +877,7 @@ function renderSavedLists(me, savedLists) {
       });
       await refreshWorkspace(me);
     } catch (error) {
-      button.disabled = false;
+      button.disabled = form.querySelector('[aria-invalid="true"]') !== null;
       showSectionError(
         section,
         error,
@@ -1161,20 +1198,46 @@ function renderLearners(me, learners) {
 function renderAssignmentsCard(
   me,
   assignments,
-  { limit = null, id = "assignments", heading = copy.assignments } = {},
+  {
+    limit = null,
+    id = "assignments",
+    heading = copy.assignments,
+    fullPage = false,
+    showViewAll = false,
+  } = {},
 ) {
   const listCard = document.createElement("section");
   listCard.className = "product-card";
   listCard.id = id;
-  const listHeading = document.createElement("h2");
+  const listHeading = document.createElement(fullPage ? "h1" : "h2");
   listHeading.textContent = heading;
   listCard.append(listHeading);
+  if (fullPage) {
+    const intro = document.createElement("p");
+    intro.textContent = copy.assignmentsPageCopy;
+    const create = document.createElement("a");
+    create.className = "button-link";
+    create.href = `/teacher/assignments/new?lang=${encodeURIComponent(locale)}`;
+    create.textContent = copy.newAssignment;
+    create.addEventListener("click", () =>
+      setAssignmentEntryPoint("workspace"),
+    );
+    listCard.append(intro, create);
+  }
   const visibleAssignments = limit ? assignments.slice(0, limit) : assignments;
   if (!visibleAssignments.length) {
     const empty = document.createElement("p");
     empty.className = "empty-state";
     empty.textContent = copy.noAssignments;
     listCard.append(empty);
+    const create = document.createElement("a");
+    create.className = "button-link button-secondary";
+    create.href = `/teacher/assignments/new?lang=${encodeURIComponent(locale)}`;
+    create.textContent = copy.createFirstAssignment;
+    create.addEventListener("click", () =>
+      setAssignmentEntryPoint("workspace"),
+    );
+    listCard.append(create);
   } else {
     const list = document.createElement("div");
     list.className = "assignment-list";
@@ -1206,6 +1269,11 @@ function renderAssignmentsCard(
         m("attempts", { count: assignment.attempt_count }),
         m("average", { count: assignment.average_accuracy }),
         m("due", { date: date(assignment.expires_at) }),
+        assignment.assigned_learner_names
+          ? m("assignedToSummary", {
+              learners: assignment.assigned_learner_names,
+            })
+          : m("linkOnly"),
       ]) {
         const item = document.createElement("span");
         item.textContent = text;
@@ -1221,6 +1289,13 @@ function renderAssignmentsCard(
       list.append(row);
     }
     listCard.append(list);
+  }
+  if (showViewAll && assignments.length) {
+    const viewAll = document.createElement("a");
+    viewAll.className = "button-link button-secondary";
+    viewAll.href = `/teacher/assignments?lang=${encodeURIComponent(locale)}`;
+    viewAll.textContent = copy.viewAllAssignments;
+    listCard.append(viewAll);
   }
   return listCard;
 }
@@ -1529,12 +1604,21 @@ async function renderProgressCenter(me, data, main = shell(me, "progress")) {
   const smartReviewCopy = document.createElement("p");
   smartReviewCopy.textContent = copy.smartReviewValue;
   smartReviewCard.append(smartReviewTitle, smartReviewCopy);
-  if (!isPlusPlan(me)) {
+  if (!isPlusPlan(me) && needsReview) {
     const preview = document.createElement("p");
-    preview.textContent = needsReview
-      ? m("smartReviewPreview", { count: needsReview })
-      : copy.smartReviewUpgrade;
-    smartReviewCard.append(preview, upgradeLink("smart_review"));
+    preview.textContent = m("needsReviewWords", { count: needsReview });
+    const locked = document.createElement("button");
+    locked.type = "button";
+    locked.className = "button-secondary";
+    locked.textContent = copy.createReview;
+    locked.addEventListener("click", () =>
+      showLockedFeaturePlan(
+        smartReviewCard,
+        copy.smartReviewUpgrade,
+        "smart_review",
+      ),
+    );
+    smartReviewCard.append(preview, locked);
   } else if (learners.length) {
     smartReviewCard.append(
       progressLearnerRows(learners, { reviewActions: true }),
@@ -1545,15 +1629,18 @@ async function renderProgressCenter(me, data, main = shell(me, "progress")) {
     empty.textContent = copy.noRecentProgress;
     smartReviewCard.append(empty);
   }
-  smartReview.append(smartReviewCard);
+  const showSmartReview = isPlusPlan(me) || needsReview > 0;
+  if (showSmartReview) smartReview.append(smartReviewCard);
 
   const panels = [
     ["overview", copy.overview, overview],
     ["mastery", copy.mastery, mastery],
-    ["smart-review", copy.smartReview, smartReview],
   ];
+  if (showSmartReview)
+    panels.push(["smart-review", copy.smartReview, smartReview]);
   header.append(progressTabs(panels));
-  main.append(header, overview, mastery, smartReview);
+  main.append(header, overview, mastery);
+  if (showSmartReview) main.append(smartReview);
 }
 
 async function renderDashboard(me, { force = false } = {}) {
@@ -1600,7 +1687,9 @@ async function renderDashboard(me, { force = false } = {}) {
     return;
   }
   if (section === "assignments") {
-    main.append(renderAssignmentsCard(me, data.assignments || []));
+    main.append(
+      renderAssignmentsCard(me, data.assignments || [], { fullPage: true }),
+    );
     return;
   }
   const needsReviewCount = (data.learners || []).reduce(
@@ -1621,25 +1710,6 @@ async function renderDashboard(me, { force = false } = {}) {
     : isTeacherPlan(me) || isPlusPlan(me)
       ? copy.teacherPlan
       : copy.freePlan;
-  const actions = document.createElement("div");
-  actions.className = "actions";
-  const create = document.createElement("a");
-  create.className = "button-link";
-  create.href = `/teacher/assignments/new?lang=${encodeURIComponent(locale)}`;
-  create.textContent = copy.newAssignment;
-  create.addEventListener("click", () => setAssignmentEntryPoint("workspace"));
-  const billing = document.createElement(isPlusPlan(me) ? "button" : "a");
-  if (isPlusPlan(me)) {
-    billing.type = "button";
-    billing.className = "button-secondary";
-    billing.textContent = copy.manageBilling;
-    billing.addEventListener("click", openPortal);
-  } else {
-    billing.href = productPagePath("pricing", locale);
-    billing.className = "button-link pro";
-    billing.textContent = copy.upgrade;
-  }
-  actions.append(create, billing);
   const submissionNotice = submissionLimitNotice(data.usage);
   card.append(
     heading,
@@ -1648,13 +1718,13 @@ async function renderDashboard(me, { force = false } = {}) {
     usageCards(data.usage, me, needsReviewCount),
   );
   if (submissionNotice) card.append(submissionNotice);
-  card.append(actions);
   main.append(card);
   main.append(
     renderAssignmentsCard(me, data.assignments || [], {
       limit: 5,
       id: "recent-assignments",
       heading: copy.recentAssignments,
+      showViewAll: true,
     }),
     renderProgressCard(data.learners || [], { recentOnly: true }),
   );
@@ -1724,43 +1794,52 @@ function showCheckoutRetry(interval, plan, error) {
   main.prepend(notice);
 }
 
-async function renderNew(me) {
+async function renderAssignmentForm(me, { assignment = null } = {}) {
+  const editing = Boolean(assignment);
   const main = shell(me, "assignments");
   const card = document.createElement("section");
   card.className = "product-card";
   const heading = document.createElement("h1");
-  heading.textContent = copy.newTitle;
+  heading.textContent = editing ? copy.editAssignment : copy.newTitle;
   const headingRow = document.createElement("div");
   headingRow.className = "assignment-form-heading";
   const backLink = document.createElement("a");
   backLink.className = "button-link button-secondary";
-  backLink.href = `/teacher/assignments?lang=${encodeURIComponent(locale)}`;
-  backLink.textContent = copy.backToDashboard;
+  backLink.href = editing
+    ? `/teacher/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`
+    : `/teacher/assignments?lang=${encodeURIComponent(locale)}`;
+  backLink.textContent = editing ? copy.cancel : copy.backToDashboard;
   headingRow.append(heading, backLink);
   const form = document.createElement("form");
   form.className = "product-form";
-  const defaultDeadline = new Date(Date.now() + 7 * 86_400_000);
+  const defaultDeadline = new Date(
+    editing ? assignment.expires_at : Date.now() + 7 * 86_400_000,
+  );
   defaultDeadline.setSeconds(0, 0);
-  let draftWords = "";
-  let draftTitle = "";
-  let draftSentences = "";
-  let draftMode = "dictation";
-  try {
-    draftWords = sessionStorage.getItem("mySpellingTeacherDraftWords") || "";
-    draftTitle = sessionStorage.getItem("mySpellingTeacherDraftTitle") || "";
-    draftSentences =
-      sessionStorage.getItem("mySpellingTeacherDraftSentences") || "";
-    draftMode =
-      sessionStorage.getItem("mySpellingTeacherDraftMode") || "dictation";
-  } catch {}
+  let draftWords = assignment?.words?.map((word) => word.word).join("\n") || "";
+  let draftTitle = assignment?.title || "";
+  let draftSentences =
+    assignment?.words?.map((word) => word.example_sentence || "").join("\n") ||
+    "";
+  let draftMode = assignment?.mode || "dictation";
+  if (!editing) {
+    try {
+      draftWords = sessionStorage.getItem("mySpellingTeacherDraftWords") || "";
+      draftTitle = sessionStorage.getItem("mySpellingTeacherDraftTitle") || "";
+      draftSentences =
+        sessionStorage.getItem("mySpellingTeacherDraftSentences") || "";
+      draftMode =
+        sessionStorage.getItem("mySpellingTeacherDraftMode") || "dictation";
+    } catch {}
+  }
   form.innerHTML = `
     <div class="field"><label for="assignment-title">${copy.assignmentTitle}</label><input id="assignment-title" maxlength="80" required placeholder="${copy.titlePlaceholder}"></div>
     <div class="field"><label for="assignment-words">${copy.words}</label><textarea id="assignment-words" required spellcheck="false"></textarea><small>${copy.wordsHelp}</small></div>
     <div class="field"><label for="assignment-sentences">${copy.exampleSentences}</label><textarea id="assignment-sentences" maxlength="30000" spellcheck="true" placeholder="${copy.exampleSentencesHelp}"></textarea></div>
     <fieldset><legend>${copy.mode}</legend><div class="radio-row"><label><input type="radio" name="mode" value="dictation"> ${copy.dictation}</label><label><input type="radio" name="mode" value="typing"> ${copy.typing}</label></div></fieldset>
-    <fieldset id="assignment-learners-field"><legend>${m("assignTo")}</legend><div class="radio-row"><label><input type="radio" name="learnerTarget" value="anyone" checked> ${m("anyoneWithLink")}</label>${isTeacherPlan(me) ? `<label><input type="radio" name="learnerTarget" value="all"> ${m("allStudents")}</label>` : ""}<label class="learner-target-option"><input type="radio" name="learnerTarget" value="selected"> ${m(me.plan === "free" ? "freeSelectedLearners" : isParentPlan(me) ? "selectedChildren" : "selectedStudents")}</label></div><div id="assignment-learner-list"></div></fieldset>
+    <fieldset id="assignment-learners-field"><legend>${m("assignTo")}</legend><div class="radio-row"><label><input type="radio" name="learnerTarget" value="all"> ${m(me.plan === "free" ? "allLearners" : isParentPlan(me) ? "allChildren" : "allStudents")}</label><label><input type="radio" name="learnerTarget" value="selected"> ${m(me.plan === "free" ? "freeSelectedLearners" : isParentPlan(me) ? "selectedChildren" : "selectedStudents")}</label><label><input type="radio" name="learnerTarget" value="anyone" checked> ${m("linkOnly")}</label></div><div id="assignment-learner-list"></div></fieldset>
     <div class="grid"><div class="field"><label for="assignment-deadline">${copy.deadline}</label><input id="assignment-deadline" type="datetime-local" required></div><div class="field"><label for="assignment-max">${copy.maxAttempts}</label><select id="assignment-max">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<option>${n}</option>`).join("")}</select></div></div>
-    <div class="actions"><button type="submit">${copy.publish}</button></div>`;
+    <div class="actions"><button type="submit">${editing ? copy.saveChanges : copy.publish}</button></div>`;
   attachSentenceLibraryControls(
     form,
     me,
@@ -1771,38 +1850,103 @@ async function renderNew(me) {
   const roster = (await api("/api/assignments")).learners || [];
   const learnerField = form.querySelector("#assignment-learners-field");
   const learnerList = form.querySelector("#assignment-learner-list");
-  if (!roster.length) learnerField.hidden = true;
-  else {
-    learnerList.innerHTML = roster
-      .filter((learner) => !learner.archived)
+  const learnerOptions = learnerField.querySelector(".radio-row");
+  const activeLearners = roster.filter((learner) => !learner.archived);
+  if (!activeLearners.length) {
+    learnerOptions.hidden = true;
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = m("noLearnersForAssignment");
+    const add = document.createElement("a");
+    add.className = "button-link button-secondary";
+    add.href = `/teacher?lang=${encodeURIComponent(locale)}#learners`;
+    add.textContent = m(
+      me.plan === "free"
+        ? "freeAddLearner"
+        : isParentPlan(me)
+          ? "addChild"
+          : "addLearner",
+    );
+    learnerList.replaceChildren(empty, add);
+  } else {
+    learnerList.innerHTML = activeLearners
       .map(
         (learner) =>
           `<label><input type="checkbox" name="learnerId" value="${learner.id}"> ${learner.name}</label>`,
       )
       .join("");
-    if (
-      isParentPlan(me) &&
-      roster.filter((learner) => !learner.archived).length === 1
-    ) {
-      form.querySelector(
-        'input[name="learnerTarget"][value="selected"]',
-      ).checked = true;
-      learnerList.querySelector('input[name="learnerId"]').checked = true;
+    const allRadio = form.querySelector(
+      'input[name="learnerTarget"][value="all"]',
+    );
+    const selectedRadio = form.querySelector(
+      'input[name="learnerTarget"][value="selected"]',
+    );
+    const checkboxes = [
+      ...learnerList.querySelectorAll('input[name="learnerId"]'),
+    ];
+    const assignedIds = new Set(
+      (assignment?.assignedLearners || []).map((learner) => learner.id),
+    );
+    if (editing && assignedIds.size) {
+      selectedRadio.checked = true;
+      checkboxes.forEach((input) => {
+        input.checked = assignedIds.has(input.value);
+      });
+    } else if (!editing && isParentPlan(me) && activeLearners.length === 1) {
+      selectedRadio.checked = true;
+      checkboxes[0].checked = true;
+    } else {
+      allRadio.checked = true;
+      checkboxes.forEach((input) => {
+        input.checked = true;
+      });
     }
-    form.addEventListener("change", () => {
+    const updateLearnerVisibility = () => {
       learnerList.hidden =
         form.querySelector('input[name="learnerTarget"]:checked').value !==
         "selected";
-    });
-    learnerList.hidden = true;
+    };
+    form.addEventListener("change", updateLearnerVisibility);
+    updateLearnerVisibility();
   }
   form.querySelector("#assignment-words").value = draftWords;
   form.querySelector("#assignment-sentences").value = draftSentences;
   form.querySelector("#assignment-title").value = draftTitle;
+  form.querySelector("#assignment-max").value = String(
+    editing ? assignment.max_attempts : 1,
+  );
   form.querySelector(
     `input[name="mode"][value="${draftMode === "typing" ? "typing" : "dictation"}"]`,
   ).checked = true;
-  attachLongListAdvice(form, "#assignment-words");
+  if (editing && assignment.hasAttempts) {
+    const lock = document.createElement("small");
+    lock.className = "field-lock";
+    lock.textContent = copy.assignmentHasResults;
+    form.querySelector("#assignment-words").disabled = true;
+    form.querySelector("#assignment-sentences").disabled = true;
+    form.querySelectorAll('input[name="mode"]').forEach((input) => {
+      input.disabled = true;
+    });
+    form.querySelector("#assignment-words").closest(".field").append(lock);
+    form
+      .querySelector("#assignment-sentences")
+      .closest(".field")
+      .append(lock.cloneNode(true));
+    const modeField = form
+      .querySelector('input[name="mode"]')
+      .closest("fieldset");
+    modeField.append(lock.cloneNode(true));
+    form
+      .querySelectorAll(
+        ".sentence-library-controls button, .sentence-library-controls select",
+      )
+      .forEach((control) => {
+        control.disabled = true;
+      });
+  }
+  attachWordLimit(form, me, "#assignment-words", {
+    locked: editing && assignment.hasAttempts,
+  });
   const local = new Date(
     defaultDeadline.getTime() - defaultDeadline.getTimezoneOffset() * 60_000,
   )
@@ -1812,37 +1956,52 @@ async function renderNew(me) {
   const status = statusElement(form);
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (form.querySelector('[aria-invalid="true"]')) return;
     form.querySelector(".section-error")?.remove();
     const button = form.querySelector('button[type="submit"]');
     button.disabled = true;
-    button.textContent = copy.creating;
+    button.textContent = editing ? copy.savingChanges : copy.creating;
     try {
       const mode = form.querySelector('input[name="mode"]:checked').value;
-      const result = await api("/api/assignments", {
-        method: "POST",
-        body: JSON.stringify({
-          title: form.querySelector("#assignment-title").value,
-          words: form.querySelector("#assignment-words").value,
-          exampleSentences: form.querySelector("#assignment-sentences").value,
-          mode,
-          expiresAt: new Date(
-            form.querySelector("#assignment-deadline").value,
-          ).toISOString(),
-          maxAttempts: Number(form.querySelector("#assignment-max").value),
-          learnerIds:
-            form.querySelector('input[name="learnerTarget"]:checked')?.value ===
-            "all"
-              ? [
-                  ...learnerList.querySelectorAll('input[name="learnerId"]'),
-                ].map((input) => input.value)
-              : form.querySelector('input[name="learnerTarget"]:checked')
-                    ?.value === "selected"
-                ? [
-                    ...form.querySelectorAll('input[name="learnerId"]:checked'),
-                  ].map((input) => input.value)
-                : [],
-        }),
-      });
+      const learnerTarget = form.querySelector(
+        'input[name="learnerTarget"]:checked',
+      )?.value;
+      const learnerIds =
+        learnerTarget === "all"
+          ? [...learnerList.querySelectorAll('input[name="learnerId"]')].map(
+              (input) => input.value,
+            )
+          : learnerTarget === "selected"
+            ? [...form.querySelectorAll('input[name="learnerId"]:checked')].map(
+                (input) => input.value,
+              )
+            : [];
+      const body = {
+        title: form.querySelector("#assignment-title").value,
+        expiresAt: new Date(
+          form.querySelector("#assignment-deadline").value,
+        ).toISOString(),
+        maxAttempts: Number(form.querySelector("#assignment-max").value),
+        learnerIds,
+      };
+      if (!editing || !assignment.hasAttempts) {
+        body.words = form.querySelector("#assignment-words").value;
+        body.exampleSentences = form.querySelector(
+          "#assignment-sentences",
+        ).value;
+        body.mode = mode;
+      }
+      const result = await api(
+        editing ? `/api/assignments/${assignment.id}` : "/api/assignments",
+        {
+          method: editing ? "PATCH" : "POST",
+          body: JSON.stringify(body),
+        },
+      );
+      if (editing) {
+        location.href = `/teacher/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`;
+        return;
+      }
       try {
         sessionStorage.removeItem("mySpellingTeacherDraftWords");
         sessionStorage.removeItem("mySpellingTeacherDraftSentences");
@@ -1867,12 +2026,21 @@ async function renderNew(me) {
         status.textContent = error.message;
         status.className = "status error";
       }
-      button.disabled = false;
-      button.textContent = copy.publish;
+      button.disabled = form.querySelector('[aria-invalid="true"]') !== null;
+      button.textContent = editing ? copy.saveChanges : copy.publish;
     }
   });
   card.append(headingRow, form);
   main.append(card);
+}
+
+async function renderNew(me) {
+  return renderAssignmentForm(me);
+}
+
+async function renderEdit(me, id) {
+  const data = await api(`/api/assignments/${id}`);
+  return renderAssignmentForm(me, { assignment: data });
 }
 
 function statCard(label, value) {
@@ -1921,6 +2089,15 @@ async function renderDetail(me, id) {
   link.textContent = studentUrl;
   link.rel = "noreferrer";
   linkPanel.append(link);
+  const audience = document.createElement("p");
+  audience.className = "assignment-meta";
+  const assignedLearners = data.assignedLearners || [];
+  audience.textContent = assignedLearners.length
+    ? m("assignedToSummary", {
+        learners: assignedLearners.map((learner) => learner.name).join(", "),
+      })
+    : m("linkOnly");
+  linkPanel.append(audience);
   const actions = document.createElement("div");
   actions.className = "actions";
   const copyButton = document.createElement("button");
@@ -1944,6 +2121,9 @@ async function renderDetail(me, id) {
   edit.type = "button";
   edit.className = "button-secondary";
   edit.textContent = copy.editAssignment;
+  edit.addEventListener("click", () => {
+    location.href = `/teacher/assignments/${id}/edit?lang=${encodeURIComponent(locale)}`;
+  });
   copyButton.addEventListener("click", async () => {
     await navigator.clipboard.writeText(studentUrl);
     copyButton.textContent =
@@ -1990,55 +2170,6 @@ async function renderDetail(me, id) {
       );
     }
   });
-  edit.addEventListener("click", async () => {
-    const title = prompt(copy.assignmentTitle, data.title);
-    if (title === null) return;
-    const words = prompt(
-      copy.listWordsPrompt,
-      data.words.map((word) => word.word).join("\n"),
-    );
-    if (words === null) return;
-    const exampleSentences = prompt(
-      copy.exampleSentencesPrompt,
-      data.words.map((word) => word.example_sentence || "").join("\n"),
-    );
-    if (exampleSentences === null) return;
-    let editedSentences = exampleSentences;
-    if (isPlusPlan(me) && confirm(copy.fillSentenceLibrary)) {
-      try {
-        const matches = await api("/api/sentence-library/match", {
-          method: "POST",
-          body: JSON.stringify({ words, difficulty: "simple" }),
-        });
-        const existing = editedSentences.split(/\r?\n/);
-        editedSentences = words
-          .split(/\r?\n/)
-          .map(
-            (word, index) =>
-              existing[index]?.trim() ||
-              matches.matches[word.trim().toLowerCase()] ||
-              "",
-          )
-          .join("\n");
-      } catch (error) {
-        showSectionError(card, error);
-        return;
-      }
-    }
-    try {
-      await api(`/api/assignments/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify({
-          title,
-          words,
-          exampleSentences: editedSentences,
-        }),
-      });
-      location.reload();
-    } catch (error) {
-      showSectionError(card, error);
-    }
-  });
   actions.append(copyButton, edit, saveList, toggle);
   if (isTeacherPlan(me)) {
     const exportLink = document.createElement("a");
@@ -2073,6 +2204,9 @@ async function renderDetail(me, id) {
   );
   summary.append(summaryTitle, grid);
   main.append(summary);
+  const hasMissedWords = data.attempts.some(
+    (attempt) => attempt.missed_words?.length,
+  );
   const review = document.createElement("section");
   review.className = "product-card";
   const reviewTitle = document.createElement("h2");
@@ -2109,11 +2243,16 @@ async function renderDetail(me, id) {
       }
     });
   } else {
-    const locked = document.createElement("p");
-    locked.textContent = copy.smartReviewUpgrade;
-    review.append(locked, upgradeLink("smart_review"));
+    const locked = document.createElement("button");
+    locked.type = "button";
+    locked.className = "button-secondary";
+    locked.textContent = copy.createReview;
+    locked.addEventListener("click", () =>
+      showLockedFeaturePlan(review, copy.smartReviewUpgrade, "smart_review"),
+    );
+    review.append(locked);
   }
-  main.append(review);
+  if (isPlusPlan(me) || hasMissedWords) main.append(review);
   const results = document.createElement("section");
   results.className = "product-card";
   const resultTitle = document.createElement("h2");
@@ -2287,14 +2426,6 @@ async function renderLearner(me, id) {
   const history = document.createElement("p");
   history.textContent = m("historyWindow", { days: data.historyDays });
   card.append(headingRow, history);
-  if (!isPlusPlan(me)) {
-    const historyUpgrade = document.createElement("div");
-    historyUpgrade.className = "notice";
-    const message = document.createElement("p");
-    message.textContent = copy.masteryHistoryUpgrade;
-    historyUpgrade.append(message, upgradeLink("mastery_history"));
-    card.append(historyUpgrade);
-  }
   main.append(card);
 
   const summary = document.createElement("section");
@@ -2345,9 +2476,18 @@ async function renderLearner(me, id) {
     });
     todaysReview.append(list, button);
   } else if (!data.smartReview && reviewData.count) {
-    const locked = document.createElement("p");
-    locked.textContent = copy.todaysReviewUpgrade;
-    todaysReview.append(locked, upgradeLink("todays_review"));
+    const locked = document.createElement("button");
+    locked.type = "button";
+    locked.className = "button-secondary";
+    locked.textContent = copy.createTodaysReview;
+    locked.addEventListener("click", () =>
+      showLockedFeaturePlan(
+        todaysReview,
+        copy.todaysReviewUpgrade,
+        "todays_review",
+      ),
+    );
+    todaysReview.append(locked);
   }
   main.append(todaysReview);
 
@@ -2387,13 +2527,18 @@ async function renderLearner(me, id) {
       }
     });
   } else {
-    const locked = document.createElement("p");
-    locked.textContent = data.summary.needsReview
-      ? m("smartReviewPreview", { count: data.summary.needsReview })
-      : copy.smartReviewUpgrade;
-    review.append(locked, upgradeLink("smart_review"));
+    if (data.summary.needsReview) {
+      const locked = document.createElement("button");
+      locked.type = "button";
+      locked.className = "button-secondary";
+      locked.textContent = copy.createReview;
+      locked.addEventListener("click", () =>
+        showLockedFeaturePlan(review, copy.smartReviewUpgrade, "smart_review"),
+      );
+      review.append(locked);
+    }
   }
-  main.append(review);
+  if (data.smartReview || data.summary.needsReview) main.append(review);
 
   const words = document.createElement("section");
   words.className = "product-card";
@@ -2541,11 +2686,15 @@ async function renderTeacherRoute(me) {
   const detail = location.pathname.match(
     /^\/teacher\/assignments\/([0-9a-f-]{36})$/i,
   );
+  const editAssignment = location.pathname.match(
+    /^\/teacher\/assignments\/([0-9a-f-]{36})\/edit$/i,
+  );
   const learner = location.pathname.match(
     /^\/teacher\/learners\/([0-9a-f-]{36})$/i,
   );
   try {
     if (location.pathname === "/teacher/assignments/new") await renderNew(me);
+    else if (editAssignment) await renderEdit(me, editAssignment[1]);
     else if (detail) await renderDetail(me, detail[1]);
     else if (learner) await renderLearner(me, learner[1]);
     else await renderDashboard(me);

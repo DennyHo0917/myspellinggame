@@ -607,15 +607,21 @@ describe("teacher authorization and quotas", () => {
 
   it("does not replace assignment words after a student attempt exists", async () => {
     const created = await createAssignment();
+    const learner = await createLearner("Alice");
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
     expect((await submit(publicId, assignment.words)).status).toBe(201);
+    const detailResponse = await call(`/api/assignments/${created.body.id}`);
+    expect(
+      ((await detailResponse.json()) as { hasAttempts: boolean }).hasAttempts,
+    ).toBe(true);
     const updated = await call(`/api/assignments/${created.body.id}`, {
       method: "PATCH",
       body: JSON.stringify({
         title: "Changed",
         words: ["cherry"],
         exampleSentences: ["I ate a cherry."],
+        learnerIds: [learner.body.id],
       }),
     });
     expect(updated.status).toBe(409);
@@ -627,6 +633,60 @@ describe("teacher authorization and quotas", () => {
       "apple",
       "banana",
     ]);
+    expect(
+      await bindings.DB.prepare(
+        "SELECT COUNT(*) AS count FROM assignment_learners WHERE assignment_id = ?",
+      )
+        .bind(created.body.id)
+        .first("count"),
+    ).toBe(0);
+  });
+
+  it("allows metadata and learner updates after attempts without changing words or mode", async () => {
+    const created = await createAssignment();
+    const learner = await createLearner("Alice");
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    expect((await submit(publicId, assignment.words)).status).toBe(201);
+    const updated = await call(`/api/assignments/${created.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        title: "After attempt",
+        expiresAt: new Date(Date.now() + 2 * 86_400_000).toISOString(),
+        maxAttempts: 5,
+        learnerIds: [learner.body.id],
+      }),
+    });
+    expect(updated.status).toBe(200);
+    expect(await updated.json()).toMatchObject({
+      title: "After attempt",
+      max_attempts: 5,
+      assignedLearners: [{ id: learner.body.id, name: "Alice" }],
+    });
+  });
+
+  it("does not change assignment mode after a student attempt exists", async () => {
+    const created = await createAssignment();
+    const learner = await createLearner("Alice");
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    expect((await submit(publicId, assignment.words)).status).toBe(201);
+
+    const updated = await call(`/api/assignments/${created.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ mode: "typing", learnerIds: [learner.body.id] }),
+    });
+    expect(updated.status).toBe(409);
+    expect(((await updated.json()) as { error: string }).error).toBe(
+      "assignment_has_results",
+    );
+    expect(
+      await bindings.DB.prepare(
+        "SELECT COUNT(*) AS count FROM assignment_learners WHERE assignment_id = ?",
+      )
+        .bind(created.body.id)
+        .first("count"),
+    ).toBe(0);
   });
 
   it("keeps the existing-result lock ahead of the plan word limit", async () => {
@@ -1153,6 +1213,110 @@ describe("assignment learner binding and class join", () => {
     });
     expect(created.response.status).toBe(403);
     expect(created.body.error).toBe("learner_forbidden");
+  });
+
+  it("combines assignment field updates with learner reassignment", async () => {
+    await insertSubscription({ plan: "teacher", status: "active" });
+    const first = await createLearner("Alice");
+    const second = await createLearner("Bob");
+    const created = await createAssignment(teacherA, {
+      learnerIds: [first.body.id],
+    });
+
+    const updated = await call(`/api/assignments/${created.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        title: "Updated assignment",
+        words: ["cherry"],
+        mode: "typing",
+        maxAttempts: 5,
+        learnerIds: [second.body.id],
+      }),
+    });
+    expect(updated.status).toBe(200);
+    expect(await updated.json()).toMatchObject({
+      title: "Updated assignment",
+      mode: "typing",
+      max_attempts: 5,
+      words: [expect.objectContaining({ word: "cherry" })],
+      assignedLearners: [{ id: second.body.id, name: "Bob" }],
+    });
+  });
+
+  it("supports reassigning learners", async () => {
+    await insertSubscription({ plan: "teacher", status: "active" });
+    const first = await createLearner("Alice");
+    const second = await createLearner("Bob");
+    const created = await createAssignment(teacherA, {
+      learnerIds: [first.body.id],
+    });
+
+    const reassigned = await call(`/api/assignments/${created.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ learnerIds: [second.body.id] }),
+    });
+    expect(reassigned.status).toBe(200);
+    expect(
+      ((await reassigned.json()) as { assignedLearners: unknown[] })
+        .assignedLearners,
+    ).toEqual([{ id: second.body.id, name: "Bob" }]);
+  });
+
+  it("supports clearing all learner assignments", async () => {
+    await insertSubscription({ plan: "teacher", status: "active" });
+    const learner = await createLearner("Alice");
+    const created = await createAssignment(teacherA, {
+      learnerIds: [learner.body.id],
+    });
+
+    const cleared = await call(`/api/assignments/${created.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ learnerIds: [] }),
+    });
+    expect(cleared.status).toBe(200);
+    expect(
+      ((await cleared.json()) as { assignedLearners: unknown[] })
+        .assignedLearners,
+    ).toEqual([]);
+  });
+
+  it("rejects reassignment to another user's or archived learner", async () => {
+    await insertSubscription({ plan: "teacher", status: "active" });
+    const owned = await createLearner("Owned");
+    const foreign = await createLearner("Foreign", teacherB);
+    const created = await createAssignment(teacherA, {
+      learnerIds: [owned.body.id],
+    });
+
+    const crossOwner = await call(`/api/assignments/${created.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        title: "Must not be saved",
+        learnerIds: [foreign.body.id],
+      }),
+    });
+    expect(crossOwner.status).toBe(403);
+    expect(((await crossOwner.json()) as { error: string }).error).toBe(
+      "learner_forbidden",
+    );
+    expect(
+      await bindings.DB.prepare("SELECT title FROM assignments WHERE id = ?")
+        .bind(created.body.id)
+        .first("title"),
+    ).toBe("Week one");
+
+    await call(`/api/learners/${owned.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ archived: true }),
+    });
+    const archived = await call(`/api/assignments/${created.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ learnerIds: [owned.body.id] }),
+    });
+    expect(archived.status).toBe(403);
+    expect(((await archived.json()) as { error: string }).error).toBe(
+      "learner_forbidden",
+    );
   });
 
   it("keeps Teacher-only PIN and Class Join unavailable to Parent plans", async () => {

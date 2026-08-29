@@ -1,12 +1,34 @@
-export const SAMPLE_WORDS = ['because', 'friend', 'beautiful', 'answer', 'enough', 'favorite', 'library', 'through'];
+export const SAMPLE_WORDS = [
+  "because",
+  "friend",
+  "beautiful",
+  "answer",
+  "enough",
+  "favorite",
+  "library",
+  "through",
+];
 export const ANONYMOUS_WORD_LIMIT = 20;
 
-export function parseWords(text) {
-  return [...new Set((text || '')
+export function analyzeWords(text) {
+  const tokens = String(text || "")
     .toLowerCase()
     .split(/[^a-z'-]+/)
     .map((word) => word.trim())
-    .filter((word) => word.length > 1 && word.length <= 24))];
+    .filter(Boolean);
+  const duplicates = [
+    ...new Set(tokens.filter((word, index) => tokens.indexOf(word) !== index)),
+  ];
+  const tooShort = [...new Set(tokens.filter((word) => word.length <= 1))];
+  const tooLong = [...new Set(tokens.filter((word) => word.length > 24))];
+  const words = [
+    ...new Set(tokens.filter((word) => word.length > 1 && word.length <= 24)),
+  ];
+  return { words, duplicates, tooShort, tooLong };
+}
+
+export function parseWords(text) {
+  return analyzeWords(text).words;
 }
 
 export function configuredWords(text, fallback = SAMPLE_WORDS) {
@@ -15,7 +37,9 @@ export function configuredWords(text, fallback = SAMPLE_WORDS) {
 }
 
 export function normalizeAnswer(answer) {
-  return String(answer || '').trim().toLowerCase();
+  return String(answer || "")
+    .trim()
+    .toLowerCase();
 }
 
 export function createDictationSession(words) {
@@ -54,7 +78,9 @@ export function advanceDictationSession(session) {
 }
 
 export function dictationSummary(session) {
-  const missedWords = session.results.filter((result) => !result.correct).map((result) => result.word);
+  const missedWords = session.results
+    .filter((result) => !result.correct)
+    .map((result) => result.word);
   const correct = session.results.length - missedWords.length;
   const total = session.words.length;
   return {
@@ -71,7 +97,8 @@ export function retryMissedDictation(session) {
 }
 
 export function takeCustomWord(words, cursor = 0) {
-  if (!Array.isArray(words) || cursor >= words.length) return { word: null, cursor };
+  if (!Array.isArray(words) || cursor >= words.length)
+    return { word: null, cursor };
   return { word: words[cursor], cursor: cursor + 1 };
 }
 
@@ -79,8 +106,14 @@ export function shouldEndTypingOnMiss(isCustomRound, missedCount, maxMisses) {
   return !isCustomRound && missedCount >= maxMisses;
 }
 
-export function customTypingRoundComplete(totalWords, processedCount, activeWordCount) {
-  return totalWords > 0 && processedCount >= totalWords && activeWordCount === 0;
+export function customTypingRoundComplete(
+  totalWords,
+  processedCount,
+  activeWordCount,
+) {
+  return (
+    totalWords > 0 && processedCount >= totalWords && activeWordCount === 0
+  );
 }
 
 export function typingCompletionStats(processedCount, missedWords = []) {

@@ -66,6 +66,7 @@ type AssignmentRow = {
   max_attempts: number;
   created_at: string;
   expires_at: string;
+  closed_at?: string | null;
 };
 
 type AttemptDetailRow = {
@@ -530,7 +531,10 @@ async function listAssignments(
               a.created_at, a.expires_at,
               COUNT(CASE WHEN at.status = 'completed' THEN 1 END) AS attempt_count,
               COUNT(DISTINCT at.nickname_key) AS student_count,
-              COALESCE(ROUND(AVG(CASE WHEN at.status = 'completed' THEN at.accuracy END)), 0) AS average_accuracy
+              COALESCE(ROUND(AVG(CASE WHEN at.status = 'completed' THEN at.accuracy END)), 0) AS average_accuracy,
+              (SELECT GROUP_CONCAT(l.name, ', ') FROM assignment_learners al
+               JOIN learners l ON l.id = al.learner_id
+               WHERE al.assignment_id = a.id) AS assigned_learner_names
        FROM assignments a
        LEFT JOIN attempts at ON at.assignment_id = a.id AND at.completed_at >= ?
        WHERE a.owner_user_id = ?
@@ -548,16 +552,17 @@ async function assignmentDetail(
   plan: Plan,
 ) {
   const cutoff = historyCutoff(plan);
-  const [wordRows, attemptRows, average, assignedLearners] = await Promise.all([
-    db
-      .prepare(
-        "SELECT id, position, word, example_sentence FROM assignment_words WHERE assignment_id = ? ORDER BY position",
-      )
-      .bind(assignment.id)
-      .all<AssignmentWord>(),
-    db
-      .prepare(
-        `SELECT at.id, at.nickname, at.attempt_number, at.status, at.score, at.correct_count,
+  const [wordRows, attemptRows, average, assignedLearners, attemptExists] =
+    await Promise.all([
+      db
+        .prepare(
+          "SELECT id, position, word, example_sentence FROM assignment_words WHERE assignment_id = ? ORDER BY position",
+        )
+        .bind(assignment.id)
+        .all<AssignmentWord>(),
+      db
+        .prepare(
+          `SELECT at.id, at.nickname, at.attempt_number, at.status, at.score, at.correct_count,
                 at.incorrect_count, at.accuracy, at.duration_seconds, at.completed_at,
                 GROUP_CONCAT(CASE WHEN ai.is_correct = 0 THEN aw.word END, char(31)) AS missed_words
          FROM attempts at
@@ -566,27 +571,31 @@ async function assignmentDetail(
          WHERE at.assignment_id = ? AND at.completed_at >= ?
          GROUP BY at.id
          ORDER BY at.completed_at DESC`,
-      )
-      .bind(assignment.id, cutoff)
-      .all<AttemptDetailRow>(),
-    db
-      .prepare(
-        `SELECT COUNT(CASE WHEN status = 'completed' THEN 1 END) AS attempts,
+        )
+        .bind(assignment.id, cutoff)
+        .all<AttemptDetailRow>(),
+      db
+        .prepare(
+          `SELECT COUNT(CASE WHEN status = 'completed' THEN 1 END) AS attempts,
                 COUNT(DISTINCT nickname_key) AS students,
                 COALESCE(ROUND(AVG(CASE WHEN status = 'completed' THEN accuracy END)), 0) AS average_accuracy
          FROM attempts WHERE assignment_id = ? AND completed_at >= ?`,
-      )
-      .bind(assignment.id, cutoff)
-      .first<Record<string, number>>(),
-    db
-      .prepare(
-        `SELECT l.id, l.name FROM assignment_learners al
+        )
+        .bind(assignment.id, cutoff)
+        .first<Record<string, number>>(),
+      db
+        .prepare(
+          `SELECT l.id, l.name FROM assignment_learners al
          JOIN learners l ON l.id = al.learner_id
          WHERE al.assignment_id = ? ORDER BY l.name_key`,
-      )
-      .bind(assignment.id)
-      .all<{ id: string; name: string }>(),
-  ]);
+        )
+        .bind(assignment.id)
+        .all<{ id: string; name: string }>(),
+      db
+        .prepare("SELECT 1 FROM attempts WHERE assignment_id = ? LIMIT 1")
+        .bind(assignment.id)
+        .first(),
+    ]);
   let missedWords: unknown[] | null = null;
   if (PLAN_LIMITS[plan].missedWordStats) {
     missedWords = (
@@ -620,6 +629,7 @@ async function assignmentDetail(
     },
     missedWordStats: missedWords,
     assignedLearners: assignedLearners.results,
+    hasAttempts: Boolean(attemptExists),
   };
 }
 
@@ -1263,46 +1273,59 @@ async function updateAssignment(
   userId: string,
 ) {
   const body = await readJson(request);
-  if (body.learnerIds !== undefined) {
+  const hasWords = Object.hasOwn(body, "words");
+  const hasMode = Object.hasOwn(body, "mode");
+  const hasTitle = Object.hasOwn(body, "title");
+  const hasMaxAttempts = Object.hasOwn(body, "maxAttempts");
+  const hasDeadline = Object.hasOwn(body, "expiresAt");
+  const hasLearners = Object.hasOwn(body, "learnerIds");
+  const hasStatus = Object.hasOwn(body, "status");
+  const hasAssignmentChanges =
+    hasTitle || hasWords || hasMode || hasMaxAttempts || hasDeadline;
+
+  const title =
+    hasTitle || hasWords
+      ? validateTitle(body.title ?? assignment.title)
+      : assignment.title;
+  const mode = hasMode ? validateMode(body.mode) : assignment.mode;
+  const maxAttempts = hasMaxAttempts
+    ? validateMaxAttempts(body.maxAttempts)
+    : assignment.max_attempts;
+  const expiresAt = hasDeadline
+    ? validateDeadline(body.expiresAt)
+    : assignment.expires_at;
+  const words = hasWords
+    ? parseWordEntries(
+        body.words,
+        body.exampleSentences ?? body.example_sentences ?? body.sentences,
+      )
+    : null;
+
+  let learnerIds: string[] | null = null;
+  if (hasLearners) {
     if (
       !Array.isArray(body.learnerIds) ||
       body.learnerIds.some((id) => typeof id !== "string")
     )
       throw new HttpError(400, "invalid_learners", "Choose valid students.");
-    const ids = [...new Set(body.learnerIds as string[])];
-    if (ids.length) {
-      const placeholders = ids.map(() => "?").join(",");
+    learnerIds = [...new Set(body.learnerIds as string[])];
+    if (learnerIds.length) {
+      const placeholders = learnerIds.map(() => "?").join(",");
       const owned = await env.DB.prepare(
         `SELECT id FROM learners WHERE owner_user_id = ? AND archived = 0 AND id IN (${placeholders})`,
       )
-        .bind(userId, ...ids)
+        .bind(userId, ...learnerIds)
         .all<{ id: string }>();
-      if (owned.results.length !== ids.length)
+      if (owned.results.length !== learnerIds.length)
         throw new HttpError(
           403,
           "learner_forbidden",
           "A selected student is not available.",
         );
     }
-    const statements = [
-      env.DB.prepare(
-        "DELETE FROM assignment_learners WHERE assignment_id = ?",
-      ).bind(assignment.id),
-      ...ids.map((learnerId) =>
-        env.DB.prepare(
-          "INSERT INTO assignment_learners (assignment_id, learner_id, created_at) VALUES (?, ?, ?)",
-        ).bind(assignment.id, learnerId, new Date().toISOString()),
-      ),
-    ];
-    await env.DB.batch(statements);
-    return assignmentDetail(env.DB, assignment, await getPlan(env, userId));
   }
-  if (Object.hasOwn(body, "words")) {
-    const title = validateTitle(body.title ?? assignment.title);
-    const words = parseWordEntries(
-      body.words,
-      body.exampleSentences ?? body.example_sentences ?? body.sentences,
-    );
+
+  if (hasWords || (hasMode && mode !== assignment.mode)) {
     const attempt = await env.DB.prepare(
       "SELECT 1 FROM attempts WHERE assignment_id = ? LIMIT 1",
     )
@@ -1312,14 +1335,81 @@ async function updateAssignment(
       throw new HttpError(
         409,
         "assignment_has_results",
-        "Assignments with student attempts cannot change their word list.",
+        "Assignments with student attempts cannot change their word list or practice mode.",
       );
     }
-    enforcePlanWordLimit(words, await getPlan(env, userId));
-    await env.DB.batch([
+    if (words) enforcePlanWordLimit(words, await getPlan(env, userId));
+  }
+
+  if (hasStatus && body.status !== "published" && body.status !== "closed") {
+    throw new HttpError(
+      400,
+      "invalid_status",
+      "Assignments can be published or closed.",
+    );
+  }
+  const status = hasStatus
+    ? (body.status as AssignmentRow["status"])
+    : assignment.status;
+  const reopening =
+    hasStatus && status === "published" && assignment.status !== "published";
+  if (hasStatus && status === "published") {
+    if (expiresAt <= new Date().toISOString()) {
+      throw new HttpError(
+        409,
+        "assignment_expired",
+        "Expired assignments cannot be reopened.",
+      );
+    }
+    if (reopening) {
+      const plan = await getPlan(env, userId);
+      const active = await env.DB.prepare(
+        `SELECT COUNT(*) AS count FROM assignments
+         WHERE owner_user_id = ? AND status = 'published' AND expires_at > ?`,
+      )
+        .bind(userId, new Date().toISOString())
+        .first<{ count: number }>();
+      if (Number(active?.count ?? 0) >= PLAN_LIMITS[plan].activeAssignments)
+        throw new HttpError(
+          403,
+          "active_assignment_limit",
+          "Your active assignment limit has been reached.",
+        );
+    }
+  }
+
+  if (!hasAssignmentChanges && !hasLearners && !hasStatus)
+    throw new HttpError(
+      400,
+      "invalid_status",
+      "Assignments can be published or closed.",
+    );
+
+  const statements: D1PreparedStatement[] = [];
+  if (hasAssignmentChanges || hasStatus) {
+    const closedAt = hasStatus
+      ? status === "closed"
+        ? new Date().toISOString()
+        : null
+      : (assignment.closed_at ?? null);
+    statements.push(
       env.DB.prepare(
-        "UPDATE assignments SET title = ? WHERE id = ? AND owner_user_id = ?",
-      ).bind(title, assignment.id, userId),
+        `UPDATE assignments SET title = ?, mode = ?, max_attempts = ?, expires_at = ?, status = ?, closed_at = ?
+         WHERE id = ? AND owner_user_id = ?`,
+      ).bind(
+        title,
+        mode,
+        maxAttempts,
+        expiresAt,
+        status,
+        closedAt,
+        assignment.id,
+        userId,
+      ),
+    );
+  }
+  if (words) {
+    statements.push(
       env.DB.prepare(
         "DELETE FROM assignment_words WHERE assignment_id = ?",
       ).bind(assignment.id),
@@ -1334,66 +1424,38 @@ async function updateAssignment(
           entry.example_sentence,
         ),
       ),
-    ]);
-    return assignmentDetail(
-      env.DB,
-      { ...assignment, title },
-      await getPlan(env, userId),
     );
   }
-  if (body.status !== "published" && body.status !== "closed") {
-    throw new HttpError(
-      400,
-      "invalid_status",
-      "Assignments can be published or closed.",
+  if (learnerIds) {
+    const createdAt = new Date().toISOString();
+    statements.push(
+      env.DB.prepare(
+        "DELETE FROM assignment_learners WHERE assignment_id = ?",
+      ).bind(assignment.id),
+      ...learnerIds.map((learnerId) =>
+        env.DB.prepare(
+          `INSERT INTO assignment_learners (assignment_id, learner_id, created_at)
+           VALUES (?, (SELECT id FROM learners
+                       WHERE id = ? AND owner_user_id = ? AND archived = 0), ?)`,
+        ).bind(assignment.id, learnerId, userId, createdAt),
+      ),
     );
   }
-  if (body.status === "published") {
-    if (assignment.expires_at <= new Date().toISOString()) {
-      throw new HttpError(
-        409,
-        "assignment_expired",
-        "Expired assignments cannot be reopened.",
-      );
-    }
-    if (assignment.status !== "published") {
-      const plan = await getPlan(env, userId);
-      const now = new Date().toISOString();
-      const reopened = await env.DB.prepare(
-        `UPDATE assignments SET status = 'published', closed_at = NULL
-         WHERE id = ? AND owner_user_id = ?
-           AND (SELECT COUNT(*) FROM assignments
-                WHERE owner_user_id = ? AND status = 'published' AND expires_at > ?) < ?`,
-      )
-        .bind(
-          assignment.id,
-          userId,
-          userId,
-          now,
-          PLAN_LIMITS[plan].activeAssignments,
-        )
-        .run();
-      if (!reopened.meta.changes) {
-        throw new HttpError(
-          403,
-          "active_assignment_limit",
-          "Your active assignment limit has been reached.",
-        );
-      }
-      return { status: body.status };
-    }
-  }
-  await env.DB.prepare(
-    "UPDATE assignments SET status = ?, closed_at = ? WHERE id = ? AND owner_user_id = ?",
-  )
-    .bind(
-      body.status,
-      body.status === "closed" ? new Date().toISOString() : null,
-      assignment.id,
-      userId,
-    )
-    .run();
-  return { status: body.status };
+  await env.DB.batch(statements);
+
+  if (!hasAssignmentChanges && !hasLearners) return { status };
+  return assignmentDetail(
+    env.DB,
+    {
+      ...assignment,
+      title,
+      mode,
+      max_attempts: maxAttempts,
+      expires_at: expiresAt,
+      status,
+    },
+    await getPlan(env, userId),
+  );
 }
 
 async function publicAssignment(

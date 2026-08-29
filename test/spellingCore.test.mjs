@@ -1,8 +1,9 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
+import test from "node:test";
+import assert from "node:assert/strict";
 
 import {
   advanceDictationSession,
+  analyzeWords,
   configuredWords,
   createDictationSession,
   customTypingRoundComplete,
@@ -15,10 +16,10 @@ import {
   submitDictationAnswer,
   takeCustomWord,
   typingCompletionStats,
-} from '../src/js/spellingCore.mjs';
+} from "../src/js/spellingCore.mjs";
 
-test('dictation uses each word once and completes after the last answer', () => {
-  const session = createDictationSession(['one', 'two', 'three']);
+test("dictation uses each word once and completes after the last answer", () => {
+  const session = createDictationSession(["one", "two", "three"]);
   const seen = [];
 
   while (currentDictationWord(session)) {
@@ -27,7 +28,7 @@ test('dictation uses each word once and completes after the last answer', () => 
     advanceDictationSession(session);
   }
 
-  assert.deepEqual(seen, ['one', 'two', 'three']);
+  assert.deepEqual(seen, ["one", "two", "three"]);
   assert.deepEqual(dictationSummary(session), {
     total: 3,
     correct: 3,
@@ -37,53 +38,66 @@ test('dictation uses each word once and completes after the last answer', () => 
   });
 });
 
-test('missed words can be retried on their own', () => {
-  const session = createDictationSession(['alpha', 'beta', 'gamma']);
-  submitDictationAnswer(session, 'alpha');
+test("missed words can be retried on their own", () => {
+  const session = createDictationSession(["alpha", "beta", "gamma"]);
+  submitDictationAnswer(session, "alpha");
   advanceDictationSession(session);
-  submitDictationAnswer(session, 'wrong');
+  submitDictationAnswer(session, "wrong");
   advanceDictationSession(session);
-  submitDictationAnswer(session, 'gamma');
+  submitDictationAnswer(session, "gamma");
 
   const retry = retryMissedDictation(session);
-  assert.deepEqual(retry.words, ['beta']);
-  assert.equal(currentDictationWord(retry), 'beta');
+  assert.deepEqual(retry.words, ["beta"]);
+  assert.equal(currentDictationWord(retry), "beta");
 });
 
-test('custom typing words stop at exhaustion without a fallback word', () => {
+test("custom typing words stop at exhaustion without a fallback word", () => {
   let cursor = 0;
-  const words = ['red', 'blue'];
+  const words = ["red", "blue"];
   const first = takeCustomWord(words, cursor);
   cursor = first.cursor;
   const second = takeCustomWord(words, cursor);
   cursor = second.cursor;
   const exhausted = takeCustomWord(words, cursor);
 
-  assert.equal(first.word, 'red');
-  assert.equal(second.word, 'blue');
+  assert.equal(first.word, "red");
+  assert.equal(second.word, "blue");
   assert.equal(exhausted.word, null);
   assert.equal(exhausted.cursor, 2);
 });
 
-test('empty input falls back and duplicate words are removed', () => {
-  assert.deepEqual(parseWords(' Apple\nAPPLE, banana  banana '), ['apple', 'banana']);
-  assert.deepEqual(configuredWords('', ['sample']), ['sample']);
+test("empty input falls back and duplicate words are removed", () => {
+  assert.deepEqual(parseWords(" Apple\nAPPLE, banana  banana "), [
+    "apple",
+    "banana",
+  ]);
+  assert.deepEqual(configuredWords("", ["sample"]), ["sample"]);
 });
 
-test('word parsing keeps values above the plan limit for explicit validation', () => {
-  const words = Array.from({ length: 81 }, (_, index) =>
-    `word${index.toString(2).padStart(7, 'a').replaceAll('0', 'a').replaceAll('1', 'b')}`,
+test("word parsing keeps values above the plan limit for explicit validation", () => {
+  const words = Array.from(
+    { length: 81 },
+    (_, index) =>
+      `word${index.toString(2).padStart(7, "a").replaceAll("0", "a").replaceAll("1", "b")}`,
   );
-  assert.equal(parseWords(words.join('\n')).length, 81);
+  assert.equal(parseWords(words.join("\n")).length, 81);
 });
 
-test('answer comparison ignores surrounding whitespace and case', () => {
-  assert.equal(normalizeAnswer('  BeAuTiFuL  '), 'beautiful');
-  const session = createDictationSession(['beautiful']);
-  assert.equal(submitDictationAnswer(session, '  BEAUTIFUL ').correct, true);
+test("word analysis counts unique valid words and reports ignored entries", () => {
+  const result = analyzeWords("Apple\napple\na\n" + "x".repeat(25));
+  assert.deepEqual(result.words, ["apple"]);
+  assert.deepEqual(result.duplicates, ["apple"]);
+  assert.deepEqual(result.tooShort, ["a"]);
+  assert.deepEqual(result.tooLong, ["x".repeat(25)]);
 });
 
-test('custom Typing Rain processes all 20 words before ending', () => {
+test("answer comparison ignores surrounding whitespace and case", () => {
+  assert.equal(normalizeAnswer("  BeAuTiFuL  "), "beautiful");
+  const session = createDictationSession(["beautiful"]);
+  assert.equal(submitDictationAnswer(session, "  BEAUTIFUL ").correct, true);
+});
+
+test("custom Typing Rain processes all 20 words before ending", () => {
   const words = Array.from({ length: 20 }, (_, index) => `word${index}`);
   for (let processed = 1; processed <= 5; processed++) {
     assert.equal(shouldEndTypingOnMiss(true, processed, 5), false);
@@ -95,8 +109,8 @@ test('custom Typing Rain processes all 20 words before ending', () => {
   assert.equal(shouldEndTypingOnMiss(false, 5, 5), true);
 });
 
-test('Typing Rain completion and GA4 stats only count processed words', () => {
-  const firstFiveMissed = ['one', 'two', 'three', 'four', 'five'];
+test("Typing Rain completion and GA4 stats only count processed words", () => {
+  const firstFiveMissed = ["one", "two", "three", "four", "five"];
   assert.deepEqual(typingCompletionStats(5, firstFiveMissed), {
     word_count: 5,
     correct_count: 0,

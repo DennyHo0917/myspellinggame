@@ -78,20 +78,6 @@ button:disabled {
 .button-secondary:hover {
   background: #d8e7e5;
 }
-.sentence-library-fill {
-  gap: 0.45rem;
-}
-.sentence-library-upgrade-badge {
-  border-radius: 999px;
-  padding: 0.18rem 0.42rem;
-  background: #f2c14e;
-  color: #4a3500;
-  font-size: 0.68rem;
-  font-weight: 850;
-  line-height: 1;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
 .button-danger {
   background: var(--red);
 }
@@ -483,6 +469,26 @@ fieldset legend {
 }
 .field small {
   color: var(--muted);
+}
+.word-count {
+  font-variant-numeric: tabular-nums;
+}
+.long-list-advice {
+  color: #8a5a00 !important;
+  background: #fff8dc;
+  border-left: 3px solid #d99a00;
+  padding: 0.35rem 0.5rem;
+}
+.word-list-error {
+  color: var(--red) !important;
+  font-weight: 700;
+}
+.word-count.error {
+  color: var(--red);
+  font-weight: 700;
+}
+.word-limit-upgrade[hidden] {
+  display: none;
 }
 fieldset {
   border: 1px solid var(--line);

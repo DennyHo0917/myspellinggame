@@ -31,6 +31,12 @@ async function mockAssignment(
     `**/api/public/assignments/${publicId}/attempts`,
     submitHandler,
   );
+  await page.route(`**/api/public/assignments/${publicId}/start`, (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ ok: true }),
+    }),
+  );
 }
 
 async function completeAssignment(page) {
@@ -163,6 +169,108 @@ test("other review words separate first and second retries", async ({
   ).toBeVisible();
 });
 
+test("assigned work requires the learner link instead of a nickname", async ({
+  page,
+}) => {
+  await page.route(`**/api/public/assignments/${publicId}`, (route) =>
+    route.fulfill({
+      status: 403,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "learner_required" }),
+    }),
+  );
+
+  await page.goto(`/a/${publicId}?lang=en`);
+  await expect(
+    page.getByRole("heading", {
+      name: "Use the student link for this assignment.",
+    }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Nickname")).toHaveCount(0);
+});
+
+test("start blocks a nickname when max attempts are exhausted", async ({
+  page,
+}) => {
+  await mockAssignment(page, "typing", (route) =>
+    route.fulfill({ status: 201 }),
+  );
+  await page.unroute(`**/api/public/assignments/${publicId}/start`);
+  await page.route(`**/api/public/assignments/${publicId}/start`, (route) =>
+    route.fulfill({
+      status: 403,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "attempt_limit" }),
+    }),
+  );
+
+  await page.goto(`/a/${publicId}?lang=en`);
+  await page.getByLabel("Nickname").fill("Student 01");
+  await page.getByRole("button", { name: "Start assignment" }).click();
+  await expect(
+    page.getByText("This nickname has used all allowed attempts."),
+  ).toBeVisible();
+  await expect(page.locator(".player-word")).toHaveCount(0);
+});
+
+test("start blocks a nickname when the Free monthly quota is exhausted", async ({
+  page,
+}) => {
+  await mockAssignment(page, "typing", (route) =>
+    route.fulfill({ status: 201 }),
+  );
+  await page.unroute(`**/api/public/assignments/${publicId}/start`);
+  await page.route(`**/api/public/assignments/${publicId}/start`, (route) =>
+    route.fulfill({
+      status: 403,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "monthly_submission_limit" }),
+    }),
+  );
+
+  await page.goto(`/a/${publicId}?lang=en`);
+  await page.getByLabel("Nickname").fill("Student 01");
+  await page.getByRole("button", { name: "Start assignment" }).click();
+  await expect(
+    page.getByText("This account’s submission limit has been reached."),
+  ).toBeVisible();
+  await expect(page.locator(".player-word")).toHaveCount(0);
+});
+
+test("public assignment blocks nicknames the server would reject before starting", async ({
+  page,
+}) => {
+  await mockAssignment(page, "typing", (route) =>
+    route.fulfill({ status: 201 }),
+  );
+  let startCalls = 0;
+  page.on("request", (request) => {
+    if (
+      new URL(request.url()).pathname.endsWith(
+        `/api/public/assignments/${publicId}/start`,
+      )
+    )
+      startCalls += 1;
+  });
+
+  await page.goto(`/a/${publicId}?lang=en`);
+  for (const nickname of [
+    "a",
+    "x".repeat(33),
+    "student@example.com",
+    "http://example.com",
+    "HTTPS://example.com",
+  ]) {
+    await page.getByLabel("Nickname").fill(nickname);
+    await page.getByRole("button", { name: "Start assignment" }).click();
+    await expect(page.locator(".status.error")).toHaveText(
+      "Enter a nickname or classroom number with 2–32 characters.",
+    );
+    await expect(page.locator(".player-word")).toHaveCount(0);
+  }
+  expect(startCalls).toBe(0);
+});
+
 test("magic learner links use the server identity and hide nickname entry", async ({
   page,
 }) => {
@@ -216,6 +324,12 @@ test("magic learner links use the server identity and hide nickname entry", asyn
         }),
       });
     },
+  );
+  await page.route(`**/api/public/assignments/${publicId}/start`, (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ ok: true }),
+    }),
   );
 
   await page.goto(`/l/${learnerPublicId}?lang=en`);
@@ -1650,6 +1764,59 @@ test("free practice accepts optional example sentences and replays the full prom
   ).toBeHidden();
 });
 
+test("clearing the word list stays empty until sample words are loaded", async ({
+  page,
+}) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const words = page.locator("#custom-word-list");
+  await expect(words).not.toHaveValue("");
+
+  await words.fill("");
+  await expect(words).toHaveValue("");
+  await page.getByRole("button", { name: "Start Spelling Test" }).click();
+  await expect(page.locator("#spelling-status")).toHaveText(
+    "Add at least one spelling word before starting.",
+  );
+  await expect(
+    page.getByRole("button", { name: "Return to main menu" }),
+  ).toBeHidden();
+
+  await page.getByRole("button", { name: "Sample list" }).click();
+  await expect(words).toHaveValue(/because/);
+  await page.getByRole("button", { name: "Start Spelling Test" }).click();
+  await expect(
+    page.getByRole("button", { name: "Return to main menu" }),
+  ).toBeVisible();
+});
+
+test("shared practice links do not reuse or overwrite local example sentences", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "mySpellingGameExampleSentences",
+      "Old apple sentence.\nOld banana sentence.",
+    );
+  });
+  await page.goto("/#words=apple%2Cbanana&mode=dictation", {
+    waitUntil: "domcontentloaded",
+  });
+
+  await expect(page.locator("#custom-example-sentences")).toHaveValue("");
+  await page.getByRole("button", { name: "Start Spelling Test" }).click();
+  await expect(page.locator("#dictation-screen")).toBeVisible();
+  expect(
+    await page.evaluate(() =>
+      localStorage.getItem("mySpellingGameExampleSentences"),
+    ),
+  ).toBe("Old apple sentence.\nOld banana sentence.");
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("#custom-example-sentences")).toHaveValue(
+    "Old apple sentence.\nOld banana sentence.",
+  );
+});
+
 test("dictation receives optional example sentence data and speaks the full prompt", async ({
   page,
 }) => {
@@ -1894,6 +2061,94 @@ for (const mode of ["dictation", "typing"]) {
   });
 }
 
+test("unfinished public assignments resume after a refresh and clear after completion", async ({
+  page,
+}) => {
+  let submittedBody;
+  await mockAssignment(page, "typing", async (route) => {
+    submittedBody = route.request().postDataJSON();
+    await route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({
+        id: submittedBody.attemptId,
+        nickname: submittedBody.nickname,
+        correct_count: 2,
+        incorrect_count: 0,
+        accuracy: 100,
+        missedWords: [],
+      }),
+    });
+  });
+
+  await page.goto(`/a/${publicId}?lang=en`);
+  await page.getByLabel("Nickname").fill("Student 01");
+  await page.getByRole("button", { name: "Start assignment" }).click();
+  await expect(page.locator(".player-word")).toHaveText("apple");
+  const savedAfterStart = await page.evaluate(() =>
+    JSON.parse(
+      sessionStorage.getItem("mySpellingAssignment:abcdefghijklmnopqrstuvwx"),
+    ),
+  );
+  expect(savedAfterStart).toMatchObject({
+    nickname: "Student 01",
+    index: 1,
+    originalAnswers: [],
+    retryQueue: [],
+    promptStep: 0,
+    startedAt: expect.any(Number),
+    attemptId: expect.any(String),
+  });
+
+  await page.locator(".answer-form input").fill("wrong");
+  await page.getByRole("button", { name: "Check answer" }).click();
+  await page.getByRole("button", { name: "Next word" }).click();
+  await expect(page.locator(".player-word")).toHaveText("banana");
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.locator(".player-word")).toHaveText("banana");
+  const savedAfterRefresh = await page.evaluate(() =>
+    JSON.parse(
+      sessionStorage.getItem("mySpellingAssignment:abcdefghijklmnopqrstuvwx"),
+    ),
+  );
+  expect(savedAfterRefresh.originalAnswers).toEqual([
+    { wordId: words[0].id, answer: "wrong" },
+  ]);
+  expect(savedAfterRefresh.retryQueue).toHaveLength(1);
+  expect(savedAfterRefresh.attemptId).toBe(savedAfterStart.attemptId);
+  expect(savedAfterRefresh.startedAt).toBe(savedAfterStart.startedAt);
+
+  await page.locator(".answer-form input").fill("banana");
+  await page.getByRole("button", { name: "Check answer" }).click();
+  await page.getByRole("button", { name: "Next word" }).click();
+  await expect(page.locator(".player-word")).toHaveText("apple");
+  await page.locator(".answer-form input").fill("apple");
+  await page.getByRole("button", { name: "Check answer" }).click();
+  await page.getByRole("button", { name: "Next word" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Your result" }),
+  ).toBeVisible();
+  expect(submittedBody.answers).toEqual([
+    { wordId: words[0].id, answer: "wrong" },
+    { wordId: words[1].id, answer: "banana" },
+  ]);
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("mySpellingAssignment:abcdefghijklmnopqrstuvwx"),
+    ),
+  ).toBeNull();
+
+  await page.getByRole("button", { name: "Try again" }).click();
+  await expect(
+    page.getByRole("button", { name: "Start assignment" }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("mySpellingAssignment:abcdefghijklmnopqrstuvwx"),
+    ),
+  ).toBeNull();
+});
+
 test("mobile student UI fits the viewport and reports a failed save before retrying", async ({
   page,
 }) => {
@@ -1981,6 +2236,11 @@ test("a student can return to the start during consecutive assignments", async (
     await expect(
       page.getByRole("button", { name: "Start assignment" }),
     ).toBeVisible();
+    expect(
+      await page.evaluate(() =>
+        sessionStorage.getItem("mySpellingAssignment:abcdefghijklmnopqrstuvwx"),
+      ),
+    ).toBeNull();
   }
   expect(calls).toBe(2);
 });
@@ -3656,6 +3916,38 @@ test("learner management keeps progress, rename, archive, and restore actions", 
   await expect(row.getByText("Archived", { exact: true })).toBeVisible();
   await row.getByRole("button", { name: "Restore" }).click();
   await expect(row.getByText("Active", { exact: true })).toBeVisible();
+});
+
+test("learner management shows the plan limit when restoring would exceed active profiles", async ({
+  page,
+}) => {
+  const learner = {
+    id: "12121212-1212-4121-8121-121212121212",
+    name: "Archived learner",
+    archived: 1,
+    completed_attempts: 0,
+    accuracy: 0,
+  };
+  await mockWorkspaceShell(page, "free", { learners: [learner] });
+  await page.route(`**/api/learners/${learner.id}`, (route) =>
+    route.fulfill({
+      status: 403,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "learner_limit" }),
+    }),
+  );
+
+  await page.goto("/teacher/learners?lang=en", {
+    waitUntil: "domcontentloaded",
+  });
+  const row = page.locator("article", { hasText: learner.name });
+  await expect(row.getByText("Archived", { exact: true })).toBeVisible();
+  await row.locator("summary").click();
+  await row.getByRole("button", { name: "Restore" }).click();
+  await expect(page.locator(".section-error")).toContainText(
+    "You’ve reached the Free Plan limit of 1 student profile",
+  );
+  await expect(row.getByText("Archived", { exact: true })).toBeVisible();
 });
 
 test("workspace overview stays lightweight and links to full management views", async ({

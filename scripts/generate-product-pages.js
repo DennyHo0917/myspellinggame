@@ -131,7 +131,7 @@ const copy = {
     currentPlan: "Current plan",
     secureCheckout: "Secure checkout by Stripe · Cancel anytime",
     language: "Language",
-    note: "Teachers sign in. No student accounts. No passwords. Just share a link.",
+    note: "Parents and teachers sign in. Students need no account or password. Anonymous practice needs no account, supports up to 20 words per list, and does not save Workspace tracking history.",
   },
   es: {
     title: "Planes y precios para tareas | My Spelling Game",
@@ -196,7 +196,7 @@ const copy = {
     currentPlan: "Plan actual",
     secureCheckout: "Pago seguro con Stripe · Cancela cuando quieras",
     language: "Idioma",
-    note: "Los docentes inician sesión. Los estudiantes entran mediante un enlace, sin cuentas ni contraseñas.",
+    note: "Las familias y los docentes inician sesión. Los estudiantes no necesitan cuenta ni contraseña. La práctica anónima no requiere cuenta, admite hasta 20 palabras por lista y no guarda el historial de seguimiento del espacio de trabajo.",
   },
   "pt-BR": {
     title: "Planos e preços para tarefas | My Spelling Game",
@@ -261,7 +261,7 @@ const copy = {
     currentPlan: "Plano atual",
     secureCheckout: "Checkout seguro pelo Stripe · Cancele quando quiser",
     language: "Idioma",
-    note: "Professores entram com sua conta. Alunos participam por link, sem conta ou senha.",
+    note: "Responsáveis e professores entram com sua conta. Os alunos não precisam de conta nem senha. A prática anônima não exige conta, aceita até 20 palavras por lista e não salva o histórico de acompanhamento do espaço de trabalho.",
   },
   fr: {
     title: "Offres et tarifs pour les devoirs | My Spelling Game",
@@ -326,7 +326,7 @@ const copy = {
     currentPlan: "Offre actuelle",
     secureCheckout: "Paiement sécurisé par Stripe · Résiliable à tout moment",
     language: "Langue",
-    note: "Les enseignants se connectent. Les élèves rejoignent l’activité par lien, sans compte ni mot de passe.",
+    note: "Les parents et les enseignants se connectent. Les élèves n’ont besoin ni de compte ni de mot de passe. La pratique anonyme ne demande aucun compte, accepte jusqu’à 20 mots par liste et n’enregistre pas l’historique de suivi de l’espace de travail.",
   },
   id: {
     title: "Paket dan harga tugas | My Spelling Game",
@@ -391,7 +391,7 @@ const copy = {
     currentPlan: "Paket saat ini",
     secureCheckout: "Checkout aman oleh Stripe · Batalkan kapan saja",
     language: "Bahasa",
-    note: "Guru cukup masuk. Siswa bergabung lewat tautan, tanpa akun atau kata sandi.",
+    note: "Orang tua dan guru masuk ke akun mereka. Siswa tidak memerlukan akun atau kata sandi. Latihan anonim tidak memerlukan akun, mendukung hingga 20 kata per daftar, dan tidak menyimpan riwayat pelacakan ruang kerja.",
   },
   zh: {
     title: "作业方案与价格 | My Spelling Game",
@@ -455,7 +455,7 @@ const copy = {
     currentPlan: "当前方案",
     secureCheckout: "Stripe 安全结账 · 可随时取消",
     language: "语言",
-    note: "教师登录，学生通过链接加入，无需学生账号和密码。",
+    note: "家长和教师登录，学生无需账号或密码。匿名练习无需账号，每份最多 20 个词，也不会保存 Workspace 追踪历史。",
   },
 };
 

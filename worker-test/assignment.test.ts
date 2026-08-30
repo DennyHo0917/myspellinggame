@@ -208,8 +208,12 @@ async function createLearner(
   return { response, body: (await response.json()) as Record<string, unknown> };
 }
 
-async function publicWords(publicId: string) {
-  const response = await call(`/api/public/assignments/${publicId}`, {}, null);
+async function publicWords(publicId: string, learnerPublicId?: string) {
+  const response = await call(
+    `/api/public/assignments/${publicId}${learnerPublicId ? `?learner=${encodeURIComponent(learnerPublicId)}` : ""}`,
+    {},
+    null,
+  );
   return (await response.json()) as {
     words: Array<{
       id: string;
@@ -249,6 +253,24 @@ async function submit(
         accuracy: 100,
         completed: options.completed,
       }),
+    },
+    null,
+  );
+}
+
+async function start(
+  publicId: string,
+  options: { nickname?: string; learnerPublicId?: string } = {},
+) {
+  return call(
+    `/api/public/assignments/${publicId}/start`,
+    {
+      method: "POST",
+      body: JSON.stringify(
+        options.learnerPublicId
+          ? { learnerPublicId: options.learnerPublicId }
+          : { nickname: options.nickname ?? "Student 01" },
+      ),
     },
     null,
   );
@@ -904,6 +926,91 @@ describe("saved lists and learner profiles", () => {
     expect(limited.body.error).toBe("learner_limit");
   });
 
+  it.each(["free", "parent", "teacher"] as const)(
+    "counts only active %s learners for usage and creation",
+    async (plan) => {
+      if (plan !== "free") await insertSubscription({ plan, status: "active" });
+      const now = new Date().toISOString();
+      await bindings.DB.prepare(
+        `INSERT INTO learners (
+             id, owner_user_id, name, name_key, archived, created_at, updated_at
+           ) VALUES (?, ?, ?, ?, 1, ?, ?)`,
+      )
+        .bind(
+          crypto.randomUUID(),
+          teacherA.id,
+          `${plan} archived`,
+          `${plan} archived`,
+          now,
+          now,
+        )
+        .run();
+
+      const me = (await (await call("/api/me")).json()) as {
+        learnerProfiles: number;
+      };
+      expect(me.learnerProfiles).toBe(0);
+      expect((await createLearner(`${plan} active`)).response.status).toBe(201);
+    },
+  );
+
+  it.each([
+    ["free", 1],
+    ["parent", 5],
+    ["teacher", 40],
+  ] as const)(
+    "blocks restoring an archived %s learner when active limit is full",
+    async (plan, limit) => {
+      if (plan !== "free") await insertSubscription({ plan, status: "active" });
+      const now = new Date().toISOString();
+      const activeStatements = Array.from({ length: limit }, (_, index) =>
+        bindings.DB.prepare(
+          `INSERT INTO learners (
+               id, owner_user_id, name, name_key, archived, created_at, updated_at
+             ) VALUES (?, ?, ?, ?, 0, ?, ?)`,
+        ).bind(
+          crypto.randomUUID(),
+          teacherA.id,
+          `${plan} active ${index}`,
+          `${plan} active ${index}`,
+          now,
+          now,
+        ),
+      );
+      await bindings.DB.batch(activeStatements);
+      const archivedId = crypto.randomUUID();
+      await bindings.DB.prepare(
+        `INSERT INTO learners (
+             id, owner_user_id, name, name_key, archived, created_at, updated_at
+           ) VALUES (?, ?, ?, ?, 1, ?, ?)`,
+      )
+        .bind(
+          archivedId,
+          teacherA.id,
+          `${plan} archived`,
+          `${plan} archived`,
+          now,
+          now,
+        )
+        .run();
+
+      const restored = await call(`/api/learners/${archivedId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ archived: false }),
+      });
+      expect(restored.status).toBe(403);
+      expect(((await restored.json()) as { error: string }).error).toBe(
+        "learner_limit",
+      );
+      const row = await bindings.DB.prepare(
+        "SELECT archived FROM learners WHERE id = ?",
+      )
+        .bind(archivedId)
+        .first<{ archived: number }>();
+      expect(row?.archived).toBe(1);
+    },
+  );
+
   it("keeps saved lists and learner profiles private to their owner", async () => {
     const savedList = await createSavedList("Private list");
     const learner = await createLearner("Learner 01");
@@ -1048,6 +1155,29 @@ describe("saved lists and learner profiles", () => {
     expect(linked).toBeNull();
     expect(linked).not.toBe(learnerB.body.id);
   });
+
+  it.each([
+    ["a", "invalid_nickname"],
+    ["x".repeat(33), "invalid_nickname"],
+    ["student@example.com", "personal_info_not_allowed"],
+    ["http://example.com", "personal_info_not_allowed"],
+    ["HTTPS://example.com", "personal_info_not_allowed"],
+  ] as const)(
+    "rejects invalid public nickname %s before start and submit",
+    async (nickname, error) => {
+      const created = await createAssignment();
+      const publicId = String(created.body.publicId);
+      const assignment = await publicWords(publicId);
+
+      const started = await start(publicId, { nickname });
+      expect(started.status).toBe(400);
+      expect(((await started.json()) as { error: string }).error).toBe(error);
+
+      const submitted = await submit(publicId, assignment.words, { nickname });
+      expect(submitted.status).toBe(400);
+      expect(((await submitted.json()) as { error: string }).error).toBe(error);
+    },
+  );
 
   it("allows duplicate learner names with distinct public identities", async () => {
     await insertSubscription({ plan: "teacher", status: "active" });
@@ -1226,7 +1356,10 @@ describe("assignment learner binding and class join", () => {
     );
     expect(homeB.assignments).toHaveLength(0);
 
-    const words = await publicWords(String(created.body.publicId));
+    const words = await publicWords(
+      String(created.body.publicId),
+      String(learnerA.body.public_id),
+    );
     expect(
       (
         await submit(String(created.body.publicId), words.words, {
@@ -1240,6 +1373,81 @@ describe("assignment learner binding and class join", () => {
       .bind(created.body.id)
       .first<{ learner_id: string }>();
     expect(attempt?.learner_id).toBe(learnerA.body.id);
+  });
+
+  it("requires learner identity for assigned work and keeps link-only work anonymous", async () => {
+    await insertSubscription({ plan: "teacher", status: "active" });
+    const learner = await createLearner("Alice");
+    const otherLearner = await createLearner("Bob");
+    const assigned = await createAssignment(teacherA, {
+      learnerIds: [learner.body.id],
+      maxAttempts: 1,
+    });
+    const assignedPublicId = String(assigned.body.publicId);
+    const missingLearner = await call(
+      `/api/public/assignments/${assignedPublicId}`,
+      {},
+      null,
+    );
+    expect(missingLearner.status).toBe(403);
+    expect(((await missingLearner.json()) as { error: string }).error).toBe(
+      "learner_required",
+    );
+    const wrongLearner = await call(
+      `/api/public/assignments/${assignedPublicId}?learner=${encodeURIComponent(String(otherLearner.body.public_id))}`,
+      {},
+      null,
+    );
+    expect(wrongLearner.status).toBe(404);
+    expect(((await wrongLearner.json()) as { error: string }).error).toBe(
+      "learner_not_found",
+    );
+
+    const anonymousSubmit = await submit(assignedPublicId, [], {
+      nickname: "Student 01",
+    });
+    expect(anonymousSubmit.status).toBe(403);
+    expect(((await anonymousSubmit.json()) as { error: string }).error).toBe(
+      "learner_required",
+    );
+
+    const assignedWords = await publicWords(
+      assignedPublicId,
+      String(learner.body.public_id),
+    );
+    expect(assignedWords.learner).toMatchObject({ name: "Alice" });
+    expect(
+      (
+        await start(assignedPublicId, {
+          learnerPublicId: String(learner.body.public_id),
+        })
+      ).status,
+    ).toBe(200);
+    expect(
+      (
+        await submit(assignedPublicId, assignedWords.words, {
+          learnerPublicId: String(learner.body.public_id),
+        })
+      ).status,
+    ).toBe(201);
+    const learnerAttemptLimit = await start(assignedPublicId, {
+      learnerPublicId: String(learner.body.public_id),
+    });
+    expect(learnerAttemptLimit.status).toBe(403);
+    expect(
+      ((await learnerAttemptLimit.json()) as { error: string }).error,
+    ).toBe("attempt_limit");
+
+    const linkOnly = await createAssignment(teacherA, { title: "Link only" });
+    const linkOnlyPublicId = String(linkOnly.body.publicId);
+    const linkOnlyWords = await publicWords(linkOnlyPublicId);
+    expect(
+      (
+        await submit(linkOnlyPublicId, linkOnlyWords.words, {
+          nickname: "Guest",
+        })
+      ).status,
+    ).toBe(201);
   });
 
   it("rejects cross-owner learner bindings", async () => {
@@ -1826,6 +2034,50 @@ describe("today's review state", () => {
 });
 
 describe("assignment attempts", () => {
+  it("checks attempt and monthly limits before starting public work", async () => {
+    const attemptLimited = await createAssignment(teacherA, {
+      maxAttempts: 1,
+    });
+    const attemptLimitedPublicId = String(attemptLimited.body.publicId);
+    const attemptLimitedWords = await publicWords(attemptLimitedPublicId);
+    expect(
+      (await submit(attemptLimitedPublicId, attemptLimitedWords.words)).status,
+    ).toBe(201);
+    const attemptLimitResponse = await start(attemptLimitedPublicId);
+    expect(attemptLimitResponse.status).toBe(403);
+    expect(
+      ((await attemptLimitResponse.json()) as { error: string }).error,
+    ).toBe("attempt_limit");
+    await call(
+      `/api/assignments/${attemptLimited.body.id}`,
+      { method: "PATCH", body: JSON.stringify({ status: "closed" }) },
+      teacherA,
+    );
+
+    const monthlyLimited = await createAssignment(teacherA, {
+      title: "Monthly limit",
+    });
+    expect((await start(String(monthlyLimited.body.publicId))).status).toBe(
+      200,
+    );
+    const now = new Date().toISOString();
+    await bindings.DB.batch(
+      Array.from({ length: 8 }, () =>
+        bindings.DB.prepare(
+          `INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at)
+           VALUES (?, ?, ?, ?)`,
+        ).bind(crypto.randomUUID(), teacherA.id, monthStart(), now),
+      ),
+    );
+    const monthlyLimitResponse = await start(
+      String(monthlyLimited.body.publicId),
+    );
+    expect(monthlyLimitResponse.status).toBe(403);
+    expect(
+      ((await monthlyLimitResponse.json()) as { error: string }).error,
+    ).toBe("monthly_submission_limit");
+  });
+
   it.each(["parent", "teacher"] as const)(
     "expires Free results after 14 days and %s results after 365 days",
     async (plan) => {

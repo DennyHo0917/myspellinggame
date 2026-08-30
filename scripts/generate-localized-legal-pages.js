@@ -783,7 +783,7 @@ const aboutUpdates = {
     description:
       "About My Spelling Game, a custom spelling practice tool with no-account student practice, photo import, automatic example sentences, and review tools.",
     intro:
-      "My Spelling Game is a spelling practice tool for students, parents, teachers, and homeschool families. Students can practice custom word lists without creating accounts. Teachers and parents can optionally use a workspace to save lists, publish assignments, track progress, and use Today’s Review over time.",
+      "My Spelling Game is a spelling practice tool for students, parents, teachers, and homeschool families. Students can practice custom word lists without creating accounts. Parents and teachers can sign in to a workspace to save lists, publish assignments, and track progress. Parent and Teacher Plans add Smart Review, Today’s Review, photo import, and automatic example sentences.",
     panels: [
       [
         "Mission",
@@ -791,7 +791,7 @@ const aboutUpdates = {
       ],
       [
         "Why It Exists",
-        "Many spelling products use their own fixed vocabulary, while families usually need this week's exact words. One practice can be completed completely anonymously. When people need longer-term use, the workspace adds saved lists, assignments, student progress, and review without changing the custom-list workflow.",
+        "Many spelling products use their own fixed vocabulary, while families usually need this week's exact words. One practice can be completed completely anonymously. When people need longer-term use, the workspace adds saved lists, assignments, and student progress without changing the custom-list workflow. Parent and Teacher Plans add Smart Review and Today's Review.",
       ],
       [
         "What It Does",
@@ -807,7 +807,7 @@ const aboutUpdates = {
     description:
       "Sobre My Spelling Game, una herramienta de práctica de spelling sin cuenta con importación por foto, frases automáticas y repaso.",
     intro:
-      "My Spelling Game es una herramienta de práctica de spelling para estudiantes, familias, docentes y hogares que educan en casa. Los estudiantes practican listas propias sin crear cuentas. Docentes y familias pueden usar un espacio de trabajo para guardar listas, publicar tareas, seguir el progreso y usar el Repaso de hoy.",
+      "My Spelling Game es una herramienta de práctica de spelling para estudiantes, familias, docentes y hogares que educan en casa. Los estudiantes practican listas propias sin crear cuentas. Las familias y los docentes pueden iniciar sesión en un espacio de trabajo para guardar listas, publicar tareas y seguir el progreso. Los planes para familias y docentes añaden Repaso inteligente, Repaso de hoy, importación por foto y frases automáticas.",
     panels: [
       [
         "Misión",
@@ -815,7 +815,7 @@ const aboutUpdates = {
       ],
       [
         "Por qué existe",
-        "Muchos juegos usan su propio vocabulario, pero normalmente se necesitan las palabras exactas de esta semana. Una práctica puede hacerse de forma totalmente anónima. Cuando hace falta continuidad, el espacio de trabajo añade listas guardadas, tareas, progreso y repaso sin cambiar el flujo de lista personalizada.",
+        "Muchos juegos usan su propio vocabulario, pero normalmente se necesitan las palabras exactas de esta semana. Una práctica puede hacerse de forma totalmente anónima. Cuando hace falta continuidad, el espacio de trabajo añade listas guardadas, tareas y progreso sin cambiar el flujo de lista personalizada. Los planes para familias y docentes añaden Repaso inteligente y Repaso de hoy.",
       ],
       [
         "Qué hace",
@@ -831,7 +831,7 @@ const aboutUpdates = {
     description:
       "Sobre o My Spelling Game, uma ferramenta de prática de ortografia sem conta com importação por foto, frases automáticas e revisão.",
     intro:
-      "My Spelling Game é uma ferramenta de prática de ortografia para alunos, responsáveis, professores e famílias que fazem educação domiciliar. Os alunos praticam listas próprias sem criar contas. Professores e responsáveis podem usar um espaço de trabalho para salvar listas, publicar tarefas, acompanhar o progresso e usar a Revisão de hoje.",
+      "O My Spelling Game é uma ferramenta de prática de ortografia para alunos, responsáveis, professores e famílias que fazem educação domiciliar. Os alunos praticam listas próprias sem criar contas. Professores e responsáveis podem entrar em um espaço de trabalho para salvar listas, publicar tarefas e acompanhar o progresso. Os planos para Pais e Professores acrescentam Revisão inteligente, Revisão de hoje, importação por foto e frases automáticas.",
     panels: [
       [
         "Missão",
@@ -839,7 +839,7 @@ const aboutUpdates = {
       ],
       [
         "Por que existe",
-        "Muitos produtos usam um vocabulário fixo, mas as famílias geralmente precisam das palavras exatas da semana. Uma prática pode ser concluída de forma totalmente anônima. Quando é preciso continuar, o espaço de trabalho acrescenta listas salvas, tarefas, progresso e revisão sem mudar o fluxo de lista personalizada.",
+        "Muitos produtos usam um vocabulário fixo, mas as famílias geralmente precisam das palavras exatas da semana. Uma prática pode ser concluída de forma totalmente anônima. Quando é preciso continuar, o espaço de trabalho acrescenta listas salvas, tarefas e progresso sem mudar o fluxo de lista personalizada. Os planos para Pais e Professores acrescentam Revisão inteligente e Revisão de hoje.",
       ],
       [
         "O que faz",
@@ -855,7 +855,7 @@ const aboutUpdates = {
     description:
       "À propos de My Spelling Game, un outil de pratique de l’orthographe sans compte avec import photo, phrases automatiques et révision.",
     intro:
-      "My Spelling Game est un outil de pratique de l’orthographe pour les élèves, les parents, les enseignants et les familles en instruction à domicile. Les élèves utilisent leurs listes sans créer de compte. Les adultes peuvent utiliser un espace de travail pour enregistrer les listes, publier des devoirs, suivre les progrès et lancer la Révision du jour.",
+      "My Spelling Game est un outil de pratique de l’orthographe pour les élèves, les parents, les enseignants et les familles en instruction à domicile. Les élèves utilisent leurs listes sans créer de compte. Les parents et les enseignants peuvent se connecter à un espace de travail pour enregistrer les listes, publier des devoirs et suivre les progrès. Les offres Parents et Enseignants ajoutent la Révision intelligente, la Révision du jour, l’import photo et les phrases automatiques.",
     panels: [
       [
         "Mission",
@@ -863,7 +863,7 @@ const aboutUpdates = {
       ],
       [
         "Pourquoi ce site existe",
-        "Beaucoup de produits imposent un vocabulaire fixe, alors que les familles ont besoin des mots exacts de la semaine. Une séance peut être faite entièrement sans compte. Pour un suivi plus long, l’espace de travail ajoute listes enregistrées, devoirs, progrès et révision sans changer le fonctionnement des listes personnalisées.",
+        "Beaucoup de produits imposent un vocabulaire fixe, alors que les familles ont besoin des mots exacts de la semaine. Une séance peut être faite entièrement sans compte. Pour un suivi plus long, l’espace de travail ajoute listes enregistrées, devoirs et progrès sans changer le fonctionnement des listes personnalisées. Les offres Parents et Enseignants ajoutent la Révision intelligente et la Révision du jour.",
       ],
       [
         "Ce que fait l’outil",
@@ -879,7 +879,7 @@ const aboutUpdates = {
     description:
       "Tentang My Spelling Game, alat latihan ejaan tanpa akun dengan impor foto, kalimat otomatis, dan ulasan mingguan.",
     intro:
-      "My Spelling Game adalah alat latihan ejaan untuk siswa, orang tua, guru, dan keluarga homeschool. Siswa dapat berlatih dengan daftar sendiri tanpa membuat akun. Guru dan orang tua dapat memakai ruang kerja untuk menyimpan daftar, menerbitkan tugas, memantau kemajuan, dan memakai Ulasan hari ini.",
+      "My Spelling Game adalah alat latihan ejaan untuk siswa, orang tua, guru, dan keluarga homeschool. Siswa dapat berlatih dengan daftar sendiri tanpa membuat akun. Guru dan orang tua dapat masuk ke ruang kerja untuk menyimpan daftar, menerbitkan tugas, dan memantau kemajuan. Paket Orang Tua dan Guru menambahkan Ulasan Pintar, Ulasan hari ini, impor foto, dan kalimat otomatis.",
     panels: [
       [
         "Misi",
@@ -887,7 +887,7 @@ const aboutUpdates = {
       ],
       [
         "Mengapa dibuat",
-        "Banyak produk ejaan memakai kosakata tetap, padahal keluarga biasanya membutuhkan kata yang tepat untuk minggu ini. Satu latihan dapat diselesaikan sepenuhnya tanpa akun. Jika perlu penggunaan jangka panjang, ruang kerja menambahkan daftar tersimpan, tugas, kemajuan siswa, dan ulasan tanpa mengubah alur daftar sendiri.",
+        "Banyak produk ejaan memakai kosakata tetap, padahal keluarga biasanya membutuhkan kata yang tepat untuk minggu ini. Satu latihan dapat diselesaikan sepenuhnya tanpa akun. Jika perlu penggunaan jangka panjang, ruang kerja menambahkan daftar tersimpan, tugas, dan kemajuan siswa tanpa mengubah alur daftar sendiri. Paket Orang Tua dan Guru menambahkan Ulasan Pintar dan Ulasan hari ini.",
       ],
       [
         "Fungsi utama",
@@ -903,7 +903,7 @@ const aboutUpdates = {
     description:
       "关于 My Spelling Game：支持学生免账号练习、拍照导入词表、自动例句和每周复习的英语拼写工具。",
     intro:
-      "My Spelling Game 是一款面向学生、家长、老师和家庭教育的英语拼写练习工具。学生无需创建账号即可练习自己的单词表；家长和老师可以使用工作台保存词表、发布作业、持续追踪进度，并使用今日复习。",
+      "My Spelling Game 是一款面向学生、家长、老师和家庭教育的英语拼写练习工具。学生无需创建账号即可练习自己的单词表；家长和老师登录工作台后可以保存词表、发布作业并持续追踪进度。家长方案和教师方案增加智能复习、今日复习、拍照导入和自动例句。",
     panels: [
       [
         "使命",
@@ -911,7 +911,7 @@ const aboutUpdates = {
       ],
       [
         "为什么做它",
-        "很多拼写产品使用固定词库，但家庭真正需要的通常是本周正在学习的单词。一次练习可以完全匿名完成。如果需要长期使用，工作台会增加已保存词表、作业、学生进度和复习功能，同时保留自定义词表的核心流程。",
+        "很多拼写产品使用固定词库，但家庭真正需要的通常是本周正在学习的单词。一次练习可以完全匿名完成。如果需要长期使用，工作台会增加已保存词表、作业和学生进度，同时保留自定义词表的核心流程。家长方案和教师方案增加智能复习和今日复习。",
       ],
       [
         "它能做什么",

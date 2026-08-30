@@ -135,6 +135,7 @@ const PACKS = {
     copyLearnerLink: "Copy student link",
     learnerLinkCopied: "Student link copied.",
     assignmentLoading: "Loading assignment…",
+    checkingAvailability: "Checking availability…",
     nicknameHelp:
       "Use a nickname or classroom number. Do not enter a real full name, email address, or other personal information.",
     start: "Start assignment",
@@ -322,6 +323,7 @@ const PACKS = {
     savedListLimit:
       "You’ve reached the Free Plan limit of 1 saved list. View plans for unlimited saved lists.",
     learnerNotFound: "This student profile could not be found.",
+    learnerRequired: "Use the student link for this assignment.",
     learnerExists:
       "A student profile with that nickname or number already exists.",
     learnerLimit:
@@ -472,6 +474,7 @@ const PACKS = {
     copyLearnerLink: "Copiar enlace del estudiante",
     learnerLinkCopied: "Enlace del estudiante copiado.",
     assignmentLoading: "Cargando tarea…",
+    checkingAvailability: "Comprobando disponibilidad…",
     nicknameHelp:
       "Usa un apodo o número de clase. No escribas tu nombre completo real, correo ni otros datos personales.",
     start: "Empezar tarea",
@@ -661,6 +664,7 @@ const PACKS = {
     savedListLimit:
       "Has alcanzado el límite de 1 lista guardada del Plan Gratis. Consulta los planes para guardar listas ilimitadas.",
     learnerNotFound: "No se encontró este perfil.",
+    learnerRequired: "Usa el enlace del estudiante para esta tarea.",
     learnerExists: "Ya existe un perfil con ese apodo o número.",
     learnerLimit:
       "Has alcanzado el límite de 1 perfil del Plan Gratis. Consulta los planes para gestionar más perfiles.",
@@ -811,6 +815,7 @@ const PACKS = {
     copyLearnerLink: "Copiar link do aluno",
     learnerLinkCopied: "Link do aluno copiado.",
     assignmentLoading: "Carregando tarefa…",
+    checkingAvailability: "Verificando disponibilidade…",
     nicknameHelp:
       "Use um apelido ou número de sala. Não informe nome completo, email ou outros dados pessoais.",
     start: "Começar tarefa",
@@ -998,6 +1003,7 @@ const PACKS = {
     savedListLimit:
       "Você atingiu o limite de 1 lista salva do Plano Grátis. Veja os planos para ter listas ilimitadas.",
     learnerNotFound: "Este perfil não foi encontrado.",
+    learnerRequired: "Use o link do aluno para esta tarefa.",
     learnerExists: "Já existe um perfil com esse apelido ou número.",
     learnerLimit:
       "Você atingiu o limite de 1 perfil do Plano Grátis. Veja os planos para acompanhar mais perfis.",
@@ -1147,6 +1153,7 @@ const PACKS = {
     copyLearnerLink: "Copier le lien de l’élève",
     learnerLinkCopied: "Lien de l’élève copié.",
     assignmentLoading: "Chargement du devoir…",
+    checkingAvailability: "Vérification de la disponibilité…",
     nicknameHelp:
       "Utilisez un pseudonyme ou un numéro de classe. N’indiquez pas votre nom complet, votre adresse email ni d’autres informations personnelles.",
     start: "Commencer le devoir",
@@ -1338,6 +1345,7 @@ const PACKS = {
     savedListLimit:
       "Vous avez atteint la limite gratuite de 1 liste. Consultez les offres pour enregistrer un nombre illimité de listes.",
     learnerNotFound: "Ce profil est introuvable.",
+    learnerRequired: "Utilisez le lien de l’élève pour ce devoir.",
     learnerExists: "Un profil avec ce pseudo ou ce numéro existe déjà.",
     learnerLimit:
       "Vous avez atteint la limite gratuite de 1 profil. Consultez les offres pour suivre davantage de profils.",
@@ -1486,6 +1494,7 @@ const PACKS = {
     copyLearnerLink: "Salin link siswa",
     learnerLinkCopied: "Link siswa disalin.",
     assignmentLoading: "Memuat tugas…",
+    checkingAvailability: "Memeriksa ketersediaan…",
     nicknameHelp:
       "Gunakan nama panggilan atau nomor kelas. Jangan masukkan nama lengkap, email, atau informasi pribadi lainnya.",
     start: "Mulai tugas",
@@ -1672,6 +1681,7 @@ const PACKS = {
     savedListLimit:
       "Anda telah mencapai batas 1 daftar tersimpan pada Paket Gratis. Lihat paket untuk daftar tanpa batas.",
     learnerNotFound: "Profil siswa ini tidak ditemukan.",
+    learnerRequired: "Gunakan tautan siswa untuk tugas ini.",
     learnerExists:
       "Profil dengan nama panggilan atau nomor tersebut sudah ada.",
     learnerLimit:
@@ -1808,6 +1818,7 @@ const PACKS = {
     copyLearnerLink: "复制学生链接",
     learnerLinkCopied: "学生链接已复制。",
     assignmentLoading: "正在加载作业…",
+    checkingAvailability: "正在检查是否可以开始…",
     nicknameHelp:
       "请使用昵称或课堂编号，不要填写真实全名、邮箱或其他个人信息。",
     start: "开始作业",
@@ -1981,6 +1992,7 @@ const PACKS = {
     savedListLimit:
       "你已达到免费方案 1 个词表的上限。查看方案可不限量保存词表。",
     learnerNotFound: "找不到这个学生档案。",
+    learnerRequired: "请使用学生链接进入这份作业。",
     learnerExists: "相同昵称或编号的学生档案已存在。",
     learnerLimit:
       "你已达到免费方案 1 个学生档案的上限。查看方案可管理更多学生档案。",

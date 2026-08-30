@@ -2,7 +2,6 @@ import { gameState } from './gameState.js';
 import { getPageLocale, t } from './pageLocale.js';
 import {
   ANONYMOUS_WORD_LIMIT,
-  configuredWords,
   customTypingRoundComplete,
   parseWords,
   SAMPLE_WORDS,
@@ -288,6 +287,10 @@ async function getAccount() {
 
 export async function canStartPractice({ anonymousOnly = false } = {}) {
   const words = currentWords();
+  if (!words.length) {
+    status(t('emptyWords'));
+    return false;
+  }
   const sharedLink = readShareState(window.location).sharedLink;
   const anonymous = anonymousOnly || sharedLink;
   const account = anonymous ? null : await getAccount();
@@ -313,7 +316,7 @@ export async function canStartPractice({ anonymousOnly = false } = {}) {
 }
 
 function currentWords() {
-  return configuredWords(textarea()?.value || '');
+  return parseWords(textarea()?.value || '');
 }
 
 function currentExampleSentences(words = currentWords()) {
@@ -357,11 +360,16 @@ export function initSpellingMode() {
   const input = textarea();
   if (!input) return;
 
+  const shareState = readShareState(window.location);
   const fromUrl = loadWordsFromUrl();
   const saved = parseWords(localStorage.getItem(STORAGE_KEY) || '');
   input.value = (fromUrl.length ? fromUrl : saved.length ? saved : SAMPLE_WORDS).join('\n');
   const sentenceInput = sentenceTextarea();
-  if (sentenceInput) sentenceInput.value = localStorage.getItem(SENTENCES_STORAGE_KEY) || '';
+  if (sentenceInput) {
+    sentenceInput.value = shareState.sharedLink
+      ? ''
+      : localStorage.getItem(SENTENCES_STORAGE_KEY) || '';
+  }
 
   const mode = selectedModeFromUrl();
   const modeInput = document.querySelector(`input[name="practice-mode"][value="${mode}"]`);
@@ -388,7 +396,7 @@ export function initSpellingMode() {
   document.getElementById('auto-example-sentences-btn')?.addEventListener('click', autoFillExampleSentences);
   initPhotoImport();
   void getAccount();
-  if (readShareState(window.location).autoStart) queueMicrotask(() => window.startGame?.());
+  if (shareState.autoStart) queueMicrotask(() => window.startGame?.());
 }
 
 export function loadSampleWords() {
@@ -423,12 +431,14 @@ export function prepareSession() {
   const easyToggle = document.getElementById('easy-mode-toggle');
   gameState.easyMode = !!easyToggle?.checked;
   localStorage.setItem(STORAGE_KEY, words.join('\n'));
-  localStorage.setItem(SENTENCES_STORAGE_KEY, sentenceTextarea()?.value || '');
+  const shareState = readShareState(window.location);
+  if (!shareState.sharedLink) {
+    localStorage.setItem(SENTENCES_STORAGE_KEY, sentenceTextarea()?.value || '');
+  }
   localStorage.setItem(HEAR_KEY, gameState.hearWords ? '1' : '0');
   localStorage.removeItem(LEGACY_READ_KEY);
   localStorage.setItem(EASY_KEY, gameState.easyMode ? '1' : '0');
   status(t('wordsInRound', { count: words.length }));
-  const shareState = readShareState(window.location);
   if (!gameState.replayRound) {
     track('word_list_created', {
       word_count: words.length,

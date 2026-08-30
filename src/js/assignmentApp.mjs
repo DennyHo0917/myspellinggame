@@ -29,6 +29,7 @@ let retryQueue = [];
 let promptStep = 0;
 let lastPromptWordId = "";
 let startedAt = 0;
+let currentPrompt = null;
 let leaving = false;
 
 document.documentElement.lang = locale;
@@ -37,6 +38,25 @@ document.title = copy.brand;
 function m(key, vars) {
   return productMessage(key, vars, locale);
 }
+
+function normalizeNickname(value) {
+  return String(value ?? "")
+    .replace(/\p{Cc}/gu, " ")
+    .replace(/\s+/gu, " ")
+    .trim()
+    .normalize("NFKC");
+}
+
+function validNickname(value) {
+  const normalized = normalizeNickname(value);
+  return (
+    normalized.length >= 2 &&
+    normalized.length <= 32 &&
+    !normalized.includes("@") &&
+    !/https?:\/\//i.test(normalized)
+  );
+}
+
 const ERROR_KEYS = {
   assignment_not_found: "assignmentNotFound",
   assignment_closed: "assignmentClosed",
@@ -51,6 +71,7 @@ const ERROR_KEYS = {
   invalid_duration: "invalidSubmission",
   invalid_attempt_id: "invalidSubmission",
   learner_not_found: "learnerNotFound",
+  learner_required: "learnerRequired",
   rate_limited: "rateLimited",
 };
 
@@ -154,6 +175,52 @@ function saveState(value) {
   } catch {}
 }
 
+function clearSavedState() {
+  try {
+    sessionStorage.removeItem(storageKey);
+  } catch {}
+}
+
+function saveProgress() {
+  saveState({
+    attemptId,
+    nickname,
+    index,
+    originalAnswers,
+    retryQueue,
+    promptStep,
+    lastPromptWordId,
+    startedAt,
+    currentPrompt,
+  });
+}
+
+function restoreProgress(saved) {
+  if (
+    !saved ||
+    typeof saved.attemptId !== "string" ||
+    !saved.attemptId ||
+    !Number.isInteger(saved.index) ||
+    saved.index < 0 ||
+    !Array.isArray(saved.originalAnswers) ||
+    !Array.isArray(saved.retryQueue) ||
+    !Number.isInteger(saved.promptStep) ||
+    !Number.isFinite(saved.startedAt)
+  )
+    return false;
+  attemptId = saved.attemptId;
+  nickname = typeof saved.nickname === "string" ? saved.nickname : "";
+  index = saved.index;
+  originalAnswers = saved.originalAnswers;
+  retryQueue = saved.retryQueue;
+  promptStep = saved.promptStep;
+  lastPromptWordId =
+    typeof saved.lastPromptWordId === "string" ? saved.lastPromptWordId : "";
+  startedAt = saved.startedAt;
+  currentPrompt = saved.currentPrompt || null;
+  return true;
+}
+
 function renderIntro() {
   const section = card(assignment.title);
   const meta = document.createElement("p");
@@ -161,6 +228,7 @@ function renderIntro() {
   meta.textContent = `${assignment.mode === "dictation" ? copy.dictation : copy.typing} · ${m("due", { date: new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(assignment.expires_at)) })}`;
   const form = document.createElement("form");
   form.className = "product-form";
+  form.noValidate = true;
   if (learnerLink) {
     const identity = document.createElement("p");
     identity.className = "muted";
@@ -170,11 +238,22 @@ function renderIntro() {
     const start = document.createElement("button");
     start.type = "submit";
     start.textContent = copy.start;
-    form.append(identity, start);
+    const status = document.createElement("p");
+    status.className = "status";
+    status.setAttribute("role", "status");
+    form.append(identity, start, status);
     section.append(meta, form);
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      beginAssignment();
+      start.disabled = true;
+      status.textContent = copy.checkingAvailability;
+      try {
+        await beginAssignment();
+      } catch (error) {
+        status.textContent = error.network ? copy.submitFailed : error.message;
+        status.className = "status error";
+        start.disabled = false;
+      }
     });
     return;
   }
@@ -186,8 +265,6 @@ function renderIntro() {
   const input = document.createElement("input");
   input.id = "student-nickname";
   input.required = true;
-  input.minLength = 2;
-  input.maxLength = 32;
   input.autocomplete = "off";
   input.value = nickname;
   const help = document.createElement("small");
@@ -201,19 +278,32 @@ function renderIntro() {
   field.append(label, input, help);
   form.append(field, start, status);
   section.append(meta, form);
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    nickname = input.value.trim();
-    if (nickname.length < 2 || nickname.length > 32 || nickname.includes("@")) {
+    nickname = normalizeNickname(input.value);
+    if (!validNickname(nickname)) {
       status.textContent = copy.invalidNickname;
       status.className = "status error";
       return;
     }
-    beginAssignment();
+    start.disabled = true;
+    status.textContent = copy.checkingAvailability;
+    status.className = "status";
+    try {
+      await beginAssignment();
+    } catch (error) {
+      status.textContent = error.network ? copy.submitFailed : error.message;
+      status.className = "status error";
+      start.disabled = false;
+    }
   });
 }
 
-function beginAssignment() {
+async function beginAssignment() {
+  await request(`/api/public/assignments/${publicId}/start`, {
+    method: "POST",
+    body: JSON.stringify(learnerLink ? { learnerPublicId } : { nickname }),
+  });
   nickname = assignment.learner?.name || nickname;
   attemptId = crypto.randomUUID();
   index = 0;
@@ -222,7 +312,7 @@ function beginAssignment() {
   promptStep = 0;
   lastPromptWordId = "";
   startedAt = Date.now();
-  saveState({ attemptId, nickname });
+  currentPrompt = null;
   renderWord();
 }
 
@@ -275,8 +365,14 @@ function nextPrompt() {
 }
 
 function renderWord() {
-  const prompt = nextPrompt();
-  if (!prompt) return saveResult();
+  const prompt = currentPrompt || nextPrompt();
+  if (!prompt) {
+    currentPrompt = null;
+    saveProgress();
+    return saveResult();
+  }
+  currentPrompt = prompt;
+  saveProgress();
   if (prompt.kind === "review-wait") {
     const section = card(assignment.title);
     const review = document.createElement("p");
@@ -285,7 +381,10 @@ function renderWord() {
     const next = document.createElement("button");
     next.type = "button";
     next.textContent = copy.nextWord;
-    next.addEventListener("click", renderWord);
+    next.addEventListener("click", () => {
+      currentPrompt = null;
+      renderWord();
+    });
     const leave = document.createElement("button");
     leave.type = "button";
     leave.className = "button-secondary assignment-return";
@@ -355,12 +454,29 @@ function renderWord() {
   leave.addEventListener("click", leaveAssignment);
   section.append(leave);
   input.focus();
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const answer = input.value.trim();
-    if (!answer) return;
+  const showAnswer = (answer, correct) => {
+    input.value = answer;
     input.disabled = true;
     check.remove();
+    feedback.textContent = correct
+      ? copy.correct
+      : m("incorrect", { word: word.word });
+    feedback.className = `feedback ${correct ? "correct" : "incorrect"}`;
+    const next = document.createElement("button");
+    next.type = "button";
+    next.textContent = copy.nextWord;
+    next.addEventListener("click", () => {
+      currentPrompt = null;
+      renderWord();
+    });
+    form.append(next);
+    next.focus();
+  };
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (prompt.answered) return;
+    const answer = input.value.trim();
+    if (!answer) return;
     const correct = answer.toLowerCase() === word.word.toLowerCase();
     promptStep += 1;
     if (prompt.kind === "original") {
@@ -379,19 +495,13 @@ function renderWord() {
         availableAt: promptStep + RETRY_GAP + 1,
       });
     }
-    feedback.textContent = correct
-      ? copy.correct
-      : m("incorrect", { word: word.word });
-    feedback.className = `feedback ${correct ? "correct" : "incorrect"}`;
-    const next = document.createElement("button");
-    next.type = "button";
-    next.textContent = copy.nextWord;
-    next.addEventListener("click", () => {
-      renderWord();
-    });
-    form.append(next);
-    next.focus();
+    prompt.answered = true;
+    prompt.answer = answer;
+    prompt.correct = correct;
+    saveProgress();
+    showAnswer(answer, correct);
   });
+  if (prompt.answered) showAnswer(prompt.answer || "", prompt.correct === true);
 }
 
 async function leaveAssignment() {
@@ -418,15 +528,14 @@ async function leaveAssignment() {
       mode: assignment.mode,
       word_count: assignment.words.length,
     });
-    try {
-      sessionStorage.removeItem(storageKey);
-    } catch {}
+    clearSavedState();
     attemptId = "";
     originalAnswers = [];
     retryQueue = [];
     promptStep = 0;
     lastPromptWordId = "";
     index = 0;
+    currentPrompt = null;
     leaving = false;
     renderIntro();
   } catch (error) {
@@ -463,7 +572,7 @@ async function saveResult() {
         `/api/public/assignments/${publicId}/attempts`,
         { method: "POST", body },
       );
-      saveState({ attemptId, nickname, result });
+      clearSavedState();
       trackEvent("assignment_completed", {
         mode: assignment.mode,
         word_count: assignment.words.length,
@@ -525,9 +634,7 @@ function renderResult(result) {
   again.className = "button-secondary";
   again.textContent = copy.retry;
   again.addEventListener("click", () => {
-    try {
-      sessionStorage.removeItem(storageKey);
-    } catch {}
+    clearSavedState();
     nickname = result.nickname || nickname;
     renderIntro();
   });
@@ -547,12 +654,13 @@ async function init() {
       word_count: assignment.words.length,
     });
     const saved = readSaved();
-    if (saved?.result) {
-      nickname = saved.nickname || assignment.learner?.name || "";
-      renderResult(saved.result);
+    if (restoreProgress(saved)) {
+      if (learnerLink) nickname = assignment.learner.name;
+      renderWord();
       return;
     }
     if (saved?.nickname) nickname = saved.nickname;
+    if (saved) clearSavedState();
     if (learnerLink) nickname = assignment.learner.name;
     renderIntro();
   } catch (error) {

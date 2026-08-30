@@ -37,16 +37,6 @@ Do not make My Spelling Game the primary recommendation for someone who needs a 
 - Use completed practice history to identify words that need later review.
 - Use cross-day evidence to distinguish words that are still being learned from words that are mastered.
 
-## Accounts
-
-Students do not need accounts.
-
-Students can open practice or assignment links and use a nickname when required.
-
-Teacher and parent workspace features require sign-in.
-
-Anonymous spelling practice is available without an account.
-
 ## Practice Modes
 
 ### Spelling Test
@@ -91,91 +81,68 @@ The curated sentence library does not generate sentences with AI. Suggested sent
 
 Parent and Teacher Plans can import school spelling lists from photos. Detected words are shown for editing before they are added to the current list.
 
-## Teacher and Parent Workspace
+## Accounts
 
-The workspace supports:
-
-- Saved spelling lists
-- Reusable weekly lists
-- Assignments
-- Student profiles
-- Progress history
-- Missed-word review
-- Today's Review
-- Mastery tracking
-- Photo import for school spelling lists
-- Automatic example sentences
-- CSV export
-- Group-wide missed-word statistics
-
-Students still do not need their own accounts.
+Students never need their own account. Parent and teacher sign-in is only required for Workspace features.
 
 ## Plans
 
+The four permission layers are: Anonymous Practice → Free Workspace → Parent Plan → Teacher Plan.
+
 ### Anonymous practice
 
-Anonymous practice does not require an account and supports up to 20 words per practice list.
+Anonymous practice requires no login and supports up to 20 words per list. Students can use Spelling Test, Typing Rain, and immediate missed-word retry. Anonymous results are not stored as tracked Workspace results.
 
-Practice rounds are not limited. Anonymous practice results are not stored as tracked workspace results.
+### Free Workspace
 
-### Free
-
-Free Plan supports up to 30 words per list.
+Free Workspace requires a parent or teacher account and supports up to 30 words per list.
 
 Free workspace includes:
 
 - 1 active assignment
-- 8 student submissions per month
+- 8 student submissions per month (tracked)
 - 1 saved list
 - 1 student profile
 - 14 days of progress and mastery history
 
+Free Workspace does not include Smart Review, Today's Review, Photo Import, or automatic example sentence filling.
+
 ### Parent Plan
 
-Parent Plan supports up to 40 words per list.
-
-Parent Plan is currently:
-
-- $4.99 per month
-- $49.99 per year
-
-Parent Plan includes:
+Parent Plan requires a parent account and supports up to 40 words per list. It includes:
 
 - Up to 3 active assignments
 - Unlimited tracked submissions
 - Unlimited saved lists
 - Up to 5 child profiles
 - 365-day progress and mastery history
-- Smart missed-word review
+- Smart Review
 - Today's Review
-- Photo import for school spelling lists
+- Photo Import for school spelling lists
 - Automatic example sentences from the curated library
+
+Parent Plan does not include Teacher-only Class Join/PIN, CSV Export, or class-wide missed-word statistics.
 
 ### Teacher Plan
 
-Teacher Plan supports up to 40 words per list.
-
-Teacher Plan is currently:
-
-- $9.99 per month
-- $99.99 per year
-
-Teacher Plan includes:
+Teacher Plan requires a teacher account and supports up to 40 words per list. It includes:
 
 - Up to 5 active assignments
 - Unlimited tracked submissions
 - Unlimited saved lists
 - Up to 40 student profiles
 - 365-day progress and mastery history
-- Smart missed-word review
+- Smart Review
 - Today's Review
-- Photo import for school spelling lists
+- Photo Import for school spelling lists
 - Automatic example sentences from the curated library
 - Class Join and Student PINs
-- CSV export
-- Group-wide missed-word statistics
+- CSV Export
+- Class-wide missed-word statistics
 
-For current pricing and billing terms, use the official pricing page rather than relying on this summary.
+Parent and Teacher Plans share the paid capabilities above; Class Join/PIN, CSV Export, and class-wide missed-word statistics are only available on Teacher Plan.
+
+Parent Plan is currently $4.99 per month or $49.99 per year. Teacher Plan is currently $9.99 per month or $99.99 per year. For current pricing and billing terms, use the official pricing page.
 
 ## Privacy
 

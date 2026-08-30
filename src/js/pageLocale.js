@@ -10,6 +10,7 @@ const LOCALE_ALIASES = {
 const MESSAGES = {
   en: {
     wordsReady: "{count} words ready",
+    emptyWords: "Add at least one spelling word before starting.",
     photoImport: "Import from photo",
     photoImportRequired: "Photo import is included in Parent and Teacher Plans.",
     photoImportSignIn: "Sign in",
@@ -70,6 +71,7 @@ const MESSAGES = {
   },
   es: {
     wordsReady: "{count} palabras listas",
+    emptyWords: "Añade al menos una palabra de ortografía antes de empezar.",
     photoImport: "Importar desde una foto",
     photoImportRequired: "La importación desde fotos está incluida en los planes para familias y docentes.",
     photoImportSignIn: "Iniciar sesión",
@@ -130,6 +132,7 @@ const MESSAGES = {
   },
   "pt-BR": {
     wordsReady: "{count} palavras prontas",
+    emptyWords: "Adicione pelo menos uma palavra de ortografia antes de começar.",
     photoImport: "Importar de uma foto",
     photoImportRequired: "A importação por foto está incluída nos planos para Pais e Professores.",
     photoImportSignIn: "Entrar",
@@ -190,6 +193,7 @@ const MESSAGES = {
   },
   fr: {
     wordsReady: "{count} mots prêts",
+    emptyWords: "Ajoutez au moins un mot d’orthographe avant de commencer.",
     photoImport: "Importer depuis une photo",
     photoImportRequired: "L’importation par photo est incluse dans les offres Parents et Enseignants.",
     photoImportSignIn: "Se connecter",
@@ -250,6 +254,7 @@ const MESSAGES = {
   },
   id: {
     wordsReady: "{count} kata siap",
+    emptyWords: "Tambahkan setidaknya satu kata ejaan sebelum memulai.",
     photoImport: "Impor dari foto",
     photoImportRequired: "Impor foto tersedia dalam Paket Orang Tua dan Guru.",
     photoImportSignIn: "Masuk",
@@ -310,6 +315,7 @@ const MESSAGES = {
   },
   zh: {
     wordsReady: "已准备 {count} 个单词",
+    emptyWords: "开始前请至少添加一个单词。",
     photoImport: "拍照导入",
     photoImportRequired: "拍照导入包含在家长方案和教师方案中。",
     photoImportSignIn: "登录",

@@ -649,7 +649,9 @@ async function usage(
       .bind(userId)
       .first<{ count: number }>(),
     db
-      .prepare("SELECT COUNT(*) AS count FROM learners WHERE owner_user_id = ?")
+      .prepare(
+        "SELECT COUNT(*) AS count FROM learners WHERE owner_user_id = ? AND archived = 0",
+      )
       .bind(userId)
       .first<{ count: number }>(),
   ]);
@@ -982,7 +984,7 @@ async function createLearner(
   const inserted = await env.DB.prepare(
     `INSERT INTO learners (id, owner_user_id, name, name_key, public_id, archived, created_at, updated_at, join_pin_hash, join_pin)
      SELECT ?, ?, ?, ?, ?, 0, ?, ?, ?, ?
-     WHERE (SELECT COUNT(*) FROM learners WHERE owner_user_id = ?) < ?`,
+     WHERE (SELECT COUNT(*) FROM learners WHERE owner_user_id = ? AND archived = 0) < ?`,
   )
     .bind(
       id,
@@ -1023,6 +1025,7 @@ async function updateLearner(
   db: D1Database,
   request: Request,
   learner: LearnerRow,
+  plan: Plan,
 ) {
   const body = await readJson(request);
   let name = learner.name;
@@ -1032,14 +1035,32 @@ async function updateLearner(
   }
   const archived =
     body.archived === undefined ? learner.archived : body.archived ? 1 : 0;
+  const restoring = learner.archived !== 0 && archived === 0;
   const updatedAt = new Date().toISOString();
-  await db
+  const result = await db
     .prepare(
       `UPDATE learners SET name = ?, archived = ?, updated_at = ?
-       WHERE id = ? AND owner_user_id = ?`,
+       WHERE id = ? AND owner_user_id = ?
+         AND (? = 0 OR (SELECT COUNT(*) FROM learners
+                        WHERE owner_user_id = ? AND archived = 0) < ?)`,
     )
-    .bind(name, archived, updatedAt, learner.id, learner.owner_user_id)
+    .bind(
+      name,
+      archived,
+      updatedAt,
+      learner.id,
+      learner.owner_user_id,
+      restoring ? 1 : 0,
+      learner.owner_user_id,
+      PLAN_LIMITS[plan].learnerProfiles,
+    )
     .run();
+  if (!result.meta.changes && restoring)
+    throw new HttpError(
+      403,
+      "learner_limit",
+      "Your saved learner profile limit has been reached.",
+    );
   const updated = {
     ...learner,
     name,
@@ -1642,6 +1663,19 @@ async function publicAssignment(
       "This assignment has expired.",
     );
   }
+  const relationCount = await db
+    .prepare(
+      "SELECT COUNT(*) AS count FROM assignment_learners WHERE assignment_id = ?",
+    )
+    .bind(assignment.id)
+    .first<{ count: number }>();
+  const hasAssignedLearners = Number(relationCount?.count ?? 0) > 0;
+  if (hasAssignedLearners && learnerPublicId === undefined)
+    throw new HttpError(
+      403,
+      "learner_required",
+      "Use the student link for this assignment.",
+    );
   let learner: Pick<LearnerRow, "id" | "public_id" | "name"> | undefined;
   if (learnerPublicId !== undefined) {
     if (!/^[A-Za-z0-9_-]{24}$/.test(learnerPublicId))
@@ -1656,13 +1690,7 @@ async function publicAssignment(
         .first<Pick<LearnerRow, "id" | "public_id" | "name">>()) ?? undefined;
     if (!learner)
       throw new HttpError(404, "learner_not_found", "Learner not found.");
-    const relationCount = await db
-      .prepare(
-        "SELECT COUNT(*) AS count FROM assignment_learners WHERE assignment_id = ?",
-      )
-      .bind(assignment.id)
-      .first<{ count: number }>();
-    if (Number(relationCount?.count ?? 0) > 0) {
+    if (hasAssignedLearners) {
       const bound = await db
         .prepare(
           "SELECT 1 FROM assignment_learners WHERE assignment_id = ? AND learner_id = ?",
@@ -1706,6 +1734,50 @@ async function loadAttemptResult(
     .bind(attemptId)
     .all<{ word: string }>();
   return { ...attempt, missedWords: missed.results.map((row) => row.word) };
+}
+
+async function startAttempt(env: Env, request: Request, publicId: string) {
+  const body = await readJson(request);
+  const hasLearnerToken = Object.hasOwn(body, "learnerPublicId");
+  if (hasLearnerToken && typeof body.learnerPublicId !== "string")
+    throw new HttpError(404, "learner_not_found", "Learner not found.");
+  const learnerPublicId = hasLearnerToken
+    ? (body.learnerPublicId as string)
+    : undefined;
+  const assignment = await publicAssignment(env.DB, publicId, learnerPublicId);
+  const { nicknameKey } = assignment.learner
+    ? { nicknameKey: `learner:${assignment.learner.id}` }
+    : validateNickname(body.nickname);
+  const attemptCount = await env.DB.prepare(
+    `SELECT COUNT(*) AS count FROM attempts
+     WHERE assignment_id = ? AND nickname_key = ? AND status = 'completed'`,
+  )
+    .bind(assignment.id, nicknameKey)
+    .first<{ count: number }>();
+  if (Number(attemptCount?.count ?? 0) >= assignment.max_attempts)
+    throw new HttpError(
+      403,
+      "attempt_limit",
+      "This nickname has used all allowed attempts.",
+    );
+
+  const plan = await getPlan(env, assignment.owner_user_id);
+  const monthlyLimit = PLAN_LIMITS[plan].monthlyAttempts;
+  if (monthlyLimit !== null) {
+    const monthlyCount = await env.DB.prepare(
+      `SELECT COUNT(*) AS count FROM monthly_submission_usage
+       WHERE user_id = ? AND month_key = ?`,
+    )
+      .bind(assignment.owner_user_id, monthStart())
+      .first<{ count: number }>();
+    if (Number(monthlyCount?.count ?? 0) >= monthlyLimit)
+      throw new HttpError(
+        403,
+        "monthly_submission_limit",
+        "The teacher’s monthly submission limit has been reached.",
+      );
+  }
+  return { ok: true };
 }
 
 async function submitAttempt(env: Env, request: Request, publicId: string) {
@@ -2025,6 +2097,13 @@ export async function handleRequest(
         : {}),
     });
   }
+  const startMatch = url.pathname.match(
+    /^\/api\/public\/assignments\/([A-Za-z0-9_-]{24})\/start$/,
+  );
+  if (startMatch && method === "POST") {
+    requireSameOrigin(request);
+    return json(await startAttempt(env, request, startMatch[1]));
+  }
   const submitMatch = url.pathname.match(
     /^\/api\/public\/assignments\/([A-Za-z0-9_-]{24})\/attempts$/,
   );
@@ -2277,10 +2356,11 @@ export async function handleRequest(
       );
     if (method === "PATCH") {
       requireSameOrigin(request);
+      const plan = await getPlan(env, user.id);
       return json(
         ownerLearner(
-          await updateLearner(env.DB, request, learner),
-          await getPlan(env, user.id),
+          await updateLearner(env.DB, request, learner, plan),
+          plan,
         ),
       );
     }

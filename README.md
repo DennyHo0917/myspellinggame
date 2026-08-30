@@ -19,13 +19,48 @@ My Spelling Game is best for focused practice with weekly or custom spelling lis
 - **Photo import:** Parent and Teacher plans can read a school spelling list from a photo. Review and edit the detected words before adding them.
 - **Example sentences:** Add your own sentences for dictation, or use the curated example-sentence library on supported plans.
 
-## Parent and Teacher Workspace
+## Access and plans
 
-Parents and teachers can sign in to a Workspace to manage learning over time:
+My Spelling Game has four access levels: **Anonymous Practice → Free Workspace → Parent Plan → Teacher Plan**. Students never need their own account.
 
-- Create and share assignments without requiring student accounts.
-- Save and reuse spelling lists, including weekly lists.
-- Track progress across assignments and see which words are mastered.
-- Use Smart Review and Today’s Review to focus practice on missed and due words.
+### Anonymous Practice
 
-Students can open a shared practice link and begin without creating an account or password.
+- No login required.
+- Practice up to 20 words per list with Spelling Test, Typing Rain, and immediate missed-word retry.
+- Results are not saved as tracked Workspace history.
+
+### Free Workspace
+
+Free Workspace requires a parent or teacher account. It supports up to 30 words per list and includes:
+
+- 1 active assignment
+- 8 tracked student submissions per month
+- 1 saved list
+- 1 student profile
+- 14 days of progress and mastery history
+
+Smart Review, Today’s Review, Photo Import, and automatic example sentences are not included in Free Workspace.
+
+### Parent Plan
+
+Parent Plan requires a parent account and supports up to 40 words per list. It includes:
+
+- Up to 3 active assignments
+- Unlimited tracked submissions and saved lists
+- Up to 5 child profiles
+- 365-day progress and mastery history
+- Smart Review, Today’s Review, Photo Import, and automatic example sentences from the curated library
+
+### Teacher Plan
+
+Teacher Plan requires a teacher account and supports up to 40 words per list. It includes the Parent Plan paid capabilities, plus:
+
+- Up to 5 active assignments
+- Up to 40 student profiles
+- Class Join and Student PINs
+- CSV Export
+- Class-wide missed-word statistics
+
+Class Join/PIN, CSV Export, and class-wide missed-word statistics are Teacher-only features. Parents and teachers can use the shared paid capabilities only through their respective paid plans; they are not free after signing in.
+
+Students can open a shared practice or assignment link and begin without creating an account or password.

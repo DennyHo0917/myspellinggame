@@ -1459,11 +1459,19 @@ function renderLearnersLegacy(me, learners) {
       ? copy.restoreLearner
       : copy.archiveLearner;
     archive.addEventListener("click", async () => {
-      await api(`/api/learners/${learner.id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ archived: !learner.archived }),
-      });
-      await refreshWorkspace(me);
+      try {
+        await api(`/api/learners/${learner.id}`, {
+          method: "PATCH",
+          body: JSON.stringify({ archived: !learner.archived }),
+        });
+        await refreshWorkspace(me);
+      } catch (error) {
+        showSectionError(
+          section,
+          error,
+          error.code === "learner_limit" ? "learner_limit" : null,
+        );
+      }
     });
     actions.append(open);
     if (isTeacherPlan(me) && !learner.archived && learner.join_pin)
@@ -1674,11 +1682,19 @@ function renderLearners(me, learners) {
       ? copy.restoreLearner
       : copy.archiveLearner;
     archive.addEventListener("click", async () => {
-      await api(`/api/learners/${learner.id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ archived: !learner.archived }),
-      });
-      await refreshWorkspace(me);
+      try {
+        await api(`/api/learners/${learner.id}`, {
+          method: "PATCH",
+          body: JSON.stringify({ archived: !learner.archived }),
+        });
+        await refreshWorkspace(me);
+      } catch (error) {
+        showSectionError(
+          section,
+          error,
+          error.code === "learner_limit" ? "learner_limit" : null,
+        );
+      }
     });
     menuItems.append(rename, archive);
     if (isTeacherPlan(me) && !learner.archived && learner.join_pin) {

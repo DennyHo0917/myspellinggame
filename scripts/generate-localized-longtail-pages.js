@@ -3389,27 +3389,106 @@ const paidLandingFeatures = {
       ["Today's Review", "Open a short session built from missed words that are due for practice today."],
       ["Photo Import", "Bring in a school spelling list from a photo, then review the words before creating an assignment."],
       ["Automatic Example Sentences", "Fill known words with example sentences from the curated library, with editing before publishing."],
+      ["Class-wide Missed-word Statistics", "See which missed words are most common across the class."],
     ],
   },
   es: {
     parent: [["Importar desde una foto", "Importa la lista de spelling de la escuela desde una foto y revisa las palabras antes de usarlas."], ["Frases de ejemplo automáticas", "Completa palabras conocidas con frases de la biblioteca seleccionada y edítalas antes de usarlas."]],
-    teacher: [["Repaso de hoy", "Abre una sesión corta con las palabras falladas que toca practicar hoy."], ["Importar desde una foto", "Importa la lista de spelling de la escuela desde una foto y revisa las palabras antes de crear la tarea."], ["Frases de ejemplo automáticas", "Completa palabras conocidas con frases de la biblioteca seleccionada y edítalas antes de publicar."]],
+    teacher: [["Repaso de hoy", "Abre una sesión corta con las palabras falladas que toca practicar hoy."], ["Importar desde una foto", "Importa la lista de spelling de la escuela desde una foto y revisa las palabras antes de crear la tarea."], ["Frases de ejemplo automáticas", "Completa palabras conocidas con frases de la biblioteca seleccionada y edítalas antes de publicar."], ["Estadísticas de errores de la clase", "Identifica las palabras que más cuesta dominar en toda la clase."]],
   },
   "pt-BR": {
     parent: [["Importar por foto", "Importe a lista de ortografia da escola por foto e revise as palavras antes de usá-las."], ["Frases de exemplo automáticas", "Preencha palavras conhecidas com frases da biblioteca selecionada e edite-as antes de usar."]],
-    teacher: [["Revisão de hoje", "Abra uma sessão curta com as palavras erradas que já devem ser praticadas hoje."], ["Importar por foto", "Importe a lista de ortografia da escola por foto e revise as palavras antes de criar a atividade."], ["Frases de exemplo automáticas", "Preencha palavras conhecidas com frases da biblioteca selecionada e edite-as antes de publicar."]],
+    teacher: [["Revisão de hoje", "Abra uma sessão curta com as palavras erradas que já devem ser praticadas hoje."], ["Importar por foto", "Importe a lista de ortografia da escola por foto e revise as palavras antes de criar a atividade."], ["Frases de exemplo automáticas", "Preencha palavras conhecidas com frases da biblioteca selecionada e edite-as antes de publicar."], ["Estatísticas de erros da turma", "Veja quais palavras são mais difíceis para toda a turma."]],
   },
   fr: {
     parent: [["Import par photo", "Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de les utiliser."], ["Phrases d’exemple automatiques", "Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant usage."]],
-    teacher: [["Révision du jour", "Lancez une courte séance avec les mots manqués qui doivent être revus aujourd’hui."], ["Import par photo", "Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de créer le devoir."], ["Phrases d’exemple automatiques", "Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant publication."]],
+    teacher: [["Révision du jour", "Lancez une courte séance avec les mots manqués qui doivent être revus aujourd’hui."], ["Import par photo", "Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de créer le devoir."], ["Phrases d’exemple automatiques", "Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant publication."], ["Statistiques des mots manqués de la classe", "Repérez les mots qui posent le plus de difficultés dans toute la classe."]],
   },
   id: {
     parent: [["Impor foto", "Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum digunakan."], ["Kalimat contoh otomatis", "Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum digunakan."]],
-    teacher: [["Ulasan hari ini", "Buka sesi singkat berisi kata salah yang sudah waktunya dilatih hari ini."], ["Impor foto", "Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum membuat tugas."], ["Kalimat contoh otomatis", "Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum diterbitkan."]],
+    teacher: [["Ulasan hari ini", "Buka sesi singkat berisi kata salah yang sudah waktunya dilatih hari ini."], ["Impor foto", "Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum membuat tugas."], ["Kalimat contoh otomatis", "Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum diterbitkan."], ["Statistik kata salah di kelas", "Lihat kata yang paling sering salah di seluruh kelas."]],
   },
   zh: {
     parent: [["拍照导入", "从学校词表照片中提取单词，确认后再加入练习。"], ["自动填充例句", "使用精选例句库为已知单词补充例句，使用前仍可编辑。"]],
-    teacher: [["今日复习", "打开一轮短练习，复习今天正好需要再次练习的错词。"], ["拍照导入", "从学校词表照片中提取单词，确认后再创建作业。"], ["自动填充例句", "使用精选例句库为已知单词补充例句，发布前仍可编辑。"]],
+    teacher: [["今日复习", "打开一轮短练习，复习今天正好需要再次练习的错词。"], ["拍照导入", "从学校词表照片中提取单词，确认后再创建作业。"], ["自动填充例句", "使用精选例句库为已知单词补充例句，发布前仍可编辑。"], ["班级错词统计", "查看全班最常出现的错词，找到需要重点练习的内容。"]],
+  },
+};
+
+const parentFeatureGroups = {
+  en: {
+    freeTitle: "Free Workspace",
+    freeIntro: "After a parent signs in, Free Workspace keeps learner profiles, progress, and mastery history connected.",
+    paidTitle: "Parent Plan",
+    paidIntro: "The paid Parent Plan adds focused review, list import, sentence help, and longer family history.",
+  },
+  es: {
+    freeTitle: "Espacio de trabajo gratuito",
+    freeIntro: "Al iniciar sesión, el espacio gratuito mantiene unidos los perfiles, el progreso y el dominio de cada estudiante.",
+    paidTitle: "Plan para familias",
+    paidIntro: "El Plan para familias de pago añade repaso específico, importación de listas, ayuda con frases y un historial más largo.",
+  },
+  "pt-BR": {
+    freeTitle: "Espaço de trabalho gratuito",
+    freeIntro: "Depois de entrar, o espaço gratuito reúne perfis, progresso e domínio de cada aluno.",
+    paidTitle: "Plano para Pais",
+    paidIntro: "O Plano para Pais pago acrescenta revisão focada, importação de listas, ajuda com frases e um histórico familiar mais longo.",
+  },
+  fr: {
+    freeTitle: "Espace de travail gratuit",
+    freeIntro: "Après connexion, l’espace gratuit relie les profils, la progression et la maîtrise de chaque élève.",
+    paidTitle: "Offre Parents",
+    paidIntro: "L’offre Parents payante ajoute la révision ciblée, l’import de listes, l’aide aux phrases et un historique familial plus long.",
+  },
+  id: {
+    freeTitle: "Ruang Kerja Gratis",
+    freeIntro: "Setelah orang tua masuk, Ruang Kerja Gratis menghubungkan profil pelajar, perkembangan, dan penguasaan.",
+    paidTitle: "Paket Orang Tua",
+    paidIntro: "Paket Orang Tua berbayar menambahkan ulasan terarah, impor daftar, bantuan kalimat, dan riwayat keluarga yang lebih panjang.",
+  },
+  zh: {
+    freeTitle: "免费工作台",
+    freeIntro: "家长登录后，免费工作台可以保存学习者档案、进度和掌握度记录。",
+    paidTitle: "家长方案",
+    paidIntro: "家长方案付费权益增加针对性复习、词表导入、例句帮助和更长的家庭学习历史。",
+  },
+};
+
+const teacherFeatureGroups = {
+  en: {
+    freeTitle: "Free Workspace",
+    freeIntro: "After a teacher signs in, Free Workspace covers basic assignments, learner progress, and mastery.",
+    paidTitle: "Teacher Plan",
+    paidIntro: "The paid Teacher Plan adds review tools, list import, class capacity, history, and reporting.",
+  },
+  es: {
+    freeTitle: "Espacio de trabajo gratuito",
+    freeIntro: "Al iniciar sesión, el espacio gratuito cubre las tareas básicas, el progreso y el dominio del alumnado.",
+    paidTitle: "Plan para docentes",
+    paidIntro: "El Plan para docentes de pago añade herramientas de repaso, importación de listas, capacidad de clase, historial e informes.",
+  },
+  "pt-BR": {
+    freeTitle: "Espaço de trabalho gratuito",
+    freeIntro: "Depois de entrar, o espaço gratuito cobre atividades básicas, progresso e domínio dos alunos.",
+    paidTitle: "Plano para Professores",
+    paidIntro: "O Plano para Professores pago acrescenta ferramentas de revisão, importação de listas, capacidade da turma, histórico e relatórios.",
+  },
+  fr: {
+    freeTitle: "Espace de travail gratuit",
+    freeIntro: "Après connexion, l’espace gratuit couvre les devoirs de base, la progression et la maîtrise des élèves.",
+    paidTitle: "Offre Enseignants",
+    paidIntro: "L’offre Enseignants payante ajoute les outils de révision, l’import de listes, la capacité de classe, l’historique et les rapports.",
+  },
+  id: {
+    freeTitle: "Ruang Kerja Gratis",
+    freeIntro: "Setelah guru masuk, Ruang Kerja Gratis mencakup tugas dasar, perkembangan, dan penguasaan siswa.",
+    paidTitle: "Paket Guru",
+    paidIntro: "Paket Guru berbayar menambahkan alat ulasan, impor daftar, kapasitas kelas, riwayat, dan laporan.",
+  },
+  zh: {
+    freeTitle: "免费工作台",
+    freeIntro: "教师登录后，免费工作台提供基础作业、学习进度和掌握度记录。",
+    paidTitle: "教师方案",
+    paidIntro: "教师方案付费权益增加复习工具、词表导入、班级规模、历史记录和结果报告。",
   },
 };
 
@@ -3675,6 +3754,35 @@ function schemaScripts(lang, slug, page) {
 function audienceLandingMain(langCode, lang, copy, audience) {
   const workspaceUrl = `/teacher?lang=${encodeURIComponent(langCode)}`;
   const pricingUrl = pagePath(lang, "pricing");
+  const featureCards = (features) =>
+    features
+      .map(([title, body]) => `                <article class="seo-panel parent-value-card"><h3>${title}</h3><p>${body}</p></article>`)
+      .join("\n");
+  const featureGroups = audience === "parent" ? parentFeatureGroups[langCode] : teacherFeatureGroups[langCode];
+  const freeFeatureCount = audience === "parent" ? 3 : 4;
+  const featureContent =
+    audience === "parent" || audience === "teacher"
+      ? `            <div class="parent-feature-group">
+                <div class="parent-section-heading">
+                    <h2>${featureGroups.freeTitle}</h2>
+                    <p>${featureGroups.freeIntro}</p>
+                </div>
+                <div class="parent-value-grid">
+${featureCards(copy.features.slice(0, freeFeatureCount))}
+                </div>
+            </div>
+            <div class="parent-feature-group">
+                <div class="parent-section-heading">
+                    <h2>${featureGroups.paidTitle}</h2>
+                    <p>${featureGroups.paidIntro}</p>
+                </div>
+                <div class="parent-value-grid">
+${featureCards(copy.features.slice(freeFeatureCount))}
+                </div>
+            </div>`
+      : `            <div class="parent-value-grid">
+${featureCards(copy.features)}
+            </div>`;
   return `    <main class="seo-landing content-page parent-landing${audience === "teacher" ? " teacher-landing" : ""}">
         <section class="seo-hero parent-practice-hero">
             <span class="parent-eyebrow">${copy.eyebrow}</span>
@@ -3700,9 +3808,7 @@ ${copy.flow.map((step) => `                <li>${step}</li>`).join("\n")}
                 <h2 id="${audience}-values-${langCode}">${copy.featuresTitle}</h2>
                 <p>${copy.featuresIntro}</p>
             </div>
-            <div class="parent-value-grid">
-${copy.features.map(([title, body]) => `                <article class="seo-panel parent-value-card"><h3>${title}</h3><p>${body}</p></article>`).join("\n")}
-            </div>
+${featureContent}
         </section>
 
         <section class="seo-panel parent-workspace-cta">

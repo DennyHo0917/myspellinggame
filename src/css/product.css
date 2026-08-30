@@ -1438,6 +1438,27 @@ body.workspace-page {
   background: #fbfdfd;
 }
 
+.workspace-overview-main > #recent-assignments,
+.workspace-overview-main > #recent-progress {
+  min-width: 0;
+}
+
+.workspace-overview-main > #recent-assignments .empty-state,
+.workspace-overview-main > #recent-progress .empty-state {
+  margin: 0.5rem 0 0;
+  padding: 0.65rem 0.75rem;
+}
+
+@media (min-width: 801px) {
+  .workspace-overview-main {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .workspace-overview-main > #overview {
+    grid-column: 1 / -1;
+  }
+}
+
 .progress-center-card {
   width: 100%;
 }

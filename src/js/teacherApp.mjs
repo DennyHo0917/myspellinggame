@@ -2113,6 +2113,7 @@ async function renderDashboard(me, { force = false } = {}) {
       location.hash.replace(/^#/, ""),
   );
   const main = shell(me, section);
+  main.classList.toggle("workspace-overview-main", section === "overview");
   let data = workspaceCache.data;
   if (!data || force) {
     let loading = main.querySelector(".workspace-loading");

@@ -84,18 +84,21 @@ const seoSlugs = [
   "custom-spelling-words-game",
   "sight-word-typing-game",
   "spelling-practice-for-parents",
+  "weekly-spelling-practice",
 ];
 const footerSlugs = [
   "sight-word-typing-game",
   "spelling-practice-for-parents",
   "custom-spelling-words-game",
   "spelling-assignments-for-teachers",
+  "weekly-spelling-practice",
 ];
 const newLongtailSlugs = [
   "custom-spelling-words-game",
   "sight-word-typing-game",
   "spelling-assignments-for-teachers",
   "spelling-practice-for-parents",
+  "weekly-spelling-practice",
 ];
 const existingLocalizedSlugs = [];
 const legalSlugs = ["about", "contact", "privacy"];
@@ -1733,6 +1736,235 @@ const longtailContentBoosts = {
   },
 };
 
+const weeklyPageCopy = {
+  en: {
+    title: "Weekly Spelling Practice With Your Exact List | My Spelling Game",
+    description:
+      "Paste this week's exact spelling words and start practice immediately. Replay missed words and use the list without student login.",
+    ogDescription:
+      "Practice this week's exact spelling list with missed-word retry and no login.",
+    h1: "Practice This Week's Spelling Words",
+    intro:
+      "Paste the exact spelling list for this week and start a short practice round without login.",
+    panels: [
+      [
+        "Use This Week's Exact Spelling List",
+        "Paste the words from the teacher, workbook, or family plan. The round uses the exact weekly list you enter, not a random word bank.",
+      ],
+      [
+        "Missed-Word Retry",
+        "After each round, missed words are ready to replay. Keep the weekly practice short and spend the next attempt on the words that still need work.",
+      ],
+      [
+        "Parent and Teacher Workspace",
+        "Use the no-login practice now, then save the weekly list in Parent or Teacher Workspace to share assignments, track progress, and see mastery over time.",
+      ],
+    ],
+    faq: [
+      [
+        "Can I use the exact list for this week?",
+        "Yes. Paste this week's spelling list and the practice uses those exact words.",
+      ],
+      [
+        "Do students need a login?",
+        "No. Students can start from the shared link without an account.",
+      ],
+      [
+        "Can I retry missed words?",
+        "Yes. Missed words are collected for a focused retry round.",
+      ],
+    ],
+  },
+  es: {
+    title: "Práctica semanal de ortografía con tu lista exacta | My Spelling Game",
+    description:
+      "Pega las palabras exactas de ortografía de esta semana y empieza al instante. Repite los fallos sin iniciar sesión.",
+    ogDescription:
+      "Practica la lista exacta de esta semana, repite los fallos y no crees una cuenta.",
+    h1: "Practica las palabras de ortografía de esta semana",
+    intro:
+      "Pega la lista exacta de esta semana y empieza una ronda corta sin iniciar sesión.",
+    panels: [
+      [
+        "Usa la lista exacta de esta semana",
+        "Pega las palabras del profesor, del workbook o del plan familiar. La ronda usa exactamente tu lista semanal, no un banco aleatorio.",
+      ],
+      [
+        "Repite las palabras falladas",
+        "Al terminar, las palabras falladas quedan listas para otra ronda. Mantén la práctica breve y céntrate en lo que todavía cuesta.",
+      ],
+      [
+        "Espacio de trabajo para familias y docentes",
+        "Empieza sin cuenta y después guarda la lista semanal en el espacio de trabajo para compartir tareas, seguir el progreso y ver el dominio con el tiempo.",
+      ],
+    ],
+    faq: [
+      [
+        "¿Puedo usar la lista exacta de esta semana?",
+        "Sí. Pega la lista y la práctica usa esas mismas palabras.",
+      ],
+      [
+        "¿Los alumnos necesitan iniciar sesión?",
+        "No. Pueden abrir el enlace compartido sin crear una cuenta.",
+      ],
+      [
+        "¿Se pueden repetir las palabras falladas?",
+        "Sí. Se reúnen para una ronda de repaso centrada.",
+      ],
+    ],
+  },
+  "pt-BR": {
+    title: "Prática semanal de ortografia com sua lista exata | My Spelling Game",
+    description:
+      "Cole as palavras exatas de ortografia desta semana e comece na hora. Repita os erros sem fazer login.",
+    ogDescription:
+      "Pratique a lista exata da semana, revise os erros e comece sem conta.",
+    h1: "Pratique as palavras de ortografia desta semana",
+    intro:
+      "Cole a lista exata desta semana e comece uma rodada curta sem fazer login.",
+    panels: [
+      [
+        "Use a lista exata desta semana",
+        "Cole as palavras do professor, da apostila ou do plano da família. A rodada usa exatamente a sua lista semanal, sem banco aleatório.",
+      ],
+      [
+        "Repita as palavras erradas",
+        "No fim da rodada, as palavras erradas ficam prontas para outra tentativa. Mantenha a prática curta e foque no que ainda precisa de atenção.",
+      ],
+      [
+        "Espaço de trabalho para pais e professores",
+        "Comece sem conta e depois salve a lista semanal no espaço de trabalho para compartilhar tarefas, acompanhar o progresso e ver o domínio ao longo do tempo.",
+      ],
+    ],
+    faq: [
+      [
+        "Posso usar a lista exata desta semana?",
+        "Sim. Cole a lista e a prática usa essas mesmas palavras.",
+      ],
+      [
+        "O aluno precisa fazer login?",
+        "Não. Ele pode abrir o link compartilhado sem criar conta.",
+      ],
+      [
+        "Dá para repetir as palavras erradas?",
+        "Sim. Elas ficam reunidas para uma rodada de revisão focada.",
+      ],
+    ],
+  },
+  fr: {
+    title: "Pratique d’orthographe hebdomadaire avec votre liste exacte | My Spelling Game",
+    description:
+      "Collez les mots d’orthographe exacts de la semaine et commencez tout de suite. Reprenez les mots manqués sans compte.",
+    ogDescription:
+      "Travaillez la liste exacte de la semaine, reprenez les mots manqués, sans connexion.",
+    h1: "Pratiquez les mots d’orthographe de cette semaine",
+    intro:
+      "Collez la liste exacte de la semaine et lancez une courte séance sans connexion.",
+    panels: [
+      [
+        "Utilisez la liste exacte de la semaine",
+        "Collez les mots du professeur, du cahier ou du programme familial. La partie utilise exactement votre liste hebdomadaire, pas une banque aléatoire.",
+      ],
+      [
+        "Reprenez les mots manqués",
+        "À la fin de chaque partie, les mots manqués sont prêts à être rejoués. Gardez une séance courte et concentrez-vous sur les mots encore difficiles.",
+      ],
+      [
+        "Espace de travail pour parents et enseignants",
+        "Commencez sans compte, puis enregistrez la liste dans l’espace de travail pour partager des devoirs, suivre les progrès et voir la maîtrise au fil du temps.",
+      ],
+    ],
+    faq: [
+      [
+        "Puis-je utiliser la liste exacte de cette semaine ?",
+        "Oui. Collez la liste et la pratique utilise ces mêmes mots.",
+      ],
+      [
+        "Les élèves doivent-ils se connecter ?",
+        "Non. Le lien partagé s’ouvre sans créer de compte.",
+      ],
+      [
+        "Peut-on reprendre les mots manqués ?",
+        "Oui. Ils sont regroupés pour une courte reprise ciblée.",
+      ],
+    ],
+  },
+  id: {
+    title: "Latihan ejaan mingguan dengan daftar yang sama | My Spelling Game",
+    description:
+      "Tempel kata ejaan persis dari minggu ini dan langsung mulai. Ulangi kata yang salah tanpa login.",
+    ogDescription:
+      "Latih daftar ejaan minggu ini, ulangi kata yang salah, tanpa akun.",
+    h1: "Latih kata ejaan minggu ini",
+    intro:
+      "Tempel daftar ejaan yang sama untuk minggu ini dan mulai ronde singkat tanpa login.",
+    panels: [
+      [
+        "Gunakan daftar persis minggu ini",
+        "Tempel kata dari guru, buku latihan, atau rencana keluarga. Ronde memakai daftar mingguan yang Anda masukkan, bukan bank kata acak.",
+      ],
+      [
+        "Ulangi kata yang salah",
+        "Setelah ronde selesai, kata yang salah siap dimainkan lagi. Buat latihan tetap singkat dan fokus pada kata yang masih sulit.",
+      ],
+      [
+        "Ruang kerja untuk orang tua dan guru",
+        "Mulai tanpa akun, lalu simpan daftar mingguan di ruang kerja untuk membagikan tugas, memantau kemajuan, dan melihat penguasaan dari waktu ke waktu.",
+      ],
+    ],
+    faq: [
+      [
+        "Bisa memakai daftar persis minggu ini?",
+        "Bisa. Tempel daftar dan latihan memakai kata yang sama.",
+      ],
+      [
+        "Apakah siswa perlu login?",
+        "Tidak. Link bersama dapat dibuka tanpa membuat akun.",
+      ],
+      [
+        "Bisa mengulang kata yang salah?",
+        "Bisa. Kata tersebut dikumpulkan untuk ronde ulang yang terarah.",
+      ],
+    ],
+  },
+  zh: {
+    title: "使用本周完整词表进行英语拼写练习 | My Spelling Game",
+    description:
+      "粘贴本周完整英语拼写单词，立即开始练习。无需登录，并可重练漏掉的单词。",
+    ogDescription: "使用本周完整词表练习，集中重练错词，无需登录。",
+    h1: "练习本周英语拼写单词",
+    intro: "粘贴本周完整词表，立即开始一轮短练习，无需登录。",
+    panels: [
+      [
+        "使用本周完整词表",
+        "粘贴老师、教材或家庭计划中的单词。每轮只使用你输入的本周完整词表，不会混入随机词汇。",
+      ],
+      [
+        "重练漏掉的单词",
+        "每轮结束后，漏掉的单词会整理好，方便马上再练。保持练习短小，把时间用在仍然不稳的词上。",
+      ],
+      [
+        "家长和教师工作台",
+        "现在无需登录即可开始；之后可把本周词表保存到家长或教师工作台，分享作业、追踪进度并查看长期掌握度。",
+      ],
+    ],
+    faq: [
+      [
+        "可以使用本周完整词表吗？",
+        "可以。粘贴词表后，练习只使用这些单词。",
+      ],
+      [
+        "学生需要登录吗？",
+        "不需要。学生打开分享链接即可开始，无需注册账号。",
+      ],
+      [
+        "能重练漏掉的单词吗？",
+        "可以。漏词会集中整理到下一轮练习中。",
+      ],
+    ],
+  },
+};
+
 const homeschoolProgressPanels = {
   en: [
     "Track Progress Across the Week",
@@ -3170,6 +3402,9 @@ const customLauncher = {
     sightLabel: "Sight words",
     sightButton: "Start Typing Game",
     sightHelp: "No login needed · Up to 20 sight words",
+    weeklyLabel: "This week's spelling words",
+    weeklyButton: "Start This Week's Practice",
+    weeklyHelp: "No login needed · Use the exact weekly list",
     invalid: "Enter at least one word.",
     limit: "No-login practice supports up to 20 words per list.",
   },
@@ -3180,6 +3415,9 @@ const customLauncher = {
     sightLabel: "Palabras frecuentes (sight words)",
     sightButton: "Empezar el juego de mecanografía",
     sightHelp: "Sin iniciar sesión · Hasta 20 sight words",
+    weeklyLabel: "Palabras de spelling de esta semana",
+    weeklyButton: "Empezar la práctica semanal",
+    weeklyHelp: "Sin iniciar sesión · Usa la lista semanal exacta",
     invalid: "Escribe al menos una palabra.",
     limit: "La práctica sin cuenta admite hasta 20 palabras por lista.",
   },
@@ -3190,6 +3428,9 @@ const customLauncher = {
     sightLabel: "Palavras frequentes (sight words)",
     sightButton: "Começar o jogo de digitação",
     sightHelp: "Sem login · Até 20 sight words",
+    weeklyLabel: "Palavras de ortografia desta semana",
+    weeklyButton: "Começar a prática da semana",
+    weeklyHelp: "Sem conta · Use a lista exata da semana",
     invalid: "Digite pelo menos uma palavra.",
     limit: "A prática sem conta aceita até 20 palavras por lista.",
   },
@@ -3200,6 +3441,9 @@ const customLauncher = {
     sightLabel: "Mots fréquents (sight words)",
     sightButton: "Lancer le jeu de frappe",
     sightHelp: "Sans connexion · Jusqu’à 20 sight words",
+    weeklyLabel: "Mots d’orthographe de cette semaine",
+    weeklyButton: "Commencer la pratique de la semaine",
+    weeklyHelp: "Sans compte · Utilisez la liste exacte de la semaine",
     invalid: "Saisissez au moins un mot.",
     limit: "L’entraînement sans compte accepte jusqu’à 20 mots par liste.",
   },
@@ -3210,6 +3454,9 @@ const customLauncher = {
     sightLabel: "Sight words (kata umum)",
     sightButton: "Mulai game mengetik",
     sightHelp: "Tanpa akun · Maksimal 20 sight words",
+    weeklyLabel: "Kata ejaan minggu ini",
+    weeklyButton: "Mulai latihan minggu ini",
+    weeklyHelp: "Tanpa akun · Gunakan daftar mingguan yang sama",
     invalid: "Masukkan setidaknya satu kata.",
     limit: "Latihan tanpa akun mendukung hingga 20 kata per daftar.",
   },
@@ -3220,6 +3467,9 @@ const customLauncher = {
     sightLabel: "Sight words 高频词",
     sightButton: "开始打字游戏",
     sightHelp: "无需登录 · 最多输入 20 个 sight words",
+    weeklyLabel: "本周英语拼写单词",
+    weeklyButton: "开始本周练习",
+    weeklyHelp: "无需登录 · 直接使用本周完整词表",
     invalid: "请至少输入一个英语单词。",
     limit: "无需登录的练习每份词表最多 20 个单词。",
   },
@@ -3355,6 +3605,7 @@ function schemaScripts(lang, slug, page) {
       "custom-spelling-words-game": "2026-08-30",
       "homeschool-spelling-practice": "2026-08-23",
       "sight-word-typing-game": "2026-08-30",
+      "weekly-spelling-practice": "2026-08-30",
       "spelling-assignments-for-teachers": "2026-08-30",
       "spelling-practice-for-parents": "2026-08-30",
       "vocabulary-typing-game": "2026-06-22",
@@ -3450,7 +3701,11 @@ function renderPage(langCode, slug) {
       : slug === "spelling-assignments-for-teachers"
         ? teacherLandingCopy[langCode]
         : null;
-  const page = audienceCopy || pages[langCode][slug];
+  const page =
+    audienceCopy ||
+    (slug === "weekly-spelling-practice"
+      ? weeklyPageCopy[langCode]
+      : pages[langCode][slug]);
   const launcher = customLauncher[langCode];
   return `<!DOCTYPE html>
 <html lang="${lang.htmlLang}">
@@ -3507,12 +3762,12 @@ ${
             <h1>${localizeLegacyTerms(page.h1, langCode)}</h1>
             <p>${localizeLegacyTerms(page.intro, langCode)}</p>
 ${
-  slug === "custom-spelling-words-game" || slug === "sight-word-typing-game"
-    ? `            <form class="landing-launcher" action="${dirPath(lang)}" data-mode="typing" data-invalid="${escapeAttr(launcher.invalid)}" data-limit="${escapeAttr(launcher.limit)}">
-                <label for="${slug === "sight-word-typing-game" ? "sight" : "custom"}-words-${langCode}">${localizeLegacyTerms(slug === "sight-word-typing-game" ? launcher.sightLabel : launcher.label, langCode)}</label>
-                <textarea id="${slug === "sight-word-typing-game" ? "sight" : "custom"}-words-${langCode}" name="words" required spellcheck="false" placeholder="${slug === "sight-word-typing-game" ? "the&#10;and&#10;you&#10;said" : "because&#10;friend&#10;beautiful"}"></textarea>
-                <button type="submit">${localizeLegacyTerms(slug === "sight-word-typing-game" ? launcher.sightButton : launcher.button, langCode)}</button>
-                <small>${localizeLegacyTerms(slug === "sight-word-typing-game" ? launcher.sightHelp : launcher.help, langCode)}</small>
+  ["custom-spelling-words-game", "sight-word-typing-game", "weekly-spelling-practice"].includes(slug)
+    ? `            <form class="landing-launcher" action="${dirPath(lang)}" data-mode="${slug === "weekly-spelling-practice" ? "dictation" : "typing"}" data-invalid="${escapeAttr(launcher.invalid)}" data-limit="${escapeAttr(launcher.limit)}">
+                <label for="${slug === "sight-word-typing-game" ? "sight" : slug === "weekly-spelling-practice" ? "weekly" : "custom"}-words-${langCode}">${localizeLegacyTerms(slug === "sight-word-typing-game" ? launcher.sightLabel : slug === "weekly-spelling-practice" ? launcher.weeklyLabel : launcher.label, langCode)}</label>
+                <textarea id="${slug === "sight-word-typing-game" ? "sight" : slug === "weekly-spelling-practice" ? "weekly" : "custom"}-words-${langCode}" name="words" required spellcheck="false" placeholder="${slug === "sight-word-typing-game" ? "the&#10;and&#10;you&#10;said" : "because&#10;friend&#10;beautiful"}"></textarea>
+                <button type="submit">${localizeLegacyTerms(slug === "sight-word-typing-game" ? launcher.sightButton : slug === "weekly-spelling-practice" ? launcher.weeklyButton : launcher.button, langCode)}</button>
+                <small>${localizeLegacyTerms(slug === "sight-word-typing-game" ? launcher.sightHelp : slug === "weekly-spelling-practice" ? launcher.weeklyHelp : launcher.help, langCode)}</small>
             </form>`
     : `            <a class="seo-cta" href="${dirPath(lang)}">${labels[langCode].start}</a>`
 }

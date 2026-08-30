@@ -19,9 +19,16 @@ const sharedLinks = [
   "/spelling-practice-for-parents",
   "/custom-spelling-words-game",
   "/spelling-assignments-for-teachers",
+  "/weekly-spelling-practice",
 ];
 
-const localizedSeoSlugs = [];
+const localizedSeoSlugs = [
+  "sight-word-typing-game",
+  "spelling-practice-for-parents",
+  "custom-spelling-words-game",
+  "spelling-assignments-for-teachers",
+  "weekly-spelling-practice",
+];
 const faqLabels = {
   en: "FAQ",
   es: "Preguntas frecuentes",
@@ -230,6 +237,7 @@ const pages = {
       "En casa",
       "Vocabulario",
       "Para docentes",
+      "Práctica semanal",
     ],
     legalLinks: ["Privacidad", "Acerca de", "Contacto"],
     schema: {
@@ -393,6 +401,7 @@ const pages = {
       "Em casa",
       "Vocabulário",
       "Para professores",
+      "Prática semanal",
     ],
     legalLinks: ["Privacidade", "Sobre", "Contato"],
     schema: {
@@ -556,6 +565,7 @@ const pages = {
       "À la maison",
       "Vocabulaire",
       "Pour les enseignants",
+      "Pratique hebdomadaire",
     ],
     legalLinks: ["Confidentialité", "À propos", "Contact"],
     schema: {
@@ -714,7 +724,13 @@ const pages = {
       repeatText:
         "Alat ini sengaja sederhana: ambil daftar pendek, latihan, lihat kata yang terlewat, lalu ulangi. Gratis, tanpa akun siswa, dan tidak bergantung pada platform sekolah.",
     },
-    footerLinks: ["Kata umum", "Di rumah", "Kosakata", "Untuk guru"],
+    footerLinks: [
+      "Kata umum",
+      "Di rumah",
+      "Kosakata",
+      "Untuk guru",
+      "Latihan mingguan",
+    ],
     legalLinks: ["Privasi", "Tentang", "Kontak"],
     schema: {
       description:
@@ -862,7 +878,13 @@ const pages = {
       repeatText:
         "这个工具故意做得很小：每周拿到一份单词，练一遍，找到漏掉的词，再练一遍。免费、无需学生账号，也不绑定任何学习平台。",
     },
-    footerLinks: ["高频词练习", "家庭学习", "词汇练习", "教师作业"],
+    footerLinks: [
+      "高频词练习",
+      "家庭学习",
+      "词汇练习",
+      "教师作业",
+      "每周拼写练习",
+    ],
     legalLinks: ["隐私", "关于", "联系"],
     schema: {
       description:

@@ -269,6 +269,73 @@ test("sight-word pages launch a localized no-login typing game", () => {
   }
 });
 
+test("weekly spelling pages launch exact-list dictation practice", () => {
+  const expected = {
+    "": [
+      "Practice This Week's Spelling Words",
+      "This week's spelling words",
+      "Start This Week's Practice",
+      "No login needed",
+      "Use This Week's Exact Spelling List",
+      "Missed-Word Retry",
+      "Parent and Teacher Workspace",
+    ],
+    es: [
+      "Practica las palabras de ortografía de esta semana",
+      "Palabras de ortografía de esta semana",
+      "Empezar la práctica semanal",
+      "Sin iniciar sesión",
+      "Usa la lista exacta de esta semana",
+      "Repite las palabras falladas",
+    ],
+    "pt-br": [
+      "Pratique as palavras de ortografia desta semana",
+      "Palavras de ortografia desta semana",
+      "Começar a prática da semana",
+      "Sem conta",
+      "Use a lista exata desta semana",
+      "Repita as palavras erradas",
+    ],
+    fr: [
+      "Pratiquez les mots d’orthographe de cette semaine",
+      "Mots d’orthographe de cette semaine",
+      "Commencer la pratique de la semaine",
+      "Sans compte",
+      "Utilisez la liste exacte de la semaine",
+      "Reprenez les mots manqués",
+    ],
+    id: [
+      "Latih kata ejaan minggu ini",
+      "Kata ejaan minggu ini",
+      "Mulai latihan minggu ini",
+      "Tanpa akun",
+      "Gunakan daftar persis minggu ini",
+      "Ulangi kata yang salah",
+    ],
+    zh: [
+      "练习本周英语拼写单词",
+      "本周英语拼写单词",
+      "开始本周练习",
+      "无需登录",
+      "使用本周完整词表",
+      "重练漏掉的单词",
+    ],
+  };
+  for (const [locale, terms] of Object.entries(expected)) {
+    const html = fs.readFileSync(
+      path.join(root, locale, "weekly-spelling-practice.html"),
+      "utf8",
+    );
+    assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
+    assert.match(html, /<form class="landing-launcher"[^>]*data-mode="dictation"/);
+    assert.match(html, /placeholder="because&#10;friend&#10;beautiful"/);
+    for (const term of terms)
+      assert.ok(html.includes(term), `${locale || "en"}: ${term}`);
+    for (const hreflang of hreflangs)
+      assert.ok(html.includes(`hreflang="${hreflang}"`), `${locale || "en"}: ${hreflang}`);
+  }
+});
+
 test("parent landing pages launch practice and expose localized workspace value", () => {
   const expected = {
     "": [
@@ -420,8 +487,9 @@ test("localized legal pages keep SEO links inside the active locale", () => {
       assert.match(html, new RegExp(`href="/${locale}/faq"`));
       assert.doesNotMatch(
         html,
-        /(?:spelling-list-game|weekly-spelling-practice)/,
+        /spelling-list-game/,
       );
+      assert.match(html, new RegExp(`href="/${locale}/weekly-spelling-practice"`));
     }
   }
 });

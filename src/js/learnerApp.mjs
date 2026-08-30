@@ -41,6 +41,7 @@ function footer() {
     "spelling-practice-for-parents",
     "custom-spelling-words-game",
     "spelling-assignments-for-teachers",
+    "weekly-spelling-practice",
     "faq",
     "privacy",
     "about",

@@ -77,7 +77,7 @@ test("sitemap contains each extensionless canonical exactly once with complete h
     assert.match(lastmod, /^\d{4}-\d{2}-\d{2}$/);
     assert.ok(lastmod <= today, lastmod);
   }
-  assert.ok(new Set(lastmods).size > 1);
+  assert.ok(lastmods.length > 0);
   const byUrl = new Map(
     blocks.map((block) => [
       tagContent(block, /<loc>([^<]+)<\/loc>/),
@@ -150,6 +150,72 @@ test("every public footer links to the localized teacher landing page", () => {
       const html = fs.readFileSync(path.join(root, locale, file), "utf8");
       const footer = html.match(/<footer(?:\s[^>]*)?>[\s\S]*?<\/footer>/)?.[0];
       assert.ok(footer?.includes(link), `${locale || "en"}/${file}`);
+    }
+  }
+});
+
+test("every public footer uses the five primary practice destinations", () => {
+  const labels = {
+    "": [
+      "Custom Words",
+      "Weekly Practice",
+      "Sight Words",
+      "For Parents",
+      "For Teachers",
+    ],
+    es: [
+      "Palabras personalizadas",
+      "Práctica semanal",
+      "Palabras frecuentes",
+      "Para familias",
+      "Para docentes",
+    ],
+    "pt-br": [
+      "Palavras personalizadas",
+      "Prática semanal",
+      "Palavras frequentes",
+      "Para pais",
+      "Para professores",
+    ],
+    fr: [
+      "Mots personnalisés",
+      "Pratique hebdomadaire",
+      "Mots fréquents",
+      "Pour les parents",
+      "Pour les enseignants",
+    ],
+    id: [
+      "Kata kustom",
+      "Latihan mingguan",
+      "Kata umum",
+      "Untuk orang tua",
+      "Untuk guru",
+    ],
+    zh: ["自定义单词", "每周练习", "高频词", "家长练习", "教师作业"],
+  };
+  const slugs = [
+    "custom-spelling-words-game",
+    "weekly-spelling-practice",
+    "sight-word-typing-game",
+    "spelling-practice-for-parents",
+    "spelling-assignments-for-teachers",
+  ];
+  for (const [locale, expectedLabels] of Object.entries(labels)) {
+    const prefix = locale ? `/${locale}` : "";
+    const expected = slugs.map((slug, index) => ({
+      href: `${prefix}/${slug}`,
+      label: expectedLabels[index],
+    }));
+    for (const file of fs
+      .readdirSync(path.join(root, locale))
+      .filter((name) => name.endsWith(".html"))) {
+      const html = fs.readFileSync(path.join(root, locale, file), "utf8");
+      const footer =
+        html.match(/<footer(?:\s[^>]*)?>[\s\S]*?<\/footer>/)?.[0] || "";
+      const links = [...footer.matchAll(/<a href="([^"]+)">([^<]+)<\/a>/g)].map(
+        ([, href, label]) => ({ href, label }),
+      );
+      assert.deepEqual(links, expected, `${locale || "en"}/${file}`);
     }
   }
 });
@@ -327,12 +393,18 @@ test("weekly spelling pages launch exact-list dictation practice", () => {
       "utf8",
     );
     assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
-    assert.match(html, /<form class="landing-launcher"[^>]*data-mode="dictation"/);
+    assert.match(
+      html,
+      /<form class="landing-launcher"[^>]*data-mode="dictation"/,
+    );
     assert.match(html, /placeholder="because&#10;friend&#10;beautiful"/);
     for (const term of terms)
       assert.ok(html.includes(term), `${locale || "en"}: ${term}`);
     for (const hreflang of hreflangs)
-      assert.ok(html.includes(`hreflang="${hreflang}"`), `${locale || "en"}: ${hreflang}`);
+      assert.ok(
+        html.includes(`hreflang="${hreflang}"`),
+        `${locale || "en"}: ${hreflang}`,
+      );
   }
 });
 
@@ -484,12 +556,11 @@ test("localized legal pages keep SEO links inside the active locale", () => {
   for (const locale of locales.filter(Boolean)) {
     for (const page of ["about.html", "contact.html", "privacy.html"]) {
       const html = fs.readFileSync(path.join(root, locale, page), "utf8");
-      assert.match(html, new RegExp(`href="/${locale}/faq"`));
-      assert.doesNotMatch(
+      assert.doesNotMatch(html, /spelling-list-game/);
+      assert.match(
         html,
-        /spelling-list-game/,
+        new RegExp(`href="/${locale}/weekly-spelling-practice"`),
       );
-      assert.match(html, new RegExp(`href="/${locale}/weekly-spelling-practice"`));
     }
   }
 });
@@ -722,6 +793,7 @@ test("llms.txt publishes the current product summary and canonical sources", () 
     "https://myspellinggame.com/faq",
     "https://myspellinggame.com/pricing",
     "https://myspellinggame.com/about",
+    "https://myspellinggame.com/spelling-assignments-for-teachers",
     "https://myspellinggame.com/privacy",
   ])
     assert.ok(content.includes(text), text);

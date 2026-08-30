@@ -12,7 +12,7 @@ import {
 import { speakWord as speak } from './speech.js';
 import { entryPage, pageLocale, setAssignmentEntryPoint, trackEvent } from './analytics.mjs';
 import { buildShareHash, readShareState } from './shareState.mjs';
-import { productPagePath } from './productLocale.mjs';
+import { productMessage, productPagePath } from './productLocale.mjs';
 
 const STORAGE_KEY = 'mySpellingGameSpellingWords';
 const SENTENCES_STORAGE_KEY = 'mySpellingGameExampleSentences';
@@ -31,6 +31,56 @@ function textarea() {
 
 function sentenceTextarea() {
   return document.getElementById('custom-example-sentences');
+}
+
+function sentenceLibraryNotice(message = productMessage('sentenceLibraryRequired', {}, pageLocale())) {
+  const field = sentenceTextarea()?.closest('.word-entry-field');
+  if (!field) return;
+  field.querySelector('.sentence-library-notice')?.remove();
+  const notice = document.createElement('small');
+  notice.className = 'sentence-library-notice';
+  notice.setAttribute('role', 'status');
+  notice.textContent = message;
+  const link = document.createElement('a');
+  link.href = `${productPagePath('pricing', pageLocale())}#pricing`;
+  link.textContent = productMessage('upgrade', {}, pageLocale());
+  notice.append(' ', link);
+  field.append(notice);
+}
+
+async function autoFillExampleSentences() {
+  const button = document.getElementById('auto-example-sentences-btn');
+  const words = currentWords();
+  if (!button || !words.length) return;
+  button.disabled = true;
+  try {
+    const account = await getAccount();
+    if (!isPlusAccount(account)) {
+      sentenceLibraryNotice();
+      return;
+    }
+    sentenceTextarea()?.closest('.word-entry-field')?.querySelector('.sentence-library-notice')?.remove();
+    const response = await fetch('/api/sentence-library/match', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ words: words.join('\n'), difficulty: 'simple' }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || 'sentence_library_error');
+    const existing = (sentenceTextarea()?.value || '').split(/\r?\n/);
+    sentenceTextarea().value = words
+      .map((word, index) => existing[index]?.trim() || data.matches?.[word.toLowerCase()] || '')
+      .join('\n');
+  } catch (error) {
+    sentenceLibraryNotice(
+      error.message === 'sentence_library_required'
+        ? productMessage('sentenceLibraryRequired', {}, pageLocale())
+        : productMessage('sentenceLibraryError', {}, pageLocale()),
+    );
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function status(text) {
@@ -195,6 +245,7 @@ export function initSpellingMode() {
     void updateLongListAdvice();
   });
   syncModeUI();
+  document.getElementById('auto-example-sentences-btn')?.addEventListener('click', autoFillExampleSentences);
   void getAccount();
   if (readShareState(window.location).autoStart) queueMicrotask(() => window.startGame?.());
 }

@@ -4,14 +4,6 @@ const path = require("path");
 const root = path.resolve(__dirname, "..");
 const baseUrl = "https://myspellinggame.com";
 const ogImage = `${baseUrl}/images/my-spelling-game-og.png`;
-const faqLabels = {
-  en: "FAQ",
-  es: "Preguntas frecuentes",
-  "pt-BR": "Perguntas frequentes",
-  fr: "Questions fréquentes",
-  id: "Pertanyaan umum",
-  zh: "常见问题",
-};
 const footerRights = {
   en: "All rights reserved.",
   es: "Todos los derechos reservados.",
@@ -88,11 +80,11 @@ const alternates = [
 ];
 
 const sharedFooterLinks = [
-  { href: "/sight-word-typing-game", key: "sight" },
-  { href: "/spelling-practice-for-parents", key: "homeschool" },
-  { href: "/custom-spelling-words-game", key: "vocabulary" },
-  { href: "/spelling-assignments-for-teachers", key: "teachers" },
+  { href: "/custom-spelling-words-game", key: "custom" },
   { href: "/weekly-spelling-practice", key: "weekly" },
+  { href: "/sight-word-typing-game", key: "sight" },
+  { href: "/spelling-practice-for-parents", key: "parents" },
+  { href: "/spelling-assignments-for-teachers", key: "teachers" },
 ];
 
 const locale = {
@@ -101,11 +93,11 @@ const locale = {
     dir: "",
     nav: { language: "Language", home: "Home" },
     links: {
-      sight: "Sight Words",
-      homeschool: "Homeschool",
-      vocabulary: "Vocabulary",
-      teachers: "For Teachers",
+      custom: "Custom Words",
       weekly: "Weekly Practice",
+      sight: "Sight Words",
+      parents: "For Parents",
+      teachers: "For Teachers",
       privacy: "Privacy",
       about: "About",
       contact: "Contact",
@@ -208,11 +200,11 @@ const locale = {
     dir: "/es",
     nav: { language: "Idioma", home: "Inicio" },
     links: {
-      sight: "Palabras frecuentes",
-      homeschool: "En casa",
-      vocabulary: "Vocabulario",
-      teachers: "Para docentes",
+      custom: "Palabras personalizadas",
       weekly: "Práctica semanal",
+      sight: "Palabras frecuentes",
+      parents: "Para familias",
+      teachers: "Para docentes",
       privacy: "Privacidad",
       about: "Acerca de",
       contact: "Contacto",
@@ -315,11 +307,11 @@ const locale = {
     dir: "/pt-br",
     nav: { language: "Idioma", home: "Início" },
     links: {
-      sight: "Palavras frequentes",
-      homeschool: "Em casa",
-      vocabulary: "Vocabulário",
-      teachers: "Para professores",
+      custom: "Palavras personalizadas",
       weekly: "Prática semanal",
+      sight: "Palavras frequentes",
+      parents: "Para pais",
+      teachers: "Para professores",
       privacy: "Privacidade",
       about: "Sobre",
       contact: "Contato",
@@ -422,11 +414,11 @@ const locale = {
     dir: "/fr",
     nav: { language: "Langue", home: "Accueil" },
     links: {
-      sight: "Mots fréquents",
-      homeschool: "À la maison",
-      vocabulary: "Vocabulaire",
-      teachers: "Pour les enseignants",
+      custom: "Mots personnalisés",
       weekly: "Pratique hebdomadaire",
+      sight: "Mots fréquents",
+      parents: "Pour les parents",
+      teachers: "Pour les enseignants",
       privacy: "Confidentialité",
       about: "À propos",
       contact: "Contact",
@@ -529,11 +521,11 @@ const locale = {
     dir: "/id",
     nav: { language: "Bahasa", home: "Beranda" },
     links: {
-      sight: "Kata umum",
-      homeschool: "Di rumah",
-      vocabulary: "Kosakata",
-      teachers: "Untuk guru",
+      custom: "Kata kustom",
       weekly: "Latihan mingguan",
+      sight: "Kata umum",
+      parents: "Untuk orang tua",
+      teachers: "Untuk guru",
       privacy: "Privasi",
       about: "Tentang",
       contact: "Kontak",
@@ -636,11 +628,11 @@ const locale = {
     dir: "/zh",
     nav: { language: "语言", home: "首页" },
     links: {
-      sight: "高频词练习",
-      homeschool: "家庭学习",
-      vocabulary: "词汇练习",
+      custom: "自定义单词",
+      weekly: "每周练习",
+      sight: "高频词",
+      parents: "家长练习",
       teachers: "教师作业",
-      weekly: "每周拼写练习",
       privacy: "隐私",
       about: "关于",
       contact: "联系",
@@ -927,7 +919,7 @@ ${links}
 function footer(loc) {
   return `    <footer>
         <p>
-            <span class="footer-links">${sharedFooterLinks.map((item) => `<a href="${localizedSeoHref(loc, item)}">${loc.links[item.key]}</a>`).join(" &middot; ")} &middot; <a href="${pagePath(loc, "faq")}">${faqLabels[loc.htmlLang === "zh-CN" ? "zh" : codeForLocale(loc)]}</a> &middot; <a href="${pagePath(loc, "privacy")}">${loc.links.privacy}</a> &middot; <a href="${pagePath(loc, "about")}">${loc.links.about}</a> &middot; <a href="${pagePath(loc, "contact")}">${loc.links.contact}</a></span><br>
+            <span class="footer-links">${sharedFooterLinks.map((item) => `<a href="${localizedSeoHref(loc, item)}">${loc.links[item.key]}</a>`).join(" &middot; ")}</span><br>
             &copy; 2026 My Spelling Game ${footerRights[codeForLocale(loc)]}
         </p>
     </footer>`;

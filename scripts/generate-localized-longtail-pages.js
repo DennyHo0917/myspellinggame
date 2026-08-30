@@ -87,11 +87,11 @@ const seoSlugs = [
   "weekly-spelling-practice",
 ];
 const footerSlugs = [
+  "custom-spelling-words-game",
+  "weekly-spelling-practice",
   "sight-word-typing-game",
   "spelling-practice-for-parents",
-  "custom-spelling-words-game",
   "spelling-assignments-for-teachers",
-  "weekly-spelling-practice",
 ];
 const newLongtailSlugs = [
   "custom-spelling-words-game",
@@ -200,64 +200,46 @@ const labels = {
 
 const footerLinks = {
   en: {
-    "custom-spelling-words-game": "Vocabulary",
-    "spelling-assignments-for-teachers": "For Teachers",
-    "spelling-practice-for-parents": "Homeschool",
-    "spelling-list-game": "Spelling List Game",
+    "custom-spelling-words-game": "Custom Words",
     "weekly-spelling-practice": "Weekly Practice",
-    "homeschool-spelling-practice": "Homeschool",
     "sight-word-typing-game": "Sight Words",
-    "vocabulary-typing-game": "Vocabulary",
+    "spelling-practice-for-parents": "For Parents",
+    "spelling-assignments-for-teachers": "For Teachers",
   },
   es: {
-    "custom-spelling-words-game": "Vocabulario",
-    "spelling-assignments-for-teachers": "Para docentes",
-    "spelling-practice-for-parents": "En casa",
-    "spelling-list-game": "Lista de spelling",
+    "custom-spelling-words-game": "Palabras personalizadas",
     "weekly-spelling-practice": "Práctica semanal",
-    "homeschool-spelling-practice": "En casa",
     "sight-word-typing-game": "Palabras frecuentes",
-    "vocabulary-typing-game": "Vocabulario",
+    "spelling-practice-for-parents": "Para familias",
+    "spelling-assignments-for-teachers": "Para docentes",
   },
   "pt-BR": {
-    "custom-spelling-words-game": "Vocabulário",
-    "spelling-assignments-for-teachers": "Para professores",
-    "spelling-practice-for-parents": "Em casa",
-    "spelling-list-game": "Lista de soletrar",
+    "custom-spelling-words-game": "Palavras personalizadas",
     "weekly-spelling-practice": "Prática semanal",
-    "homeschool-spelling-practice": "Em casa",
     "sight-word-typing-game": "Palavras frequentes",
-    "vocabulary-typing-game": "Vocabulário",
+    "spelling-practice-for-parents": "Para pais",
+    "spelling-assignments-for-teachers": "Para professores",
   },
   fr: {
-    "custom-spelling-words-game": "Vocabulaire",
-    "spelling-assignments-for-teachers": "Pour les enseignants",
-    "spelling-practice-for-parents": "À la maison",
-    "spelling-list-game": "Liste de mots",
+    "custom-spelling-words-game": "Mots personnalisés",
     "weekly-spelling-practice": "Pratique hebdomadaire",
-    "homeschool-spelling-practice": "À la maison",
     "sight-word-typing-game": "Mots fréquents",
-    "vocabulary-typing-game": "Vocabulaire",
+    "spelling-practice-for-parents": "Pour les parents",
+    "spelling-assignments-for-teachers": "Pour les enseignants",
   },
   id: {
-    "custom-spelling-words-game": "Kosakata",
-    "spelling-assignments-for-teachers": "Untuk guru",
-    "spelling-practice-for-parents": "Di rumah",
-    "spelling-list-game": "Daftar spelling",
+    "custom-spelling-words-game": "Kata kustom",
     "weekly-spelling-practice": "Latihan mingguan",
-    "homeschool-spelling-practice": "Di rumah",
     "sight-word-typing-game": "Kata umum",
-    "vocabulary-typing-game": "Kosakata",
+    "spelling-practice-for-parents": "Untuk orang tua",
+    "spelling-assignments-for-teachers": "Untuk guru",
   },
   zh: {
-    "custom-spelling-words-game": "词汇练习",
+    "custom-spelling-words-game": "自定义单词",
+    "weekly-spelling-practice": "每周练习",
+    "sight-word-typing-game": "高频词",
+    "spelling-practice-for-parents": "家长练习",
     "spelling-assignments-for-teachers": "教师作业",
-    "spelling-practice-for-parents": "家庭学习",
-    "spelling-list-game": "单词表练习",
-    "weekly-spelling-practice": "每周拼写练习",
-    "homeschool-spelling-practice": "家庭学习",
-    "sight-word-typing-game": "高频词练习",
-    "vocabulary-typing-game": "词汇练习",
   },
 };
 const footerRights = {
@@ -1776,7 +1758,8 @@ const weeklyPageCopy = {
     ],
   },
   es: {
-    title: "Práctica semanal de ortografía con tu lista exacta | My Spelling Game",
+    title:
+      "Práctica semanal de ortografía con tu lista exacta | My Spelling Game",
     description:
       "Pega las palabras exactas de ortografía de esta semana y empieza al instante. Repite los fallos sin iniciar sesión.",
     ogDescription:
@@ -1814,7 +1797,8 @@ const weeklyPageCopy = {
     ],
   },
   "pt-BR": {
-    title: "Prática semanal de ortografia com sua lista exata | My Spelling Game",
+    title:
+      "Prática semanal de ortografia com sua lista exata | My Spelling Game",
     description:
       "Cole as palavras exatas de ortografia desta semana e comece na hora. Repita os erros sem fazer login.",
     ogDescription:
@@ -1852,7 +1836,8 @@ const weeklyPageCopy = {
     ],
   },
   fr: {
-    title: "Pratique d’orthographe hebdomadaire avec votre liste exacte | My Spelling Game",
+    title:
+      "Pratique d’orthographe hebdomadaire avec votre liste exacte | My Spelling Game",
     description:
       "Collez les mots d’orthographe exacts de la semaine et commencez tout de suite. Reprenez les mots manqués sans compte.",
     ogDescription:
@@ -1949,18 +1934,9 @@ const weeklyPageCopy = {
       ],
     ],
     faq: [
-      [
-        "可以使用本周完整词表吗？",
-        "可以。粘贴词表后，练习只使用这些单词。",
-      ],
-      [
-        "学生需要登录吗？",
-        "不需要。学生打开分享链接即可开始，无需注册账号。",
-      ],
-      [
-        "能重练漏掉的单词吗？",
-        "可以。漏词会集中整理到下一轮练习中。",
-      ],
+      ["可以使用本周完整词表吗？", "可以。粘贴词表后，练习只使用这些单词。"],
+      ["学生需要登录吗？", "不需要。学生打开分享链接即可开始，无需注册账号。"],
+      ["能重练漏掉的单词吗？", "可以。漏词会集中整理到下一轮练习中。"],
     ],
   },
 };
@@ -3567,7 +3543,7 @@ function footerHtml(langCode) {
   const lang = languages.find((item) => item.code === langCode);
   return `    <footer>
         <p>
-            <span class="footer-links">${footerSlugs.map((slug) => `<a href="${pagePath(lang, slug)}">${footerLinks[langCode][slug]}</a>`).join(" &middot; ")} &middot; <a href="${pagePath(lang, "faq")}">${faqLabels[langCode]}</a> &middot; <a href="${pagePath(lang, "privacy")}">${lang.privacy}</a> &middot; <a href="${pagePath(lang, "about")}">${lang.about}</a> &middot; <a href="${pagePath(lang, "contact")}">${lang.contact}</a></span><br>
+            <span class="footer-links">${footerSlugs.map((slug) => `<a href="${pagePath(lang, slug)}">${footerLinks[langCode][slug]}</a>`).join(" &middot; ")}</span><br>
             &copy; 2026 My Spelling Game ${footerRights[langCode]}
         </p>
     </footer>`;
@@ -3762,7 +3738,11 @@ ${
             <h1>${localizeLegacyTerms(page.h1, langCode)}</h1>
             <p>${localizeLegacyTerms(page.intro, langCode)}</p>
 ${
-  ["custom-spelling-words-game", "sight-word-typing-game", "weekly-spelling-practice"].includes(slug)
+  [
+    "custom-spelling-words-game",
+    "sight-word-typing-game",
+    "weekly-spelling-practice",
+  ].includes(slug)
     ? `            <form class="landing-launcher" action="${dirPath(lang)}" data-mode="${slug === "weekly-spelling-practice" ? "dictation" : "typing"}" data-invalid="${escapeAttr(launcher.invalid)}" data-limit="${escapeAttr(launcher.limit)}">
                 <label for="${slug === "sight-word-typing-game" ? "sight" : slug === "weekly-spelling-practice" ? "weekly" : "custom"}-words-${langCode}">${localizeLegacyTerms(slug === "sight-word-typing-game" ? launcher.sightLabel : slug === "weekly-spelling-practice" ? launcher.weeklyLabel : launcher.label, langCode)}</label>
                 <textarea id="${slug === "sight-word-typing-game" ? "sight" : slug === "weekly-spelling-practice" ? "weekly" : "custom"}-words-${langCode}" name="words" required spellcheck="false" placeholder="${slug === "sight-word-typing-game" ? "the&#10;and&#10;you&#10;said" : "because&#10;friend&#10;beautiful"}"></textarea>

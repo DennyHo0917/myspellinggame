@@ -327,15 +327,11 @@ async function signOut() {
 }
 
 const FOOTER_PAGES = [
+  "custom-spelling-words-game",
+  "weekly-spelling-practice",
   "sight-word-typing-game",
   "spelling-practice-for-parents",
-  "custom-spelling-words-game",
   "spelling-assignments-for-teachers",
-  "weekly-spelling-practice",
-  "faq",
-  "privacy",
-  "about",
-  "contact",
 ];
 
 function footer() {

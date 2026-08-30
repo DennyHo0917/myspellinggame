@@ -523,6 +523,53 @@ a {
   min-width: 0;
 }
 
+.sentence-field-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sentence-field-heading label {
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.auto-sentence-btn {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.auto-sentence-btn:hover {
+  border-color: var(--primary-strong);
+  background: var(--primary-strong);
+  color: #ffffff;
+}
+
+.auto-sentence-btn:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.sentence-library-notice {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.sentence-library-notice a {
+  color: var(--primary);
+  font-weight: 800;
+}
+
 #custom-word-list,
 #custom-example-sentences {
   width: 100%;

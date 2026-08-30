@@ -15,11 +15,11 @@ const alternates = [
 ];
 
 const sharedLinks = [
+  "/custom-spelling-words-game",
+  "/weekly-spelling-practice",
   "/sight-word-typing-game",
   "/spelling-practice-for-parents",
-  "/custom-spelling-words-game",
   "/spelling-assignments-for-teachers",
-  "/weekly-spelling-practice",
 ];
 
 const localizedSeoSlugs = [
@@ -29,14 +29,6 @@ const localizedSeoSlugs = [
   "spelling-assignments-for-teachers",
   "weekly-spelling-practice",
 ];
-const faqLabels = {
-  en: "FAQ",
-  es: "Preguntas frecuentes",
-  "pt-BR": "Perguntas frequentes",
-  fr: "Questions fréquentes",
-  id: "Pertanyaan umum",
-  zh: "常见问题",
-};
 const footerRights = {
   en: "All rights reserved.",
   es: "Todos los derechos reservados.",
@@ -140,6 +132,7 @@ const pages = {
       noLogin: "Sin crear una cuenta",
       wordsLabel: "Tus palabras en inglés",
       sentencesLabel: "Frases de ejemplo (opcional)",
+      autoSentences: "Autocompletar frases",
       sentencesHelp:
         "Una frase por línea, en el mismo orden que las palabras. Deja una línea en blanco si no la necesitas.",
       hear: "Escuchar cada palabra antes de escribir",
@@ -233,11 +226,11 @@ const pages = {
         "Es una herramienta pequeña para una tarea repetida: tomar una lista corta, practicar, ver qué palabras fallan y repetirlas. Gratis, sin cuentas de estudiante y sin depender de una plataforma escolar.",
     },
     footerLinks: [
-      "Palabras frecuentes",
-      "En casa",
-      "Vocabulario",
-      "Para docentes",
+      "Palabras personalizadas",
       "Práctica semanal",
+      "Palabras frecuentes",
+      "Para familias",
+      "Para docentes",
     ],
     legalLinks: ["Privacidad", "Acerca de", "Contacto"],
     schema: {
@@ -304,6 +297,7 @@ const pages = {
       noLogin: "Sem criar uma conta",
       wordsLabel: "Suas palavras em inglês",
       sentencesLabel: "Frases de exemplo (opcional)",
+      autoSentences: "Preencher frases automaticamente",
       sentencesHelp:
         "Uma frase por linha, na mesma ordem das palavras. Deixe uma linha em branco quando não precisar.",
       hear: "Ouvir cada palavra antes de digitar",
@@ -397,11 +391,11 @@ const pages = {
         "É uma ferramenta pequena para uma rotina que se repete: pegar uma lista curta, praticar, descobrir os erros e praticar de novo. Grátis, sem conta de aluno e sem depender de plataforma escolar.",
     },
     footerLinks: [
-      "Palavras frequentes",
-      "Em casa",
-      "Vocabulário",
-      "Para professores",
+      "Palavras personalizadas",
       "Prática semanal",
+      "Palavras frequentes",
+      "Para pais",
+      "Para professores",
     ],
     legalLinks: ["Privacidade", "Sobre", "Contato"],
     schema: {
@@ -468,6 +462,7 @@ const pages = {
       noLogin: "Sans créer de compte",
       wordsLabel: "Vos mots anglais",
       sentencesLabel: "Phrases d’exemple (facultatif)",
+      autoSentences: "Remplir automatiquement",
       sentencesHelp:
         "Une phrase par ligne, dans le même ordre que les mots. Laissez une ligne vide si besoin.",
       hear: "Écouter chaque mot avant de taper",
@@ -561,11 +556,11 @@ const pages = {
         "L’outil reste volontairement simple : prendre une liste courte, faire pratiquer l’enfant, repérer les mots manqués, puis les refaire. Gratuit, sans compte élève et sans dépendre d’une plateforme scolaire.",
     },
     footerLinks: [
-      "Mots fréquents",
-      "À la maison",
-      "Vocabulaire",
-      "Pour les enseignants",
+      "Mots personnalisés",
       "Pratique hebdomadaire",
+      "Mots fréquents",
+      "Pour les parents",
+      "Pour les enseignants",
     ],
     legalLinks: ["Confidentialité", "À propos", "Contact"],
     schema: {
@@ -632,6 +627,7 @@ const pages = {
       noLogin: "Tanpa membuat akun",
       wordsLabel: "Daftar kata bahasa Inggris",
       sentencesLabel: "Kalimat contoh (opsional)",
+      autoSentences: "Isi kalimat otomatis",
       sentencesHelp:
         "Satu kalimat per baris, sesuai urutan kata. Biarkan baris kosong jika tidak perlu.",
       hear: "Dengarkan kata sebelum mengetik",
@@ -725,11 +721,11 @@ const pages = {
         "Alat ini sengaja sederhana: ambil daftar pendek, latihan, lihat kata yang terlewat, lalu ulangi. Gratis, tanpa akun siswa, dan tidak bergantung pada platform sekolah.",
     },
     footerLinks: [
-      "Kata umum",
-      "Di rumah",
-      "Kosakata",
-      "Untuk guru",
+      "Kata kustom",
       "Latihan mingguan",
+      "Kata umum",
+      "Untuk orang tua",
+      "Untuk guru",
     ],
     legalLinks: ["Privasi", "Tentang", "Kontak"],
     schema: {
@@ -788,6 +784,7 @@ const pages = {
       noLogin: "无需创建账号",
       wordsLabel: "你的英语单词",
       sentencesLabel: "例句（可选）",
+      autoSentences: "自动填充例句",
       sentencesHelp:
         "每行填写一个例句，顺序与上面的单词对应。不需要的单词留空行即可。",
       hear: "输入前朗读每个单词",
@@ -878,13 +875,7 @@ const pages = {
       repeatText:
         "这个工具故意做得很小：每周拿到一份单词，练一遍，找到漏掉的词，再练一遍。免费、无需学生账号，也不绑定任何学习平台。",
     },
-    footerLinks: [
-      "高频词练习",
-      "家庭学习",
-      "词汇练习",
-      "教师作业",
-      "每周拼写练习",
-    ],
+    footerLinks: ["自定义单词", "每周练习", "高频词", "家长练习", "教师作业"],
     legalLinks: ["隐私", "关于", "联系"],
     schema: {
       description:
@@ -1245,7 +1236,7 @@ ${game.chips.map((chip) => `                            <span>${chip}</span>`).j
                                     <textarea id="custom-word-list" rows="7" spellcheck="false" placeholder="because&#10;friend&#10;beautiful&#10;answer"></textarea>
                                 </div>
                                 <div class="word-entry-field dictation-option">
-                                    <label for="custom-example-sentences">${game.sentencesLabel}</label>
+                                    <div class="sentence-field-heading"><label for="custom-example-sentences">${game.sentencesLabel}</label><button type="button" class="auto-sentence-btn" id="auto-example-sentences-btn">${game.autoSentences}</button></div>
                                     <textarea id="custom-example-sentences" rows="7" maxlength="30000" spellcheck="true" placeholder="I stayed inside because it was raining.&#10;My friend helped me with my homework."></textarea>
                                     <small class="spelling-help">${game.sentencesHelp}</small>
                                 </div>
@@ -1397,7 +1388,7 @@ ${listItems(info.bullets)}
 
     <footer>
         <p>
-            <span class="footer-links">${sharedLinks.map((href, index) => `<a href="${localizedSharedHref(page, href)}">${page.footerLinks[index]}</a>`).join(" &middot; ")} &middot; <a href="${legalBase}/faq">${faqLabels[page.pageLocale]}</a> &middot; <a href="${legalBase}/privacy">${page.legalLinks[0]}</a> &middot; <a href="${legalBase}/about">${page.legalLinks[1]}</a> &middot; <a href="${legalBase}/contact">${page.legalLinks[2]}</a></span><br>
+            <span class="footer-links">${sharedLinks.map((href, index) => `<a href="${localizedSharedHref(page, href)}">${page.footerLinks[index]}</a>`).join(" &middot; ")}</span><br>
             &copy; 2026 My Spelling Game ${footerRights[page.pageLocale]}
         </p>
     </footer>

@@ -2243,6 +2243,7 @@ export async function handleRequest(
       user: { id: user.id, name: user.name, email: user.email },
       billingInterval: subscription?.billing_interval || null,
       subscriptionStatus: subscription?.status || null,
+      currentPeriodEnd: subscription?.current_period_end || null,
       workspaceType: workspace?.workspace_type ?? null,
       classPublicId,
       ...(await usage(env.DB, user.id, plan)),

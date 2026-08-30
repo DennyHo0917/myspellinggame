@@ -69,11 +69,18 @@
         <a class="teacher-nav-link" href="/teacher?lang=zh">工作台</a>
         <button class="header-home-link" onclick="window.location.href='/zh/'" id="back-home" title="首页">首页</button>
     </header>
-    <main class="seo-landing content-page">
-        <section class="seo-hero">
-            <h1>练习本周英语拼写单词</h1>
-            <p>粘贴本周完整词表，立即开始一轮短练习，无需登录。</p>
-            <form class="landing-launcher" action="/zh/" data-mode="dictation" data-invalid="请至少输入一个英语单词。" data-limit="无需登录的练习每份词表最多 20 个单词。">
+    <main class="seo-landing content-page tool-landing">
+        <section class="tool-hero">
+            <div class="tool-hero-copy">
+                <h1>练习本周英语拼写单词</h1>
+                <p>粘贴本周完整词表，立即开始一轮短练习，无需登录。</p>
+                <ul class="tool-hero-points">
+                    <li>无需登录</li>
+                    <li>使用你自己的词表</li>
+                    <li>可以分享或重复练习</li>
+                </ul>
+            </div>
+            <form class="landing-launcher tool-hero-launcher" action="/zh/" data-mode="dictation" data-invalid="请至少输入一个英语单词。" data-limit="无需登录的练习每份词表最多 20 个单词。">
                 <label for="weekly-words-zh">本周英语拼写单词</label>
                 <textarea id="weekly-words-zh" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">开始本周练习</button>
@@ -81,36 +88,60 @@
             </form>
         </section>
 
+        <section class="tool-why" aria-labelledby="tool-why-zh">
+            <h2 id="tool-why-zh">为什么使用这个练习？</h2>
+            <div class="tool-why-grid">
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">✦</span><h3>使用本周完整词表</h3><p>粘贴老师、教材或家庭计划中的单词。每轮只使用你输入的本周完整词表，不会混入随机词汇。</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">◎</span><h3>无需账号</h3><p>不用创建学生登录信息，打开就能开始一轮练习。</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">↻</span><h3>重练漏掉的单词</h3><p>每轮结束后，漏掉的单词会整理好，方便马上再练。保持练习短小，把时间用在仍然不稳的词上。</p></div>
+            </div>
+        </section>
+
+        <section class="tool-start" aria-labelledby="tool-start-zh">
+            <h2 id="tool-start-zh">3步开始练习</h2>
+            <div class="tool-start-grid">
+                <div class="tool-start-step"><div class="tool-start-number">1</div><h3>输入词表</h3><p>粘贴自己的单词</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">2</div><h3>开始练习</h3><p>使用当前练习模式</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">3</div><h3>分享/重练</h3><p>分享链接或重练错词</p></div>
+            </div>
+        </section>
+
+        <section class="tool-use-cases" aria-labelledby="tool-use-cases-zh">
+            <h2 id="tool-use-cases-zh">适合这些场景</h2>
+            <div class="tool-use-case-grid">
+                <div class="tool-use-case"><h3>每周作业</h3><p>把本周词表变成简短、可以重复的练习。</p></div>
+                <div class="tool-use-case"><h3>拼写测试</h3><p>在课堂测试前先做一轮快速检查。</p></div>
+                <div class="tool-use-case"><h3>家庭练习</h3><p>让孩子无需登录即可独立完成一轮练习。</p></div>
+                <div class="tool-use-case"><h3>ESL/词汇</h3><p>使用课程单词进行有针对性的打字或听写练习。</p></div>
+            </div>
+        </section>
+
         <aside class="ad-slot" aria-label="广告">
             <span>广告</span>
         </aside>
 
-        <section class="seo-panel">
-            <h2>使用本周完整词表</h2>
-            <p>粘贴老师、教材或家庭计划中的单词。每轮只使用你输入的本周完整词表，不会混入随机词汇。</p>
+        <section class="tool-workspace-note" aria-labelledby="tool-workspace-zh">
+            <div>
+                <h2 id="tool-workspace-zh">家长和教师工作台</h2>
+                <p>现在无需登录即可开始；之后可把本周词表保存到家长或教师工作台，分享作业、追踪进度并查看长期掌握度。</p>
+            </div>
+            <a class="tool-workspace-link" href="/teacher?lang=zh">进入家长或教师工作台</a>
         </section>
 
-        <section class="seo-panel">
-            <h2>重练漏掉的单词</h2>
-            <p>每轮结束后，漏掉的单词会整理好，方便马上再练。保持练习短小，把时间用在仍然不稳的词上。</p>
+        <section class="tool-faq" aria-labelledby="tool-faq-zh">
+            <h2 id="tool-faq-zh">常见问题</h2>
+            <div class="faq-list">
+                <details class="faq-item"><summary>可以使用本周完整词表吗？</summary><p>可以。粘贴词表后，练习只使用这些单词。</p></details>
+                <details class="faq-item"><summary>学生需要登录吗？</summary><p>不需要。学生打开分享链接即可开始，无需注册账号。</p></details>
+                <details class="faq-item"><summary>能重练漏掉的单词吗？</summary><p>可以。漏词会集中整理到下一轮练习中。</p></details>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>家长和教师工作台</h2>
-            <p>现在无需登录即可开始；之后可把本周词表保存到家长或教师工作台，分享作业、追踪进度并查看长期掌握度。</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>常见问题</h2>
-            <p><strong>可以使用本周完整词表吗？</strong> 可以。粘贴词表后，练习只使用这些单词。</p>
-            <p><strong>学生需要登录吗？</strong> 不需要。学生打开分享链接即可开始，无需注册账号。</p>
-            <p><strong>能重练漏掉的单词吗？</strong> 可以。漏词会集中整理到下一轮练习中。</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>相关练习页面</h2>
-            <div class="seo-link-grid">
+        <section class="tool-related" aria-labelledby="tool-related-zh">
+            <h2 id="tool-related-zh">继续练习</h2>
+            <div class="tool-related-links">
                 <a href="/zh/custom-spelling-words-game">自定义单词拼写游戏</a>
+                <a href="/zh/weekly-spelling-practice">每周拼写练习</a>
                 <a href="/zh/sight-word-typing-game">Sight Words 打字练习</a>
                 <a href="/zh/spelling-practice-for-parents">家长英语拼写练习</a>
             </div>

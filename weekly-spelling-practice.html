@@ -69,11 +69,18 @@
         <a class="teacher-nav-link" href="/teacher?lang=en">Workspace</a>
         <button class="header-home-link" onclick="window.location.href='/'" id="back-home" title="Home">Home</button>
     </header>
-    <main class="seo-landing content-page">
-        <section class="seo-hero">
-            <h1>Practice This Week's Spelling Words</h1>
-            <p>Paste the exact spelling list for this week and start a short practice round without login.</p>
-            <form class="landing-launcher" action="/" data-mode="dictation" data-invalid="Enter at least one word." data-limit="No-login practice supports up to 20 words per list.">
+    <main class="seo-landing content-page tool-landing">
+        <section class="tool-hero">
+            <div class="tool-hero-copy">
+                <h1>Practice This Week's Spelling Words</h1>
+                <p>Paste the exact spelling list for this week and start a short practice round without login.</p>
+                <ul class="tool-hero-points">
+                    <li>No login needed</li>
+                    <li>Use your own spelling list</li>
+                    <li>Share or retry practice</li>
+                </ul>
+            </div>
+            <form class="landing-launcher tool-hero-launcher" action="/" data-mode="dictation" data-invalid="Enter at least one word." data-limit="No-login practice supports up to 20 words per list.">
                 <label for="weekly-words-en">This week's spelling words</label>
                 <textarea id="weekly-words-en" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">Start This Week's Practice</button>
@@ -81,36 +88,60 @@
             </form>
         </section>
 
+        <section class="tool-why" aria-labelledby="tool-why-en">
+            <h2 id="tool-why-en">Why use this practice?</h2>
+            <div class="tool-why-grid">
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">✦</span><h3>Use This Week's Exact Spelling List</h3><p>Paste the words from the teacher, workbook, or family plan. The round uses the exact weekly list you enter, not a random word bank.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">◎</span><h3>No account needed</h3><p>Start a round right away without creating a student login.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">↻</span><h3>Missed-Word Retry</h3><p>After each round, missed words are ready to replay. Keep the weekly practice short and spend the next attempt on the words that still need work.</p></div>
+            </div>
+        </section>
+
+        <section class="tool-start" aria-labelledby="tool-start-en">
+            <h2 id="tool-start-en">3 steps to start practicing</h2>
+            <div class="tool-start-grid">
+                <div class="tool-start-step"><div class="tool-start-number">1</div><h3>Enter your word list</h3><p>Paste your own words</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">2</div><h3>Start practicing</h3><p>Use the current practice mode</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">3</div><h3>Share or retry</h3><p>Share the link or retry missed words</p></div>
+            </div>
+        </section>
+
+        <section class="tool-use-cases" aria-labelledby="tool-use-cases-en">
+            <h2 id="tool-use-cases-en">Great for these situations</h2>
+            <div class="tool-use-case-grid">
+                <div class="tool-use-case"><h3>Weekly homework</h3><p>Turn this week’s list into a short, repeatable practice.</p></div>
+                <div class="tool-use-case"><h3>Spelling tests</h3><p>Run a quick check before the classroom test.</p></div>
+                <div class="tool-use-case"><h3>Practice at home</h3><p>Give children an independent round with no login.</p></div>
+                <div class="tool-use-case"><h3>ESL and vocabulary</h3><p>Use lesson words for focused typing or listening practice.</p></div>
+            </div>
+        </section>
+
         <aside class="ad-slot" aria-label="Advertisement">
             <span>Advertisement</span>
         </aside>
 
-        <section class="seo-panel">
-            <h2>Use This Week's Exact Spelling List</h2>
-            <p>Paste the words from the teacher, workbook, or family plan. The round uses the exact weekly list you enter, not a random word bank.</p>
+        <section class="tool-workspace-note" aria-labelledby="tool-workspace-en">
+            <div>
+                <h2 id="tool-workspace-en">Parent and Teacher Workspace</h2>
+                <p>Use the no-login practice now, then save the weekly list in Parent or Teacher Workspace to share assignments, track progress, and see mastery over time.</p>
+            </div>
+            <a class="tool-workspace-link" href="/teacher?lang=en">Open Parent or Teacher Workspace</a>
         </section>
 
-        <section class="seo-panel">
-            <h2>Missed-Word Retry</h2>
-            <p>After each round, missed words are ready to replay. Keep the weekly practice short and spend the next attempt on the words that still need work.</p>
+        <section class="tool-faq" aria-labelledby="tool-faq-en">
+            <h2 id="tool-faq-en">Quick FAQ</h2>
+            <div class="faq-list">
+                <details class="faq-item"><summary>Can I use the exact list for this week?</summary><p>Yes. Paste this week's spelling list and the practice uses those exact words.</p></details>
+                <details class="faq-item"><summary>Do students need a login?</summary><p>No. Students can start from the shared link without an account.</p></details>
+                <details class="faq-item"><summary>Can I retry missed words?</summary><p>Yes. Missed words are collected for a focused retry round.</p></details>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>Parent and Teacher Workspace</h2>
-            <p>Use the no-login practice now, then save the weekly list in Parent or Teacher Workspace to share assignments, track progress, and see mastery over time.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Quick FAQ</h2>
-            <p><strong>Can I use the exact list for this week?</strong> Yes. Paste this week's spelling list and the practice uses those exact words.</p>
-            <p><strong>Do students need a login?</strong> No. Students can start from the shared link without an account.</p>
-            <p><strong>Can I retry missed words?</strong> Yes. Missed words are collected for a focused retry round.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Related Practice Pages</h2>
-            <div class="seo-link-grid">
+        <section class="tool-related" aria-labelledby="tool-related-en">
+            <h2 id="tool-related-en">Keep practicing</h2>
+            <div class="tool-related-links">
                 <a href="/custom-spelling-words-game">Custom Spelling Words Game</a>
+                <a href="/weekly-spelling-practice">Weekly Spelling Practice</a>
                 <a href="/sight-word-typing-game">Sight Word Typing Game</a>
                 <a href="/spelling-practice-for-parents">Spelling Practice for Parents</a>
             </div>

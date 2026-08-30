@@ -69,11 +69,18 @@
         <a class="teacher-nav-link" href="/teacher?lang=en">Workspace</a>
         <button class="header-home-link" onclick="window.location.href='/'" id="back-home" title="Home">Home</button>
     </header>
-    <main class="seo-landing content-page">
-        <section class="seo-hero">
-            <h1>Sight Word Typing Game With Your Own List</h1>
-            <p>Paste the exact sight words your student is learning and turn them into a short typing round for class, home, or early-grade practice.</p>
-            <form class="landing-launcher" action="/" data-mode="typing" data-invalid="Enter at least one word." data-limit="No-login practice supports up to 20 words per list.">
+    <main class="seo-landing content-page tool-landing">
+        <section class="tool-hero">
+            <div class="tool-hero-copy">
+                <h1>Sight Word Typing Game With Your Own List</h1>
+                <p>Paste the exact sight words your student is learning and turn them into a short typing round for class, home, or early-grade practice.</p>
+                <ul class="tool-hero-points">
+                    <li>No login needed</li>
+                    <li>Use your own spelling list</li>
+                    <li>Share or retry practice</li>
+                </ul>
+            </div>
+            <form class="landing-launcher tool-hero-launcher" action="/" data-mode="typing" data-invalid="Enter at least one word." data-limit="No-login practice supports up to 20 words per list.">
                 <label for="sight-words-en">Sight words</label>
                 <textarea id="sight-words-en" name="words" required spellcheck="false" placeholder="the&#10;and&#10;you&#10;said"></textarea>
                 <button type="submit">Start Typing Game</button>
@@ -81,38 +88,63 @@
             </form>
         </section>
 
+        <section class="tool-why" aria-labelledby="tool-why-en">
+            <h2 id="tool-why-en">Why use this practice?</h2>
+            <div class="tool-why-grid">
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">✦</span><h3>Custom word lists</h3><p>Practice the exact words from homework, class, or your own plan.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">◎</span><h3>No account needed</h3><p>Start a round right away without creating a student login.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">↻</span><h3>Retry missed words</h3><p>Spend the next short round on the words that still need work.</p></div>
+            </div>
+        </section>
+
+        <section class="tool-start" aria-labelledby="tool-start-en">
+            <h2 id="tool-start-en">3 steps to start practicing</h2>
+            <div class="tool-start-grid">
+                <div class="tool-start-step"><div class="tool-start-number">1</div><h3>Enter your word list</h3><p>Paste your own words</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">2</div><h3>Start practicing</h3><p>Use the current practice mode</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">3</div><h3>Share or retry</h3><p>Share the link or retry missed words</p></div>
+            </div>
+        </section>
+
+        <section class="tool-use-cases" aria-labelledby="tool-use-cases-en">
+            <h2 id="tool-use-cases-en">Great for these situations</h2>
+            <div class="tool-use-case-grid">
+                <div class="tool-use-case"><h3>Weekly homework</h3><p>Turn this week’s list into a short, repeatable practice.</p></div>
+                <div class="tool-use-case"><h3>Spelling tests</h3><p>Run a quick check before the classroom test.</p></div>
+                <div class="tool-use-case"><h3>Practice at home</h3><p>Give children an independent round with no login.</p></div>
+                <div class="tool-use-case"><h3>ESL and vocabulary</h3><p>Use lesson words for focused typing or listening practice.</p></div>
+            </div>
+        </section>
+
         <aside class="ad-slot" aria-label="Advertisement">
             <span>Advertisement</span>
         </aside>
 
-        <section class="seo-panel">
-            <h2>When Sight Word Typing Helps</h2>
-            <p>Sight words need fast recognition, but typing also asks the student to look closely at every letter. This page works well after a child has already seen the words in reading practice and needs a light way to repeat them. Keep the list small so the child can finish with confidence.</p>
+        <section class="tool-advice" aria-labelledby="tool-advice-en">
+            <h2 id="tool-advice-en">Sight word practice tips</h2>
+            <div class="tool-advice-grid">
+                <article class="tool-advice-item"><h3>When Sight Word Typing Helps</h3><p>Sight words need fast recognition, but typing also asks the student to look closely at every letter. This page works well after a child has already seen the words in reading practice and needs a light way to repeat them. Keep the list small so the child can finish with confidence.</p></article>
+                <article class="tool-advice-item"><h3>A Five-Minute Practice Flow</h3><p>Start with five to ten words from the current reader, homework sheet, or classroom list. Let the student play one round, then look at the missed words together. Read each missed word aloud, use it in a sentence, and replay only those words. That small loop is usually more useful than adding a bigger list.</p></article>
+                <article class="tool-advice-item"><h3>Good Lists To Try</h3><p>Use teacher-provided sight words, early reader words, Dolch-style words, Fry-style words, color words, number words, or short high-frequency phrases broken into single words. Avoid mixing too many new words at once. Familiar words should become quick wins, while missed words show what still needs practice.</p></article>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>A Five-Minute Practice Flow</h2>
-            <p>Start with five to ten words from the current reader, homework sheet, or classroom list. Let the student play one round, then look at the missed words together. Read each missed word aloud, use it in a sentence, and replay only those words. That small loop is usually more useful than adding a bigger list.</p>
+        <section class="tool-faq" aria-labelledby="tool-faq-en">
+            <h2 id="tool-faq-en">Quick FAQ</h2>
+            <div class="faq-list">
+                <details class="faq-item"><summary>How many sight words should I put in one round?</summary><p>Five to ten words is a good starting point for early readers. Add more only when the student finishes comfortably.</p></details>
+                <details class="faq-item"><summary>Is this a replacement for reading practice?</summary><p>No. Use it as a quick typing and recognition activity alongside real reading, read-aloud time, and word work.</p></details>
+                <details class="faq-item"><summary>Can I use teacher sight words from school?</summary><p>Yes. Paste the exact words from the teacher so practice matches the current classroom list.</p></details>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>Good Lists To Try</h2>
-            <p>Use teacher-provided sight words, early reader words, Dolch-style words, Fry-style words, color words, number words, or short high-frequency phrases broken into single words. Avoid mixing too many new words at once. Familiar words should become quick wins, while missed words show what still needs practice.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Quick FAQ</h2>
-            <p><strong>How many sight words should I put in one round?</strong> Five to ten words is a good starting point for early readers. Add more only when the student finishes comfortably.</p>
-            <p><strong>Is this a replacement for reading practice?</strong> No. Use it as a quick typing and recognition activity alongside real reading, read-aloud time, and word work.</p>
-            <p><strong>Can I use teacher sight words from school?</strong> Yes. Paste the exact words from the teacher so practice matches the current classroom list.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Related Practice Pages</h2>
-            <div class="seo-link-grid">
+        <section class="tool-related" aria-labelledby="tool-related-en">
+            <h2 id="tool-related-en">Keep practicing</h2>
+            <div class="tool-related-links">
                 <a href="/custom-spelling-words-game">Custom Spelling Words Game</a>
-                <a href="/spelling-practice-for-parents">Spelling Practice for Parents</a>
                 <a href="/weekly-spelling-practice">Weekly Spelling Practice</a>
+                <a href="/sight-word-typing-game">Sight Word Typing Game</a>
+                <a href="/spelling-practice-for-parents">Spelling Practice for Parents</a>
             </div>
         </section>
     </main>

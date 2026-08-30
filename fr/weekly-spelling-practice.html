@@ -69,11 +69,18 @@
         <a class="teacher-nav-link" href="/teacher?lang=fr">Espace de travail</a>
         <button class="header-home-link" onclick="window.location.href='/fr/'" id="back-home" title="Accueil">Accueil</button>
     </header>
-    <main class="seo-landing content-page">
-        <section class="seo-hero">
-            <h1>Pratiquez les mots d’orthographe de cette semaine</h1>
-            <p>Collez la liste exacte de la semaine et lancez une courte séance sans connexion.</p>
-            <form class="landing-launcher" action="/fr/" data-mode="dictation" data-invalid="Saisissez au moins un mot." data-limit="L’entraînement sans compte accepte jusqu’à 20 mots par liste.">
+    <main class="seo-landing content-page tool-landing">
+        <section class="tool-hero">
+            <div class="tool-hero-copy">
+                <h1>Pratiquez les mots d’orthographe de cette semaine</h1>
+                <p>Collez la liste exacte de la semaine et lancez une courte séance sans connexion.</p>
+                <ul class="tool-hero-points">
+                    <li>Sans connexion</li>
+                    <li>Utilisez votre propre liste de mots</li>
+                    <li>Partagez ou recommencez l’exercice</li>
+                </ul>
+            </div>
+            <form class="landing-launcher tool-hero-launcher" action="/fr/" data-mode="dictation" data-invalid="Saisissez au moins un mot." data-limit="L’entraînement sans compte accepte jusqu’à 20 mots par liste.">
                 <label for="weekly-words-fr">Mots d’orthographe de cette semaine</label>
                 <textarea id="weekly-words-fr" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">Commencer la pratique de la semaine</button>
@@ -81,36 +88,60 @@
             </form>
         </section>
 
+        <section class="tool-why" aria-labelledby="tool-why-fr">
+            <h2 id="tool-why-fr">Pourquoi utiliser cet exercice ?</h2>
+            <div class="tool-why-grid">
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">✦</span><h3>Utilisez la liste exacte de la semaine</h3><p>Collez les mots du professeur, du cahier ou du programme familial. La partie utilise exactement votre liste hebdomadaire, pas une banque aléatoire.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">◎</span><h3>Sans compte</h3><p>Lancez une séance immédiatement, sans créer de compte élève.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">↻</span><h3>Reprenez les mots manqués</h3><p>À la fin de chaque partie, les mots manqués sont prêts à être rejoués. Gardez une séance courte et concentrez-vous sur les mots encore difficiles.</p></div>
+            </div>
+        </section>
+
+        <section class="tool-start" aria-labelledby="tool-start-fr">
+            <h2 id="tool-start-fr">3 étapes pour commencer</h2>
+            <div class="tool-start-grid">
+                <div class="tool-start-step"><div class="tool-start-number">1</div><h3>Saisissez votre liste</h3><p>Collez vos propres mots</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">2</div><h3>Commencez l’exercice</h3><p>Utilisez le mode actuel</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">3</div><h3>Partagez ou recommencez</h3><p>Partagez le lien ou revoyez les erreurs</p></div>
+            </div>
+        </section>
+
+        <section class="tool-use-cases" aria-labelledby="tool-use-cases-fr">
+            <h2 id="tool-use-cases-fr">Utile dans ces situations</h2>
+            <div class="tool-use-case-grid">
+                <div class="tool-use-case"><h3>Devoirs de la semaine</h3><p>Transformez la liste de la semaine en exercice court et répétable.</p></div>
+                <div class="tool-use-case"><h3>Tests d’orthographe</h3><p>Faites une vérification rapide avant le contrôle en classe.</p></div>
+                <div class="tool-use-case"><h3>Exercices à la maison</h3><p>Laissez l’enfant faire une séance autonome, sans connexion.</p></div>
+                <div class="tool-use-case"><h3>ESL et vocabulaire</h3><p>Utilisez les mots de la leçon pour une pratique ciblée de frappe ou de dictée.</p></div>
+            </div>
+        </section>
+
         <aside class="ad-slot" aria-label="Publicité">
             <span>Publicité</span>
         </aside>
 
-        <section class="seo-panel">
-            <h2>Utilisez la liste exacte de la semaine</h2>
-            <p>Collez les mots du professeur, du cahier ou du programme familial. La partie utilise exactement votre liste hebdomadaire, pas une banque aléatoire.</p>
+        <section class="tool-workspace-note" aria-labelledby="tool-workspace-fr">
+            <div>
+                <h2 id="tool-workspace-fr">Espace de travail pour parents et enseignants</h2>
+                <p>Commencez sans compte, puis enregistrez la liste dans l’espace de travail pour partager des devoirs, suivre les progrès et voir la maîtrise au fil du temps.</p>
+            </div>
+            <a class="tool-workspace-link" href="/teacher?lang=fr">Ouvrir l’espace parents ou enseignants</a>
         </section>
 
-        <section class="seo-panel">
-            <h2>Reprenez les mots manqués</h2>
-            <p>À la fin de chaque partie, les mots manqués sont prêts à être rejoués. Gardez une séance courte et concentrez-vous sur les mots encore difficiles.</p>
+        <section class="tool-faq" aria-labelledby="tool-faq-fr">
+            <h2 id="tool-faq-fr">Questions rapides</h2>
+            <div class="faq-list">
+                <details class="faq-item"><summary>Puis-je utiliser la liste exacte de cette semaine ?</summary><p>Oui. Collez la liste et la pratique utilise ces mêmes mots.</p></details>
+                <details class="faq-item"><summary>Les élèves doivent-ils se connecter ?</summary><p>Non. Le lien partagé s’ouvre sans créer de compte.</p></details>
+                <details class="faq-item"><summary>Peut-on reprendre les mots manqués ?</summary><p>Oui. Ils sont regroupés pour une courte reprise ciblée.</p></details>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>Espace de travail pour parents et enseignants</h2>
-            <p>Commencez sans compte, puis enregistrez la liste dans l’espace de travail pour partager des devoirs, suivre les progrès et voir la maîtrise au fil du temps.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Questions rapides</h2>
-            <p><strong>Puis-je utiliser la liste exacte de cette semaine ?</strong> Oui. Collez la liste et la pratique utilise ces mêmes mots.</p>
-            <p><strong>Les élèves doivent-ils se connecter ?</strong> Non. Le lien partagé s’ouvre sans créer de compte.</p>
-            <p><strong>Peut-on reprendre les mots manqués ?</strong> Oui. Ils sont regroupés pour une courte reprise ciblée.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Pages de pratique liées</h2>
-            <div class="seo-link-grid">
+        <section class="tool-related" aria-labelledby="tool-related-fr">
+            <h2 id="tool-related-fr">Continuez à pratiquer</h2>
+            <div class="tool-related-links">
                 <a href="/fr/custom-spelling-words-game">Jeu avec vos mots</a>
+                <a href="/fr/weekly-spelling-practice">Pratique hebdomadaire</a>
                 <a href="/fr/sight-word-typing-game">Pratique des sight words</a>
                 <a href="/fr/spelling-practice-for-parents">Exercices pour les parents</a>
             </div>

@@ -69,11 +69,18 @@
         <a class="teacher-nav-link" href="/teacher?lang=zh">工作台</a>
         <button class="header-home-link" onclick="window.location.href='/zh/'" id="back-home" title="首页">首页</button>
     </header>
-    <main class="seo-landing content-page">
-        <section class="seo-hero">
-            <h1>输入自己的英语单词，立即开始</h1>
-            <p>在下方粘贴自定义英语拼写词表，无需登录，单词雨只使用你输入的单词。</p>
-            <form class="landing-launcher" action="/zh/" data-mode="typing" data-invalid="请至少输入一个英语单词。" data-limit="无需登录的练习每份词表最多 20 个单词。">
+    <main class="seo-landing content-page tool-landing">
+        <section class="tool-hero">
+            <div class="tool-hero-copy">
+                <h1>输入自己的英语单词，立即开始</h1>
+                <p>在下方粘贴自定义英语拼写词表，无需登录，单词雨只使用你输入的单词。</p>
+                <ul class="tool-hero-points">
+                    <li>无需登录</li>
+                    <li>使用你自己的词表</li>
+                    <li>可以分享或重复练习</li>
+                </ul>
+            </div>
+            <form class="landing-launcher tool-hero-launcher" action="/zh/" data-mode="typing" data-invalid="请至少输入一个英语单词。" data-limit="无需登录的练习每份词表最多 20 个单词。">
                 <label for="custom-words-zh">你自己的英语拼写单词</label>
                 <textarea id="custom-words-zh" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">立即开始游戏</button>
@@ -81,33 +88,56 @@
             </form>
         </section>
 
+        <section class="tool-why" aria-labelledby="tool-why-zh">
+            <h2 id="tool-why-zh">为什么使用这个练习？</h2>
+            <div class="tool-why-grid">
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">✦</span><h3>用自己的单词，不用随机词库</h3><p>作业单词、老师词表、英语词汇或任意自定义单词都可以。每一轮只使用你输入的这份词表。</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">◎</span><h3>无需登录的自定义拼写练习</h3><p>输入单词后立即开始，漏掉的词可以单独重练。分享同一个练习链接也不需要学生注册账号。</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">↻</span><h3>错词重练</h3><p>下一轮短练习只关注仍然需要掌握的单词。</p></div>
+            </div>
+        </section>
+
+        <section class="tool-start" aria-labelledby="tool-start-zh">
+            <h2 id="tool-start-zh">3步开始练习</h2>
+            <div class="tool-start-grid">
+                <div class="tool-start-step"><div class="tool-start-number">1</div><h3>输入词表</h3><p>粘贴自己的单词</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">2</div><h3>开始练习</h3><p>使用当前练习模式</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">3</div><h3>分享/重练</h3><p>分享链接或重练错词</p></div>
+            </div>
+        </section>
+
+        <section class="tool-use-cases" aria-labelledby="tool-use-cases-zh">
+            <h2 id="tool-use-cases-zh">适合这些场景</h2>
+            <div class="tool-use-case-grid">
+                <div class="tool-use-case"><h3>每周作业</h3><p>把本周词表变成简短、可以重复的练习。</p></div>
+                <div class="tool-use-case"><h3>拼写测试</h3><p>在课堂测试前先做一轮快速检查。</p></div>
+                <div class="tool-use-case"><h3>家庭练习</h3><p>让孩子无需登录即可独立完成一轮练习。</p></div>
+                <div class="tool-use-case"><h3>ESL/词汇</h3><p>使用课程单词进行有针对性的打字或听写练习。</p></div>
+            </div>
+        </section>
+
         <aside class="ad-slot" aria-label="广告">
             <span>广告</span>
         </aside>
 
-        <section class="seo-panel">
-            <h2>用自己的单词，不用随机词库</h2>
-            <p>作业单词、老师词表、英语词汇或任意自定义单词都可以。每一轮只使用你输入的这份词表。</p>
+
+
+        <section class="tool-faq" aria-labelledby="tool-faq-zh">
+            <h2 id="tool-faq-zh">常见问题</h2>
+            <div class="faq-list">
+                <details class="faq-item"><summary>可以用自己的英语单词吗？</summary><p>可以。粘贴单词表后，游戏只使用这份单词。</p></details>
+                <details class="faq-item"><summary>能当作测验前练习吗？</summary><p>可以。短轮次适合在测验前快速检查。</p></details>
+                <details class="faq-item"><summary>学生需要登录吗？</summary><p>不需要。打开练习链接即可。</p></details>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>无需登录的自定义拼写练习</h2>
-            <p>输入单词后立即开始，漏掉的词可以单独重练。分享同一个练习链接也不需要学生注册账号。</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>常见问题</h2>
-            <p><strong>可以用自己的英语单词吗？</strong> 可以。粘贴单词表后，游戏只使用这份单词。</p>
-            <p><strong>能当作测验前练习吗？</strong> 可以。短轮次适合在测验前快速检查。</p>
-            <p><strong>学生需要登录吗？</strong> 不需要。打开练习链接即可。</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>相关练习页面</h2>
-            <div class="seo-link-grid">
+        <section class="tool-related" aria-labelledby="tool-related-zh">
+            <h2 id="tool-related-zh">继续练习</h2>
+            <div class="tool-related-links">
+                <a href="/zh/custom-spelling-words-game">自定义单词拼写游戏</a>
+                <a href="/zh/weekly-spelling-practice">每周拼写练习</a>
                 <a href="/zh/sight-word-typing-game">Sight Words 打字练习</a>
                 <a href="/zh/spelling-practice-for-parents">家长英语拼写练习</a>
-                <a href="/zh/weekly-spelling-practice">每周拼写练习</a>
             </div>
         </section>
     </main>

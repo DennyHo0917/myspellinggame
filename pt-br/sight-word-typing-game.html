@@ -69,11 +69,18 @@
         <a class="teacher-nav-link" href="/teacher?lang=pt-BR">Espaço de trabalho</a>
         <button class="header-home-link" onclick="window.location.href='/pt-br/'" id="back-home" title="Início">Início</button>
     </header>
-    <main class="seo-landing content-page">
-        <section class="seo-hero">
-            <h1>Jogo para praticar palavras frequentes</h1>
-            <p>Cole as palavras frequentes que a criança está aprendendo agora e transforme a lista em uma rodada curta de digitação.</p>
-            <form class="landing-launcher" action="/pt-br/" data-mode="typing" data-invalid="Digite pelo menos uma palavra." data-limit="A prática sem conta aceita até 20 palavras por lista.">
+    <main class="seo-landing content-page tool-landing">
+        <section class="tool-hero">
+            <div class="tool-hero-copy">
+                <h1>Jogo para praticar palavras frequentes</h1>
+                <p>Cole as palavras frequentes que a criança está aprendendo agora e transforme a lista em uma rodada curta de digitação.</p>
+                <ul class="tool-hero-points">
+                    <li>Sem conta</li>
+                    <li>Use sua própria lista de palavras</li>
+                    <li>Compartilhe ou repita a prática</li>
+                </ul>
+            </div>
+            <form class="landing-launcher tool-hero-launcher" action="/pt-br/" data-mode="typing" data-invalid="Digite pelo menos uma palavra." data-limit="A prática sem conta aceita até 20 palavras por lista.">
                 <label for="sight-words-pt-BR">Palavras frequentes (sight words)</label>
                 <textarea id="sight-words-pt-BR" name="words" required spellcheck="false" placeholder="the&#10;and&#10;you&#10;said"></textarea>
                 <button type="submit">Começar o jogo de digitação</button>
@@ -81,38 +88,63 @@
             </form>
         </section>
 
+        <section class="tool-why" aria-labelledby="tool-why-pt-BR">
+            <h2 id="tool-why-pt-BR">Por que usar esta prática?</h2>
+            <div class="tool-why-grid">
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">✦</span><h3>Listas personalizadas</h3><p>Pratique exatamente as palavras da tarefa, da turma ou do seu plano.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">◎</span><h3>Sem conta</h3><p>Comece uma rodada na hora, sem criar conta para o aluno.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">↻</span><h3>Repita os erros</h3><p>Use a próxima rodada curta nas palavras que ainda precisam de prática.</p></div>
+            </div>
+        </section>
+
+        <section class="tool-start" aria-labelledby="tool-start-pt-BR">
+            <h2 id="tool-start-pt-BR">3 passos para começar</h2>
+            <div class="tool-start-grid">
+                <div class="tool-start-step"><div class="tool-start-number">1</div><h3>Digite sua lista</h3><p>Cole suas próprias palavras</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">2</div><h3>Comece a praticar</h3><p>Use o modo de prática atual</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">3</div><h3>Compartilhe ou repita</h3><p>Compartilhe o link ou repita os erros</p></div>
+            </div>
+        </section>
+
+        <section class="tool-use-cases" aria-labelledby="tool-use-cases-pt-BR">
+            <h2 id="tool-use-cases-pt-BR">Perfeito para estas situações</h2>
+            <div class="tool-use-case-grid">
+                <div class="tool-use-case"><h3>Tarefa semanal</h3><p>Transforme a lista da semana em uma prática curta e repetível.</p></div>
+                <div class="tool-use-case"><h3>Testes de ortografia</h3><p>Faça uma verificação rápida antes do teste da turma.</p></div>
+                <div class="tool-use-case"><h3>Prática em casa</h3><p>Ofereça uma rodada independente para a criança, sem login.</p></div>
+                <div class="tool-use-case"><h3>ESL e vocabulário</h3><p>Use as palavras da aula em uma prática focada de digitação ou ditado.</p></div>
+            </div>
+        </section>
+
         <aside class="ad-slot" aria-label="Anúncio">
             <span>Anúncio</span>
         </aside>
 
-        <section class="seo-panel">
-            <h2>Quando essa prática ajuda</h2>
-            <p>Palavras frequentes precisam ser reconhecidas rápido, mas digitar também faz a criança olhar cada letra. Use depois que a palavra já apareceu na leitura. Uma lista pequena e repetida costuma ser melhor que uma lista grande com muitas novidades.</p>
+        <section class="tool-advice" aria-labelledby="tool-advice-pt-BR">
+            <h2 id="tool-advice-pt-BR">Dicas para praticar palavras frequentes</h2>
+            <div class="tool-advice-grid">
+                <article class="tool-advice-item"><h3>Quando essa prática ajuda</h3><p>Palavras frequentes precisam ser reconhecidas rápido, mas digitar também faz a criança olhar cada letra. Use depois que a palavra já apareceu na leitura. Uma lista pequena e repetida costuma ser melhor que uma lista grande com muitas novidades.</p></article>
+                <article class="tool-advice-item"><h3>Fluxo de cinco minutos</h3><p>Comece com cinco a dez palavras do livro, tarefa ou lista do professor. Jogue uma rodada, veja as palavras erradas e leia cada uma em voz alta. Depois use as palavras em frases simples e jogue outra rodada só com os erros.</p></article>
+                <article class="tool-advice-item"><h3>Boas listas para testar</h3><p>Use listas do professor, palavras estilo Dolch ou Fry, cores, números ou palavras comuns de leitores iniciantes. Evite misturar muitas palavras novas de uma vez. Palavras familiares dão confiança e os erros mostram o que precisa voltar.</p></article>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>Fluxo de cinco minutos</h2>
-            <p>Comece com cinco a dez palavras do livro, tarefa ou lista do professor. Jogue uma rodada, veja as palavras erradas e leia cada uma em voz alta. Depois use as palavras em frases simples e jogue outra rodada só com os erros.</p>
+        <section class="tool-faq" aria-labelledby="tool-faq-pt-BR">
+            <h2 id="tool-faq-pt-BR">Perguntas rápidas</h2>
+            <div class="faq-list">
+                <details class="faq-item"><summary>Quantas palavras frequentes devo colocar?</summary><p>Cinco a dez palavras é um bom começo para leitores iniciantes.</p></details>
+                <details class="faq-item"><summary>Isso substitui a leitura?</summary><p>Não. Use como apoio junto com leitura real, leitura em voz alta e trabalho com palavras.</p></details>
+                <details class="faq-item"><summary>Posso usar a lista da escola?</summary><p>Sim. Cole exatamente as palavras do professor para manter a prática alinhada.</p></details>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>Boas listas para testar</h2>
-            <p>Use listas do professor, palavras estilo Dolch ou Fry, cores, números ou palavras comuns de leitores iniciantes. Evite misturar muitas palavras novas de uma vez. Palavras familiares dão confiança e os erros mostram o que precisa voltar.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Perguntas rápidas</h2>
-            <p><strong>Quantas palavras frequentes devo colocar?</strong> Cinco a dez palavras é um bom começo para leitores iniciantes.</p>
-            <p><strong>Isso substitui a leitura?</strong> Não. Use como apoio junto com leitura real, leitura em voz alta e trabalho com palavras.</p>
-            <p><strong>Posso usar a lista da escola?</strong> Sim. Cole exatamente as palavras do professor para manter a prática alinhada.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Páginas de prática relacionadas</h2>
-            <div class="seo-link-grid">
+        <section class="tool-related" aria-labelledby="tool-related-pt-BR">
+            <h2 id="tool-related-pt-BR">Continue praticando</h2>
+            <div class="tool-related-links">
                 <a href="/pt-br/custom-spelling-words-game">Jogo com suas palavras</a>
-                <a href="/pt-br/spelling-practice-for-parents">Prática para pais</a>
                 <a href="/pt-br/weekly-spelling-practice">Prática semanal</a>
+                <a href="/pt-br/sight-word-typing-game">Prática de sight words</a>
+                <a href="/pt-br/spelling-practice-for-parents">Prática para pais</a>
             </div>
         </section>
     </main>

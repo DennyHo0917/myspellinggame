@@ -69,11 +69,18 @@
         <a class="teacher-nav-link" href="/teacher?lang=fr">Espace de travail</a>
         <button class="header-home-link" onclick="window.location.href='/fr/'" id="back-home" title="Accueil">Accueil</button>
     </header>
-    <main class="seo-landing content-page">
-        <section class="seo-hero">
-            <h1>Jeu pour pratiquer les mots fréquents</h1>
-            <p>Collez les mots fréquents que l’enfant apprend en ce moment et transformez-les en courte partie de frappe.</p>
-            <form class="landing-launcher" action="/fr/" data-mode="typing" data-invalid="Saisissez au moins un mot." data-limit="L’entraînement sans compte accepte jusqu’à 20 mots par liste.">
+    <main class="seo-landing content-page tool-landing">
+        <section class="tool-hero">
+            <div class="tool-hero-copy">
+                <h1>Jeu pour pratiquer les mots fréquents</h1>
+                <p>Collez les mots fréquents que l’enfant apprend en ce moment et transformez-les en courte partie de frappe.</p>
+                <ul class="tool-hero-points">
+                    <li>Sans connexion</li>
+                    <li>Utilisez votre propre liste de mots</li>
+                    <li>Partagez ou recommencez l’exercice</li>
+                </ul>
+            </div>
+            <form class="landing-launcher tool-hero-launcher" action="/fr/" data-mode="typing" data-invalid="Saisissez au moins un mot." data-limit="L’entraînement sans compte accepte jusqu’à 20 mots par liste.">
                 <label for="sight-words-fr">Mots fréquents (sight words)</label>
                 <textarea id="sight-words-fr" name="words" required spellcheck="false" placeholder="the&#10;and&#10;you&#10;said"></textarea>
                 <button type="submit">Lancer le jeu de frappe</button>
@@ -81,38 +88,63 @@
             </form>
         </section>
 
+        <section class="tool-why" aria-labelledby="tool-why-fr">
+            <h2 id="tool-why-fr">Pourquoi utiliser cet exercice ?</h2>
+            <div class="tool-why-grid">
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">✦</span><h3>Listes personnalisées</h3><p>Travaillez exactement les mots des devoirs, de la classe ou de votre programme.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">◎</span><h3>Sans compte</h3><p>Lancez une séance immédiatement, sans créer de compte élève.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">↻</span><h3>Revoyez les erreurs</h3><p>Consacrez la courte séance suivante aux mots encore difficiles.</p></div>
+            </div>
+        </section>
+
+        <section class="tool-start" aria-labelledby="tool-start-fr">
+            <h2 id="tool-start-fr">3 étapes pour commencer</h2>
+            <div class="tool-start-grid">
+                <div class="tool-start-step"><div class="tool-start-number">1</div><h3>Saisissez votre liste</h3><p>Collez vos propres mots</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">2</div><h3>Commencez l’exercice</h3><p>Utilisez le mode actuel</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">3</div><h3>Partagez ou recommencez</h3><p>Partagez le lien ou revoyez les erreurs</p></div>
+            </div>
+        </section>
+
+        <section class="tool-use-cases" aria-labelledby="tool-use-cases-fr">
+            <h2 id="tool-use-cases-fr">Utile dans ces situations</h2>
+            <div class="tool-use-case-grid">
+                <div class="tool-use-case"><h3>Devoirs de la semaine</h3><p>Transformez la liste de la semaine en exercice court et répétable.</p></div>
+                <div class="tool-use-case"><h3>Tests d’orthographe</h3><p>Faites une vérification rapide avant le contrôle en classe.</p></div>
+                <div class="tool-use-case"><h3>Exercices à la maison</h3><p>Laissez l’enfant faire une séance autonome, sans connexion.</p></div>
+                <div class="tool-use-case"><h3>ESL et vocabulaire</h3><p>Utilisez les mots de la leçon pour une pratique ciblée de frappe ou de dictée.</p></div>
+            </div>
+        </section>
+
         <aside class="ad-slot" aria-label="Publicité">
             <span>Publicité</span>
         </aside>
 
-        <section class="seo-panel">
-            <h2>Quand cette pratique aide</h2>
-            <p>Les mots fréquents doivent être reconnus vite, mais les taper oblige aussi à regarder chaque lettre. Utilisez cette page après une activité de lecture, quand l'enfant connaît déjà les mots et doit les revoir légèrement. Une petite liste répétée est souvent préférable.</p>
+        <section class="tool-advice" aria-labelledby="tool-advice-fr">
+            <h2 id="tool-advice-fr">Conseils pour travailler les mots fréquents</h2>
+            <div class="tool-advice-grid">
+                <article class="tool-advice-item"><h3>Quand cette pratique aide</h3><p>Les mots fréquents doivent être reconnus vite, mais les taper oblige aussi à regarder chaque lettre. Utilisez cette page après une activité de lecture, quand l'enfant connaît déjà les mots et doit les revoir légèrement. Une petite liste répétée est souvent préférable.</p></article>
+                <article class="tool-advice-item"><h3>Un rythme de cinq minutes</h3><p>Commencez avec cinq à dix mots du livre, du devoir ou de la liste du professeur. Jouez une partie, regardez les mots manqués, puis lisez-les ensemble. Utilisez chaque mot dans une phrase simple et relancez seulement les mots manqués.</p></article>
+                <article class="tool-advice-item"><h3>Listes adaptées</h3><p>Essayez une liste donnée par le professeur, des mots de type Dolch ou Fry, des couleurs, des nombres ou des mots fréquents d'un premier lecteur. Évitez trop de mots nouveaux en même temps. Les mots connus donnent confiance et les erreurs montrent quoi reprendre.</p></article>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>Un rythme de cinq minutes</h2>
-            <p>Commencez avec cinq à dix mots du livre, du devoir ou de la liste du professeur. Jouez une partie, regardez les mots manqués, puis lisez-les ensemble. Utilisez chaque mot dans une phrase simple et relancez seulement les mots manqués.</p>
+        <section class="tool-faq" aria-labelledby="tool-faq-fr">
+            <h2 id="tool-faq-fr">Questions rapides</h2>
+            <div class="faq-list">
+                <details class="faq-item"><summary>Combien de mots fréquents mettre ?</summary><p>Cinq à dix mots sont un bon début pour les jeunes lecteurs.</p></details>
+                <details class="faq-item"><summary>Est-ce que cela remplace la lecture ?</summary><p>Non. Utilisez-le comme complément à la vraie lecture, à la lecture à voix haute et au travail sur les mots.</p></details>
+                <details class="faq-item"><summary>Puis-je utiliser la liste de l’école ?</summary><p>Oui. Collez les mots du professeur pour rester aligné avec la classe.</p></details>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>Listes adaptées</h2>
-            <p>Essayez une liste donnée par le professeur, des mots de type Dolch ou Fry, des couleurs, des nombres ou des mots fréquents d'un premier lecteur. Évitez trop de mots nouveaux en même temps. Les mots connus donnent confiance et les erreurs montrent quoi reprendre.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Questions rapides</h2>
-            <p><strong>Combien de mots fréquents mettre ?</strong> Cinq à dix mots sont un bon début pour les jeunes lecteurs.</p>
-            <p><strong>Est-ce que cela remplace la lecture ?</strong> Non. Utilisez-le comme complément à la vraie lecture, à la lecture à voix haute et au travail sur les mots.</p>
-            <p><strong>Puis-je utiliser la liste de l’école ?</strong> Oui. Collez les mots du professeur pour rester aligné avec la classe.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Pages de pratique liées</h2>
-            <div class="seo-link-grid">
+        <section class="tool-related" aria-labelledby="tool-related-fr">
+            <h2 id="tool-related-fr">Continuez à pratiquer</h2>
+            <div class="tool-related-links">
                 <a href="/fr/custom-spelling-words-game">Jeu avec vos mots</a>
-                <a href="/fr/spelling-practice-for-parents">Exercices pour les parents</a>
                 <a href="/fr/weekly-spelling-practice">Pratique hebdomadaire</a>
+                <a href="/fr/sight-word-typing-game">Pratique des sight words</a>
+                <a href="/fr/spelling-practice-for-parents">Exercices pour les parents</a>
             </div>
         </section>
     </main>

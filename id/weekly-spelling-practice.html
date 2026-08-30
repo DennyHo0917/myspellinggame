@@ -69,11 +69,18 @@
         <a class="teacher-nav-link" href="/teacher?lang=id">Ruang kerja</a>
         <button class="header-home-link" onclick="window.location.href='/id/'" id="back-home" title="Beranda">Beranda</button>
     </header>
-    <main class="seo-landing content-page">
-        <section class="seo-hero">
-            <h1>Latih kata ejaan minggu ini</h1>
-            <p>Tempel daftar ejaan yang sama untuk minggu ini dan mulai ronde singkat tanpa akun.</p>
-            <form class="landing-launcher" action="/id/" data-mode="dictation" data-invalid="Masukkan setidaknya satu kata." data-limit="Latihan tanpa akun mendukung hingga 20 kata per daftar.">
+    <main class="seo-landing content-page tool-landing">
+        <section class="tool-hero">
+            <div class="tool-hero-copy">
+                <h1>Latih kata ejaan minggu ini</h1>
+                <p>Tempel daftar ejaan yang sama untuk minggu ini dan mulai ronde singkat tanpa akun.</p>
+                <ul class="tool-hero-points">
+                    <li>Tanpa akun</li>
+                    <li>Gunakan daftar ejaan sendiri</li>
+                    <li>Bagikan atau ulangi latihan</li>
+                </ul>
+            </div>
+            <form class="landing-launcher tool-hero-launcher" action="/id/" data-mode="dictation" data-invalid="Masukkan setidaknya satu kata." data-limit="Latihan tanpa akun mendukung hingga 20 kata per daftar.">
                 <label for="weekly-words-id">Kata ejaan minggu ini</label>
                 <textarea id="weekly-words-id" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">Mulai latihan minggu ini</button>
@@ -81,36 +88,60 @@
             </form>
         </section>
 
+        <section class="tool-why" aria-labelledby="tool-why-id">
+            <h2 id="tool-why-id">Mengapa memakai latihan ini?</h2>
+            <div class="tool-why-grid">
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">✦</span><h3>Gunakan daftar persis minggu ini</h3><p>Tempel kata dari guru, buku latihan, atau rencana keluarga. Ronde memakai daftar mingguan yang Anda masukkan, bukan bank kata acak.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">◎</span><h3>Tanpa akun</h3><p>Mulai sesi segera tanpa membuat akun siswa.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">↻</span><h3>Ulangi kata yang salah</h3><p>Setelah ronde selesai, kata yang salah siap dimainkan lagi. Buat latihan tetap singkat dan fokus pada kata yang masih sulit.</p></div>
+            </div>
+        </section>
+
+        <section class="tool-start" aria-labelledby="tool-start-id">
+            <h2 id="tool-start-id">3 langkah untuk mulai berlatih</h2>
+            <div class="tool-start-grid">
+                <div class="tool-start-step"><div class="tool-start-number">1</div><h3>Masukkan daftar kata</h3><p>Tempel kata-kata Anda sendiri</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">2</div><h3>Mulai berlatih</h3><p>Gunakan mode latihan saat ini</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">3</div><h3>Bagikan atau ulangi</h3><p>Bagikan link atau ulangi kata yang salah</p></div>
+            </div>
+        </section>
+
+        <section class="tool-use-cases" aria-labelledby="tool-use-cases-id">
+            <h2 id="tool-use-cases-id">Cocok untuk situasi ini</h2>
+            <div class="tool-use-case-grid">
+                <div class="tool-use-case"><h3>Tugas mingguan</h3><p>Ubah daftar minggu ini menjadi latihan singkat yang bisa diulang.</p></div>
+                <div class="tool-use-case"><h3>Tes ejaan</h3><p>Lakukan pemeriksaan cepat sebelum tes di kelas.</p></div>
+                <div class="tool-use-case"><h3>Latihan di rumah</h3><p>Berikan sesi mandiri untuk anak tanpa perlu login.</p></div>
+                <div class="tool-use-case"><h3>ESL dan kosakata</h3><p>Gunakan kata dari pelajaran untuk latihan mengetik atau dikte yang terarah.</p></div>
+            </div>
+        </section>
+
         <aside class="ad-slot" aria-label="Iklan">
             <span>Iklan</span>
         </aside>
 
-        <section class="seo-panel">
-            <h2>Gunakan daftar persis minggu ini</h2>
-            <p>Tempel kata dari guru, buku latihan, atau rencana keluarga. Ronde memakai daftar mingguan yang Anda masukkan, bukan bank kata acak.</p>
+        <section class="tool-workspace-note" aria-labelledby="tool-workspace-id">
+            <div>
+                <h2 id="tool-workspace-id">Ruang kerja untuk orang tua dan guru</h2>
+                <p>Mulai tanpa akun, lalu simpan daftar mingguan di ruang kerja untuk membagikan tugas, memantau kemajuan, dan melihat penguasaan dari waktu ke waktu.</p>
+            </div>
+            <a class="tool-workspace-link" href="/teacher?lang=id">Buka ruang kerja orang tua atau guru</a>
         </section>
 
-        <section class="seo-panel">
-            <h2>Ulangi kata yang salah</h2>
-            <p>Setelah ronde selesai, kata yang salah siap dimainkan lagi. Buat latihan tetap singkat dan fokus pada kata yang masih sulit.</p>
+        <section class="tool-faq" aria-labelledby="tool-faq-id">
+            <h2 id="tool-faq-id">Pertanyaan singkat</h2>
+            <div class="faq-list">
+                <details class="faq-item"><summary>Bisa memakai daftar persis minggu ini?</summary><p>Bisa. Tempel daftar dan latihan memakai kata yang sama.</p></details>
+                <details class="faq-item"><summary>Apakah siswa perlu akun?</summary><p>Tidak. Link bersama dapat dibuka tanpa membuat akun.</p></details>
+                <details class="faq-item"><summary>Bisa mengulang kata yang salah?</summary><p>Bisa. Kata tersebut dikumpulkan untuk ronde ulang yang terarah.</p></details>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>Ruang kerja untuk orang tua dan guru</h2>
-            <p>Mulai tanpa akun, lalu simpan daftar mingguan di ruang kerja untuk membagikan tugas, memantau kemajuan, dan melihat penguasaan dari waktu ke waktu.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Pertanyaan singkat</h2>
-            <p><strong>Bisa memakai daftar persis minggu ini?</strong> Bisa. Tempel daftar dan latihan memakai kata yang sama.</p>
-            <p><strong>Apakah siswa perlu akun?</strong> Tidak. Link bersama dapat dibuka tanpa membuat akun.</p>
-            <p><strong>Bisa mengulang kata yang salah?</strong> Bisa. Kata tersebut dikumpulkan untuk ronde ulang yang terarah.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Halaman latihan terkait</h2>
-            <div class="seo-link-grid">
+        <section class="tool-related" aria-labelledby="tool-related-id">
+            <h2 id="tool-related-id">Lanjut berlatih</h2>
+            <div class="tool-related-links">
                 <a href="/id/custom-spelling-words-game">Game dengan kata sendiri</a>
+                <a href="/id/weekly-spelling-practice">Latihan mingguan</a>
                 <a href="/id/sight-word-typing-game">Latihan sight words</a>
                 <a href="/id/spelling-practice-for-parents">Latihan untuk orang tua</a>
             </div>

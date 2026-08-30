@@ -69,11 +69,18 @@
         <a class="teacher-nav-link" href="/teacher?lang=id">Ruang kerja</a>
         <button class="header-home-link" onclick="window.location.href='/id/'" id="back-home" title="Beranda">Beranda</button>
     </header>
-    <main class="seo-landing content-page">
-        <section class="seo-hero">
-            <h1>Game latihan kata umum</h1>
-            <p>Tempel kata umum yang sedang dipelajari anak dan ubah menjadi ronde mengetik singkat.</p>
-            <form class="landing-launcher" action="/id/" data-mode="typing" data-invalid="Masukkan setidaknya satu kata." data-limit="Latihan tanpa akun mendukung hingga 20 kata per daftar.">
+    <main class="seo-landing content-page tool-landing">
+        <section class="tool-hero">
+            <div class="tool-hero-copy">
+                <h1>Game latihan kata umum</h1>
+                <p>Tempel kata umum yang sedang dipelajari anak dan ubah menjadi ronde mengetik singkat.</p>
+                <ul class="tool-hero-points">
+                    <li>Tanpa akun</li>
+                    <li>Gunakan daftar ejaan sendiri</li>
+                    <li>Bagikan atau ulangi latihan</li>
+                </ul>
+            </div>
+            <form class="landing-launcher tool-hero-launcher" action="/id/" data-mode="typing" data-invalid="Masukkan setidaknya satu kata." data-limit="Latihan tanpa akun mendukung hingga 20 kata per daftar.">
                 <label for="sight-words-id">Sight words (kata umum)</label>
                 <textarea id="sight-words-id" name="words" required spellcheck="false" placeholder="the&#10;and&#10;you&#10;said"></textarea>
                 <button type="submit">Mulai game mengetik</button>
@@ -81,38 +88,63 @@
             </form>
         </section>
 
+        <section class="tool-why" aria-labelledby="tool-why-id">
+            <h2 id="tool-why-id">Mengapa memakai latihan ini?</h2>
+            <div class="tool-why-grid">
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">✦</span><h3>Daftar kata sendiri</h3><p>Latih tepat kata dari pekerjaan rumah, kelas, atau rencana Anda.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">◎</span><h3>Tanpa akun</h3><p>Mulai sesi segera tanpa membuat akun siswa.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">↻</span><h3>Ulangi kata yang salah</h3><p>Gunakan sesi singkat berikutnya untuk kata yang masih perlu dilatih.</p></div>
+            </div>
+        </section>
+
+        <section class="tool-start" aria-labelledby="tool-start-id">
+            <h2 id="tool-start-id">3 langkah untuk mulai berlatih</h2>
+            <div class="tool-start-grid">
+                <div class="tool-start-step"><div class="tool-start-number">1</div><h3>Masukkan daftar kata</h3><p>Tempel kata-kata Anda sendiri</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">2</div><h3>Mulai berlatih</h3><p>Gunakan mode latihan saat ini</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">3</div><h3>Bagikan atau ulangi</h3><p>Bagikan link atau ulangi kata yang salah</p></div>
+            </div>
+        </section>
+
+        <section class="tool-use-cases" aria-labelledby="tool-use-cases-id">
+            <h2 id="tool-use-cases-id">Cocok untuk situasi ini</h2>
+            <div class="tool-use-case-grid">
+                <div class="tool-use-case"><h3>Tugas mingguan</h3><p>Ubah daftar minggu ini menjadi latihan singkat yang bisa diulang.</p></div>
+                <div class="tool-use-case"><h3>Tes ejaan</h3><p>Lakukan pemeriksaan cepat sebelum tes di kelas.</p></div>
+                <div class="tool-use-case"><h3>Latihan di rumah</h3><p>Berikan sesi mandiri untuk anak tanpa perlu login.</p></div>
+                <div class="tool-use-case"><h3>ESL dan kosakata</h3><p>Gunakan kata dari pelajaran untuk latihan mengetik atau dikte yang terarah.</p></div>
+            </div>
+        </section>
+
         <aside class="ad-slot" aria-label="Iklan">
             <span>Iklan</span>
         </aside>
 
-        <section class="seo-panel">
-            <h2>Kapan latihan ini membantu</h2>
-            <p>Kata umum perlu dikenali cepat, tetapi mengetik membuat anak memperhatikan setiap huruf. Gunakan setelah anak sudah melihat kata itu dalam bacaan. Daftar pendek yang diulang biasanya lebih baik daripada daftar besar dengan banyak kata baru.</p>
+        <section class="tool-advice" aria-labelledby="tool-advice-id">
+            <h2 id="tool-advice-id">Tips latihan sight words</h2>
+            <div class="tool-advice-grid">
+                <article class="tool-advice-item"><h3>Kapan latihan ini membantu</h3><p>Kata umum perlu dikenali cepat, tetapi mengetik membuat anak memperhatikan setiap huruf. Gunakan setelah anak sudah melihat kata itu dalam bacaan. Daftar pendek yang diulang biasanya lebih baik daripada daftar besar dengan banyak kata baru.</p></article>
+                <article class="tool-advice-item"><h3>Alur lima menit</h3><p>Mulai dengan lima sampai sepuluh kata dari buku, PR, atau daftar guru. Mainkan satu ronde, lihat kata yang salah, lalu baca bersama. Pakai kata itu dalam kalimat sederhana dan ulangi hanya kata yang salah.</p></article>
+                <article class="tool-advice-item"><h3>Daftar yang cocok</h3><p>Gunakan daftar dari guru, kata gaya Dolch atau Fry, warna, angka, atau kata umum dari bacaan awal. Jangan mencampur terlalu banyak kata baru sekaligus. Kata yang sudah dikenal memberi rasa percaya diri, sedangkan kesalahan menunjukkan apa yang perlu diulang.</p></article>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>Alur lima menit</h2>
-            <p>Mulai dengan lima sampai sepuluh kata dari buku, PR, atau daftar guru. Mainkan satu ronde, lihat kata yang salah, lalu baca bersama. Pakai kata itu dalam kalimat sederhana dan ulangi hanya kata yang salah.</p>
+        <section class="tool-faq" aria-labelledby="tool-faq-id">
+            <h2 id="tool-faq-id">Pertanyaan singkat</h2>
+            <div class="faq-list">
+                <details class="faq-item"><summary>Berapa banyak kata umum dalam satu ronde?</summary><p>Lima sampai sepuluh kata adalah awal yang baik untuk pembaca awal.</p></details>
+                <details class="faq-item"><summary>Apakah ini menggantikan membaca?</summary><p>Tidak. Pakai sebagai tambahan bersama membaca sungguhan, membaca nyaring, dan latihan kata.</p></details>
+                <details class="faq-item"><summary>Bisa memakai daftar dari sekolah?</summary><p>Bisa. Tempel kata dari guru agar latihan sesuai dengan kelas.</p></details>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>Daftar yang cocok</h2>
-            <p>Gunakan daftar dari guru, kata gaya Dolch atau Fry, warna, angka, atau kata umum dari bacaan awal. Jangan mencampur terlalu banyak kata baru sekaligus. Kata yang sudah dikenal memberi rasa percaya diri, sedangkan kesalahan menunjukkan apa yang perlu diulang.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Pertanyaan singkat</h2>
-            <p><strong>Berapa banyak kata umum dalam satu ronde?</strong> Lima sampai sepuluh kata adalah awal yang baik untuk pembaca awal.</p>
-            <p><strong>Apakah ini menggantikan membaca?</strong> Tidak. Pakai sebagai tambahan bersama membaca sungguhan, membaca nyaring, dan latihan kata.</p>
-            <p><strong>Bisa memakai daftar dari sekolah?</strong> Bisa. Tempel kata dari guru agar latihan sesuai dengan kelas.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Halaman latihan terkait</h2>
-            <div class="seo-link-grid">
+        <section class="tool-related" aria-labelledby="tool-related-id">
+            <h2 id="tool-related-id">Lanjut berlatih</h2>
+            <div class="tool-related-links">
                 <a href="/id/custom-spelling-words-game">Game dengan kata sendiri</a>
-                <a href="/id/spelling-practice-for-parents">Latihan untuk orang tua</a>
                 <a href="/id/weekly-spelling-practice">Latihan mingguan</a>
+                <a href="/id/sight-word-typing-game">Latihan sight words</a>
+                <a href="/id/spelling-practice-for-parents">Latihan untuk orang tua</a>
             </div>
         </section>
     </main>

@@ -69,11 +69,18 @@
         <a class="teacher-nav-link" href="/teacher?lang=pt-BR">Espaço de trabalho</a>
         <button class="header-home-link" onclick="window.location.href='/pt-br/'" id="back-home" title="Início">Início</button>
     </header>
-    <main class="seo-landing content-page">
-        <section class="seo-hero">
-            <h1>Pratique as palavras de ortografia desta semana</h1>
-            <p>Cole a lista exata desta semana e comece uma rodada curta sem fazer conta.</p>
-            <form class="landing-launcher" action="/pt-br/" data-mode="dictation" data-invalid="Digite pelo menos uma palavra." data-limit="A prática sem conta aceita até 20 palavras por lista.">
+    <main class="seo-landing content-page tool-landing">
+        <section class="tool-hero">
+            <div class="tool-hero-copy">
+                <h1>Pratique as palavras de ortografia desta semana</h1>
+                <p>Cole a lista exata desta semana e comece uma rodada curta sem fazer conta.</p>
+                <ul class="tool-hero-points">
+                    <li>Sem conta</li>
+                    <li>Use sua própria lista de palavras</li>
+                    <li>Compartilhe ou repita a prática</li>
+                </ul>
+            </div>
+            <form class="landing-launcher tool-hero-launcher" action="/pt-br/" data-mode="dictation" data-invalid="Digite pelo menos uma palavra." data-limit="A prática sem conta aceita até 20 palavras por lista.">
                 <label for="weekly-words-pt-BR">Palavras de ortografia desta semana</label>
                 <textarea id="weekly-words-pt-BR" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">Começar a prática da semana</button>
@@ -81,36 +88,60 @@
             </form>
         </section>
 
+        <section class="tool-why" aria-labelledby="tool-why-pt-BR">
+            <h2 id="tool-why-pt-BR">Por que usar esta prática?</h2>
+            <div class="tool-why-grid">
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">✦</span><h3>Use a lista exata desta semana</h3><p>Cole as palavras do professor, da apostila ou do plano da família. A rodada usa exatamente a sua lista semanal, sem banco aleatório.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">◎</span><h3>Sem conta</h3><p>Comece uma rodada na hora, sem criar conta para o aluno.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">↻</span><h3>Repita as palavras erradas</h3><p>No fim da rodada, as palavras erradas ficam prontas para outra tentativa. Mantenha a prática curta e foque no que ainda precisa de atenção.</p></div>
+            </div>
+        </section>
+
+        <section class="tool-start" aria-labelledby="tool-start-pt-BR">
+            <h2 id="tool-start-pt-BR">3 passos para começar</h2>
+            <div class="tool-start-grid">
+                <div class="tool-start-step"><div class="tool-start-number">1</div><h3>Digite sua lista</h3><p>Cole suas próprias palavras</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">2</div><h3>Comece a praticar</h3><p>Use o modo de prática atual</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">3</div><h3>Compartilhe ou repita</h3><p>Compartilhe o link ou repita os erros</p></div>
+            </div>
+        </section>
+
+        <section class="tool-use-cases" aria-labelledby="tool-use-cases-pt-BR">
+            <h2 id="tool-use-cases-pt-BR">Perfeito para estas situações</h2>
+            <div class="tool-use-case-grid">
+                <div class="tool-use-case"><h3>Tarefa semanal</h3><p>Transforme a lista da semana em uma prática curta e repetível.</p></div>
+                <div class="tool-use-case"><h3>Testes de ortografia</h3><p>Faça uma verificação rápida antes do teste da turma.</p></div>
+                <div class="tool-use-case"><h3>Prática em casa</h3><p>Ofereça uma rodada independente para a criança, sem login.</p></div>
+                <div class="tool-use-case"><h3>ESL e vocabulário</h3><p>Use as palavras da aula em uma prática focada de digitação ou ditado.</p></div>
+            </div>
+        </section>
+
         <aside class="ad-slot" aria-label="Anúncio">
             <span>Anúncio</span>
         </aside>
 
-        <section class="seo-panel">
-            <h2>Use a lista exata desta semana</h2>
-            <p>Cole as palavras do professor, da apostila ou do plano da família. A rodada usa exatamente a sua lista semanal, sem banco aleatório.</p>
+        <section class="tool-workspace-note" aria-labelledby="tool-workspace-pt-BR">
+            <div>
+                <h2 id="tool-workspace-pt-BR">Espaço de trabalho para pais e professores</h2>
+                <p>Comece sem conta e depois salve a lista semanal no espaço de trabalho para compartilhar tarefas, acompanhar o progresso e ver o domínio ao longo do tempo.</p>
+            </div>
+            <a class="tool-workspace-link" href="/teacher?lang=pt-BR">Abrir o espaço para pais ou professores</a>
         </section>
 
-        <section class="seo-panel">
-            <h2>Repita as palavras erradas</h2>
-            <p>No fim da rodada, as palavras erradas ficam prontas para outra tentativa. Mantenha a prática curta e foque no que ainda precisa de atenção.</p>
+        <section class="tool-faq" aria-labelledby="tool-faq-pt-BR">
+            <h2 id="tool-faq-pt-BR">Perguntas rápidas</h2>
+            <div class="faq-list">
+                <details class="faq-item"><summary>Posso usar a lista exata desta semana?</summary><p>Sim. Cole a lista e a prática usa essas mesmas palavras.</p></details>
+                <details class="faq-item"><summary>O aluno precisa fazer conta?</summary><p>Não. Ele pode abrir o link compartilhado sem criar conta.</p></details>
+                <details class="faq-item"><summary>Dá para repetir as palavras erradas?</summary><p>Sim. Elas ficam reunidas para uma rodada de revisão focada.</p></details>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>Espaço de trabalho para pais e professores</h2>
-            <p>Comece sem conta e depois salve a lista semanal no espaço de trabalho para compartilhar tarefas, acompanhar o progresso e ver o domínio ao longo do tempo.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Perguntas rápidas</h2>
-            <p><strong>Posso usar a lista exata desta semana?</strong> Sim. Cole a lista e a prática usa essas mesmas palavras.</p>
-            <p><strong>O aluno precisa fazer conta?</strong> Não. Ele pode abrir o link compartilhado sem criar conta.</p>
-            <p><strong>Dá para repetir as palavras erradas?</strong> Sim. Elas ficam reunidas para uma rodada de revisão focada.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Páginas de prática relacionadas</h2>
-            <div class="seo-link-grid">
+        <section class="tool-related" aria-labelledby="tool-related-pt-BR">
+            <h2 id="tool-related-pt-BR">Continue praticando</h2>
+            <div class="tool-related-links">
                 <a href="/pt-br/custom-spelling-words-game">Jogo com suas palavras</a>
+                <a href="/pt-br/weekly-spelling-practice">Prática semanal</a>
                 <a href="/pt-br/sight-word-typing-game">Prática de sight words</a>
                 <a href="/pt-br/spelling-practice-for-parents">Prática para pais</a>
             </div>

@@ -2,15 +2,18 @@ import { trackEvent } from "./analytics.mjs";
 import {
   normalizeProductLocale,
   PENDING_CHECKOUT_LOCALE_KEY,
+  productMessages,
   productMessage,
 } from "./productLocale.mjs";
 
 const locale = normalizeProductLocale(document.body.dataset.productLocale);
+const copy = productMessages(locale);
 const planOptions = document.querySelectorAll("[data-plan-option]");
 const planPrices = document.querySelectorAll("[data-plan-price]");
 const planChoices = document.querySelectorAll("[data-plan-choice]");
 const pricingGrid = document.querySelector(".pricing-grid");
 const freeChoice = document.querySelector('[data-plan-cta="free"]');
+const subscriptionStatus = document.querySelector("[data-subscription-status]");
 const accountPromise = fetch("/api/me", { credentials: "same-origin" })
   .then((response) => (response.ok ? response.json() : null))
   .catch(() => null);
@@ -58,6 +61,16 @@ function selectPlan(plan) {
     );
   for (const card of document.querySelectorAll("[data-plan-card]"))
     card.classList.toggle("selected", card.dataset.planCard === plan);
+}
+
+function formatSubscriptionDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat(locale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date);
 }
 
 async function openBillingPortal(control) {
@@ -152,6 +165,20 @@ for (const choice of planChoices)
 
 accountPromise
   .then((me) => {
+    const endDate = formatSubscriptionDate(me?.currentPeriodEnd);
+    if (
+      subscriptionStatus &&
+      endDate &&
+      ["parent", "teacher"].includes(me?.plan)
+    ) {
+      const planLabel = copy[`${me.plan}Plan`] || me.plan;
+      subscriptionStatus.textContent = productMessage(
+        "subscriptionExpires",
+        { plan: planLabel, date: endDate },
+        locale,
+      );
+      subscriptionStatus.hidden = false;
+    }
     const current = document.querySelector(`[data-plan-cta="${me?.plan}"]`);
     if (!current) return;
     const currentCard = document.querySelector(`[data-plan-card="${me.plan}"]`);

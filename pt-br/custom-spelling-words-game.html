@@ -69,11 +69,18 @@
         <a class="teacher-nav-link" href="/teacher?lang=pt-BR">Espaço de trabalho</a>
         <button class="header-home-link" onclick="window.location.href='/pt-br/'" id="back-home" title="Início">Início</button>
     </header>
-    <main class="seo-landing content-page">
-        <section class="seo-hero">
-            <h1>Digite suas próprias palavras e comece na hora</h1>
-            <p>Cole suas palavras de ortografia personalizadas e abra uma chuva de palavras sem conta que use somente a sua lista.</p>
-            <form class="landing-launcher" action="/pt-br/" data-mode="typing" data-invalid="Digite pelo menos uma palavra." data-limit="A prática sem conta aceita até 20 palavras por lista.">
+    <main class="seo-landing content-page tool-landing">
+        <section class="tool-hero">
+            <div class="tool-hero-copy">
+                <h1>Digite suas próprias palavras e comece na hora</h1>
+                <p>Cole suas palavras de ortografia personalizadas e abra uma chuva de palavras sem conta que use somente a sua lista.</p>
+                <ul class="tool-hero-points">
+                    <li>Sem conta</li>
+                    <li>Use sua própria lista de palavras</li>
+                    <li>Compartilhe ou repita a prática</li>
+                </ul>
+            </div>
+            <form class="landing-launcher tool-hero-launcher" action="/pt-br/" data-mode="typing" data-invalid="Digite pelo menos uma palavra." data-limit="A prática sem conta aceita até 20 palavras por lista.">
                 <label for="custom-words-pt-BR">Suas próprias palavras de ortografia</label>
                 <textarea id="custom-words-pt-BR" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">Começar agora</button>
@@ -81,33 +88,56 @@
             </form>
         </section>
 
+        <section class="tool-why" aria-labelledby="tool-why-pt-BR">
+            <h2 id="tool-why-pt-BR">Por que usar esta prática?</h2>
+            <div class="tool-why-grid">
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">✦</span><h3>Suas palavras, não um banco aleatório</h3><p>Cole palavras da tarefa, uma lista do professor, vocabulário ou qualquer lista personalizada. Cada rodada usa exatamente o que você digitar.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">◎</span><h3>Prática personalizada sem conta</h3><p>Digite as palavras, comece na hora e repita as que errar. Você também pode compartilhar o mesmo link sem criar contas de aluno.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">↻</span><h3>Repita os erros</h3><p>Use a próxima rodada curta nas palavras que ainda precisam de prática.</p></div>
+            </div>
+        </section>
+
+        <section class="tool-start" aria-labelledby="tool-start-pt-BR">
+            <h2 id="tool-start-pt-BR">3 passos para começar</h2>
+            <div class="tool-start-grid">
+                <div class="tool-start-step"><div class="tool-start-number">1</div><h3>Digite sua lista</h3><p>Cole suas próprias palavras</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">2</div><h3>Comece a praticar</h3><p>Use o modo de prática atual</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">3</div><h3>Compartilhe ou repita</h3><p>Compartilhe o link ou repita os erros</p></div>
+            </div>
+        </section>
+
+        <section class="tool-use-cases" aria-labelledby="tool-use-cases-pt-BR">
+            <h2 id="tool-use-cases-pt-BR">Perfeito para estas situações</h2>
+            <div class="tool-use-case-grid">
+                <div class="tool-use-case"><h3>Tarefa semanal</h3><p>Transforme a lista da semana em uma prática curta e repetível.</p></div>
+                <div class="tool-use-case"><h3>Testes de ortografia</h3><p>Faça uma verificação rápida antes do teste da turma.</p></div>
+                <div class="tool-use-case"><h3>Prática em casa</h3><p>Ofereça uma rodada independente para a criança, sem login.</p></div>
+                <div class="tool-use-case"><h3>ESL e vocabulário</h3><p>Use as palavras da aula em uma prática focada de digitação ou ditado.</p></div>
+            </div>
+        </section>
+
         <aside class="ad-slot" aria-label="Anúncio">
             <span>Anúncio</span>
         </aside>
 
-        <section class="seo-panel">
-            <h2>Suas palavras, não um banco aleatório</h2>
-            <p>Cole palavras da tarefa, uma lista do professor, vocabulário ou qualquer lista personalizada. Cada rodada usa exatamente o que você digitar.</p>
+
+
+        <section class="tool-faq" aria-labelledby="tool-faq-pt-BR">
+            <h2 id="tool-faq-pt-BR">Perguntas rápidas</h2>
+            <div class="faq-list">
+                <details class="faq-item"><summary>Posso usar minhas próprias palavras?</summary><p>Sim. Cole sua lista e o jogo usa apenas essas palavras.</p></details>
+                <details class="faq-item"><summary>Serve para revisar antes da prova?</summary><p>Sim. A rodada curta ajuda a praticar a lista antes do teste.</p></details>
+                <details class="faq-item"><summary>Aluno precisa criar conta?</summary><p>Não. O link abre direto no navegador.</p></details>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>Prática personalizada sem conta</h2>
-            <p>Digite as palavras, comece na hora e repita as que errar. Você também pode compartilhar o mesmo link sem criar contas de aluno.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Perguntas rápidas</h2>
-            <p><strong>Posso usar minhas próprias palavras?</strong> Sim. Cole sua lista e o jogo usa apenas essas palavras.</p>
-            <p><strong>Serve para revisar antes da prova?</strong> Sim. A rodada curta ajuda a praticar a lista antes do teste.</p>
-            <p><strong>Aluno precisa criar conta?</strong> Não. O link abre direto no navegador.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Páginas de prática relacionadas</h2>
-            <div class="seo-link-grid">
+        <section class="tool-related" aria-labelledby="tool-related-pt-BR">
+            <h2 id="tool-related-pt-BR">Continue praticando</h2>
+            <div class="tool-related-links">
+                <a href="/pt-br/custom-spelling-words-game">Jogo com suas palavras</a>
+                <a href="/pt-br/weekly-spelling-practice">Prática semanal</a>
                 <a href="/pt-br/sight-word-typing-game">Prática de sight words</a>
                 <a href="/pt-br/spelling-practice-for-parents">Prática para pais</a>
-                <a href="/pt-br/weekly-spelling-practice">Prática semanal</a>
             </div>
         </section>
     </main>

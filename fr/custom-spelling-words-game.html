@@ -69,11 +69,18 @@
         <a class="teacher-nav-link" href="/teacher?lang=fr">Espace de travail</a>
         <button class="header-home-link" onclick="window.location.href='/fr/'" id="back-home" title="Accueil">Accueil</button>
     </header>
-    <main class="seo-landing content-page">
-        <section class="seo-hero">
-            <h1>Saisissez vos propres mots et commencez tout de suite</h1>
-            <p>Collez vos mots d’orthographe personnalisés et lancez une pluie de mots sans compte qui utilise uniquement votre liste.</p>
-            <form class="landing-launcher" action="/fr/" data-mode="typing" data-invalid="Saisissez au moins un mot." data-limit="L’entraînement sans compte accepte jusqu’à 20 mots par liste.">
+    <main class="seo-landing content-page tool-landing">
+        <section class="tool-hero">
+            <div class="tool-hero-copy">
+                <h1>Saisissez vos propres mots et commencez tout de suite</h1>
+                <p>Collez vos mots d’orthographe personnalisés et lancez une pluie de mots sans compte qui utilise uniquement votre liste.</p>
+                <ul class="tool-hero-points">
+                    <li>Sans connexion</li>
+                    <li>Utilisez votre propre liste de mots</li>
+                    <li>Partagez ou recommencez l’exercice</li>
+                </ul>
+            </div>
+            <form class="landing-launcher tool-hero-launcher" action="/fr/" data-mode="typing" data-invalid="Saisissez au moins un mot." data-limit="L’entraînement sans compte accepte jusqu’à 20 mots par liste.">
                 <label for="custom-words-fr">Vos propres mots d’orthographe</label>
                 <textarea id="custom-words-fr" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">Commencer maintenant</button>
@@ -81,33 +88,56 @@
             </form>
         </section>
 
+        <section class="tool-why" aria-labelledby="tool-why-fr">
+            <h2 id="tool-why-fr">Pourquoi utiliser cet exercice ?</h2>
+            <div class="tool-why-grid">
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">✦</span><h3>Vos mots, pas une liste aléatoire</h3><p>Collez les mots d’un devoir, une liste du professeur, du vocabulaire ou toute autre liste personnalisée. Chaque partie utilise exactement ces mots.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">◎</span><h3>Pratique personnalisée sans compte</h3><p>Saisissez les mots, commencez tout de suite et reprenez ceux qui posent problème. Le même lien se partage sans créer de comptes élèves.</p></div>
+                <div class="tool-why-item"><span class="tool-why-icon" aria-hidden="true">↻</span><h3>Revoyez les erreurs</h3><p>Consacrez la courte séance suivante aux mots encore difficiles.</p></div>
+            </div>
+        </section>
+
+        <section class="tool-start" aria-labelledby="tool-start-fr">
+            <h2 id="tool-start-fr">3 étapes pour commencer</h2>
+            <div class="tool-start-grid">
+                <div class="tool-start-step"><div class="tool-start-number">1</div><h3>Saisissez votre liste</h3><p>Collez vos propres mots</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">2</div><h3>Commencez l’exercice</h3><p>Utilisez le mode actuel</p></div>
+                <div class="tool-start-step"><div class="tool-start-number">3</div><h3>Partagez ou recommencez</h3><p>Partagez le lien ou revoyez les erreurs</p></div>
+            </div>
+        </section>
+
+        <section class="tool-use-cases" aria-labelledby="tool-use-cases-fr">
+            <h2 id="tool-use-cases-fr">Utile dans ces situations</h2>
+            <div class="tool-use-case-grid">
+                <div class="tool-use-case"><h3>Devoirs de la semaine</h3><p>Transformez la liste de la semaine en exercice court et répétable.</p></div>
+                <div class="tool-use-case"><h3>Tests d’orthographe</h3><p>Faites une vérification rapide avant le contrôle en classe.</p></div>
+                <div class="tool-use-case"><h3>Exercices à la maison</h3><p>Laissez l’enfant faire une séance autonome, sans connexion.</p></div>
+                <div class="tool-use-case"><h3>ESL et vocabulaire</h3><p>Utilisez les mots de la leçon pour une pratique ciblée de frappe ou de dictée.</p></div>
+            </div>
+        </section>
+
         <aside class="ad-slot" aria-label="Publicité">
             <span>Publicité</span>
         </aside>
 
-        <section class="seo-panel">
-            <h2>Vos mots, pas une liste aléatoire</h2>
-            <p>Collez les mots d’un devoir, une liste du professeur, du vocabulaire ou toute autre liste personnalisée. Chaque partie utilise exactement ces mots.</p>
+
+
+        <section class="tool-faq" aria-labelledby="tool-faq-fr">
+            <h2 id="tool-faq-fr">Questions rapides</h2>
+            <div class="faq-list">
+                <details class="faq-item"><summary>Puis-je utiliser mes propres mots ?</summary><p>Oui. Collez votre liste et le jeu utilisera seulement ces mots.</p></details>
+                <details class="faq-item"><summary>Est-ce utile avant un contrôle ?</summary><p>Oui. Une partie courte peut servir de révision juste avant le contrôle.</p></details>
+                <details class="faq-item"><summary>Faut-il créer un compte ?</summary><p>Non. Le lien s’ouvre directement dans le navigateur.</p></details>
+            </div>
         </section>
 
-        <section class="seo-panel">
-            <h2>Pratique personnalisée sans compte</h2>
-            <p>Saisissez les mots, commencez tout de suite et reprenez ceux qui posent problème. Le même lien se partage sans créer de comptes élèves.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Questions rapides</h2>
-            <p><strong>Puis-je utiliser mes propres mots ?</strong> Oui. Collez votre liste et le jeu utilisera seulement ces mots.</p>
-            <p><strong>Est-ce utile avant un contrôle ?</strong> Oui. Une partie courte peut servir de révision juste avant le contrôle.</p>
-            <p><strong>Faut-il créer un compte ?</strong> Non. Le lien s’ouvre directement dans le navigateur.</p>
-        </section>
-
-        <section class="seo-panel">
-            <h2>Pages de pratique liées</h2>
-            <div class="seo-link-grid">
+        <section class="tool-related" aria-labelledby="tool-related-fr">
+            <h2 id="tool-related-fr">Continuez à pratiquer</h2>
+            <div class="tool-related-links">
+                <a href="/fr/custom-spelling-words-game">Jeu avec vos mots</a>
+                <a href="/fr/weekly-spelling-practice">Pratique hebdomadaire</a>
                 <a href="/fr/sight-word-typing-game">Pratique des sight words</a>
                 <a href="/fr/spelling-practice-for-parents">Exercices pour les parents</a>
-                <a href="/fr/weekly-spelling-practice">Pratique hebdomadaire</a>
             </div>
         </section>
     </main>

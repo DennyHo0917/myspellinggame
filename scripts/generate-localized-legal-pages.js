@@ -89,8 +89,9 @@ const alternates = [
 
 const sharedFooterLinks = [
   { href: "/sight-word-typing-game", key: "sight" },
-  { href: "/homeschool-spelling-practice", key: "homeschool" },
-  { href: "/vocabulary-typing-game", key: "vocabulary" },
+  { href: "/spelling-practice-for-parents", key: "homeschool" },
+  { href: "/custom-spelling-words-game", key: "vocabulary" },
+  { href: "/spelling-assignments-for-teachers", key: "teachers" },
 ];
 
 const locale = {
@@ -102,6 +103,7 @@ const locale = {
       sight: "Sight Words",
       homeschool: "Homeschool",
       vocabulary: "Vocabulary",
+      teachers: "For Teachers",
       privacy: "Privacy",
       about: "About",
       contact: "Contact",
@@ -207,6 +209,7 @@ const locale = {
       sight: "Palabras frecuentes",
       homeschool: "En casa",
       vocabulary: "Vocabulario",
+      teachers: "Para docentes",
       privacy: "Privacidad",
       about: "Acerca de",
       contact: "Contacto",
@@ -312,6 +315,7 @@ const locale = {
       sight: "Palavras frequentes",
       homeschool: "Em casa",
       vocabulary: "Vocabulário",
+      teachers: "Para professores",
       privacy: "Privacidade",
       about: "Sobre",
       contact: "Contato",
@@ -417,6 +421,7 @@ const locale = {
       sight: "Mots fréquents",
       homeschool: "À la maison",
       vocabulary: "Vocabulaire",
+      teachers: "Pour les enseignants",
       privacy: "Confidentialité",
       about: "À propos",
       contact: "Contact",
@@ -522,6 +527,7 @@ const locale = {
       sight: "Kata umum",
       homeschool: "Di rumah",
       vocabulary: "Kosakata",
+      teachers: "Untuk guru",
       privacy: "Privasi",
       about: "Tentang",
       contact: "Kontak",
@@ -627,6 +633,7 @@ const locale = {
       sight: "高频词练习",
       homeschool: "家庭学习",
       vocabulary: "词汇练习",
+      teachers: "教师作业",
       privacy: "隐私",
       about: "关于",
       contact: "联系",

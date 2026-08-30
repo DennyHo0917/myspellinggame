@@ -166,9 +166,9 @@ For current privacy details, data retention rules, analytics information, and st
 - [Pricing](https://myspellinggame.com/pricing)
 - [FAQ](https://myspellinggame.com/faq)
 - [About My Spelling Game](https://myspellinggame.com/about)
-- [Homeschool Spelling Practice](https://myspellinggame.com/homeschool-spelling-practice)
+- [Spelling Practice for Parents](https://myspellinggame.com/spelling-practice-for-parents)
 - [Sight Word Typing Game](https://myspellinggame.com/sight-word-typing-game)
-- [Vocabulary Typing Game](https://myspellinggame.com/vocabulary-typing-game)
+- [Custom Spelling Words Game](https://myspellinggame.com/custom-spelling-words-game)
 - [Privacy Policy](https://myspellinggame.com/privacy)
 - [Contact](https://myspellinggame.com/contact)
 

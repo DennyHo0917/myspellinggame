@@ -98,11 +98,67 @@ test("sitemap contains each extensionless canonical exactly once with complete h
   assert.doesNotMatch(generator, /baselineLastmod|currentContentLastmod/);
 });
 
+test("retired long-tail URLs redirect once to localized canonical pages", () => {
+  const redirects = fs.readFileSync(path.join(root, "_redirects"), "utf8");
+  for (const locale of locales) {
+    const prefix = locale ? `/${locale}` : "";
+    const expected = [
+      [
+        `${prefix}/homeschool-spelling-practice`,
+        `${prefix}/spelling-practice-for-parents`,
+      ],
+      [
+        `${prefix}/vocabulary-typing-game`,
+        `${prefix}/custom-spelling-words-game`,
+      ],
+    ];
+    for (const [from, to] of expected) {
+      assert.match(redirects, new RegExp(`^${from} ${to} 301$`, "m"));
+      assert.match(redirects, new RegExp(`^${from}\\.html ${to} 301$`, "m"));
+      assert.equal(fs.existsSync(path.join(root, `${from}.html`)), false, from);
+    }
+  }
+  const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
+  assert.doesNotMatch(
+    sitemap,
+    /homeschool-spelling-practice|vocabulary-typing-game/,
+  );
+  for (const file of publicHtmlFiles()) {
+    assert.doesNotMatch(
+      fs.readFileSync(file, "utf8"),
+      /href="[^"]*(?:homeschool-spelling-practice|vocabulary-typing-game)/,
+      file,
+    );
+  }
+});
+
+test("every public footer links to the localized teacher landing page", () => {
+  const labels = {
+    "": "For Teachers",
+    es: "Para docentes",
+    "pt-br": "Para professores",
+    fr: "Pour les enseignants",
+    id: "Untuk guru",
+    zh: "教师作业",
+  };
+  for (const [locale, label] of Object.entries(labels)) {
+    const prefix = locale ? `/${locale}` : "";
+    const link = `<a href="${prefix}/spelling-assignments-for-teachers">${label}</a>`;
+    for (const file of fs
+      .readdirSync(path.join(root, locale))
+      .filter((name) => name.endsWith(".html"))) {
+      const html = fs.readFileSync(path.join(root, locale, file), "utf8");
+      const footer = html.match(/<footer(?:\s[^>]*)?>[\s\S]*?<\/footer>/)?.[0];
+      assert.ok(footer?.includes(link), `${locale || "en"}/${file}`);
+    }
+  }
+});
+
 test("home and remaining long-tail pages have one H1 and distinct metadata per locale", () => {
   for (const locale of locales) {
     const files = [
       "index.html",
-      "homeschool-spelling-practice.html",
+      "custom-spelling-words-game.html",
       "sight-word-typing-game.html",
     ].map((name) => path.join(root, locale, name));
     const pages = files.map((file) => fs.readFileSync(file, "utf8"));
@@ -116,6 +172,100 @@ test("home and remaining long-tail pages have one H1 and distinct metadata per l
     );
     assert.equal(new Set(titles).size, 3);
     assert.equal(new Set(descriptions).size, 3);
+  }
+});
+
+test("custom spelling pages emphasize own words and launch without login", () => {
+  const expected = {
+    "": [
+      "Enter Your Own Spelling Words and Start Instantly",
+      "Your own spelling words",
+      "Start Instantly",
+      "No login needed",
+    ],
+    es: [
+      "Escribe tus propias palabras y empieza al instante",
+      "Tus propias palabras de ortografía",
+      "Empezar ahora",
+      "Sin iniciar sesión",
+    ],
+    "pt-br": [
+      "Digite suas próprias palavras e comece na hora",
+      "Suas próprias palavras de ortografia",
+      "Começar agora",
+      "Sem conta",
+    ],
+    fr: [
+      "Saisissez vos propres mots et commencez tout de suite",
+      "Vos propres mots d’orthographe",
+      "Commencer maintenant",
+      "Sans compte",
+    ],
+    id: [
+      "Masukkan kata sendiri dan langsung mulai",
+      "Kata ejaan sendiri",
+      "Mulai sekarang",
+      "Tanpa akun",
+    ],
+    zh: [
+      "输入自己的英语单词，立即开始",
+      "你自己的英语拼写单词",
+      "立即开始游戏",
+      "无需登录",
+    ],
+  };
+  for (const [locale, terms] of Object.entries(expected)) {
+    const html = fs.readFileSync(
+      path.join(root, locale, "custom-spelling-words-game.html"),
+      "utf8",
+    );
+    assert.match(html, /<form class="landing-launcher"[^>]*data-mode="typing"/);
+    assert.match(html, /placeholder="because&#10;friend&#10;beautiful"/);
+    for (const term of terms) assert.ok(html.includes(term), term);
+  }
+});
+
+test("sight-word pages launch a localized no-login typing game", () => {
+  const expected = {
+    "": ["Sight words", "Start Typing Game", "No login needed"],
+    es: [
+      "Palabras frecuentes (sight words)",
+      "Empezar el juego de mecanografía",
+      "Sin iniciar sesión",
+    ],
+    "pt-br": [
+      "Palavras frequentes (sight words)",
+      "Começar o jogo de digitação",
+      "Sem conta",
+    ],
+    fr: [
+      "Mots fréquents (sight words)",
+      "Lancer le jeu de frappe",
+      "Sans connexion",
+    ],
+    id: ["Sight words (kata umum)", "Mulai game mengetik", "Tanpa akun"],
+    zh: ["Sight words 高频词", "开始打字游戏", "无需登录"],
+  };
+  for (const [locale, terms] of Object.entries(expected)) {
+    const html = fs.readFileSync(
+      path.join(root, locale, "sight-word-typing-game.html"),
+      "utf8",
+    );
+    assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
+    assert.match(html, /<form class="landing-launcher"[^>]*data-mode="typing"/);
+    assert.match(html, /placeholder="the&#10;and&#10;you&#10;said"/);
+    for (const term of terms) assert.ok(html.includes(term), term);
+    for (const hreflang of [
+      "en",
+      "es",
+      "pt-BR",
+      "fr",
+      "id",
+      "zh-CN",
+      "x-default",
+    ]) {
+      assert.match(html, new RegExp(`hreflang="${hreflang}"`));
+    }
   }
 });
 
@@ -189,6 +339,50 @@ test("parent landing pages launch practice and expose localized workspace value"
   }
 });
 
+test("teacher landing pages launch practice and expose localized assignment value", () => {
+  const expected = {
+    "": [
+      "Paste your spelling list → Share one link → Track results",
+      "Try it now",
+      "No student accounts",
+      "Assignments",
+      "Progress",
+      "Mastery",
+      "Smart Review",
+      "Class Join/PIN",
+      "CSV",
+      "Teacher Plan",
+    ],
+    es: ["Probar ahora", "Sin cuentas para alumnos", "Tareas", "Progreso"],
+    "pt-br": [
+      "Testar agora",
+      "Sem contas de alunos",
+      "Atividades",
+      "Progresso",
+    ],
+    fr: ["Tester maintenant", "Sans compte élève", "Devoirs", "Progression"],
+    id: ["Coba sekarang", "Tanpa akun siswa", "Tugas", "Perkembangan"],
+    zh: ["立即试用", "无需学生账号", "作业", "学习进度"],
+  };
+  for (const [locale, terms] of Object.entries(expected)) {
+    const html = fs.readFileSync(
+      path.join(root, locale, "spelling-assignments-for-teachers.html"),
+      "utf8",
+    );
+    assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
+    assert.match(html, /class="landing-launcher"[^>]+data-mode="dictation"/);
+    assert.match(html, /href="\/teacher\?lang=/);
+    assert.match(html, /href="[^"]*\/pricing"/);
+    for (const term of terms)
+      assert.ok(html.includes(term), `${locale || "en"}: ${term}`);
+    for (const hreflang of hreflangs)
+      assert.ok(
+        html.includes(`hreflang="${hreflang}"`),
+        `${locale || "en"}: ${hreflang}`,
+      );
+  }
+});
+
 test("all public pages use clean GA configuration and final URL signals", () => {
   for (const file of publicHtmlFiles()) {
     const html = fs.readFileSync(file, "utf8");
@@ -226,7 +420,7 @@ test("localized legal pages keep SEO links inside the active locale", () => {
       assert.match(html, new RegExp(`href="/${locale}/faq"`));
       assert.doesNotMatch(
         html,
-        /(?:custom-spelling-words-game|spelling-list-game|weekly-spelling-practice)/,
+        /(?:spelling-list-game|weekly-spelling-practice)/,
       );
     }
   }
@@ -394,7 +588,7 @@ test("localized home pages expose the Workspace section without changing practic
   assert.doesNotMatch(home, /365 days on P(?:ro)/);
 });
 
-test("FAQ, About, and Homeschool pages describe current product capabilities", () => {
+test("FAQ, About, and Parent pages describe current product capabilities", () => {
   const faq = fs.readFileSync(path.join(root, "faq.html"), "utf8");
   for (const term of [
     "Today's Review",
@@ -412,19 +606,12 @@ test("FAQ, About, and Homeschool pages describe current product capabilities", (
     about,
     /A small, no-login spelling practice tool|product goal is intentionally narrow/,
   );
-  const homeschool = fs.readFileSync(
-    path.join(root, "homeschool-spelling-practice.html"),
+  const parent = fs.readFileSync(
+    path.join(root, "spelling-practice-for-parents.html"),
     "utf8",
   );
-  for (const term of [
-    "Track Progress Across the Week",
-    "progress",
-    "review",
-    "mastered",
-    "Today's Review",
-  ]) {
-    assert.ok(homeschool.includes(term), term);
-  }
+  for (const term of ["Progress", "Mastery", "Today's Review", "Smart Review"])
+    assert.ok(parent.includes(term), term);
 });
 
 test("FAQ visible questions and JSON-LD entities stay synchronized", () => {
@@ -494,7 +681,7 @@ test("public pages contain no legacy paid product names", () => {
       "index.html",
       "faq.html",
       "privacy.html",
-      "homeschool-spelling-practice.html",
+      "spelling-practice-for-parents.html",
     ]) {
       const content = fs.readFileSync(path.join(root, locale, file), "utf8");
       assert.doesNotMatch(

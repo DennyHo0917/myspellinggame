@@ -16,8 +16,9 @@ const alternates = [
 
 const sharedLinks = [
   "/sight-word-typing-game",
-  "/homeschool-spelling-practice",
-  "/vocabulary-typing-game",
+  "/spelling-practice-for-parents",
+  "/custom-spelling-words-game",
+  "/spelling-assignments-for-teachers",
 ];
 
 const localizedSeoSlugs = [];
@@ -224,7 +225,12 @@ const pages = {
       repeatText:
         "Es una herramienta pequeña para una tarea repetida: tomar una lista corta, practicar, ver qué palabras fallan y repetirlas. Gratis, sin cuentas de estudiante y sin depender de una plataforma escolar.",
     },
-    footerLinks: ["Palabras frecuentes", "En casa", "Vocabulario"],
+    footerLinks: [
+      "Palabras frecuentes",
+      "En casa",
+      "Vocabulario",
+      "Para docentes",
+    ],
     legalLinks: ["Privacidad", "Acerca de", "Contacto"],
     schema: {
       description:
@@ -382,7 +388,12 @@ const pages = {
       repeatText:
         "É uma ferramenta pequena para uma rotina que se repete: pegar uma lista curta, praticar, descobrir os erros e praticar de novo. Grátis, sem conta de aluno e sem depender de plataforma escolar.",
     },
-    footerLinks: ["Palavras frequentes", "Em casa", "Vocabulário"],
+    footerLinks: [
+      "Palavras frequentes",
+      "Em casa",
+      "Vocabulário",
+      "Para professores",
+    ],
     legalLinks: ["Privacidade", "Sobre", "Contato"],
     schema: {
       description:
@@ -540,7 +551,12 @@ const pages = {
       repeatText:
         "L’outil reste volontairement simple : prendre une liste courte, faire pratiquer l’enfant, repérer les mots manqués, puis les refaire. Gratuit, sans compte élève et sans dépendre d’une plateforme scolaire.",
     },
-    footerLinks: ["Mots fréquents", "À la maison", "Vocabulaire"],
+    footerLinks: [
+      "Mots fréquents",
+      "À la maison",
+      "Vocabulaire",
+      "Pour les enseignants",
+    ],
     legalLinks: ["Confidentialité", "À propos", "Contact"],
     schema: {
       description:
@@ -698,7 +714,7 @@ const pages = {
       repeatText:
         "Alat ini sengaja sederhana: ambil daftar pendek, latihan, lihat kata yang terlewat, lalu ulangi. Gratis, tanpa akun siswa, dan tidak bergantung pada platform sekolah.",
     },
-    footerLinks: ["Kata umum", "Di rumah", "Kosakata"],
+    footerLinks: ["Kata umum", "Di rumah", "Kosakata", "Untuk guru"],
     legalLinks: ["Privasi", "Tentang", "Kontak"],
     schema: {
       description:
@@ -846,7 +862,7 @@ const pages = {
       repeatText:
         "这个工具故意做得很小：每周拿到一份单词，练一遍，找到漏掉的词，再练一遍。免费、无需学生账号，也不绑定任何学习平台。",
     },
-    footerLinks: ["高频词练习", "家庭学习", "词汇练习"],
+    footerLinks: ["高频词练习", "家庭学习", "词汇练习", "教师作业"],
     legalLinks: ["隐私", "关于", "联系"],
     schema: {
       description:

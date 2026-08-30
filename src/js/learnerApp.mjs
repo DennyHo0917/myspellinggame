@@ -38,8 +38,9 @@ function footer() {
   element.className = "product-footer";
   const links = [
     "sight-word-typing-game",
-    "homeschool-spelling-practice",
-    "vocabulary-typing-game",
+    "spelling-practice-for-parents",
+    "custom-spelling-words-game",
+    "spelling-assignments-for-teachers",
     "faq",
     "privacy",
     "about",

@@ -704,12 +704,17 @@ a {
   font-weight: 800;
 }
 
-.spelling-actions button:hover,
+.spelling-actions button:hover {
+  border-color: rgba(47, 111, 115, 0.35);
+  background: #f4faf8;
+}
+
 .restart-btn:hover,
 .share-score-btn:hover,
 .close-privacy-btn:hover {
-  border-color: rgba(47, 111, 115, 0.35);
-  background: #f4faf8;
+  border-color: var(--primary-strong);
+  background: var(--primary-strong);
+  color: #ffffff;
 }
 
 .start-btn {
@@ -2164,6 +2169,13 @@ body {
   box-shadow: 0 14px 34px rgba(39, 62, 70, 0.08);
 }
 
+.teacher-landing .parent-practice-hero {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 .parent-eyebrow {
   display: inline-block;
   margin-bottom: 12px;
@@ -2179,6 +2191,14 @@ body {
   text-align: center;
 }
 
+.parent-practice-hero .teacher-flow-line {
+  max-width: none;
+  margin-top: 18px;
+  color: var(--primary);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
 .parent-flow ol {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -2187,6 +2207,10 @@ body {
   padding: 0;
   list-style: none;
   counter-reset: parent-flow;
+}
+
+.teacher-flow ol {
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .parent-flow li {

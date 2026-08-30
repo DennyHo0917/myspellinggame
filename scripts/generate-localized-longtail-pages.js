@@ -81,20 +81,21 @@ const languages = [
 ];
 
 const seoSlugs = [
-  "homeschool-spelling-practice",
+  "custom-spelling-words-game",
   "sight-word-typing-game",
-  "vocabulary-typing-game",
+  "spelling-practice-for-parents",
 ];
 const footerSlugs = [
   "sight-word-typing-game",
-  "homeschool-spelling-practice",
-  "vocabulary-typing-game",
+  "spelling-practice-for-parents",
+  "custom-spelling-words-game",
+  "spelling-assignments-for-teachers",
 ];
 const newLongtailSlugs = [
-  "homeschool-spelling-practice",
+  "custom-spelling-words-game",
   "sight-word-typing-game",
+  "spelling-assignments-for-teachers",
   "spelling-practice-for-parents",
-  "vocabulary-typing-game",
 ];
 const existingLocalizedSlugs = [];
 const legalSlugs = ["about", "contact", "privacy"];
@@ -114,6 +115,7 @@ const labels = {
     start: "Start Practice",
     links: {
       "custom-spelling-words-game": "Custom Spelling Words Game",
+      "spelling-practice-for-parents": "Spelling Practice for Parents",
       "spelling-list-game": "Spelling List Game",
       "weekly-spelling-practice": "Weekly Spelling Practice",
       "homeschool-spelling-practice": "Homeschool Spelling Practice",
@@ -127,6 +129,7 @@ const labels = {
     start: "Empezar práctica",
     links: {
       "custom-spelling-words-game": "Juego con tus palabras",
+      "spelling-practice-for-parents": "Práctica para familias",
       "spelling-list-game": "Juego con lista de spelling",
       "weekly-spelling-practice": "Práctica semanal",
       "homeschool-spelling-practice": "Spelling para educación en casa",
@@ -140,6 +143,7 @@ const labels = {
     start: "Começar prática",
     links: {
       "custom-spelling-words-game": "Jogo com suas palavras",
+      "spelling-practice-for-parents": "Prática para pais",
       "spelling-list-game": "Jogo com lista de palavras",
       "weekly-spelling-practice": "Prática semanal",
       "homeschool-spelling-practice": "Spelling para homeschool",
@@ -153,6 +157,7 @@ const labels = {
     start: "Commencer",
     links: {
       "custom-spelling-words-game": "Jeu avec vos mots",
+      "spelling-practice-for-parents": "Exercices pour les parents",
       "spelling-list-game": "Jeu avec liste de mots",
       "weekly-spelling-practice": "Pratique hebdomadaire",
       "homeschool-spelling-practice": "Orthographe anglaise à la maison",
@@ -166,6 +171,7 @@ const labels = {
     start: "Mulai latihan",
     links: {
       "custom-spelling-words-game": "Game dengan kata sendiri",
+      "spelling-practice-for-parents": "Latihan untuk orang tua",
       "spelling-list-game": "Game daftar kata",
       "weekly-spelling-practice": "Latihan mingguan",
       "homeschool-spelling-practice": "Latihan spelling di rumah",
@@ -179,6 +185,7 @@ const labels = {
     start: "开始练习",
     links: {
       "custom-spelling-words-game": "自定义单词拼写游戏",
+      "spelling-practice-for-parents": "家长英语拼写练习",
       "spelling-list-game": "单词表拼写游戏",
       "weekly-spelling-practice": "每周拼写练习",
       "homeschool-spelling-practice": "家庭英语拼写练习",
@@ -190,7 +197,9 @@ const labels = {
 
 const footerLinks = {
   en: {
-    "custom-spelling-words-game": "Custom Spelling Game",
+    "custom-spelling-words-game": "Vocabulary",
+    "spelling-assignments-for-teachers": "For Teachers",
+    "spelling-practice-for-parents": "Homeschool",
     "spelling-list-game": "Spelling List Game",
     "weekly-spelling-practice": "Weekly Practice",
     "homeschool-spelling-practice": "Homeschool",
@@ -198,7 +207,9 @@ const footerLinks = {
     "vocabulary-typing-game": "Vocabulary",
   },
   es: {
-    "custom-spelling-words-game": "Juego personalizado",
+    "custom-spelling-words-game": "Vocabulario",
+    "spelling-assignments-for-teachers": "Para docentes",
+    "spelling-practice-for-parents": "En casa",
     "spelling-list-game": "Lista de spelling",
     "weekly-spelling-practice": "Práctica semanal",
     "homeschool-spelling-practice": "En casa",
@@ -206,7 +217,9 @@ const footerLinks = {
     "vocabulary-typing-game": "Vocabulario",
   },
   "pt-BR": {
-    "custom-spelling-words-game": "Jogo personalizado",
+    "custom-spelling-words-game": "Vocabulário",
+    "spelling-assignments-for-teachers": "Para professores",
+    "spelling-practice-for-parents": "Em casa",
     "spelling-list-game": "Lista de soletrar",
     "weekly-spelling-practice": "Prática semanal",
     "homeschool-spelling-practice": "Em casa",
@@ -214,7 +227,9 @@ const footerLinks = {
     "vocabulary-typing-game": "Vocabulário",
   },
   fr: {
-    "custom-spelling-words-game": "Jeu personnalisé",
+    "custom-spelling-words-game": "Vocabulaire",
+    "spelling-assignments-for-teachers": "Pour les enseignants",
+    "spelling-practice-for-parents": "À la maison",
     "spelling-list-game": "Liste de mots",
     "weekly-spelling-practice": "Pratique hebdomadaire",
     "homeschool-spelling-practice": "À la maison",
@@ -222,7 +237,9 @@ const footerLinks = {
     "vocabulary-typing-game": "Vocabulaire",
   },
   id: {
-    "custom-spelling-words-game": "Game kata sendiri",
+    "custom-spelling-words-game": "Kosakata",
+    "spelling-assignments-for-teachers": "Untuk guru",
+    "spelling-practice-for-parents": "Di rumah",
     "spelling-list-game": "Daftar spelling",
     "weekly-spelling-practice": "Latihan mingguan",
     "homeschool-spelling-practice": "Di rumah",
@@ -230,7 +247,9 @@ const footerLinks = {
     "vocabulary-typing-game": "Kosakata",
   },
   zh: {
-    "custom-spelling-words-game": "自定义单词游戏",
+    "custom-spelling-words-game": "词汇练习",
+    "spelling-assignments-for-teachers": "教师作业",
+    "spelling-practice-for-parents": "家庭学习",
     "spelling-list-game": "单词表练习",
     "weekly-spelling-practice": "每周拼写练习",
     "homeschool-spelling-practice": "家庭学习",
@@ -312,22 +331,23 @@ function localizeLegacyTerms(value, langCode) {
 const pages = {
   en: {
     "custom-spelling-words-game": {
-      title: "Custom Typing Game With Your Own Words | My Spelling Game",
+      title:
+        "Custom Spelling Words Game With Your Own Words | My Spelling Game",
       description:
-        "Paste your own spelling words and start Typing Rain immediately. Type each falling word, review misses, and play without an account.",
+        "Enter your own spelling words and start instantly. Create a custom spelling words game, replay missed words, and practice with no login.",
       ogDescription:
-        "Paste your own words and start a no-login Typing Rain game.",
-      h1: "Typing Rain With Your Own Spelling Words",
+        "Enter your own spelling words and start a custom no-login game instantly.",
+      h1: "Enter Your Own Spelling Words and Start Instantly",
       intro:
-        "Paste any word list and launch the falling-word typing game with exactly those words.",
+        "Paste custom spelling words below to launch a no-login Typing Rain game using only your own words.",
       panels: [
         [
-          "Paste-And-Play Custom Word Lists",
-          "Parents, teachers, tutors, homeschool families, and ESL instructors often already have the word list. This page turns that list into practice without a lesson builder or student login.",
+          "Use Your Own Words, Not A Random Word Bank",
+          "Paste homework words, a teacher list, vocabulary, or any custom spelling words. Every round uses the exact words you enter.",
         ],
         [
-          "Why It Is Different",
-          "No premade word bank, no class setup, and no account wall. Paste the exact words, play a short round, then replay missed words.",
+          "Custom Spelling Practice With No Login",
+          "Enter your words, start instantly, and replay the words you miss. You can also share the same no-login practice link without setting up student accounts.",
         ],
       ],
       faq: [
@@ -450,22 +470,22 @@ const pages = {
   },
   es: {
     "custom-spelling-words-game": {
-      title: "Juego de Typing con Tus Propias Palabras | My Spelling Game",
+      title: "Juego de Ortografía con Tus Propias Palabras | My Spelling Game",
       description:
-        "Pega tus palabras y empieza Typing Rain al instante. Escribe cada palabra que cae, repasa los fallos y juega sin crear una cuenta.",
+        "Escribe tus propias palabras de ortografía y empieza al instante. Crea un juego personalizado, repite los fallos y practica sin iniciar sesión.",
       ogDescription:
-        "Pega tus palabras y empieza un juego Typing Rain sin cuenta.",
-      h1: "Typing Rain con tus propias palabras",
+        "Escribe tus propias palabras y empieza un juego personalizado sin cuenta.",
+      h1: "Escribe tus propias palabras y empieza al instante",
       intro:
-        "Pega cualquier lista y juega con esas palabras en el modo de typing con palabras que caen.",
+        "Pega tus palabras de ortografía personalizadas y abre una lluvia de palabras sin cuenta que use solo tu lista.",
       panels: [
         [
-          "Para listas reales, no bancos genéricos",
-          "Muchas familias y profesores ya tienen la lista. Lo útil es practicar exactamente esas palabras sin preparar una lección completa.",
+          "Tus propias palabras, no una lista aleatoria",
+          "Pega palabras de tarea, una lista del profesor, vocabulario o cualquier lista personalizada. Cada ronda usa exactamente lo que escribes.",
         ],
         [
-          "Rápido para clase o casa",
-          "Pega la lista, juega una ronda y repite las palabras falladas. El enlace compartido funciona sin cuenta de estudiante.",
+          "Práctica personalizada sin iniciar sesión",
+          "Escribe las palabras, empieza al instante y repite las que falles. También puedes compartir el mismo enlace sin crear cuentas de estudiante.",
         ],
       ],
       faq: [
@@ -588,21 +608,22 @@ const pages = {
   },
   "pt-BR": {
     "custom-spelling-words-game": {
-      title: "Jogo de Digitação com Suas Palavras | My Spelling Game",
+      title: "Jogo de Ortografia com Suas Próprias Palavras | My Spelling Game",
       description:
-        "Cole suas palavras e comece o Typing Rain na hora. Digite cada palavra que cai, revise os erros e jogue sem criar conta.",
-      ogDescription: "Cole suas palavras e comece um Typing Rain sem login.",
-      h1: "Typing Rain com suas próprias palavras",
+        "Digite suas próprias palavras de ortografia e comece na hora. Crie um jogo personalizado, revise os erros e pratique sem conta.",
+      ogDescription:
+        "Digite suas próprias palavras e comece um jogo personalizado sem conta.",
+      h1: "Digite suas próprias palavras e comece na hora",
       intro:
-        "Cole qualquer lista e jogue o modo de digitação com exatamente essas palavras caindo na tela.",
+        "Cole suas palavras de ortografia personalizadas e abra uma chuva de palavras sem conta que use somente a sua lista.",
       panels: [
         [
-          "Para listas reais",
-          "Pais, professores e tutores normalmente já têm a lista. O jogo evita banco genérico e usa só o que foi colado.",
+          "Suas palavras, não um banco aleatório",
+          "Cole palavras da tarefa, uma lista do professor, vocabulário ou qualquer lista personalizada. Cada rodada usa exatamente o que você digitar.",
         ],
         [
-          "Sem preparação longa",
-          "Cole a lista, faça uma rodada curta e revise as palavras erradas. O link compartilhado não exige login de aluno.",
+          "Prática personalizada sem conta",
+          "Digite as palavras, comece na hora e repita as que errar. Você também pode compartilhar o mesmo link sem criar contas de aluno.",
         ],
       ],
       faq: [
@@ -719,21 +740,22 @@ const pages = {
   },
   fr: {
     "custom-spelling-words-game": {
-      title: "Jeu de Frappe avec Vos Propres Mots | My Spelling Game",
+      title: "Jeu d’Orthographe avec Vos Propres Mots | My Spelling Game",
       description:
-        "Collez vos mots et lancez Typing Rain immédiatement. Tapez chaque mot qui tombe, révisez vos erreurs et jouez sans compte.",
-      ogDescription: "Collez vos mots et lancez un Typing Rain sans compte.",
-      h1: "Typing Rain avec vos propres mots",
+        "Saisissez vos propres mots d’orthographe et commencez tout de suite. Créez un jeu personnalisé, révisez les erreurs et pratiquez sans compte.",
+      ogDescription:
+        "Saisissez vos propres mots et lancez immédiatement un jeu personnalisé sans compte.",
+      h1: "Saisissez vos propres mots et commencez tout de suite",
       intro:
-        "Collez n’importe quelle liste et lancez le jeu de frappe avec exactement ces mots à l’écran.",
+        "Collez vos mots d’orthographe personnalisés et lancez une pluie de mots sans compte qui utilise uniquement votre liste.",
       panels: [
         [
-          "Des mots réels, pas une liste générique",
-          "La liste existe souvent déjà. Le plus utile est de la transformer en pratique courte sans préparer une leçon entière.",
+          "Vos mots, pas une liste aléatoire",
+          "Collez les mots d’un devoir, une liste du professeur, du vocabulaire ou toute autre liste personnalisée. Chaque partie utilise exactement ces mots.",
         ],
         [
-          "Pratique rapide",
-          "Collez la liste, jouez une partie et refaites les mots manqués. Le lien partagé fonctionne sans compte élève.",
+          "Pratique personnalisée sans compte",
+          "Saisissez les mots, commencez tout de suite et reprenez ceux qui posent problème. Le même lien se partage sans créer de comptes élèves.",
         ],
       ],
       faq: [
@@ -856,21 +878,22 @@ const pages = {
   },
   id: {
     "custom-spelling-words-game": {
-      title: "Game Mengetik dengan Kata Sendiri | My Spelling Game",
+      title: "Game Ejaan Kustom dengan Kata Sendiri | My Spelling Game",
       description:
-        "Tempel kata sendiri lalu mulai Typing Rain. Ketik setiap kata yang jatuh, ulangi yang salah, dan main tanpa membuat akun.",
-      ogDescription: "Tempel kata sendiri dan mulai Typing Rain tanpa login.",
-      h1: "Typing Rain dengan kata sendiri",
+        "Masukkan kata ejaan sendiri dan langsung mulai. Buat game ejaan kustom, ulangi kata yang salah, dan berlatih tanpa akun.",
+      ogDescription:
+        "Masukkan kata sendiri dan langsung mulai game kustom tanpa akun.",
+      h1: "Masukkan kata sendiri dan langsung mulai",
       intro:
-        "Tempel daftar apa saja lalu mainkan game mengetik dengan kata-kata itu jatuh di layar.",
+        "Tempel kata ejaan kustom lalu buka hujan kata tanpa akun yang hanya memakai daftar milikmu.",
       panels: [
         [
-          "Untuk daftar yang benar-benar dipakai",
-          "Orang tua, guru, dan tutor biasanya sudah punya daftar. Game ini mengubah daftar itu menjadi latihan tanpa bank kata acak.",
+          "Kata milikmu, bukan bank kata acak",
+          "Tempel kata tugas, daftar dari guru, kosakata, atau daftar kustom apa pun. Setiap ronde memakai persis kata yang kamu masukkan.",
         ],
         [
-          "Cepat untuk kelas atau rumah",
-          "Tempel daftar, mainkan ronde pendek, lalu ulangi kata yang salah. Link latihan tidak perlu akun siswa.",
+          "Latihan kustom tanpa akun",
+          "Masukkan kata, langsung mulai, lalu ulangi yang salah. Link latihan yang sama juga bisa dibagikan tanpa membuat akun siswa.",
         ],
       ],
       faq: [
@@ -987,20 +1010,21 @@ const pages = {
   },
   zh: {
     "custom-spelling-words-game": {
-      title: "用自己的单词玩打字游戏 | My Spelling Game",
+      title: "用自己的单词玩自定义英语拼写游戏 | My Spelling Game",
       description:
-        "粘贴自己的英语单词，立即开始 Typing Rain。输入屏幕上掉落的单词，结束后重练漏词，无需账号。",
-      ogDescription: "粘贴自己的单词，直接开始无需登录的 Typing Rain。",
-      h1: "用自己的单词玩 Typing Rain",
-      intro: "粘贴任意英语单词表，让这些单词进入掉落打字游戏。",
+        "输入自己的英语拼写单词，立即开始自定义游戏。只练你的词表，支持漏词重练，全程无需登录。",
+      ogDescription: "输入自己的英语单词，立即开始无需登录的自定义拼写游戏。",
+      h1: "输入自己的英语单词，立即开始",
+      intro:
+        "在下方粘贴自定义英语拼写词表，无需登录，单词雨只使用你输入的单词。",
       panels: [
         [
-          "不是随机词库",
-          "很多时候单词表已经存在，真正需要的是把它快速变成练习，而不是重新建课程。",
+          "用自己的单词，不用随机词库",
+          "作业单词、老师词表、英语词汇或任意自定义单词都可以。每一轮只使用你输入的这份词表。",
         ],
         [
-          "适合课堂和家庭",
-          "粘贴单词，练一轮，再重练漏掉的词。分享链接不需要学生注册账号。",
+          "无需登录的自定义拼写练习",
+          "输入单词后立即开始，漏掉的词可以单独重练。分享同一个练习链接也不需要学生注册账号。",
         ],
       ],
       faq: [
@@ -2715,40 +2739,487 @@ const parentLandingCopy = {
   },
 };
 
+const teacherLandingCopy = {
+  en: {
+    title: "Spelling Assignments for Teachers | My Spelling Game",
+    description:
+      "Paste a spelling list, share one link, and track results without student accounts. Create assignments, monitor mastery, use Smart Review, and export CSV reports.",
+    ogDescription:
+      "Turn any spelling list into a shareable assignment and track class results without student accounts.",
+    h1: "Spelling Assignments Without Student Accounts",
+    eyebrow: "For teachers",
+    intro:
+      "Try a listening practice instantly. In Workspace, turn the same list into an assignment students open with one link, then follow every result.",
+    heroLine: "Paste your spelling list → Share one link → Track results",
+    launcherLabel: "Your spelling list",
+    launcherButton: "Try it now",
+    launcherHelp: "No student accounts · Up to 20 words for instant practice",
+    flowTitle: "From spelling list to class results",
+    flow: ["Paste your spelling list", "Share one link", "Track results"],
+    featuresTitle: "Everything needed for weekly spelling",
+    featuresIntro:
+      "Keep setup simple for students while giving teachers a clear view of practice and progress.",
+    features: [
+      [
+        "No student accounts",
+        "Students open a link or use a class PIN without creating an email login or password.",
+      ],
+      [
+        "Assignments",
+        "Create a tracked assignment from your own words and share it with the whole class.",
+      ],
+      [
+        "Progress",
+        "See submissions, scores, missed words, and improvement across assignments.",
+      ],
+      [
+        "Mastery",
+        "Spot the words each student is learning and the words they consistently know.",
+      ],
+      [
+        "Smart Review",
+        "Build focused follow-up practice from real mistakes instead of repeating every word.",
+      ],
+      [
+        "Class Join/PIN",
+        "Give students one class code and a personal PIN for a quick return to their work.",
+      ],
+      [
+        "CSV",
+        "Export assignment and student results for records, reporting, or further analysis.",
+      ],
+      [
+        "Teacher Plan",
+        "Support up to 40 students with 5 active assignments, unlimited tracked submissions, and 365-day history.",
+      ],
+    ],
+    ctaTitle: "Ready to assign this week's spelling list?",
+    ctaText:
+      "Open Workspace to create a tracked assignment, or compare the Teacher Plan for full class tools.",
+    workspace: "Open Teacher Workspace",
+    plan: "View Teacher Plan",
+    faq: [
+      [
+        "Do students need accounts?",
+        "No. Students can open an assignment link directly or join a class with a code and personal PIN.",
+      ],
+      [
+        "Can I use my own spelling list?",
+        "Yes. Paste the exact words your class is learning, then create and share the assignment.",
+      ],
+      [
+        "What results can teachers track?",
+        "Workspace records submissions, scores, missed words, progress, and mastery. Teacher Plan also includes CSV export and longer history.",
+      ],
+    ],
+  },
+  es: {
+    title: "Tareas de ortografía para docentes | My Spelling Game",
+    description:
+      "Pega una lista de ortografía, comparte un enlace y sigue los resultados sin crear cuentas para alumnos. Consulta progreso y dominio, usa el repaso inteligente y exporta CSV.",
+    ogDescription:
+      "Convierte cualquier lista de ortografía en una tarea compartida y sigue los resultados sin cuentas de alumnos.",
+    h1: "Tareas de ortografía sin cuentas de alumnos",
+    eyebrow: "Para docentes",
+    intro:
+      "Prueba un dictado al instante. En el espacio de trabajo puedes convertir la misma lista en una tarea, compartir un único enlace y seguir cada resultado.",
+    heroLine: "Pega tu lista → Comparte un enlace → Sigue los resultados",
+    launcherLabel: "Tu lista de ortografía",
+    launcherButton: "Probar ahora",
+    launcherHelp: "Sin cuentas de alumnos · Hasta 20 palabras en la prueba",
+    flowTitle: "De la lista a los resultados de clase",
+    flow: ["Pega tu lista", "Comparte un enlace", "Sigue los resultados"],
+    featuresTitle: "Todo lo necesario para las tareas semanales",
+    featuresIntro:
+      "Una experiencia sencilla para el alumnado y una visión clara de la práctica para el docente.",
+    features: [
+      [
+        "Sin cuentas para alumnos",
+        "Los alumnos abren un enlace o usan el PIN de clase, sin correo, cuenta ni contraseña.",
+      ],
+      [
+        "Tareas",
+        "Crea una tarea con seguimiento a partir de tus palabras y compártela con toda la clase.",
+      ],
+      [
+        "Progreso",
+        "Consulta entregas, resultados, errores y mejoras entre distintas tareas.",
+      ],
+      [
+        "Dominio",
+        "Distingue las palabras que cada alumno sigue aprendiendo de las que ya domina.",
+      ],
+      [
+        "Repaso inteligente",
+        "Crea prácticas específicas a partir de errores reales sin repetir toda la lista.",
+      ],
+      [
+        "Acceso a clase/PIN",
+        "Da a los alumnos un código de clase y un PIN personal para volver rápidamente a sus tareas.",
+      ],
+      [
+        "CSV",
+        "Exporta resultados por tarea y alumno para informes, registros o análisis.",
+      ],
+      [
+        "Plan para docentes",
+        "Hasta 40 alumnos, 5 tareas activas, entregas registradas ilimitadas y 365 días de historial.",
+      ],
+    ],
+    ctaTitle: "¿Quieres asignar la lista de esta semana?",
+    ctaText:
+      "Abre el espacio de trabajo para crear una tarea con seguimiento o consulta el Plan para docentes.",
+    workspace: "Abrir espacio para docentes",
+    plan: "Ver Plan para docentes",
+    faq: [
+      [
+        "¿Los alumnos necesitan una cuenta?",
+        "No. Pueden abrir directamente el enlace de la tarea o entrar con un código de clase y su PIN personal.",
+      ],
+      [
+        "¿Puedo usar mi propia lista de palabras?",
+        "Sí. Pega las palabras exactas que está aprendiendo la clase y crea la tarea para compartirla.",
+      ],
+      [
+        "¿Qué resultados puede seguir el docente?",
+        "El espacio de trabajo registra entregas, resultados, errores, progreso y dominio. El Plan para docentes añade exportación CSV e historial ampliado.",
+      ],
+    ],
+  },
+  "pt-BR": {
+    title: "Atividades de ortografia para professores | My Spelling Game",
+    description:
+      "Cole uma lista de ortografia, compartilhe um link e acompanhe os resultados sem contas de alunos. Veja progresso e domínio, use a revisão inteligente e exporte CSV.",
+    ogDescription:
+      "Transforme qualquer lista de ortografia em uma atividade compartilhável e acompanhe a turma sem contas de alunos.",
+    h1: "Atividades de ortografia sem contas de alunos",
+    eyebrow: "Para professores",
+    intro:
+      "Teste um ditado na hora. No espaço de trabalho, transforme a mesma lista em uma atividade, compartilhe um único link e acompanhe cada resultado.",
+    heroLine: "Cole sua lista → Compartilhe um link → Acompanhe os resultados",
+    launcherLabel: "Sua lista de ortografia",
+    launcherButton: "Testar agora",
+    launcherHelp: "Sem contas de alunos · Até 20 palavras no teste",
+    flowTitle: "Da lista aos resultados da turma",
+    flow: ["Cole sua lista", "Compartilhe um link", "Acompanhe os resultados"],
+    featuresTitle: "Tudo para as atividades semanais de ortografia",
+    featuresIntro:
+      "Entrada simples para os alunos e uma visão clara da prática para o professor.",
+    features: [
+      [
+        "Sem contas de alunos",
+        "Os alunos abrem um link ou usam o PIN da turma, sem e-mail, conta ou senha.",
+      ],
+      [
+        "Atividades",
+        "Crie uma atividade acompanhada com suas palavras e compartilhe com toda a turma.",
+      ],
+      [
+        "Progresso",
+        "Veja envios, resultados, palavras erradas e melhora entre atividades.",
+      ],
+      [
+        "Domínio",
+        "Saiba quais palavras cada aluno ainda está aprendendo e quais já domina.",
+      ],
+      [
+        "Revisão inteligente",
+        "Crie práticas focadas com base nos erros reais sem repetir a lista inteira.",
+      ],
+      [
+        "Entrada na turma/PIN",
+        "Dê aos alunos um código da turma e um PIN pessoal para voltar rapidamente às atividades.",
+      ],
+      [
+        "CSV",
+        "Exporte resultados por atividade e aluno para registros, relatórios ou análise.",
+      ],
+      [
+        "Plano para Professores",
+        "Até 40 alunos, 5 atividades ativas, envios acompanhados ilimitados e histórico de 365 dias.",
+      ],
+    ],
+    ctaTitle: "Pronto para passar a lista desta semana?",
+    ctaText:
+      "Abra o espaço de trabalho para criar uma atividade acompanhada ou veja o Plano para Professores.",
+    workspace: "Abrir espaço do professor",
+    plan: "Ver Plano para Professores",
+    faq: [
+      [
+        "Os alunos precisam de conta?",
+        "Não. Eles podem abrir o link da atividade diretamente ou entrar com o código da turma e o PIN pessoal.",
+      ],
+      [
+        "Posso usar minha própria lista de palavras?",
+        "Sim. Cole exatamente as palavras que a turma está estudando e crie a atividade para compartilhar.",
+      ],
+      [
+        "Quais resultados o professor pode acompanhar?",
+        "O espaço de trabalho registra envios, resultados, erros, progresso e domínio. O Plano para Professores também inclui exportação CSV e histórico ampliado.",
+      ],
+    ],
+  },
+  fr: {
+    title: "Devoirs d’orthographe pour enseignants | My Spelling Game",
+    description:
+      "Collez une liste d’orthographe, partagez un lien et suivez les résultats sans compte élève. Consultez progression et maîtrise, utilisez la révision intelligente et exportez en CSV.",
+    ogDescription:
+      "Transformez une liste d’orthographe en devoir à partager et suivez la classe sans compte élève.",
+    h1: "Des devoirs d’orthographe sans compte élève",
+    eyebrow: "Pour les enseignants",
+    intro:
+      "Testez une dictée immédiatement. Dans l’espace de travail, transformez la même liste en devoir, partagez un seul lien et suivez chaque résultat.",
+    heroLine: "Collez votre liste → Partagez un lien → Suivez les résultats",
+    launcherLabel: "Votre liste d’orthographe",
+    launcherButton: "Tester maintenant",
+    launcherHelp: "Sans compte élève · Jusqu’à 20 mots pour l’essai",
+    flowTitle: "De la liste aux résultats de la classe",
+    flow: ["Collez votre liste", "Partagez un lien", "Suivez les résultats"],
+    featuresTitle: "Tout le nécessaire pour les devoirs de la semaine",
+    featuresIntro:
+      "Un accès simple pour les élèves et une vision claire des exercices pour l’enseignant.",
+    features: [
+      [
+        "Sans compte élève",
+        "Les élèves ouvrent un lien ou utilisent le code et leur PIN, sans e-mail, compte ni mot de passe.",
+      ],
+      [
+        "Devoirs",
+        "Créez un devoir suivi avec vos propres mots et partagez-le avec toute la classe.",
+      ],
+      [
+        "Progression",
+        "Consultez les remises, les résultats, les erreurs et l’évolution entre les devoirs.",
+      ],
+      [
+        "Maîtrise",
+        "Repérez les mots que chaque élève apprend encore et ceux qu’il maîtrise durablement.",
+      ],
+      [
+        "Révision intelligente",
+        "Créez des exercices ciblés à partir des vraies erreurs sans reprendre toute la liste.",
+      ],
+      [
+        "Accès classe/PIN",
+        "Donnez aux élèves un code de classe et un PIN personnel pour retrouver rapidement leur travail.",
+      ],
+      [
+        "CSV",
+        "Exportez les résultats par devoir et par élève pour vos dossiers, bilans ou analyses.",
+      ],
+      [
+        "Offre Enseignants",
+        "Jusqu’à 40 élèves, 5 devoirs actifs, remises suivies illimitées et historique sur 365 jours.",
+      ],
+    ],
+    ctaTitle: "Prêt à donner la liste de cette semaine ?",
+    ctaText:
+      "Ouvrez l’espace de travail pour créer un devoir suivi ou découvrez l’Offre Enseignants.",
+    workspace: "Ouvrir l’espace enseignant",
+    plan: "Voir l’Offre Enseignants",
+    faq: [
+      [
+        "Les élèves ont-ils besoin d’un compte ?",
+        "Non. Ils ouvrent directement le lien du devoir ou rejoignent la classe avec un code et leur PIN personnel.",
+      ],
+      [
+        "Puis-je utiliser ma propre liste de mots ?",
+        "Oui. Collez exactement les mots étudiés en classe, puis créez et partagez le devoir.",
+      ],
+      [
+        "Quels résultats l’enseignant peut-il suivre ?",
+        "L’espace de travail enregistre remises, résultats, erreurs, progression et maîtrise. L’Offre Enseignants ajoute l’export CSV et un historique étendu.",
+      ],
+    ],
+  },
+  id: {
+    title: "Tugas ejaan untuk guru | My Spelling Game",
+    description:
+      "Tempel daftar ejaan, bagikan satu link, dan pantau hasil tanpa akun siswa. Lihat perkembangan dan penguasaan, gunakan ulasan pintar, serta ekspor CSV.",
+    ogDescription:
+      "Ubah daftar ejaan menjadi tugas yang mudah dibagikan dan pantau kelas tanpa akun siswa.",
+    h1: "Tugas ejaan tanpa akun siswa",
+    eyebrow: "Untuk guru",
+    intro:
+      "Coba latihan dikte seketika. Di ruang kerja, ubah daftar yang sama menjadi tugas, bagikan satu link, lalu pantau setiap hasil.",
+    heroLine: "Tempel daftar ejaan → Bagikan satu link → Pantau hasil",
+    launcherLabel: "Daftar ejaan Anda",
+    launcherButton: "Coba sekarang",
+    launcherHelp: "Tanpa akun siswa · Hingga 20 kata untuk uji coba",
+    flowTitle: "Dari daftar ke hasil kelas",
+    flow: ["Tempel daftar ejaan", "Bagikan satu link", "Pantau hasil"],
+    featuresTitle: "Semua yang dibutuhkan untuk tugas ejaan mingguan",
+    featuresIntro:
+      "Akses sederhana bagi siswa dan gambaran latihan yang jelas bagi guru.",
+    features: [
+      [
+        "Tanpa akun siswa",
+        "Siswa membuka link atau memakai kode kelas dan PIN tanpa email, akun, atau kata sandi.",
+      ],
+      [
+        "Tugas",
+        "Buat tugas terlacak dari kata Anda sendiri dan bagikan kepada seluruh kelas.",
+      ],
+      [
+        "Perkembangan",
+        "Lihat kiriman, hasil, kata yang salah, dan peningkatan antartugas.",
+      ],
+      [
+        "Penguasaan",
+        "Ketahui kata yang masih dipelajari setiap siswa dan yang sudah dikuasai secara konsisten.",
+      ],
+      [
+        "Ulasan pintar",
+        "Buat latihan lanjutan dari kesalahan nyata tanpa mengulang seluruh daftar.",
+      ],
+      [
+        "Gabung kelas/PIN",
+        "Berikan kode kelas dan PIN pribadi agar siswa cepat kembali ke tugas mereka.",
+      ],
+      [
+        "CSV",
+        "Ekspor hasil tugas dan siswa untuk arsip, laporan, atau analisis lanjutan.",
+      ],
+      [
+        "Paket Guru",
+        "Hingga 40 siswa, 5 tugas aktif, kiriman terlacak tanpa batas, dan riwayat 365 hari.",
+      ],
+    ],
+    ctaTitle: "Siap memberikan daftar ejaan minggu ini?",
+    ctaText:
+      "Buka ruang kerja untuk membuat tugas terlacak atau lihat Paket Guru untuk alat kelas lengkap.",
+    workspace: "Buka ruang kerja guru",
+    plan: "Lihat Paket Guru",
+    faq: [
+      [
+        "Apakah siswa memerlukan akun?",
+        "Tidak. Siswa dapat langsung membuka link tugas atau bergabung dengan kode kelas dan PIN pribadi.",
+      ],
+      [
+        "Bisakah saya memakai daftar ejaan sendiri?",
+        "Bisa. Tempel kata yang sedang dipelajari kelas, lalu buat dan bagikan tugasnya.",
+      ],
+      [
+        "Hasil apa yang dapat dipantau guru?",
+        "Ruang kerja mencatat kiriman, hasil, kesalahan, perkembangan, dan penguasaan. Paket Guru juga mencakup ekspor CSV dan riwayat yang lebih panjang.",
+      ],
+    ],
+  },
+  zh: {
+    title: "教师英语拼写作业 | My Spelling Game",
+    description:
+      "粘贴英语词表，分享一个链接，无需学生账号即可追踪结果；还能查看学习进度与掌握度、使用智能复习并导出 CSV。",
+    ogDescription: "把任意英语词表变成可分享、可追踪的班级作业，无需学生账号。",
+    h1: "无需学生账号的英语拼写作业",
+    eyebrow: "为教师而做",
+    intro:
+      "立即试用听写练习；进入工作台后，可把同一份词表创建为作业，让学生通过一个链接完成，并持续追踪结果。",
+    heroLine: "粘贴词表 → 分享一个链接 → 追踪结果",
+    launcherLabel: "你的英语拼写词表",
+    launcherButton: "立即试用",
+    launcherHelp: "无需学生账号 · 试用最多支持 20 个单词",
+    flowTitle: "从词表到全班练习结果",
+    flow: ["粘贴英语词表", "分享一个链接", "追踪练习结果"],
+    featuresTitle: "每周英语拼写作业所需功能",
+    featuresIntro: "学生进入简单，教师也能清楚掌握练习与进步情况。",
+    features: [
+      [
+        "无需学生账号",
+        "学生通过作业链接或班级代码与 PIN 进入，无需邮箱、账号或密码。",
+      ],
+      ["作业", "用自己的词表创建可追踪作业，并分享给全班学生。"],
+      ["学习进度", "查看提交记录、成绩、错词和不同作业之间的进步。"],
+      ["掌握度", "分清每位学生仍在学习的单词和已经稳定掌握的单词。"],
+      ["智能复习", "根据真实错词生成针对性后续练习，不必重复整份词表。"],
+      [
+        "班级加入/PIN",
+        "向学生提供班级代码和个人 PIN，方便他们快速回到自己的作业。",
+      ],
+      ["CSV", "按作业和学生导出结果，便于留档、汇报或进一步分析。"],
+      [
+        "教师方案",
+        "最多支持 40 名学生和 5 份活跃作业，提交追踪不限量，并保留 365 天记录。",
+      ],
+    ],
+    ctaTitle: "准备布置本周英语拼写作业了吗？",
+    ctaText: "进入工作台创建可追踪作业，或查看教师方案的完整班级功能。",
+    workspace: "进入教师工作台",
+    plan: "查看教师方案",
+    faq: [
+      [
+        "学生需要注册账号吗？",
+        "不需要。学生可以直接打开作业链接，也可以使用班级代码和个人 PIN 加入。",
+      ],
+      [
+        "可以使用自己的英语词表吗？",
+        "可以。粘贴班级正在学习的单词，即可创建并分享作业。",
+      ],
+      [
+        "教师可以追踪哪些结果？",
+        "工作台会记录提交、成绩、错词、学习进度和掌握度；教师方案还支持 CSV 导出和更长的历史记录。",
+      ],
+    ],
+  },
+};
+
 const customLauncher = {
   en: {
-    label: "Words for Typing Rain",
-    button: "Start Typing Rain",
+    label: "Your own spelling words",
+    button: "Start Instantly",
+    help: "No login needed · Up to 20 custom spelling words",
+    sightLabel: "Sight words",
+    sightButton: "Start Typing Game",
+    sightHelp: "No login needed · Up to 20 sight words",
     invalid: "Enter at least one word.",
     limit: "No-login practice supports up to 20 words per list.",
   },
   es: {
-    label: "Palabras para Typing Rain",
-    button: "Empezar Typing Rain",
+    label: "Tus propias palabras de ortografía",
+    button: "Empezar ahora",
+    help: "Sin iniciar sesión · Hasta 20 palabras personalizadas",
+    sightLabel: "Palabras frecuentes (sight words)",
+    sightButton: "Empezar el juego de mecanografía",
+    sightHelp: "Sin iniciar sesión · Hasta 20 sight words",
     invalid: "Escribe al menos una palabra.",
     limit: "La práctica sin cuenta admite hasta 20 palabras por lista.",
   },
   "pt-BR": {
-    label: "Palavras para o Typing Rain",
-    button: "Começar Typing Rain",
+    label: "Suas próprias palavras de ortografia",
+    button: "Começar agora",
+    help: "Sem conta · Até 20 palavras personalizadas",
+    sightLabel: "Palavras frequentes (sight words)",
+    sightButton: "Começar o jogo de digitação",
+    sightHelp: "Sem login · Até 20 sight words",
     invalid: "Digite pelo menos uma palavra.",
     limit: "A prática sem conta aceita até 20 palavras por lista.",
   },
   fr: {
-    label: "Mots pour Typing Rain",
-    button: "Lancer Typing Rain",
+    label: "Vos propres mots d’orthographe",
+    button: "Commencer maintenant",
+    help: "Sans compte · Jusqu’à 20 mots personnalisés",
+    sightLabel: "Mots fréquents (sight words)",
+    sightButton: "Lancer le jeu de frappe",
+    sightHelp: "Sans connexion · Jusqu’à 20 sight words",
     invalid: "Saisissez au moins un mot.",
     limit: "L’entraînement sans compte accepte jusqu’à 20 mots par liste.",
   },
   id: {
-    label: "Kata untuk Typing Rain",
-    button: "Mulai Typing Rain",
+    label: "Kata ejaan sendiri",
+    button: "Mulai sekarang",
+    help: "Tanpa akun · Maksimal 20 kata kustom",
+    sightLabel: "Sight words (kata umum)",
+    sightButton: "Mulai game mengetik",
+    sightHelp: "Tanpa akun · Maksimal 20 sight words",
     invalid: "Masukkan setidaknya satu kata.",
     limit: "Latihan tanpa akun mendukung hingga 20 kata per daftar.",
   },
   zh: {
-    label: "Typing Rain 单词表",
-    button: "开始 Typing Rain",
+    label: "你自己的英语拼写单词",
+    button: "立即开始游戏",
+    help: "无需登录 · 最多输入 20 个自定义单词",
+    sightLabel: "Sight words 高频词",
+    sightButton: "开始打字游戏",
+    sightHelp: "无需登录 · 最多输入 20 个 sight words",
     invalid: "请至少输入一个英语单词。",
     limit: "无需登录的练习每份词表最多 20 个单词。",
   },
@@ -2881,8 +3352,10 @@ function schemaScripts(lang, slug, page) {
   };
   if (lang.code === "en") {
     webpage.dateModified = {
+      "custom-spelling-words-game": "2026-08-30",
       "homeschool-spelling-practice": "2026-08-23",
-      "sight-word-typing-game": "2026-06-22",
+      "sight-word-typing-game": "2026-08-30",
+      "spelling-assignments-for-teachers": "2026-08-30",
       "spelling-practice-for-parents": "2026-08-30",
       "vocabulary-typing-game": "2026-06-22",
     }[slug];
@@ -2921,32 +3394,32 @@ function schemaScripts(lang, slug, page) {
     .join("\n");
 }
 
-function parentLandingMain(langCode, lang, copy) {
+function audienceLandingMain(langCode, lang, copy, audience) {
   const workspaceUrl = `/teacher?lang=${encodeURIComponent(langCode)}`;
   const pricingUrl = pagePath(lang, "pricing");
-  return `    <main class="seo-landing content-page parent-landing">
+  return `    <main class="seo-landing content-page parent-landing${audience === "teacher" ? " teacher-landing" : ""}">
         <section class="seo-hero parent-practice-hero">
             <span class="parent-eyebrow">${copy.eyebrow}</span>
             <h1>${copy.h1}</h1>
-            <p>${copy.intro}</p>
+            <p>${copy.intro}</p>${copy.heroLine ? `\n            <p class="teacher-flow-line">${copy.heroLine}</p>` : ""}
             <form class="landing-launcher" action="${dirPath(lang)}" data-mode="dictation" data-invalid="${escapeAttr(customLauncher[langCode].invalid)}" data-limit="${escapeAttr(customLauncher[langCode].limit)}">
-                <label for="parent-words-${langCode}">${copy.launcherLabel}</label>
-                <textarea id="parent-words-${langCode}" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
+                <label for="${audience}-words-${langCode}">${copy.launcherLabel}</label>
+                <textarea id="${audience}-words-${langCode}" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">${copy.launcherButton}</button>
                 <small>${copy.launcherHelp}</small>
             </form>
         </section>
 
-        <section class="seo-panel parent-flow" aria-labelledby="parent-flow-${langCode}">
-            <h2 id="parent-flow-${langCode}">${copy.flowTitle}</h2>
+        <section class="seo-panel parent-flow${audience === "teacher" ? " teacher-flow" : ""}" aria-labelledby="${audience}-flow-${langCode}">
+            <h2 id="${audience}-flow-${langCode}">${copy.flowTitle}</h2>
             <ol>
 ${copy.flow.map((step) => `                <li>${step}</li>`).join("\n")}
             </ol>
         </section>
 
-        <section class="parent-value-section" aria-labelledby="parent-values-${langCode}">
+        <section class="parent-value-section" aria-labelledby="${audience}-values-${langCode}">
             <div class="parent-section-heading">
-                <h2 id="parent-values-${langCode}">${copy.featuresTitle}</h2>
+                <h2 id="${audience}-values-${langCode}">${copy.featuresTitle}</h2>
                 <p>${copy.featuresIntro}</p>
             </div>
             <div class="parent-value-grid">
@@ -2969,11 +3442,15 @@ ${faqHtml(langCode, copy.faq)}
 
 function renderPage(langCode, slug) {
   const lang = languages.find((item) => item.code === langCode);
-  const parentCopy =
+  const audience =
+    slug === "spelling-practice-for-parents" ? "parent" : "teacher";
+  const audienceCopy =
     slug === "spelling-practice-for-parents"
       ? parentLandingCopy[langCode]
-      : null;
-  const page = parentCopy || pages[langCode][slug];
+      : slug === "spelling-assignments-for-teachers"
+        ? teacherLandingCopy[langCode]
+        : null;
+  const page = audienceCopy || pages[langCode][slug];
   const launcher = customLauncher[langCode];
   return `<!DOCTYPE html>
 <html lang="${lang.htmlLang}">
@@ -3023,18 +3500,19 @@ ${alternateLinks(slug)}
 <body>
 ${languageMenu(langCode, slug)}
 ${
-  parentCopy
-    ? parentLandingMain(langCode, lang, parentCopy)
+  audienceCopy
+    ? audienceLandingMain(langCode, lang, audienceCopy, audience)
     : `    <main class="seo-landing content-page">
         <section class="seo-hero">
             <h1>${localizeLegacyTerms(page.h1, langCode)}</h1>
             <p>${localizeLegacyTerms(page.intro, langCode)}</p>
 ${
-  slug === "custom-spelling-words-game"
+  slug === "custom-spelling-words-game" || slug === "sight-word-typing-game"
     ? `            <form class="landing-launcher" action="${dirPath(lang)}" data-mode="typing" data-invalid="${escapeAttr(launcher.invalid)}" data-limit="${escapeAttr(launcher.limit)}">
-                <label for="custom-words-${langCode}">${localizeLegacyTerms(launcher.label, langCode)}</label>
-                <textarea id="custom-words-${langCode}" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
-                <button type="submit">${localizeLegacyTerms(launcher.button, langCode)}</button>
+                <label for="${slug === "sight-word-typing-game" ? "sight" : "custom"}-words-${langCode}">${localizeLegacyTerms(slug === "sight-word-typing-game" ? launcher.sightLabel : launcher.label, langCode)}</label>
+                <textarea id="${slug === "sight-word-typing-game" ? "sight" : "custom"}-words-${langCode}" name="words" required spellcheck="false" placeholder="${slug === "sight-word-typing-game" ? "the&#10;and&#10;you&#10;said" : "because&#10;friend&#10;beautiful"}"></textarea>
+                <button type="submit">${localizeLegacyTerms(slug === "sight-word-typing-game" ? launcher.sightButton : launcher.button, langCode)}</button>
+                <small>${localizeLegacyTerms(slug === "sight-word-typing-game" ? launcher.sightHelp : launcher.help, langCode)}</small>
             </form>`
     : `            <a class="seo-cta" href="${dirPath(lang)}">${labels[langCode].start}</a>`
 }

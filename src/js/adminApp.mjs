@@ -9,8 +9,16 @@ const pageLabel = document.getElementById("admin-page");
 const previous = document.getElementById("admin-previous");
 const next = document.getElementById("admin-next");
 const queryInput = document.getElementById("admin-query");
+const ordersBody = document.getElementById("admin-orders");
+const ordersStatus = document.getElementById("admin-orders-status");
+const ordersPageLabel = document.getElementById("admin-orders-page");
+const ordersPrevious = document.getElementById("admin-orders-previous");
+const ordersNext = document.getElementById("admin-orders-next");
+const orderQueryInput = document.getElementById("admin-order-query");
 let page = 1;
 let query = "";
+let ordersPage = 1;
+let orderQuery = "";
 
 async function api(path, options = {}) {
   const response = await fetch(path, {
@@ -22,7 +30,21 @@ async function api(path, options = {}) {
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const error = new Error(data.message || "操作失败，请稍后重试。");
+    const message =
+      {
+        sign_in_required: "请先登录后再继续。",
+        admin_forbidden: "当前账号没有管理后台访问权限。",
+        invalid_origin: "请求来源无效，请刷新页面后重试。",
+        json_required: "请求格式不正确。",
+        invalid_json: "请求内容格式不正确。",
+        body_too_large: "请求内容过大。",
+        invalid_page: "页码必须是正整数。",
+        invalid_admin_plan: "请选择有效的方案。",
+        user_not_found: "未找到该用户。",
+        method_not_allowed: "不支持此请求方式。",
+        admin_not_found: "未找到该管理接口。",
+      }[data.error] || "操作失败，请稍后重试。";
+    const error = new Error(message);
     error.status = response.status;
     throw error;
   }
@@ -72,6 +94,45 @@ function formatBillingInterval(value) {
   return { month: "月付", year: "年付" }[value] || value || "-";
 }
 
+function formatPlan(value) {
+  return (
+    {
+      free: "免费方案",
+      parent: "家长方案",
+      teacher: "教师方案",
+      plus: "家长方案（历史兼容）",
+      pro: "教师方案（历史兼容）",
+    }[value] || "免费方案"
+  );
+}
+
+function formatOrderStatus(value) {
+  return (
+    {
+      pending: "待完成",
+      completed: "已完成，待确认支付",
+      paid: "支付成功",
+      failed: "支付失败",
+      canceled: "已取消",
+      expired: "已过期",
+    }[value] ||
+    value ||
+    "-"
+  );
+}
+
+function formatAmount(amount, currency) {
+  if (!Number.isInteger(amount) || !currency) return "-";
+  try {
+    return new Intl.NumberFormat("zh-CN", {
+      style: "currency",
+      currency: currency.toUpperCase(),
+    }).format(amount / 100);
+  } catch {
+    return `${currency.toUpperCase()} ${(amount / 100).toFixed(2)}`;
+  }
+}
+
 function renderStats(stats) {
   const labels = [
     ["注册用户总数", stats.totalUsers],
@@ -109,13 +170,7 @@ async function loadUsers() {
         user.name,
         user.email,
         formatProvider(user.loginProvider),
-        {
-          free: "免费方案",
-          parent: "家长方案",
-          teacher: "教师方案",
-          plus: "家长方案（历史兼容）",
-          pro: "教师方案（历史兼容）",
-        }[user.plan] || "免费方案",
+        `${formatPlan(user.plan)}${user.adminPlan ? "（管理员指定）" : ""}`,
         formatSubscriptionStatus(user.subscriptionStatus),
         formatBillingInterval(user.billingInterval),
         formatDate(user.currentPeriodEnd),
@@ -125,6 +180,46 @@ async function loadUsers() {
         cell.textContent = value;
         row.append(cell);
       }
+      const actionCell = document.createElement("td");
+      const controls = document.createElement("div");
+      controls.className = "admin-plan-controls";
+      const select = document.createElement("select");
+      select.setAttribute("aria-label", `调整 ${user.email} 的方案`);
+      for (const [value, label] of [
+        ["", "按订阅自动判断"],
+        ["parent", "家长方案"],
+        ["teacher", "教师方案"],
+      ]) {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = label;
+        option.selected = (user.adminPlan || "") === value;
+        select.append(option);
+      }
+      const save = document.createElement("button");
+      save.type = "button";
+      save.className = "button-secondary";
+      save.textContent = "保存";
+      save.addEventListener("click", async () => {
+        select.disabled = true;
+        save.disabled = true;
+        usersStatus.textContent = "正在保存方案……";
+        try {
+          await api(`/api/admin/users/${encodeURIComponent(user.id)}/plan`, {
+            method: "PUT",
+            body: JSON.stringify({ plan: select.value || null }),
+          });
+          usersStatus.textContent = "方案已更新。";
+          await loadUsers();
+        } catch (error) {
+          usersStatus.textContent = error.message;
+          select.disabled = false;
+          save.disabled = false;
+        }
+      });
+      controls.append(select, save);
+      actionCell.append(controls);
+      row.append(actionCell);
       return row;
     }),
   );
@@ -135,12 +230,47 @@ async function loadUsers() {
   usersStatus.textContent = data.users.length ? "" : "没有找到用户。";
 }
 
+async function loadOrders() {
+  ordersStatus.textContent = "正在加载充值订单……";
+  const params = new URLSearchParams({
+    page: String(ordersPage),
+    q: orderQuery,
+  });
+  const data = await api(`/api/admin/orders?${params}`);
+  ordersBody.replaceChildren(
+    ...data.orders.map((order) => {
+      const row = document.createElement("tr");
+      for (const value of [
+        formatDate(order.createdAt),
+        order.name,
+        order.email,
+        formatPlan(order.plan),
+        formatBillingInterval(order.billingInterval),
+        formatAmount(order.amountTotal, order.currency),
+        formatOrderStatus(order.status),
+        order.id,
+        formatDate(order.updatedAt),
+      ]) {
+        const cell = document.createElement("td");
+        cell.textContent = value;
+        row.append(cell);
+      }
+      return row;
+    }),
+  );
+  const pages = Math.max(1, Math.ceil(data.total / data.pageSize));
+  ordersPageLabel.textContent = `第 ${data.page} / ${pages} 页 · 共 ${data.total} 笔订单`;
+  ordersPrevious.disabled = data.page <= 1;
+  ordersNext.disabled = data.page >= pages;
+  ordersStatus.textContent = data.orders.length ? "" : "没有找到充值订单。";
+}
+
 async function loadDashboard() {
   const stats = await api("/api/admin/stats");
   show(dashboard);
   signOut.hidden = false;
   renderStats(stats);
-  await loadUsers();
+  await Promise.all([loadUsers(), loadOrders()]);
 }
 
 document
@@ -164,10 +294,36 @@ next.addEventListener("click", async () => {
   await loadUsers().catch((error) => (usersStatus.textContent = error.message));
 });
 
-document.getElementById("admin-refresh").addEventListener("click", async () => {
-  await loadDashboard().catch(
-    (error) => (usersStatus.textContent = error.message),
+document
+  .getElementById("admin-order-search")
+  .addEventListener("submit", async (event) => {
+    event.preventDefault();
+    orderQuery = orderQueryInput.value.trim();
+    ordersPage = 1;
+    await loadOrders().catch(
+      (error) => (ordersStatus.textContent = error.message),
+    );
+  });
+
+ordersPrevious.addEventListener("click", async () => {
+  ordersPage -= 1;
+  await loadOrders().catch(
+    (error) => (ordersStatus.textContent = error.message),
   );
+});
+
+ordersNext.addEventListener("click", async () => {
+  ordersPage += 1;
+  await loadOrders().catch(
+    (error) => (ordersStatus.textContent = error.message),
+  );
+});
+
+document.getElementById("admin-refresh").addEventListener("click", async () => {
+  await loadDashboard().catch((error) => {
+    usersStatus.textContent = error.message;
+    ordersStatus.textContent = error.message;
+  });
 });
 
 for (const button of document.querySelectorAll("[data-auth-provider]")) {

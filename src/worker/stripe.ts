@@ -27,7 +27,19 @@ type CheckoutOptions = {
   createSession?: (
     params: Stripe.Checkout.SessionCreateParams,
     options: Stripe.RequestOptions,
-  ) => Promise<Pick<Stripe.Checkout.Session, "id" | "url" | "expires_at">>;
+  ) => Promise<
+    Pick<Stripe.Checkout.Session, "id" | "url" | "expires_at"> &
+      Partial<
+        Pick<
+          Stripe.Checkout.Session,
+          | "amount_total"
+          | "currency"
+          | "customer"
+          | "subscription"
+          | "payment_status"
+        >
+      >
+  >;
   expireSession?: (sessionId: string) => Promise<unknown>;
 };
 
@@ -170,6 +182,30 @@ async function clearCheckoutLock(
     .run();
 }
 
+async function updateOrderFromSession(
+  db: D1Database,
+  session: Stripe.Checkout.Session,
+  status: "completed" | "paid" | "failed" | "expired",
+) {
+  await db
+    .prepare(
+      `UPDATE payment_orders SET status = ?, stripe_customer_id = COALESCE(?, stripe_customer_id),
+       stripe_subscription_id = COALESCE(?, stripe_subscription_id),
+       amount_total = COALESCE(?, amount_total), currency = COALESCE(?, currency),
+       updated_at = ? WHERE id = ? AND status NOT IN ('canceled', 'paid')`,
+    )
+    .bind(
+      status,
+      objectId(session.customer),
+      objectId(session.subscription),
+      session.amount_total ?? null,
+      session.currency ?? null,
+      new Date().toISOString(),
+      session.id,
+    )
+    .run();
+}
+
 export async function createCheckout(
   env: StripeEnv,
   db: D1Database,
@@ -256,8 +292,15 @@ export async function createCheckout(
         "checkout_pending",
         "A subscription checkout is already being created.",
       );
-    if (existingLock.stripe_session_id)
+    if (existingLock.stripe_session_id) {
       await expireCheckoutSession(existingLock.stripe_session_id);
+      await db
+        .prepare(
+          "UPDATE payment_orders SET status = 'canceled', updated_at = ? WHERE id = ? AND status = 'pending'",
+        )
+        .bind(nowIso, existingLock.stripe_session_id)
+        .run();
+    }
   }
   const token = crypto.randomUUID();
   const sessionExpiresAt =
@@ -363,6 +406,33 @@ export async function createCheckout(
         "A newer subscription checkout is already being prepared.",
       );
     }
+    try {
+      await db
+        .prepare(
+          `INSERT INTO payment_orders (
+             id, user_id, plan, billing_interval, status, stripe_price_id,
+             stripe_customer_id, stripe_subscription_id, amount_total, currency,
+             created_at, updated_at
+           ) VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .bind(
+          session.id,
+          user.id,
+          plan,
+          interval,
+          price,
+          objectId(session.customer),
+          objectId(session.subscription),
+          session.amount_total ?? null,
+          session.currency ?? null,
+          nowIso,
+          nowIso,
+        )
+        .run();
+    } catch (error) {
+      await expireCheckoutSession(session.id);
+      throw error;
+    }
     return session;
   } catch (error) {
     await db
@@ -371,6 +441,36 @@ export async function createCheckout(
       .run();
     throw error;
   }
+}
+
+export async function cancelCheckout(
+  env: StripeEnv,
+  db: D1Database,
+  userId: string,
+  expireSession?: (sessionId: string) => Promise<unknown>,
+) {
+  const lock = await db
+    .prepare("SELECT stripe_session_id FROM checkout_locks WHERE user_id = ?")
+    .bind(userId)
+    .first<{ stripe_session_id: string | null }>();
+  if (!lock?.stripe_session_id) return false;
+  await (expireSession ?? ((id) => stripe(env).checkout.sessions.expire(id)))(
+    lock.stripe_session_id,
+  );
+  const now = new Date().toISOString();
+  await db.batch([
+    db
+      .prepare(
+        "UPDATE payment_orders SET status = 'canceled', updated_at = ? WHERE id = ? AND status = 'pending'",
+      )
+      .bind(now, lock.stripe_session_id),
+    db
+      .prepare(
+        "DELETE FROM checkout_locks WHERE user_id = ? AND stripe_session_id = ?",
+      )
+      .bind(userId, lock.stripe_session_id),
+  ]);
+  return true;
 }
 
 export async function createPortal(
@@ -485,6 +585,11 @@ async function applyCheckout(
       : metadataPlan === "teacher"
         ? "teacher"
         : "legacy";
+  await updateOrderFromSession(
+    db,
+    session,
+    session.payment_status === "paid" ? "paid" : "completed",
+  );
   await db
     .prepare(
       `INSERT INTO subscriptions (
@@ -562,6 +667,26 @@ async function applyInvoiceStatus(
       customerId,
     )
     .run();
+  await db
+    .prepare(
+      `UPDATE payment_orders SET status = ?, amount_total = COALESCE(?, amount_total),
+       currency = COALESCE(?, currency), updated_at = ?
+       WHERE id = (
+         SELECT id FROM payment_orders
+         WHERE status IN ('pending', 'completed')
+           AND (stripe_subscription_id = ? OR stripe_customer_id = ?)
+         ORDER BY created_at DESC LIMIT 1
+       )`,
+    )
+    .bind(
+      status === "active" ? "paid" : "failed",
+      invoice.amount_paid ?? null,
+      invoice.currency ?? null,
+      new Date().toISOString(),
+      subscriptionId,
+      customerId,
+    )
+    .run();
 }
 
 export async function applyStripeEvent(
@@ -578,6 +703,27 @@ export async function applyStripeEvent(
       );
       break;
     case "checkout.session.expired":
+      await updateOrderFromSession(
+        db,
+        event.data.object as Stripe.Checkout.Session,
+        "expired",
+      );
+      await clearCheckoutLock(db, event.data.object as Stripe.Checkout.Session);
+      break;
+    case "checkout.session.async_payment_failed":
+      await updateOrderFromSession(
+        db,
+        event.data.object as Stripe.Checkout.Session,
+        "failed",
+      );
+      await clearCheckoutLock(db, event.data.object as Stripe.Checkout.Session);
+      break;
+    case "checkout.session.async_payment_succeeded":
+      await updateOrderFromSession(
+        db,
+        event.data.object as Stripe.Checkout.Session,
+        "paid",
+      );
       await clearCheckoutLock(db, event.data.object as Stripe.Checkout.Session);
       break;
     case "customer.subscription.created":

@@ -43,7 +43,9 @@ export function resolvePlan(
   storedPlan: unknown,
   workspaceType: unknown,
   hasPaidAccess: boolean,
+  adminPlan?: unknown,
 ): Plan {
+  if (adminPlan === "parent" || adminPlan === "teacher") return adminPlan;
   if (!hasPaidAccess) return "free";
   if (storedPlan === "parent" || storedPlan === "teacher") return storedPlan;
   return workspaceType === "family" ? "parent" : "teacher";

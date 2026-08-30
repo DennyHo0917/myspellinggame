@@ -31,6 +31,7 @@ import {
   type Plan,
 } from "./domain";
 import {
+  cancelCheckout,
   createCheckout,
   createPortal,
   hasActiveSubscription,
@@ -331,7 +332,7 @@ async function adminUsers(env: Env, url: URL) {
     Number(rawPage) < 1 ||
     Number(rawPage) > 100_000
   )
-    throw new HttpError(400, "invalid_page", "Page must be a positive number.");
+    throw new HttpError(400, "invalid_page", "页码必须是正整数。");
   const page = Number(rawPage);
   const pageSize = 50;
   const query = (url.searchParams.get("q") ?? "").trim().slice(0, 200);
@@ -348,7 +349,8 @@ async function adminUsers(env: Env, url: URL) {
     `SELECT u.id, u.name, u.email, u.createdAt,
             (SELECT GROUP_CONCAT(DISTINCT a.providerId)
              FROM account a WHERE a.userId = u.id) AS loginProvider,
-            u.workspace_type, s.plan, s.status, s.billing_interval, s.current_period_end,
+            u.workspace_type, u.admin_plan, u.admin_plan_updated_at,
+            s.plan, s.status, s.billing_interval, s.current_period_end,
             s.stripe_price_id
      FROM user u
      LEFT JOIN subscriptions s ON s.user_id = u.id
@@ -369,6 +371,8 @@ async function adminUsers(env: Env, url: URL) {
       loginProvider: string | null;
       plan: string | null;
       workspace_type: "family" | "teacher" | null;
+      admin_plan: "parent" | "teacher" | null;
+      admin_plan_updated_at: string | null;
       status: string | null;
       billing_interval: "month" | "year" | null;
       current_period_end: string | null;
@@ -391,7 +395,10 @@ async function adminUsers(env: Env, url: URL) {
           },
           env,
         ),
+        row.admin_plan,
       ),
+      adminPlan: row.admin_plan,
+      adminPlanUpdatedAt: row.admin_plan_updated_at,
       subscriptionStatus: row.status,
       billingInterval: row.billing_interval,
       currentPeriodEnd: row.current_period_end,
@@ -403,6 +410,86 @@ async function adminUsers(env: Env, url: URL) {
   };
 }
 
+async function adminOrders(env: Env, url: URL) {
+  const rawPage = url.searchParams.get("page") ?? "1";
+  if (
+    !/^\d+$/.test(rawPage) ||
+    Number(rawPage) < 1 ||
+    Number(rawPage) > 100_000
+  )
+    throw new HttpError(400, "invalid_page", "页码必须是正整数。");
+  const page = Number(rawPage);
+  const pageSize = 50;
+  const query = (url.searchParams.get("q") ?? "").trim().slice(0, 200);
+  const search = `%${query.toLowerCase()}%`;
+  const where = query
+    ? "WHERE lower(u.email) LIKE ? OR lower(u.name) LIKE ? OR lower(o.id) LIKE ?"
+    : "";
+  const bindings = query ? [search, search, search] : [];
+  const count = await env.DB.prepare(
+    `SELECT COUNT(*) AS count FROM payment_orders o JOIN user u ON u.id = o.user_id ${where}`,
+  )
+    .bind(...bindings)
+    .first<{ count: number }>();
+  const rows = await env.DB.prepare(
+    `SELECT o.id, o.plan, o.billing_interval, o.status, o.amount_total,
+            o.currency, o.created_at, o.updated_at, u.name, u.email
+     FROM payment_orders o JOIN user u ON u.id = o.user_id
+     ${where}
+     ORDER BY o.created_at DESC LIMIT ? OFFSET ?`,
+  )
+    .bind(...bindings, pageSize, (page - 1) * pageSize)
+    .all<{
+      id: string;
+      plan: "parent" | "teacher";
+      billing_interval: "month" | "year";
+      status: string;
+      amount_total: number | null;
+      currency: string | null;
+      created_at: string;
+      updated_at: string;
+      name: string;
+      email: string;
+    }>();
+  return {
+    orders: rows.results.map((row) => ({
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      plan: row.plan,
+      billingInterval: row.billing_interval,
+      status: row.status,
+      amountTotal: row.amount_total,
+      currency: row.currency,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    })),
+    page,
+    pageSize,
+    total: Number(count?.count ?? 0),
+  };
+}
+
+async function adminSetPlan(env: Env, request: Request, userId: string) {
+  requireSameOrigin(request);
+  const body = await readJson(request);
+  if (body.plan !== null && body.plan !== "parent" && body.plan !== "teacher")
+    throw new HttpError(
+      400,
+      "invalid_admin_plan",
+      "请选择家长方案、教师方案或按订阅自动判断。",
+    );
+  const now = new Date().toISOString();
+  const result = await env.DB.prepare(
+    "UPDATE user SET admin_plan = ?, admin_plan_updated_at = ? WHERE id = ?",
+  )
+    .bind(body.plan, body.plan === null ? null : now, userId)
+    .run();
+  if (!result.meta.changes)
+    throw new HttpError(404, "user_not_found", "未找到该用户。");
+  return { adminPlan: body.plan, adminPlanUpdatedAt: body.plan ? now : null };
+}
+
 async function getPlan(
   env: Env,
   userId: string,
@@ -410,7 +497,7 @@ async function getPlan(
 ): Promise<Plan> {
   const subscription = await env.DB.prepare(
     `SELECT s.plan, s.status, s.current_period_end, s.stripe_price_id,
-            u.workspace_type
+            u.workspace_type, u.admin_plan
        FROM user u LEFT JOIN subscriptions s ON s.user_id = u.id
        WHERE u.id = ?`,
   )
@@ -421,6 +508,7 @@ async function getPlan(
       current_period_end: string | null;
       stripe_price_id: string | null;
       workspace_type: "family" | "teacher" | null;
+      admin_plan: "parent" | "teacher" | null;
     }>();
   return resolvePlan(
     subscription?.plan,
@@ -432,6 +520,7 @@ async function getPlan(
       env,
       now,
     ),
+    subscription?.admin_plan,
   );
 }
 
@@ -1825,12 +1914,27 @@ export async function handleRequest(
 
   if (url.pathname.startsWith("/api/admin/")) {
     await requireAdmin(env, request, getSession);
-    if (method !== "GET")
-      throw new HttpError(405, "method_not_allowed", "Only GET is allowed.");
-    if (url.pathname === "/api/admin/stats") return json(await adminStats(env));
-    if (url.pathname === "/api/admin/users")
+    if (url.pathname === "/api/admin/stats" && method === "GET")
+      return json(await adminStats(env));
+    if (url.pathname === "/api/admin/users" && method === "GET")
       return json(await adminUsers(env, url));
-    throw new HttpError(404, "admin_not_found", "Admin endpoint not found.");
+    if (url.pathname === "/api/admin/orders" && method === "GET")
+      return json(await adminOrders(env, url));
+    const planMatch = url.pathname.match(
+      /^\/api\/admin\/users\/([^/]+)\/plan$/,
+    );
+    if (planMatch && method === "PUT")
+      return json(
+        await adminSetPlan(env, request, decodeURIComponent(planMatch[1])),
+      );
+    if (
+      planMatch ||
+      ["/api/admin/stats", "/api/admin/users", "/api/admin/orders"].includes(
+        url.pathname,
+      )
+    )
+      throw new HttpError(405, "method_not_allowed", "不支持此请求方式。");
+    throw new HttpError(404, "admin_not_found", "未找到该管理接口。");
   }
 
   const publicMatch = url.pathname.match(
@@ -1969,17 +2073,19 @@ export async function handleRequest(
         stripe_subscription_id: string | null;
       }>();
     const workspace = await env.DB.prepare(
-      "SELECT workspace_type, class_public_id FROM user WHERE id = ?",
+      "SELECT workspace_type, class_public_id, admin_plan FROM user WHERE id = ?",
     )
       .bind(user.id)
       .first<{
         workspace_type: "family" | "teacher" | null;
         class_public_id: string | null;
+        admin_plan: "parent" | "teacher" | null;
       }>();
     const plan = resolvePlan(
       subscription?.plan,
       workspace?.workspace_type,
       hasActiveSubscription(subscription ?? null, env),
+      workspace?.admin_plan,
     );
     const classPublicId =
       plan === "teacher"
@@ -2282,6 +2388,12 @@ export async function handleRequest(
       },
     );
     return json({ url: checkout.url });
+  }
+
+  if (url.pathname === "/api/billing/checkout/cancel" && method === "POST") {
+    requireSameOrigin(request);
+    const user = await requireTeacher(env, request, getSession);
+    return json({ canceled: await cancelCheckout(env, env.DB, user.id) });
   }
 
   if (url.pathname === "/api/billing/portal" && method === "POST") {

@@ -58,6 +58,9 @@ Set `ADMIN_EMAIL` in the Cloudflare Worker variables (or with `wrangler secret p
 7. Enable and configure the Stripe Customer Portal for subscription management.
 8. Create a webhook endpoint at `https://myspellinggame.com/api/stripe/webhook` for:
    - `checkout.session.completed`
+   - `checkout.session.expired`
+   - `checkout.session.async_payment_succeeded`
+   - `checkout.session.async_payment_failed`
    - `customer.subscription.created`
    - `customer.subscription.updated`
    - `customer.subscription.deleted`

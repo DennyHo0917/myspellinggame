@@ -41,10 +41,20 @@ async function call(
   user: User | null = admin,
   env = testEnv(),
   method = "GET",
+  body?: unknown,
 ) {
   try {
     return await handleRequest(
-      new Request(`https://example.test${path}`, { method }),
+      new Request(`https://example.test${path}`, {
+        method,
+        headers: body
+          ? {
+              "content-type": "application/json",
+              origin: "https://example.test",
+            }
+          : undefined,
+        body: body ? JSON.stringify(body) : undefined,
+      }),
       env,
       {
         getSession: async () =>
@@ -126,7 +136,7 @@ beforeEach(async () => {
   await insertUser(member);
 });
 
-describe("read-only admin dashboard", () => {
+describe("admin dashboard", () => {
   it("fails closed and enforces admin authentication on every Admin API", async () => {
     expect((await call("/api/admin/stats", null)).status).toBe(401);
     expect((await call("/api/admin/stats", member)).status).toBe(403);
@@ -258,5 +268,96 @@ describe("read-only admin dashboard", () => {
     };
     expect(id.users.map((user) => user.id)).toEqual(["user-17"]);
     expect((await call("/api/admin/users?page=0")).status).toBe(400);
+  });
+
+  it("lets only the admin assign and clear a user's effective plan", async () => {
+    expect(
+      (
+        await call(
+          `/api/admin/users/${member.id}/plan`,
+          member,
+          testEnv(),
+          "PUT",
+          { plan: "teacher" },
+        )
+      ).status,
+    ).toBe(403);
+
+    const assigned = await call(
+      `/api/admin/users/${member.id}/plan`,
+      admin,
+      testEnv(),
+      "PUT",
+      { plan: "parent" },
+    );
+    expect(assigned.status).toBe(200);
+    expect(await assigned.json()).toMatchObject({ adminPlan: "parent" });
+    const me = (await (await call("/api/me", member)).json()) as {
+      plan: string;
+    };
+    expect(me.plan).toBe("parent");
+    const listed = (await (
+      await call(`/api/admin/users?q=${member.email}`)
+    ).json()) as {
+      users: Array<{ plan: string; adminPlan: string | null }>;
+    };
+    expect(listed.users[0]).toMatchObject({
+      plan: "parent",
+      adminPlan: "parent",
+    });
+
+    expect(
+      (
+        await call(
+          `/api/admin/users/${member.id}/plan`,
+          admin,
+          testEnv(),
+          "PUT",
+          { plan: null },
+        )
+      ).status,
+    ).toBe(200);
+    expect(
+      ((await (await call("/api/me", member)).json()) as { plan: string }).plan,
+    ).toBe("free");
+  });
+
+  it("lists and searches every checkout order status", async () => {
+    const now = new Date().toISOString();
+    await bindings.DB.batch([
+      bindings.DB.prepare(
+        `INSERT INTO payment_orders (
+             id, user_id, plan, billing_interval, status, stripe_price_id,
+             amount_total, currency, created_at, updated_at
+           ) VALUES (?, ?, 'parent', 'month', 'canceled', 'price_parent_monthly', NULL, NULL, ?, ?)`,
+      ).bind("cs_canceled", member.id, now, now),
+      bindings.DB.prepare(
+        `INSERT INTO payment_orders (
+             id, user_id, plan, billing_interval, status, stripe_price_id,
+             amount_total, currency, created_at, updated_at
+           ) VALUES (?, ?, 'teacher', 'year', 'paid', 'price_teacher_yearly', 9999, 'usd', ?, ?)`,
+      ).bind("cs_paid", admin.id, now, now),
+    ]);
+
+    const data = (await (await call("/api/admin/orders")).json()) as {
+      total: number;
+      orders: Array<Record<string, unknown>>;
+    };
+    expect(data.total).toBe(2);
+    expect(data.orders).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "cs_canceled", status: "canceled" }),
+        expect.objectContaining({
+          id: "cs_paid",
+          status: "paid",
+          amountTotal: 9999,
+          currency: "usd",
+        }),
+      ]),
+    );
+    const searched = (await (
+      await call("/api/admin/orders?q=member%40example.test")
+    ).json()) as { orders: Array<{ id: string }> };
+    expect(searched.orders.map((order) => order.id)).toEqual(["cs_canceled"]);
   });
 });

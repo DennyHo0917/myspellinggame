@@ -15,13 +15,22 @@ const accountPromise = fetch("/api/me", { credentials: "same-origin" })
   .then((response) => (response.ok ? response.json() : null))
   .catch(() => null);
 
+let checkoutCanceled = false;
 try {
-  if (new URLSearchParams(location.search).get("checkout") === "cancelled") {
+  checkoutCanceled =
+    new URLSearchParams(location.search).get("checkout") === "cancelled";
+  if (checkoutCanceled) {
     sessionStorage.removeItem("pendingCheckoutInterval");
     sessionStorage.removeItem("pendingCheckoutPlan");
     sessionStorage.removeItem(PENDING_CHECKOUT_LOCALE_KEY);
   }
 } catch {}
+
+if (checkoutCanceled)
+  void fetch("/api/billing/checkout/cancel", {
+    method: "POST",
+    credentials: "same-origin",
+  }).catch(() => null);
 
 if (pricingGrid && "IntersectionObserver" in window) {
   const observer = new IntersectionObserver((entries) => {

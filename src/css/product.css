@@ -840,7 +840,18 @@ body.product-page:not(.workspace-page) .product-nav {
 }
 
 .admin-table-wrap table {
-  min-width: 1180px;
+  min-width: 1320px;
+}
+
+.admin-plan-controls {
+  display: flex;
+  min-width: 250px;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-plan-controls select {
+  min-width: 160px;
 }
 
 .admin-pagination {

@@ -7,7 +7,7 @@
     <meta name="referrer" content="strict-origin" />
     <title>MySpellingGame 管理后台</title>
     <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="stylesheet" href="/src/css/product.css?v=admin1" />
+    <link rel="stylesheet" href="/src/css/product.css?v=admin2" />
   </head>
   <body class="product-page">
     <div class="product-shell">
@@ -94,7 +94,7 @@
             <div class="admin-heading">
               <div>
                 <h1>MySpellingGame 管理后台</h1>
-                <p class="muted">用户与订阅数据概览（只读）。</p>
+                <p class="muted">用户、方案调度与充值订单概览。</p>
               </div>
               <button class="button-secondary" id="admin-refresh" type="button">
                 刷新
@@ -130,6 +130,7 @@
                     <th>计费周期</th>
                     <th>当前周期结束时间</th>
                     <th>注册时间</th>
+                    <th>方案调度</th>
                   </tr>
                 </thead>
                 <tbody id="admin-users"></tbody>
@@ -145,6 +146,66 @@
               </button>
               <span id="admin-page"></span>
               <button class="button-secondary" id="admin-next" type="button">
+                下一页
+              </button>
+            </div>
+          </section>
+
+          <section class="product-card">
+            <div class="admin-heading">
+              <div>
+                <h2>充值订单日志</h2>
+                <p class="muted">
+                  记录所有已创建的订单，包括未完成、取消、失败和成功订单。
+                </p>
+              </div>
+            </div>
+            <form class="inline-form admin-search" id="admin-order-search">
+              <div class="field">
+                <label for="admin-order-query">搜索订单</label>
+                <input
+                  id="admin-order-query"
+                  name="q"
+                  type="search"
+                  maxlength="200"
+                  placeholder="邮箱、姓名或订单 ID"
+                />
+              </div>
+              <button type="submit">搜索</button>
+            </form>
+            <p class="status" id="admin-orders-status" role="status"></p>
+            <div class="table-wrap admin-table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>创建时间</th>
+                    <th>用户</th>
+                    <th>邮箱</th>
+                    <th>方案</th>
+                    <th>计费周期</th>
+                    <th>金额</th>
+                    <th>状态</th>
+                    <th>订单 ID</th>
+                    <th>更新时间</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-orders"></tbody>
+              </table>
+            </div>
+            <div class="admin-pagination">
+              <button
+                class="button-secondary"
+                id="admin-orders-previous"
+                type="button"
+              >
+                上一页
+              </button>
+              <span id="admin-orders-page"></span>
+              <button
+                class="button-secondary"
+                id="admin-orders-next"
+                type="button"
+              >
                 下一页
               </button>
             </div>
@@ -165,6 +226,6 @@
         </p>
       </footer>
     </div>
-    <script type="module" src="/src/js/adminApp.mjs"></script>
+    <script type="module" src="/src/js/adminApp.mjs?v=admin2"></script>
   </body>
 </html>

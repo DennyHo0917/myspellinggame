@@ -20,6 +20,7 @@ import {
 } from "../src/worker/auth";
 import { handleRequest, scheduled, type Env } from "../src/worker/index";
 import {
+  cancelCheckout,
   createCheckout,
   createPortal,
   processStripeEvent,
@@ -396,6 +397,7 @@ describe("teacher authorization and quotas", () => {
     expect(resolvePlan("pro", "teacher", true)).toBe("teacher");
     expect(resolvePlan("pro", null, true)).toBe("teacher");
     expect(resolvePlan("teacher", "teacher", false)).toBe("free");
+    expect(resolvePlan("free", null, false, "parent")).toBe("parent");
   });
 
   it.each([
@@ -3236,6 +3238,11 @@ describe("Stripe event processing", () => {
 
   it("does not consume a trial when Checkout expires", async () => {
     await createTestCheckout("cs_expired", new Date());
+    expect(
+      await bindings.DB.prepare(
+        "SELECT status FROM payment_orders WHERE id = 'cs_expired'",
+      ).first("status"),
+    ).toBe("pending");
     await processStripeEvent(
       bindings.DB,
       checkoutEvent("cs_expired", "checkout.session.expired"),
@@ -3249,6 +3256,11 @@ describe("Stripe event processing", () => {
         .bind(teacherA.id)
         .first("trial_used_at"),
     ).toBeNull();
+    expect(
+      await bindings.DB.prepare(
+        "SELECT status FROM payment_orders WHERE id = 'cs_expired'",
+      ).first("status"),
+    ).toBe("expired");
   });
 
   it("does not create trial state when Checkout completes", async () => {
@@ -3265,6 +3277,11 @@ describe("Stripe event processing", () => {
         .bind(teacherA.id)
         .first("trial_used_at"),
     ).toBeNull();
+    expect(
+      await bindings.DB.prepare(
+        "SELECT status FROM payment_orders WHERE id = 'cs_trial'",
+      ).first("status"),
+    ).toBe("completed");
     await bindings.DB.prepare(
       "UPDATE subscriptions SET status = 'canceled', plan = 'free' WHERE user_id = ?",
     )
@@ -3293,6 +3310,35 @@ describe("Stripe event processing", () => {
     const params = sent as unknown as Stripe.Checkout.SessionCreateParams;
     expect(params.subscription_data?.trial_period_days).toBeUndefined();
     expect(params.metadata?.trial_granted).toBeUndefined();
+  });
+
+  it("keeps a canceled Checkout in the order log", async () => {
+    await createTestCheckout("cs_canceled", new Date());
+    const expired: string[] = [];
+    await cancelCheckout(testEnv(), bindings.DB, teacherA.id, async (id) =>
+      expired.push(id),
+    );
+    expect(expired).toEqual(["cs_canceled"]);
+    expect(
+      await bindings.DB.prepare(
+        "SELECT status FROM payment_orders WHERE id = 'cs_canceled'",
+      ).first("status"),
+    ).toBe("canceled");
+    expect(
+      await bindings.DB.prepare(
+        "SELECT COUNT(*) AS count FROM checkout_locks",
+      ).first("count"),
+    ).toBe(0);
+    await processStripeEvent(
+      bindings.DB,
+      checkoutEvent("cs_canceled", "checkout.session.expired"),
+      testEnv(),
+    );
+    expect(
+      await bindings.DB.prepare(
+        "SELECT status FROM payment_orders WHERE id = 'cs_canceled'",
+      ).first("status"),
+    ).toBe("canceled");
   });
 
   it("keeps historical trialing access without exposing trial state", async () => {

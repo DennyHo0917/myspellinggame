@@ -2568,6 +2568,11 @@ const parentLandingCopy = {
     eyebrow: "For busy parents",
     intro:
       "You do not have to read every word aloud. Paste the school's list, start a listening practice now, or use Workspace to share it and follow the results.",
+    heroPoints: [
+      "No child account or password",
+      "Use this week's exact spelling list",
+      "Retry missed words in short rounds",
+    ],
     launcherLabel: "This week's spelling words",
     launcherButton: "Start Practice",
     launcherHelp: "No login needed · Up to 20 words",
@@ -2578,16 +2583,16 @@ const parentLandingCopy = {
       "Your child practices independently",
       "See results and long-term progress",
     ],
-    featuresTitle: "What the parent workspace adds",
+    featuresTitle: "Core tools for a calmer spelling routine",
     featuresIntro:
-      "Start free, then keep each week's practice connected to the same child.",
+      "Start with the basics, then add focused review and faster list setup when you need it.",
     features: [
       [
-        "Learner",
+        "Learner Profiles",
         "Give each child one profile and a simple practice link—no child account or password.",
       ],
       [
-        "Progress",
+        "Learning Progress",
         "See completed practices, scores, missed words, and improvement across assignments.",
       ],
       [
@@ -2595,17 +2600,31 @@ const parentLandingCopy = {
         "Know which words are still being learned and which are consistently mastered.",
       ],
       [
-        "Today's Review",
-        "Open one short session built from missed words that are ready to come back today.",
-      ],
-      [
         "Smart Review",
         "Turn real mistakes into focused follow-up practice instead of repeating the whole list.",
       ],
       [
-        "Parent Plan",
-        "Support up to 5 children with unlimited saved lists, tracked submissions, Smart Review, and 365-day history.",
+        "Photo Import",
+        "Bring in a school spelling list from a photo, then review the words before using them.",
       ],
+      [
+        "Automatic Example Sentences",
+        "Fill known words with example sentences from the curated library, with editing before use.",
+      ],
+    ],
+    planComparisonTitle: "Free Workspace vs Parent Plan",
+    planComparisonIntro:
+      "Both plans keep practice simple for children. The Parent Plan adds the tools and history that make weekly routines easier to run.",
+    freePlanFeatures: [
+      "Learner profiles",
+      "Learning progress and mastery",
+      "Basic assignments and saved lists",
+    ],
+    paidPlanFeatures: [
+      "Everything in Free Workspace",
+      "Smart Review and Today's Review",
+      "Photo Import and automatic example sentences",
+      "Up to 5 children and 365-day history",
     ],
     ctaTitle: "Ready to stop running the spelling test yourself?",
     ctaText:
@@ -2637,6 +2656,11 @@ const parentLandingCopy = {
     eyebrow: "Para familias con poco tiempo",
     intro:
       "No tienes que dictar cada palabra. Pega la lista de la escuela y empieza ahora, o compártela desde el espacio de trabajo para seguir los resultados.",
+    heroPoints: [
+      "Sin cuenta ni contraseña para tu hijo",
+      "Usa exactamente la lista de esta semana",
+      "Repite las palabras falladas en rondas cortas",
+    ],
     launcherLabel: "Palabras de esta semana",
     launcherButton: "Empezar práctica",
     launcherHelp: "Sin iniciar sesión · Hasta 20 palabras",
@@ -2647,16 +2671,16 @@ const parentLandingCopy = {
       "Tu hijo practica de forma independiente",
       "Consulta resultados y progreso a largo plazo",
     ],
-    featuresTitle: "Qué aporta el espacio de trabajo para familias",
+    featuresTitle: "Herramientas clave para una rutina más sencilla",
     featuresIntro:
-      "Empieza gratis y mantén la práctica de cada semana vinculada al mismo niño.",
+      "Empieza con lo básico y añade repasos guiados y una preparación más rápida cuando lo necesites.",
     features: [
       [
-        "Perfil del estudiante",
+        "Perfiles de estudiantes",
         "Cada niño tiene un perfil y un enlace sencillo, sin cuenta ni contraseña infantil.",
       ],
       [
-        "Progreso",
+        "Progreso de aprendizaje",
         "Consulta prácticas terminadas, resultados, errores y mejoras entre tareas.",
       ],
       [
@@ -2664,17 +2688,31 @@ const parentLandingCopy = {
         "Distingue las palabras que aún está aprendiendo de las que ya domina de forma constante.",
       ],
       [
-        "Repaso de hoy",
-        "Abre una sesión corta con los errores que conviene volver a practicar hoy.",
-      ],
-      [
         "Repaso inteligente",
         "Convierte errores reales en práctica específica sin repetir toda la lista.",
       ],
       [
-        "Plan para familias",
-        "Hasta 5 hijos, listas guardadas y entregas ilimitadas, repaso inteligente y 365 días de historial.",
+        "Importar desde una foto",
+        "Importa la lista de spelling de la escuela desde una foto y revisa las palabras antes de usarlas.",
       ],
+      [
+        "Frases de ejemplo automáticas",
+        "Completa palabras conocidas con frases de la biblioteca seleccionada y edítalas antes de usarlas.",
+      ],
+    ],
+    planComparisonTitle: "Espacio gratuito vs Plan para familias",
+    planComparisonIntro:
+      "Ambos planes mantienen la práctica sencilla para los niños. El Plan para familias añade herramientas e historial para facilitar la rutina semanal.",
+    freePlanFeatures: [
+      "Perfiles de estudiantes",
+      "Progreso de aprendizaje y dominio",
+      "Tareas básicas y listas guardadas",
+    ],
+    paidPlanFeatures: [
+      "Todo lo incluido en el espacio gratuito",
+      "Repaso inteligente y Repaso de hoy",
+      "Importación por foto y frases automáticas",
+      "Hasta 5 hijos y 365 días de historial",
     ],
     ctaTitle: "¿Quieres dejar de hacer tú el dictado?",
     ctaText:
@@ -2706,6 +2744,11 @@ const parentLandingCopy = {
     eyebrow: "Para responsáveis com pouco tempo",
     intro:
       "Você não precisa ditar cada palavra. Cole a lista da escola e comece agora, ou compartilhe pelo espaço de trabalho para acompanhar os resultados.",
+    heroPoints: [
+      "Sem conta ou senha para a criança",
+      "Use exatamente a lista de ortografia da semana",
+      "Repita palavras erradas em sessões curtas",
+    ],
     launcherLabel: "Palavras desta semana",
     launcherButton: "Começar prática",
     launcherHelp: "Sem login · Até 20 palavras",
@@ -2716,16 +2759,16 @@ const parentLandingCopy = {
       "Seu filho pratica sozinho",
       "Veja resultados e progresso a longo prazo",
     ],
-    featuresTitle: "O que o espaço de trabalho oferece aos pais",
+    featuresTitle: "Ferramentas essenciais para uma rotina mais tranquila",
     featuresIntro:
-      "Comece grátis e mantenha a prática de cada semana ligada à mesma criança.",
+      "Comece com o básico e adicione revisão focada e preparação mais rápida quando precisar.",
     features: [
       [
-        "Perfil do aluno",
+        "Perfis de alunos",
         "Cada criança tem um perfil e um link simples, sem conta ou senha infantil.",
       ],
       [
-        "Progresso",
+        "Progresso de aprendizagem",
         "Veja práticas concluídas, resultados, erros e melhora entre atividades.",
       ],
       [
@@ -2733,17 +2776,31 @@ const parentLandingCopy = {
         "Saiba quais palavras ainda estão sendo aprendidas e quais já foram dominadas com consistência.",
       ],
       [
-        "Revisão de hoje",
-        "Abra uma sessão curta com os erros que já estão no momento certo para voltar.",
-      ],
-      [
         "Revisão inteligente",
         "Transforme erros reais em prática focada sem repetir a lista inteira.",
       ],
       [
-        "Plano para Pais",
-        "Até 5 filhos, listas e envios ilimitados, revisão inteligente e histórico de 365 dias.",
+        "Importar por foto",
+        "Importe a lista de ortografia da escola por foto e revise as palavras antes de usá-las.",
       ],
+      [
+        "Frases de exemplo automáticas",
+        "Preencha palavras conhecidas com frases da biblioteca selecionada e edite-as antes de usar.",
+      ],
+    ],
+    planComparisonTitle: "Espaço gratuito vs Plano para Pais",
+    planComparisonIntro:
+      "Os dois planos mantêm a prática simples para as crianças. O Plano para Pais acrescenta ferramentas e histórico para facilitar a rotina semanal.",
+    freePlanFeatures: [
+      "Perfis de alunos",
+      "Progresso de aprendizagem e domínio",
+      "Atividades básicas e listas salvas",
+    ],
+    paidPlanFeatures: [
+      "Tudo do Espaço de trabalho gratuito",
+      "Revisão inteligente e Revisão de hoje",
+      "Importação por foto e frases automáticas",
+      "Até 5 filhos e histórico de 365 dias",
     ],
     ctaTitle: "Pronto para não precisar mais fazer o ditado?",
     ctaText:
@@ -2775,6 +2832,11 @@ const parentLandingCopy = {
     eyebrow: "Pour les parents pressés",
     intro:
       "Vous n’avez pas à dicter chaque mot. Collez la liste de l’école et commencez maintenant, ou partagez-la depuis l’espace de travail pour suivre les résultats.",
+    heroPoints: [
+      "Aucun compte ni mot de passe pour l’enfant",
+      "Utilisez exactement la liste de la semaine",
+      "Revoyez les mots manqués en courtes séances",
+    ],
     launcherLabel: "Mots de cette semaine",
     launcherButton: "Commencer",
     launcherHelp: "Sans connexion · Jusqu’à 20 mots",
@@ -2785,16 +2847,16 @@ const parentLandingCopy = {
       "Votre enfant s’entraîne en autonomie",
       "Consultez les résultats et les progrès dans le temps",
     ],
-    featuresTitle: "Ce que l’espace parents ajoute",
+    featuresTitle: "Les outils essentiels pour une routine plus simple",
     featuresIntro:
-      "Commencez gratuitement, puis reliez chaque semaine au même enfant.",
+      "Commencez avec l’essentiel, puis ajoutez la révision ciblée et une préparation plus rapide si besoin.",
     features: [
       [
-        "Profil élève",
+        "Profils des élèves",
         "Chaque enfant a un profil et un lien simple, sans compte ni mot de passe enfant.",
       ],
       [
-        "Progression",
+        "Progression d’apprentissage",
         "Consultez les exercices terminés, les résultats, les erreurs et l’évolution entre les devoirs.",
       ],
       [
@@ -2802,17 +2864,31 @@ const parentLandingCopy = {
         "Distinguez les mots encore en cours d’apprentissage de ceux maîtrisés régulièrement.",
       ],
       [
-        "Révision du jour",
-        "Lancez une courte séance avec les erreurs qu’il est temps de revoir aujourd’hui.",
-      ],
-      [
         "Révision intelligente",
         "Transformez les vraies erreurs en exercice ciblé sans refaire toute la liste.",
       ],
       [
-        "Offre Parents",
-        "Jusqu’à 5 enfants, listes et remises illimitées, révision intelligente et historique sur 365 jours.",
+        "Import par photo",
+        "Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de les utiliser.",
       ],
+      [
+        "Phrases d’exemple automatiques",
+        "Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant usage.",
+      ],
+    ],
+    planComparisonTitle: "Espace gratuit vs Offre Parents",
+    planComparisonIntro:
+      "Les deux formules gardent l’exercice simple pour les enfants. L’Offre Parents ajoute les outils et l’historique qui facilitent la routine hebdomadaire.",
+    freePlanFeatures: [
+      "Profils des élèves",
+      "Progression et maîtrise",
+      "Devoirs de base et listes enregistrées",
+    ],
+    paidPlanFeatures: [
+      "Tout l’Espace de travail gratuit",
+      "Révision intelligente et Révision du jour",
+      "Import par photo et phrases automatiques",
+      "Jusqu’à 5 enfants et historique sur 365 jours",
     ],
     ctaTitle: "Prêt à ne plus faire la dictée vous-même ?",
     ctaText:
@@ -2844,6 +2920,11 @@ const parentLandingCopy = {
     eyebrow: "Untuk orang tua yang sibuk",
     intro:
       "Anda tidak perlu mendikte setiap kata. Tempel daftar dari sekolah dan mulai sekarang, atau bagikan melalui ruang kerja untuk memantau hasilnya.",
+    heroPoints: [
+      "Anak tidak perlu akun atau kata sandi",
+      "Gunakan daftar ejaan minggu ini apa adanya",
+      "Ulangi kata yang salah dalam sesi singkat",
+    ],
     launcherLabel: "Kata minggu ini",
     launcherButton: "Mulai latihan",
     launcherHelp: "Tanpa login · Hingga 20 kata",
@@ -2854,16 +2935,16 @@ const parentLandingCopy = {
       "Anak berlatih sendiri",
       "Lihat hasil dan perkembangan jangka panjang",
     ],
-    featuresTitle: "Manfaat ruang kerja untuk orang tua",
+    featuresTitle: "Alat utama untuk rutinitas ejaan yang lebih tenang",
     featuresIntro:
-      "Mulai gratis, lalu hubungkan latihan setiap minggu ke anak yang sama.",
+      "Mulai dari dasar, lalu tambahkan ulasan terarah dan penyiapan daftar yang lebih cepat saat diperlukan.",
     features: [
       [
         "Profil pelajar",
         "Setiap anak memiliki profil dan link sederhana, tanpa akun atau kata sandi anak.",
       ],
       [
-        "Perkembangan",
+        "Perkembangan belajar",
         "Lihat latihan selesai, hasil, kata yang salah, dan peningkatan antar-tugas.",
       ],
       [
@@ -2871,17 +2952,31 @@ const parentLandingCopy = {
         "Ketahui kata yang masih dipelajari dan kata yang sudah dikuasai secara konsisten.",
       ],
       [
-        "Ulasan hari ini",
-        "Buka sesi singkat berisi kata salah yang sudah waktunya dilatih lagi hari ini.",
-      ],
-      [
         "Ulasan pintar",
         "Ubah kesalahan nyata menjadi latihan terarah tanpa mengulang seluruh daftar.",
       ],
       [
-        "Paket Orang Tua",
-        "Hingga 5 anak, daftar dan kiriman tanpa batas, ulasan pintar, serta riwayat 365 hari.",
+        "Impor foto",
+        "Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum digunakan.",
       ],
+      [
+        "Kalimat contoh otomatis",
+        "Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum digunakan.",
+      ],
+    ],
+    planComparisonTitle: "Ruang Kerja Gratis vs Paket Orang Tua",
+    planComparisonIntro:
+      "Kedua pilihan menjaga latihan tetap sederhana bagi anak. Paket Orang Tua menambahkan alat dan riwayat untuk memudahkan rutinitas mingguan.",
+    freePlanFeatures: [
+      "Profil pelajar",
+      "Perkembangan belajar dan penguasaan",
+      "Tugas dasar dan daftar tersimpan",
+    ],
+    paidPlanFeatures: [
+      "Semua fitur Ruang Kerja Gratis",
+      "Ulasan pintar dan Ulasan hari ini",
+      "Impor foto dan kalimat contoh otomatis",
+      "Hingga 5 anak dan riwayat 365 hari",
     ],
     ctaTitle: "Siap berhenti mendikte sendiri?",
     ctaText:
@@ -2912,6 +3007,11 @@ const parentLandingCopy = {
     eyebrow: "为忙碌家长而做",
     intro:
       "家长不需要亲自逐个听写。粘贴学校本周词表即可开始；进入工作台后，还能分享练习链接并持续查看结果。",
+    heroPoints: [
+      "无需儿童账号或密码",
+      "直接使用学校本周原始词表",
+      "错词可以用短轮次再次练习",
+    ],
     launcherLabel: "学校本周英语单词",
     launcherButton: "开始练习",
     launcherHelp: "无需登录 · 最多 20 个单词",
@@ -2922,18 +3022,25 @@ const parentLandingCopy = {
       "孩子独立练习",
       "家长查看结果和长期进度",
     ],
-    featuresTitle: "家长工作台能带来什么",
-    featuresIntro: "先免费开始，再把每周练习持续关联到同一个孩子。",
+    featuresTitle: "让拼写练习更轻松的核心功能",
+    featuresIntro: "先使用基础功能，再按需要加入针对性复习和更快的词表准备。",
     features: [
       ["学习者档案", "每个孩子使用固定档案和简单链接，无需儿童账号或密码。"],
       ["学习进度", "查看已完成练习、成绩、错词，以及不同作业之间的进步。"],
       ["掌握度", "分清仍在学习的单词和已经能够稳定掌握的单词。"],
-      ["今日复习", "打开一轮短练习，复习今天正好应该再次出现的错词。"],
       ["智能复习", "根据真实错误生成针对性练习，不必反复重练整份词表。"],
-      [
-        "家长方案",
-        "最多支持 5 个孩子，词表和提交不限量，包含智能复习及 365 天学习记录。",
-      ],
+      ["拍照导入", "从学校词表照片中提取单词，确认后再加入练习。"],
+      ["自动生成例句", "使用精选例句库为已知单词补充例句，使用前仍可编辑。"],
+    ],
+    planComparisonTitle: "免费工作台 vs 家长方案",
+    planComparisonIntro:
+      "两种方案都让孩子可以轻松开始练习。家长方案增加了更适合长期家庭学习的工具和历史记录。",
+    freePlanFeatures: ["学习者档案", "学习进度和掌握度", "基础作业和保存词表"],
+    paidPlanFeatures: [
+      "包含免费工作台全部功能",
+      "智能复习和今日复习",
+      "拍照导入和自动生成例句",
+      "最多 5 个孩子和 365 天历史记录",
     ],
     ctaTitle: "准备好不再亲自做听写了吗？",
     ctaText: "进入工作台创建并分享可追踪作业，或查看家长方案的完整权益。",
@@ -2968,6 +3075,11 @@ const teacherLandingCopy = {
     intro:
       "Try a listening practice instantly. In Workspace, turn the same list into an assignment students open with one link, then follow every result.",
     heroLine: "Paste your spelling list → Share one link → Track results",
+    heroPoints: [
+      "No student accounts or passwords",
+      "Paste the exact class spelling list",
+      "Track progress and retry missed words",
+    ],
     launcherLabel: "Your spelling list",
     launcherButton: "Try it now",
     launcherHelp: "No student accounts · Up to 20 words for instant practice",
@@ -3010,6 +3122,22 @@ const teacherLandingCopy = {
         "Support up to 40 students with 5 active assignments, unlimited tracked submissions, and 365-day history.",
       ],
     ],
+    planComparisonTitle: "Free Workspace vs Teacher Plan",
+    planComparisonIntro:
+      "Start with basic assignments and progress tracking. Teacher Plan adds review, import, reporting, and classroom capacity for a complete weekly workflow.",
+    freePlanFeatures: [
+      "Basic assignments from your own words",
+      "Learner progress and mastery",
+      "No student accounts for practice",
+    ],
+    paidPlanFeatures: [
+      "Everything in Free Workspace",
+      "Smart Review and Today's Review",
+      "Photo Import and automatic example sentences",
+      "Class Join/PIN and CSV Export",
+      "Class-wide missed-word statistics",
+      "Up to 40 students, 5 active assignments, and 365-day history",
+    ],
     ctaTitle: "Ready to assign this week's spelling list?",
     ctaText:
       "Open Workspace to create a tracked assignment, or compare the Teacher Plan for full class tools.",
@@ -3041,6 +3169,11 @@ const teacherLandingCopy = {
     intro:
       "Prueba un dictado al instante. En el espacio de trabajo puedes convertir la misma lista en una tarea, compartir un único enlace y seguir cada resultado.",
     heroLine: "Pega tu lista → Comparte un enlace → Sigue los resultados",
+    heroPoints: [
+      "Sin cuentas ni contraseñas para alumnos",
+      "Pega la lista exacta de la clase",
+      "Sigue el progreso y repite los errores",
+    ],
     launcherLabel: "Tu lista de ortografía",
     launcherButton: "Probar ahora",
     launcherHelp: "Sin cuentas de alumnos · Hasta 20 palabras en la prueba",
@@ -3083,6 +3216,22 @@ const teacherLandingCopy = {
         "Hasta 40 alumnos, 5 tareas activas, entregas registradas ilimitadas y 365 días de historial.",
       ],
     ],
+    planComparisonTitle: "Espacio gratuito vs Plan para docentes",
+    planComparisonIntro:
+      "Empieza con tareas básicas y seguimiento del progreso. El Plan para docentes añade repaso, importación, informes y capacidad para la clase.",
+    freePlanFeatures: [
+      "Tareas básicas con tus propias palabras",
+      "Progreso y dominio del alumnado",
+      "Práctica sin cuentas para alumnos",
+    ],
+    paidPlanFeatures: [
+      "Todo lo incluido en el espacio gratuito",
+      "Repaso inteligente y Repaso de hoy",
+      "Importación por foto y frases automáticas",
+      "Acceso a clase/PIN y exportación CSV",
+      "Estadísticas de errores de toda la clase",
+      "Hasta 40 alumnos, 5 tareas activas y 365 días de historial",
+    ],
     ctaTitle: "¿Quieres asignar la lista de esta semana?",
     ctaText:
       "Abre el espacio de trabajo para crear una tarea con seguimiento o consulta el Plan para docentes.",
@@ -3114,6 +3263,11 @@ const teacherLandingCopy = {
     intro:
       "Teste um ditado na hora. No espaço de trabalho, transforme a mesma lista em uma atividade, compartilhe um único link e acompanhe cada resultado.",
     heroLine: "Cole sua lista → Compartilhe um link → Acompanhe os resultados",
+    heroPoints: [
+      "Sem contas ou senhas para os alunos",
+      "Cole a lista exata da turma",
+      "Acompanhe o progresso e revise os erros",
+    ],
     launcherLabel: "Sua lista de ortografia",
     launcherButton: "Testar agora",
     launcherHelp: "Sem contas de alunos · Até 20 palavras no teste",
@@ -3156,6 +3310,22 @@ const teacherLandingCopy = {
         "Até 40 alunos, 5 atividades ativas, envios acompanhados ilimitados e histórico de 365 dias.",
       ],
     ],
+    planComparisonTitle: "Espaço gratuito vs Plano para Professores",
+    planComparisonIntro:
+      "Comece com atividades básicas e acompanhamento do progresso. O Plano para Professores acrescenta revisão, importação, relatórios e capacidade para a turma.",
+    freePlanFeatures: [
+      "Atividades básicas com suas próprias palavras",
+      "Progresso e domínio dos alunos",
+      "Prática sem contas para os alunos",
+    ],
+    paidPlanFeatures: [
+      "Tudo do Espaço de trabalho gratuito",
+      "Revisão inteligente e Revisão de hoje",
+      "Importação por foto e frases automáticas",
+      "Entrada na turma/PIN e exportação CSV",
+      "Estatísticas de erros de toda a turma",
+      "Até 40 alunos, 5 atividades ativas e histórico de 365 dias",
+    ],
     ctaTitle: "Pronto para passar a lista desta semana?",
     ctaText:
       "Abra o espaço de trabalho para criar uma atividade acompanhada ou veja o Plano para Professores.",
@@ -3187,6 +3357,11 @@ const teacherLandingCopy = {
     intro:
       "Testez une dictée immédiatement. Dans l’espace de travail, transformez la même liste en devoir, partagez un seul lien et suivez chaque résultat.",
     heroLine: "Collez votre liste → Partagez un lien → Suivez les résultats",
+    heroPoints: [
+      "Aucun compte ni mot de passe pour les élèves",
+      "Collez la liste exacte de la classe",
+      "Suivez les progrès et révisez les erreurs",
+    ],
     launcherLabel: "Votre liste d’orthographe",
     launcherButton: "Tester maintenant",
     launcherHelp: "Sans compte élève · Jusqu’à 20 mots pour l’essai",
@@ -3229,6 +3404,22 @@ const teacherLandingCopy = {
         "Jusqu’à 40 élèves, 5 devoirs actifs, remises suivies illimitées et historique sur 365 jours.",
       ],
     ],
+    planComparisonTitle: "Espace gratuit vs Offre Enseignants",
+    planComparisonIntro:
+      "Commencez avec les devoirs de base et le suivi des progrès. L’Offre Enseignants ajoute la révision, l’import, les rapports et la capacité de classe.",
+    freePlanFeatures: [
+      "Devoirs de base avec vos propres mots",
+      "Progression et maîtrise des élèves",
+      "Exercices sans compte élève",
+    ],
+    paidPlanFeatures: [
+      "Tout l’Espace de travail gratuit",
+      "Révision intelligente et Révision du jour",
+      "Import par photo et phrases automatiques",
+      "Accès classe/PIN et export CSV",
+      "Statistiques des mots manqués de la classe",
+      "Jusqu’à 40 élèves, 5 devoirs actifs et historique sur 365 jours",
+    ],
     ctaTitle: "Prêt à donner la liste de cette semaine ?",
     ctaText:
       "Ouvrez l’espace de travail pour créer un devoir suivi ou découvrez l’Offre Enseignants.",
@@ -3260,6 +3451,11 @@ const teacherLandingCopy = {
     intro:
       "Coba latihan dikte seketika. Di ruang kerja, ubah daftar yang sama menjadi tugas, bagikan satu link, lalu pantau setiap hasil.",
     heroLine: "Tempel daftar ejaan → Bagikan satu link → Pantau hasil",
+    heroPoints: [
+      "Tanpa akun atau kata sandi siswa",
+      "Tempel daftar ejaan kelas apa adanya",
+      "Pantau perkembangan dan ulangi kata salah",
+    ],
     launcherLabel: "Daftar ejaan Anda",
     launcherButton: "Coba sekarang",
     launcherHelp: "Tanpa akun siswa · Hingga 20 kata untuk uji coba",
@@ -3302,6 +3498,22 @@ const teacherLandingCopy = {
         "Hingga 40 siswa, 5 tugas aktif, kiriman terlacak tanpa batas, dan riwayat 365 hari.",
       ],
     ],
+    planComparisonTitle: "Ruang Kerja Gratis vs Paket Guru",
+    planComparisonIntro:
+      "Mulai dengan tugas dasar dan pemantauan perkembangan. Paket Guru menambahkan ulasan, impor, laporan, dan kapasitas kelas.",
+    freePlanFeatures: [
+      "Tugas dasar dengan kata-kata Anda sendiri",
+      "Perkembangan dan penguasaan siswa",
+      "Latihan tanpa akun siswa",
+    ],
+    paidPlanFeatures: [
+      "Semua fitur Ruang Kerja Gratis",
+      "Ulasan pintar dan Ulasan hari ini",
+      "Impor foto dan kalimat contoh otomatis",
+      "Gabung kelas/PIN dan ekspor CSV",
+      "Statistik kata salah di seluruh kelas",
+      "Hingga 40 siswa, 5 tugas aktif, dan riwayat 365 hari",
+    ],
     ctaTitle: "Siap memberikan daftar ejaan minggu ini?",
     ctaText:
       "Buka ruang kerja untuk membuat tugas terlacak atau lihat Paket Guru untuk alat kelas lengkap.",
@@ -3332,6 +3544,11 @@ const teacherLandingCopy = {
     intro:
       "立即试用听写练习；进入工作台后，可把同一份词表创建为作业，让学生通过一个链接完成，并持续追踪结果。",
     heroLine: "粘贴词表 → 分享一个链接 → 追踪结果",
+    heroPoints: [
+      "学生无需账号或密码",
+      "直接粘贴班级正在使用的词表",
+      "追踪进度并重练错词",
+    ],
     launcherLabel: "你的英语拼写词表",
     launcherButton: "立即试用",
     launcherHelp: "无需学生账号 · 试用最多支持 20 个单词",
@@ -3357,6 +3574,22 @@ const teacherLandingCopy = {
         "教师方案",
         "最多支持 40 名学生和 5 份活跃作业，提交追踪不限量，并保留 365 天记录。",
       ],
+    ],
+    planComparisonTitle: "免费工作台 vs 教师方案",
+    planComparisonIntro:
+      "先用基础作业和进度追踪开始。教师方案增加复习、导入、报告和班级容量，覆盖完整的每周作业流程。",
+    freePlanFeatures: [
+      "使用自己的词表创建基础作业",
+      "查看学习进度和掌握度",
+      "学生练习无需账号",
+    ],
+    paidPlanFeatures: [
+      "包含免费工作台全部功能",
+      "智能复习和今日复习",
+      "拍照导入和自动生成例句",
+      "班级加入/PIN 和 CSV 导出",
+      "班级错词统计",
+      "最多 40 名学生、5 份活跃作业和 365 天历史记录",
     ],
     ctaTitle: "准备布置本周英语拼写作业了吗？",
     ctaText: "进入工作台创建可追踪作业，或查看教师方案的完整班级功能。",
@@ -3493,8 +3726,6 @@ const teacherFeatureGroups = {
 };
 
 for (const [code, features] of Object.entries(paidLandingFeatures)) {
-  const parentPlan = parentLandingCopy[code].features.pop();
-  parentLandingCopy[code].features.push(...features.parent, parentPlan);
   const teacherPlan = teacherLandingCopy[code].features.pop();
   teacherLandingCopy[code].features.push(...features.teacher, teacherPlan);
 }
@@ -3751,7 +3982,176 @@ function schemaScripts(lang, slug, page) {
     .join("\n");
 }
 
+function parentLandingMain(langCode, lang, copy) {
+  const workspaceUrl = `/teacher?lang=${encodeURIComponent(langCode)}`;
+  const pricingUrl = pagePath(lang, "pricing");
+  const featureCards = copy.features
+    .map(
+      ([title, body]) =>
+        `                <article class="parent-value-card"><h3>${title}</h3><p>${body}</p></article>`,
+    )
+    .join("\n");
+  const planList = (items) =>
+    items.map((item) => `                    <li>${item}</li>`).join("\n");
+  return `    <main class="seo-landing content-page parent-landing">
+        <section class="parent-practice-hero">
+            <div class="parent-hero-copy">
+                <span class="parent-eyebrow">${copy.eyebrow}</span>
+                <h1>${copy.h1}</h1>
+                <p>${copy.intro}</p>
+                <ul class="parent-hero-points">
+${copy.heroPoints.map((point) => `                    <li>${point}</li>`).join("\n")}
+                </ul>
+            </div>
+            <form class="landing-launcher parent-hero-launcher" action="${dirPath(lang)}" data-mode="dictation" data-invalid="${escapeAttr(customLauncher[langCode].invalid)}" data-limit="${escapeAttr(customLauncher[langCode].limit)}">
+                <label for="parent-words-${langCode}">${copy.launcherLabel}</label>
+                <textarea id="parent-words-${langCode}" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
+                <button type="submit">${copy.launcherButton}</button>
+                <small>${copy.launcherHelp}</small>
+            </form>
+        </section>
+
+        <section class="parent-flow" aria-labelledby="parent-flow-${langCode}">
+            <h2 id="parent-flow-${langCode}">${copy.flowTitle}</h2>
+            <ol>
+${copy.flow.map((step) => `                <li>${step}</li>`).join("\n")}
+            </ol>
+        </section>
+
+        <section class="parent-value-section" aria-labelledby="parent-values-${langCode}">
+            <div class="parent-section-heading">
+                <h2 id="parent-values-${langCode}">${copy.featuresTitle}</h2>
+                <p>${copy.featuresIntro}</p>
+            </div>
+            <div class="parent-value-grid">
+${featureCards}
+            </div>
+        </section>
+
+        <section class="parent-plan-section" aria-labelledby="parent-plans-${langCode}">
+            <div class="parent-section-heading">
+                <h2 id="parent-plans-${langCode}">${copy.planComparisonTitle}</h2>
+                <p>${copy.planComparisonIntro}</p>
+            </div>
+            <div class="parent-plan-grid">
+                <article class="parent-plan-card">
+                    <h3>${parentFeatureGroups[langCode].freeTitle}</h3>
+                    <p>${parentFeatureGroups[langCode].freeIntro}</p>
+                    <ul>
+${planList(copy.freePlanFeatures)}
+                    </ul>
+                </article>
+                <article class="parent-plan-card parent-plan-card-highlight">
+                    <h3>${parentFeatureGroups[langCode].paidTitle}</h3>
+                    <p>${parentFeatureGroups[langCode].paidIntro}</p>
+                    <ul>
+${planList(copy.paidPlanFeatures)}
+                    </ul>
+                    <a class="seo-cta" href="${pricingUrl}">${copy.plan}</a>
+                </article>
+            </div>
+        </section>
+
+${faqHtml(langCode, copy.faq)}
+
+        <section class="parent-workspace-cta parent-final-cta">
+            <h2>${copy.ctaTitle}</h2>
+            <p>${copy.ctaText}</p>
+            <div class="parent-cta-actions">
+                <a class="seo-cta" href="${workspaceUrl}">${copy.workspace}</a>
+                <a class="seo-cta parent-secondary-cta" href="${pricingUrl}">${copy.plan}</a>
+            </div>
+        </section>
+    </main>`;
+}
+
+function teacherLandingMain(langCode, lang, copy) {
+  const workspaceUrl = `/teacher?lang=${encodeURIComponent(langCode)}`;
+  const pricingUrl = pagePath(lang, "pricing");
+  const featureCards = copy.features
+    .slice(0, -1)
+    .map(
+      ([title, body]) =>
+        `                <article class="parent-value-card"><h3>${title}</h3><p>${body}</p></article>`,
+    )
+    .join("\n");
+  const planList = (items) =>
+    items.map((item) => `                    <li>${item}</li>`).join("\n");
+  return `    <main class="seo-landing content-page parent-landing teacher-landing">
+        <section class="parent-practice-hero">
+            <div class="parent-hero-copy">
+                <span class="parent-eyebrow">${copy.eyebrow}</span>
+                <h1>${copy.h1}</h1>
+                <p>${copy.intro}</p>
+                <ul class="parent-hero-points">
+${copy.heroPoints.map((point) => `                    <li>${point}</li>`).join("\n")}
+                </ul>
+            </div>
+            <form class="landing-launcher parent-hero-launcher" action="${dirPath(lang)}" data-mode="dictation" data-invalid="${escapeAttr(customLauncher[langCode].invalid)}" data-limit="${escapeAttr(customLauncher[langCode].limit)}">
+                <label for="teacher-words-${langCode}">${copy.launcherLabel}</label>
+                <textarea id="teacher-words-${langCode}" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
+                <button type="submit">${copy.launcherButton}</button>
+                <small>${copy.launcherHelp}</small>
+            </form>
+        </section>
+
+        <section class="parent-flow" aria-labelledby="teacher-flow-${langCode}">
+            <h2 id="teacher-flow-${langCode}">${copy.flowTitle}</h2>
+            <ol>
+${copy.flow.map((step) => `                <li>${step}</li>`).join("\n")}
+            </ol>
+        </section>
+
+        <section class="parent-value-section" aria-labelledby="teacher-values-${langCode}">
+            <div class="parent-section-heading">
+                <h2 id="teacher-values-${langCode}">${copy.featuresTitle}</h2>
+                <p>${copy.featuresIntro}</p>
+            </div>
+            <div class="parent-value-grid">
+${featureCards}
+            </div>
+        </section>
+
+        <section class="parent-plan-section" aria-labelledby="teacher-plans-${langCode}">
+            <div class="parent-section-heading">
+                <h2 id="teacher-plans-${langCode}">${copy.planComparisonTitle}</h2>
+                <p>${copy.planComparisonIntro}</p>
+            </div>
+            <div class="parent-plan-grid">
+                <article class="parent-plan-card">
+                    <h3>${teacherFeatureGroups[langCode].freeTitle}</h3>
+                    <p>${teacherFeatureGroups[langCode].freeIntro}</p>
+                    <ul>
+${planList(copy.freePlanFeatures)}
+                    </ul>
+                </article>
+                <article class="parent-plan-card parent-plan-card-highlight">
+                    <h3>${teacherFeatureGroups[langCode].paidTitle}</h3>
+                    <p>${teacherFeatureGroups[langCode].paidIntro}</p>
+                    <ul>
+${planList(copy.paidPlanFeatures)}
+                    </ul>
+                    <a class="seo-cta" href="${pricingUrl}">${copy.plan}</a>
+                </article>
+            </div>
+        </section>
+
+${faqHtml(langCode, copy.faq)}
+
+        <section class="parent-workspace-cta parent-final-cta">
+            <h2>${copy.ctaTitle}</h2>
+            <p>${copy.ctaText}</p>
+            <div class="parent-cta-actions">
+                <a class="seo-cta" href="${workspaceUrl}">${copy.workspace}</a>
+                <a class="seo-cta parent-secondary-cta" href="${pricingUrl}">${copy.plan}</a>
+            </div>
+        </section>
+    </main>`;
+}
+
 function audienceLandingMain(langCode, lang, copy, audience) {
+  if (audience === "parent") return parentLandingMain(langCode, lang, copy);
+  if (audience === "teacher") return teacherLandingMain(langCode, lang, copy);
   const workspaceUrl = `/teacher?lang=${encodeURIComponent(langCode)}`;
   const pricingUrl = pagePath(lang, "pricing");
   const featureCards = (features) =>

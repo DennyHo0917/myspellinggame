@@ -434,7 +434,9 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
       mode: "typing",
       status: "published",
       words,
-      assignedLearners: [{ id: learnerId, name: "Alice" }],
+      assignedLearners: [
+        { id: learnerId, public_id: learnerPublicId, name: "Alice" },
+      ],
       summary: { students: 0, attempts: 0, averageAccuracy: 0 },
       attempts: [],
       missedWordStats: [],
@@ -518,6 +520,21 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
   await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
   expect(createdBody.learnerIds).toEqual([learnerId]);
   await expect(page.getByRole("link", { name: "Export CSV" })).toBeVisible();
+  const learnerAssignmentUrl = `${new URL(page.url()).origin}/a/${publicId}?learner=${learnerPublicId}&lang=en`;
+  await expect(page.locator(`a[href="${learnerAssignmentUrl}"]`)).toBeVisible();
+  await expect(
+    page.locator(
+      `a[href="${new URL(page.url()).origin}/a/${publicId}?lang=en"]`,
+    ),
+  ).toHaveCount(0);
+  const learnerCopyButton = page.getByRole("button", {
+    name: "Copy student link",
+  });
+  await expect(learnerCopyButton).toHaveCount(1);
+  await learnerCopyButton.click();
+  expect(await page.evaluate(() => window.__copiedText)).toBe(
+    learnerAssignmentUrl,
+  );
   await expect(
     page.getByRole("heading", { name: "Most commonly missed words" }),
   ).toBeVisible();
@@ -544,6 +561,16 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
 test("new assignment keeps learner assignment area visible when no learners exist", async ({
   page,
 }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: async (value) => {
+          window.__copiedText = value;
+        },
+      },
+    });
+  });
   const assignmentId = "99999999-9999-4999-8999-999999999999";
   const expiresAt = new Date(Date.now() + 86_400_000).toISOString();
   await page.route("**/api/me", (route) =>
@@ -609,6 +636,20 @@ test("new assignment keeps learner assignment area visible when no learners exis
   await expect(
     page.getByText("Link sharing only", { exact: true }),
   ).toBeVisible();
+  await expect(
+    page.locator(
+      `a[href="${new URL(page.url()).origin}/a/${publicId}?lang=en"]`,
+    ),
+  ).toBeVisible();
+  const copyStudentLink = page.getByRole("button", {
+    name: "Copy student link",
+  });
+  await expect(copyStudentLink).toBeVisible();
+  await copyStudentLink.click();
+  expect(await page.evaluate(() => window.__copiedText)).toBe(
+    `${new URL(page.url()).origin}/a/${publicId}?lang=en`,
+  );
+  await expect(page.locator(".assignment-learner-links")).toHaveCount(0);
   await page.getByRole("link", { name: "Back to workspace" }).click();
   await expect(
     page.getByText("Link sharing only", { exact: true }),
@@ -677,9 +718,17 @@ test("assignments page owns assignment management and overview adapts to work", 
   await expect(
     page.getByRole("heading", { name: "Recent assignments" }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: "View all assignments" }),
-  ).toBeVisible();
+  const viewAllAssignments = page.getByRole("link", {
+    name: "View all assignments",
+  });
+  await expect(viewAllAssignments).toBeVisible();
+  await expect
+    .poll(() =>
+      viewAllAssignments.evaluate(
+        (element) => getComputedStyle(element).marginTop,
+      ),
+    )
+    .toBe("16px");
   await expect(
     page.getByRole("link", { name: "Create your first assignment" }),
   ).toHaveCount(0);
@@ -715,7 +764,9 @@ test("assignment edit form prefills fields and submits a combined patch", async 
       },
       { id: words[1].id, position: 1, word: "banana", example_sentence: null },
     ],
-    assignedLearners: [{ id: learnerId, name: "Alice" }],
+    assignedLearners: [
+      { id: learnerId, public_id: "learnerToken123456789012", name: "Alice" },
+    ],
     hasAttempts: false,
     summary: { students: 0, attempts: 0, averageAccuracy: 0 },
     attempts: [],
@@ -943,7 +994,13 @@ test("assignment learner names render as text", async ({ page }) => {
     max_attempts: 1,
     expires_at: new Date(Date.now() + 86_400_000).toISOString(),
     words,
-    assignedLearners: [{ id: learnerId, name: unsafeName }],
+    assignedLearners: [
+      {
+        id: learnerId,
+        public_id: "learnerToken123456789012",
+        name: unsafeName,
+      },
+    ],
     hasAttempts: false,
     summary: { students: 0, attempts: 0, averageAccuracy: 0 },
     attempts: [],
@@ -3263,7 +3320,11 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
       words: limitWords(40)
         .split("\n")
         .map((word) => ({ word, example_sentence: null })),
-      assignedLearners: children.map(({ id, name }) => ({ id, name })),
+      assignedLearners: children.map(({ id, name, public_id }) => ({
+        id,
+        public_id,
+        name,
+      })),
       summary: { students: 0, attempts: 0, averageAccuracy: 0 },
       attempts: [],
       missedWordStats: null,
@@ -3348,6 +3409,26 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
   await expect(page.getByRole("link", { name: "Export CSV" })).toHaveCount(0);
   await expect(
     page.getByRole("heading", { name: "Most commonly missed words" }),
+  ).toHaveCount(0);
+  const assignmentOrigin = new URL(page.url()).origin;
+  for (const [name, learnerPublicId] of [
+    ["Alice", "childToken1"],
+    ["Bob", "childToken2"],
+  ]) {
+    const learnerPanel = page.locator(".assignment-student-link", {
+      hasText: name,
+    });
+    await expect(
+      learnerPanel.locator(
+        `a[href="${assignmentOrigin}/a/${publicId}?learner=${learnerPublicId}&lang=en"]`,
+      ),
+    ).toBeVisible();
+    await expect(
+      learnerPanel.getByRole("button", { name: "Copy child link" }),
+    ).toBeVisible();
+  }
+  await expect(
+    page.locator(`a[href="${assignmentOrigin}/a/${publicId}?lang=en"]`),
   ).toHaveCount(0);
 
   await page.getByRole("link", { name: "Back to workspace" }).click();

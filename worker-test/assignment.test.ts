@@ -719,7 +719,13 @@ describe("teacher authorization and quotas", () => {
     expect(await updated.json()).toMatchObject({
       title: "After attempt",
       max_attempts: 5,
-      assignedLearners: [{ id: learner.body.id, name: "Alice" }],
+      assignedLearners: [
+        {
+          id: learner.body.id,
+          public_id: learner.body.public_id,
+          name: "Alice",
+        },
+      ],
     });
   });
 
@@ -1322,11 +1328,24 @@ describe("assignment learner binding and class join", () => {
     expect(created.response.status).toBe(201);
     const detail = (await (
       await call(`/api/assignments/${created.body.id}`)
-    ).json()) as { assignedLearners: Array<{ id: string; name: string }> };
-    expect(detail.assignedLearners).toEqual([
-      { id: alice.body.id, name: "Alice" },
-      { id: bob.body.id, name: "Bob" },
-    ]);
+    ).json()) as {
+      assignedLearners: Array<{
+        id: string;
+        public_id: string;
+        name: string;
+      }>;
+    };
+    expect(detail.assignedLearners).toHaveLength(2);
+    expect(detail.assignedLearners).toEqual(
+      expect.arrayContaining([
+        {
+          id: alice.body.id,
+          public_id: alice.body.public_id,
+          name: "Alice",
+        },
+        { id: bob.body.id, public_id: bob.body.public_id, name: "Bob" },
+      ]),
+    );
   });
 
   it("binds owned learners, filters learner home, and attributes submissions", async () => {
@@ -1340,9 +1359,19 @@ describe("assignment learner binding and class join", () => {
 
     const detail = (await (
       await call(`/api/assignments/${created.body.id}`)
-    ).json()) as { assignedLearners: Array<{ id: string; name: string }> };
+    ).json()) as {
+      assignedLearners: Array<{
+        id: string;
+        public_id: string;
+        name: string;
+      }>;
+    };
     expect(detail.assignedLearners).toEqual([
-      { id: learnerA.body.id, name: "Alice" },
+      {
+        id: learnerA.body.id,
+        public_id: learnerA.body.public_id,
+        name: "Alice",
+      },
     ]);
 
     const homeA = (await (
@@ -1483,7 +1512,13 @@ describe("assignment learner binding and class join", () => {
       mode: "typing",
       max_attempts: 5,
       words: [expect.objectContaining({ word: "cherry" })],
-      assignedLearners: [{ id: second.body.id, name: "Bob" }],
+      assignedLearners: [
+        {
+          id: second.body.id,
+          public_id: second.body.public_id,
+          name: "Bob",
+        },
+      ],
     });
   });
 
@@ -1503,7 +1538,13 @@ describe("assignment learner binding and class join", () => {
     expect(
       ((await reassigned.json()) as { assignedLearners: unknown[] })
         .assignedLearners,
-    ).toEqual([{ id: second.body.id, name: "Bob" }]);
+    ).toEqual([
+      {
+        id: second.body.id,
+        public_id: second.body.public_id,
+        name: "Bob",
+      },
+    ]);
   });
 
   it("supports clearing all learner assignments", async () => {

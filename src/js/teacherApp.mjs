@@ -2655,25 +2655,77 @@ async function renderDetail(me, id) {
     me.plan === "free" || isParentPlan(me)
       ? copy.freeAssignmentLink
       : copy.studentLink;
-  const studentUrl = `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`;
-  const linkPanel = document.createElement("div");
-  linkPanel.className = "assignment-student-link";
-  const link = document.createElement("a");
-  link.href = studentUrl;
-  link.textContent = studentUrl;
-  link.rel = "noreferrer";
-  linkPanel.append(link);
-  const audience = document.createElement("p");
-  audience.className = "assignment-meta";
   const assignedLearners = data.assignedLearners || [];
-  audience.textContent = assignedLearners.length
-    ? m("assignedToSummary", {
-        learners: assignedLearners.map((learner) => learner.name).join(", "),
-      })
-    : m("linkOnly");
-  linkPanel.append(audience);
+  const linkPanel = document.createElement("div");
+  const copyText =
+    me.plan === "free"
+      ? copy.freeCopyLearnerLink
+      : isParentPlan(me)
+        ? copy.familyCopyChildLink
+        : copy.copyLink;
+  const copiedText =
+    me.plan === "free"
+      ? copy.freeLearnerLinkCopied
+      : isParentPlan(me)
+        ? copy.familyChildLinkCopied
+        : copy.copied;
+  const bindCopy = (button, url, successText = copiedText) => {
+    button.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(url);
+      button.textContent = successText;
+      button.classList.add("is-success");
+      trackEvent("assignment_link_copied", {
+        mode: data.mode,
+        word_count: data.words.length,
+      });
+    });
+  };
+  if (assignedLearners.length) {
+    linkPanel.className = "assignment-learner-links";
+    const audience = document.createElement("p");
+    audience.className = "assignment-meta";
+    audience.textContent = m("assignedToSummary", {
+      learners: assignedLearners.map((learner) => learner.name).join(", "),
+    });
+    linkPanel.append(audience);
+    for (const learner of assignedLearners) {
+      const learnerPanel = document.createElement("div");
+      learnerPanel.className = "assignment-student-link";
+      const learnerName = document.createElement("strong");
+      learnerName.textContent = learner.name;
+      const learnerUrl = `${location.origin}/a/${data.public_id}?learner=${encodeURIComponent(learner.public_id)}&lang=${encodeURIComponent(locale)}`;
+      const learnerLink = document.createElement("a");
+      learnerLink.href = learnerUrl;
+      learnerLink.textContent = learnerUrl;
+      learnerLink.rel = "noreferrer";
+      const learnerActions = document.createElement("div");
+      learnerActions.className = "actions";
+      const learnerCopyButton = document.createElement("button");
+      learnerCopyButton.type = "button";
+      learnerCopyButton.className = "button-secondary";
+      learnerCopyButton.setAttribute("aria-live", "polite");
+      learnerCopyButton.textContent = copyText;
+      bindCopy(learnerCopyButton, learnerUrl);
+      learnerActions.append(learnerCopyButton);
+      learnerPanel.append(learnerName, learnerLink, learnerActions);
+      linkPanel.append(learnerPanel);
+    }
+  } else {
+    linkPanel.className = "assignment-student-link";
+    const studentUrl = `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`;
+    const link = document.createElement("a");
+    link.href = studentUrl;
+    link.textContent = studentUrl;
+    link.rel = "noreferrer";
+    linkPanel.append(link);
+    const audience = document.createElement("p");
+    audience.className = "assignment-meta";
+    audience.textContent = m("linkOnly");
+    linkPanel.append(audience);
+  }
   const actions = document.createElement("div");
   actions.className = "actions";
+  const studentUrl = `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`;
   const copyButton = document.createElement("button");
   copyButton.type = "button";
   copyButton.setAttribute("aria-live", "polite");
@@ -2698,18 +2750,11 @@ async function renderDetail(me, id) {
   edit.addEventListener("click", () => {
     location.href = `/teacher/assignments/${id}/edit?lang=${encodeURIComponent(locale)}`;
   });
-  copyButton.addEventListener("click", async () => {
-    await navigator.clipboard.writeText(studentUrl);
-    copyButton.textContent =
-      me.plan === "free" || isParentPlan(me)
-        ? copy.freeLinkCopied
-        : copy.copied;
-    copyButton.classList.add("is-success");
-    trackEvent("assignment_link_copied", {
-      mode: data.mode,
-      word_count: data.words.length,
-    });
-  });
+  bindCopy(
+    copyButton,
+    studentUrl,
+    me.plan === "free" || isParentPlan(me) ? copy.freeLinkCopied : copy.copied,
+  );
   toggle.addEventListener("click", async () => {
     await api(`/api/assignments/${id}`, {
       method: "PATCH",
@@ -2744,7 +2789,8 @@ async function renderDetail(me, id) {
       );
     }
   });
-  actions.append(copyButton, edit, saveList, toggle);
+  if (!assignedLearners.length) actions.append(copyButton);
+  actions.append(edit, saveList, toggle);
   if (isTeacherPlan(me)) {
     const exportLink = document.createElement("a");
     exportLink.className = "button-link button-secondary";

@@ -70,11 +70,18 @@
         <button class="header-home-link" onclick="window.location.href='/es/'" id="back-home" title="Inicio">Inicio</button>
     </header>
     <main class="seo-landing content-page parent-landing">
-        <section class="seo-hero parent-practice-hero">
-            <span class="parent-eyebrow">Para familias con poco tiempo</span>
-            <h1>Práctica de ortografía que tu hijo puede hacer solo</h1>
-            <p>No tienes que dictar cada palabra. Pega la lista de la escuela y empieza ahora, o compártela desde el espacio de trabajo para seguir los resultados.</p>
-            <form class="landing-launcher" action="/es/" data-mode="dictation" data-invalid="Escribe al menos una palabra." data-limit="La práctica sin cuenta admite hasta 20 palabras por lista.">
+        <section class="parent-practice-hero">
+            <div class="parent-hero-copy">
+                <span class="parent-eyebrow">Para familias con poco tiempo</span>
+                <h1>Práctica de ortografía que tu hijo puede hacer solo</h1>
+                <p>No tienes que dictar cada palabra. Pega la lista de la escuela y empieza ahora, o compártela desde el espacio de trabajo para seguir los resultados.</p>
+                <ul class="parent-hero-points">
+                    <li>Sin cuenta ni contraseña para tu hijo</li>
+                    <li>Usa exactamente la lista de esta semana</li>
+                    <li>Repite las palabras falladas en rondas cortas</li>
+                </ul>
+            </div>
+            <form class="landing-launcher parent-hero-launcher" action="/es/" data-mode="dictation" data-invalid="Escribe al menos una palabra." data-limit="La práctica sin cuenta admite hasta 20 palabras por lista.">
                 <label for="parent-words-es">Palabras de esta semana</label>
                 <textarea id="parent-words-es" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">Empezar práctica</button>
@@ -82,7 +89,7 @@
             </form>
         </section>
 
-        <section class="seo-panel parent-flow" aria-labelledby="parent-flow-es">
+        <section class="parent-flow" aria-labelledby="parent-flow-es">
             <h2 id="parent-flow-es">De la lista escolar al progreso real</h2>
             <ol>
                 <li>Introduce las palabras de la semana</li>
@@ -94,41 +101,45 @@
 
         <section class="parent-value-section" aria-labelledby="parent-values-es">
             <div class="parent-section-heading">
-                <h2 id="parent-values-es">Qué aporta el espacio de trabajo para familias</h2>
-                <p>Empieza gratis y mantén la práctica de cada semana vinculada al mismo niño.</p>
+                <h2 id="parent-values-es">Herramientas clave para una rutina más sencilla</h2>
+                <p>Empieza con lo básico y añade repasos guiados y una preparación más rápida cuando lo necesites.</p>
             </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>Espacio de trabajo gratuito</h2>
-                    <p>Al iniciar sesión, el espacio gratuito mantiene unidos los perfiles, el progreso y el dominio de cada estudiante.</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>Perfil del estudiante</h3><p>Cada niño tiene un perfil y un enlace sencillo, sin cuenta ni contraseña infantil.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Progreso</h3><p>Consulta prácticas terminadas, resultados, errores y mejoras entre tareas.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Dominio</h3><p>Distingue las palabras que aún está aprendiendo de las que ya domina de forma constante.</p></article>
-                </div>
-            </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>Plan para familias</h2>
-                    <p>El Plan para familias de pago añade repaso específico, importación de listas, ayuda con frases y un historial más largo.</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>Repaso de hoy</h3><p>Abre una sesión corta con los errores que conviene volver a practicar hoy.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Repaso inteligente</h3><p>Convierte errores reales en práctica específica sin repetir toda la lista.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Importar desde una foto</h3><p>Importa la lista de spelling de la escuela desde una foto y revisa las palabras antes de usarlas.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Frases de ejemplo automáticas</h3><p>Completa palabras conocidas con frases de la biblioteca seleccionada y edítalas antes de usarlas.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Plan para familias</h3><p>Hasta 5 hijos, listas guardadas y entregas ilimitadas, repaso inteligente y 365 días de historial.</p></article>
-                </div>
+            <div class="parent-value-grid">
+                <article class="parent-value-card"><h3>Perfiles de estudiantes</h3><p>Cada niño tiene un perfil y un enlace sencillo, sin cuenta ni contraseña infantil.</p></article>
+                <article class="parent-value-card"><h3>Progreso de aprendizaje</h3><p>Consulta prácticas terminadas, resultados, errores y mejoras entre tareas.</p></article>
+                <article class="parent-value-card"><h3>Dominio</h3><p>Distingue las palabras que aún está aprendiendo de las que ya domina de forma constante.</p></article>
+                <article class="parent-value-card"><h3>Repaso inteligente</h3><p>Convierte errores reales en práctica específica sin repetir toda la lista.</p></article>
+                <article class="parent-value-card"><h3>Importar desde una foto</h3><p>Importa la lista de spelling de la escuela desde una foto y revisa las palabras antes de usarlas.</p></article>
+                <article class="parent-value-card"><h3>Frases de ejemplo automáticas</h3><p>Completa palabras conocidas con frases de la biblioteca seleccionada y edítalas antes de usarlas.</p></article>
             </div>
         </section>
 
-        <section class="seo-panel parent-workspace-cta">
-            <h2>¿Quieres dejar de hacer tú el dictado?</h2>
-            <p>Abre el espacio de trabajo para crear una tarea con seguimiento o consulta el Plan para familias.</p>
-            <div class="parent-cta-actions">
-                <a class="seo-cta" href="/teacher?lang=es">Abrir espacio de trabajo</a>
-                <a class="seo-cta parent-secondary-cta" href="/es/pricing">Ver Plan para familias</a>
+        <section class="parent-plan-section" aria-labelledby="parent-plans-es">
+            <div class="parent-section-heading">
+                <h2 id="parent-plans-es">Espacio gratuito vs Plan para familias</h2>
+                <p>Ambos planes mantienen la práctica sencilla para los niños. El Plan para familias añade herramientas e historial para facilitar la rutina semanal.</p>
+            </div>
+            <div class="parent-plan-grid">
+                <article class="parent-plan-card">
+                    <h3>Espacio de trabajo gratuito</h3>
+                    <p>Al iniciar sesión, el espacio gratuito mantiene unidos los perfiles, el progreso y el dominio de cada estudiante.</p>
+                    <ul>
+                    <li>Perfiles de estudiantes</li>
+                    <li>Progreso de aprendizaje y dominio</li>
+                    <li>Tareas básicas y listas guardadas</li>
+                    </ul>
+                </article>
+                <article class="parent-plan-card parent-plan-card-highlight">
+                    <h3>Plan para familias</h3>
+                    <p>El Plan para familias de pago añade repaso específico, importación de listas, ayuda con frases y un historial más largo.</p>
+                    <ul>
+                    <li>Todo lo incluido en el espacio gratuito</li>
+                    <li>Repaso inteligente y Repaso de hoy</li>
+                    <li>Importación por foto y frases automáticas</li>
+                    <li>Hasta 5 hijos y 365 días de historial</li>
+                    </ul>
+                    <a class="seo-cta" href="/es/pricing">Ver Plan para familias</a>
+                </article>
             </div>
         </section>
 
@@ -137,6 +148,15 @@
             <p><strong>¿Mi hijo puede empezar sin una cuenta?</strong> Sí. La práctica de arriba se abre sin iniciar sesión. Las tareas del espacio de trabajo también usan un enlace, sin cuenta ni contraseña infantil.</p>
             <p><strong>¿My Spelling Game lee las palabras en voz alta?</strong> Sí. El modo de dictado usa la voz del navegador para que el niño escuche y escriba cada palabra por su cuenta.</p>
             <p><strong>¿Cómo veo los resultados a lo largo del tiempo?</strong> Crea un perfil en el espacio de trabajo y comparte una tarea con seguimiento. Los resultados quedarán vinculados a su progreso y dominio.</p>
+        </section>
+
+        <section class="parent-workspace-cta parent-final-cta">
+            <h2>¿Quieres dejar de hacer tú el dictado?</h2>
+            <p>Abre el espacio de trabajo para crear una tarea con seguimiento o consulta el Plan para familias.</p>
+            <div class="parent-cta-actions">
+                <a class="seo-cta" href="/teacher?lang=es">Abrir espacio de trabajo</a>
+                <a class="seo-cta parent-secondary-cta" href="/es/pricing">Ver Plan para familias</a>
+            </div>
         </section>
     </main>
     <footer>

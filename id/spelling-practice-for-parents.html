@@ -70,11 +70,18 @@
         <button class="header-home-link" onclick="window.location.href='/id/'" id="back-home" title="Beranda">Beranda</button>
     </header>
     <main class="seo-landing content-page parent-landing">
-        <section class="seo-hero parent-practice-hero">
-            <span class="parent-eyebrow">Untuk orang tua yang sibuk</span>
-            <h1>Latihan ejaan yang bisa dilakukan anak secara mandiri</h1>
-            <p>Anda tidak perlu mendikte setiap kata. Tempel daftar dari sekolah dan mulai sekarang, atau bagikan melalui ruang kerja untuk memantau hasilnya.</p>
-            <form class="landing-launcher" action="/id/" data-mode="dictation" data-invalid="Masukkan setidaknya satu kata." data-limit="Latihan tanpa akun mendukung hingga 20 kata per daftar.">
+        <section class="parent-practice-hero">
+            <div class="parent-hero-copy">
+                <span class="parent-eyebrow">Untuk orang tua yang sibuk</span>
+                <h1>Latihan ejaan yang bisa dilakukan anak secara mandiri</h1>
+                <p>Anda tidak perlu mendikte setiap kata. Tempel daftar dari sekolah dan mulai sekarang, atau bagikan melalui ruang kerja untuk memantau hasilnya.</p>
+                <ul class="parent-hero-points">
+                    <li>Anak tidak perlu akun atau kata sandi</li>
+                    <li>Gunakan daftar ejaan minggu ini apa adanya</li>
+                    <li>Ulangi kata yang salah dalam sesi singkat</li>
+                </ul>
+            </div>
+            <form class="landing-launcher parent-hero-launcher" action="/id/" data-mode="dictation" data-invalid="Masukkan setidaknya satu kata." data-limit="Latihan tanpa akun mendukung hingga 20 kata per daftar.">
                 <label for="parent-words-id">Kata minggu ini</label>
                 <textarea id="parent-words-id" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">Mulai latihan</button>
@@ -82,7 +89,7 @@
             </form>
         </section>
 
-        <section class="seo-panel parent-flow" aria-labelledby="parent-flow-id">
+        <section class="parent-flow" aria-labelledby="parent-flow-id">
             <h2 id="parent-flow-id">Dari daftar sekolah ke perkembangan nyata</h2>
             <ol>
                 <li>Masukkan kata minggu ini</li>
@@ -94,41 +101,45 @@
 
         <section class="parent-value-section" aria-labelledby="parent-values-id">
             <div class="parent-section-heading">
-                <h2 id="parent-values-id">Manfaat ruang kerja untuk orang tua</h2>
-                <p>Mulai gratis, lalu hubungkan latihan setiap minggu ke anak yang sama.</p>
+                <h2 id="parent-values-id">Alat utama untuk rutinitas ejaan yang lebih tenang</h2>
+                <p>Mulai dari dasar, lalu tambahkan ulasan terarah dan penyiapan daftar yang lebih cepat saat diperlukan.</p>
             </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>Ruang Kerja Gratis</h2>
-                    <p>Setelah orang tua masuk, Ruang Kerja Gratis menghubungkan profil pelajar, perkembangan, dan penguasaan.</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>Profil pelajar</h3><p>Setiap anak memiliki profil dan link sederhana, tanpa akun atau kata sandi anak.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Perkembangan</h3><p>Lihat latihan selesai, hasil, kata yang salah, dan peningkatan antar-tugas.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Penguasaan</h3><p>Ketahui kata yang masih dipelajari dan kata yang sudah dikuasai secara konsisten.</p></article>
-                </div>
-            </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>Paket Orang Tua</h2>
-                    <p>Paket Orang Tua berbayar menambahkan ulasan terarah, impor daftar, bantuan kalimat, dan riwayat keluarga yang lebih panjang.</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>Ulasan hari ini</h3><p>Buka sesi singkat berisi kata salah yang sudah waktunya dilatih lagi hari ini.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Ulasan pintar</h3><p>Ubah kesalahan nyata menjadi latihan terarah tanpa mengulang seluruh daftar.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Impor foto</h3><p>Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum digunakan.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Kalimat contoh otomatis</h3><p>Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum digunakan.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Paket Orang Tua</h3><p>Hingga 5 anak, daftar dan kiriman tanpa batas, ulasan pintar, serta riwayat 365 hari.</p></article>
-                </div>
+            <div class="parent-value-grid">
+                <article class="parent-value-card"><h3>Profil pelajar</h3><p>Setiap anak memiliki profil dan link sederhana, tanpa akun atau kata sandi anak.</p></article>
+                <article class="parent-value-card"><h3>Perkembangan belajar</h3><p>Lihat latihan selesai, hasil, kata yang salah, dan peningkatan antar-tugas.</p></article>
+                <article class="parent-value-card"><h3>Penguasaan</h3><p>Ketahui kata yang masih dipelajari dan kata yang sudah dikuasai secara konsisten.</p></article>
+                <article class="parent-value-card"><h3>Ulasan pintar</h3><p>Ubah kesalahan nyata menjadi latihan terarah tanpa mengulang seluruh daftar.</p></article>
+                <article class="parent-value-card"><h3>Impor foto</h3><p>Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum digunakan.</p></article>
+                <article class="parent-value-card"><h3>Kalimat contoh otomatis</h3><p>Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum digunakan.</p></article>
             </div>
         </section>
 
-        <section class="seo-panel parent-workspace-cta">
-            <h2>Siap berhenti mendikte sendiri?</h2>
-            <p>Buka ruang kerja untuk membuat tugas terlacak atau lihat Paket Orang Tua.</p>
-            <div class="parent-cta-actions">
-                <a class="seo-cta" href="/teacher?lang=id">Buka ruang kerja</a>
-                <a class="seo-cta parent-secondary-cta" href="/id/pricing">Lihat Paket Orang Tua</a>
+        <section class="parent-plan-section" aria-labelledby="parent-plans-id">
+            <div class="parent-section-heading">
+                <h2 id="parent-plans-id">Ruang Kerja Gratis vs Paket Orang Tua</h2>
+                <p>Kedua pilihan menjaga latihan tetap sederhana bagi anak. Paket Orang Tua menambahkan alat dan riwayat untuk memudahkan rutinitas mingguan.</p>
+            </div>
+            <div class="parent-plan-grid">
+                <article class="parent-plan-card">
+                    <h3>Ruang Kerja Gratis</h3>
+                    <p>Setelah orang tua masuk, Ruang Kerja Gratis menghubungkan profil pelajar, perkembangan, dan penguasaan.</p>
+                    <ul>
+                    <li>Profil pelajar</li>
+                    <li>Perkembangan belajar dan penguasaan</li>
+                    <li>Tugas dasar dan daftar tersimpan</li>
+                    </ul>
+                </article>
+                <article class="parent-plan-card parent-plan-card-highlight">
+                    <h3>Paket Orang Tua</h3>
+                    <p>Paket Orang Tua berbayar menambahkan ulasan terarah, impor daftar, bantuan kalimat, dan riwayat keluarga yang lebih panjang.</p>
+                    <ul>
+                    <li>Semua fitur Ruang Kerja Gratis</li>
+                    <li>Ulasan pintar dan Ulasan hari ini</li>
+                    <li>Impor foto dan kalimat contoh otomatis</li>
+                    <li>Hingga 5 anak dan riwayat 365 hari</li>
+                    </ul>
+                    <a class="seo-cta" href="/id/pricing">Lihat Paket Orang Tua</a>
+                </article>
             </div>
         </section>
 
@@ -137,6 +148,15 @@
             <p><strong>Bisakah anak mulai tanpa akun?</strong> Bisa. Latihan di atas langsung terbuka tanpa akun. Tugas dari ruang kerja juga memakai link tanpa akun atau kata sandi anak.</p>
             <p><strong>Apakah My Spelling Game membacakan kata?</strong> Ya. Mode dikte memakai suara browser agar anak dapat mendengar dan mengetik setiap kata sendiri.</p>
             <p><strong>Bagaimana cara melihat hasil dari waktu ke waktu?</strong> Buat profil di ruang kerja dan bagikan tugas terlacak. Hasilnya tetap terhubung dengan perkembangan dan riwayat penguasaan profil itu.</p>
+        </section>
+
+        <section class="parent-workspace-cta parent-final-cta">
+            <h2>Siap berhenti mendikte sendiri?</h2>
+            <p>Buka ruang kerja untuk membuat tugas terlacak atau lihat Paket Orang Tua.</p>
+            <div class="parent-cta-actions">
+                <a class="seo-cta" href="/teacher?lang=id">Buka ruang kerja</a>
+                <a class="seo-cta parent-secondary-cta" href="/id/pricing">Lihat Paket Orang Tua</a>
+            </div>
         </section>
     </main>
     <footer>

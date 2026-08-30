@@ -70,12 +70,18 @@
         <button class="header-home-link" onclick="window.location.href='/'" id="back-home" title="Home">Home</button>
     </header>
     <main class="seo-landing content-page parent-landing teacher-landing">
-        <section class="seo-hero parent-practice-hero">
-            <span class="parent-eyebrow">For teachers</span>
-            <h1>Spelling Assignments Without Student Accounts</h1>
-            <p>Try a listening practice instantly. In Workspace, turn the same list into an assignment students open with one link, then follow every result.</p>
-            <p class="teacher-flow-line">Paste your spelling list → Share one link → Track results</p>
-            <form class="landing-launcher" action="/" data-mode="dictation" data-invalid="Enter at least one word." data-limit="No-login practice supports up to 20 words per list.">
+        <section class="parent-practice-hero">
+            <div class="parent-hero-copy">
+                <span class="parent-eyebrow">For teachers</span>
+                <h1>Spelling Assignments Without Student Accounts</h1>
+                <p>Try a listening practice instantly. In Workspace, turn the same list into an assignment students open with one link, then follow every result.</p>
+                <ul class="parent-hero-points">
+                    <li>No student accounts or passwords</li>
+                    <li>Paste the exact class spelling list</li>
+                    <li>Track progress and retry missed words</li>
+                </ul>
+            </div>
+            <form class="landing-launcher parent-hero-launcher" action="/" data-mode="dictation" data-invalid="Enter at least one word." data-limit="No-login practice supports up to 20 words per list.">
                 <label for="teacher-words-en">Your spelling list</label>
                 <textarea id="teacher-words-en" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">Try it now</button>
@@ -83,7 +89,7 @@
             </form>
         </section>
 
-        <section class="seo-panel parent-flow teacher-flow" aria-labelledby="teacher-flow-en">
+        <section class="parent-flow" aria-labelledby="teacher-flow-en">
             <h2 id="teacher-flow-en">From spelling list to class results</h2>
             <ol>
                 <li>Paste your spelling list</li>
@@ -97,42 +103,49 @@
                 <h2 id="teacher-values-en">Everything needed for weekly spelling</h2>
                 <p>Keep setup simple for students while giving teachers a clear view of practice and progress.</p>
             </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>Free Workspace</h2>
-                    <p>After a teacher signs in, Free Workspace covers basic assignments, learner progress, and mastery.</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>No student accounts</h3><p>Students open a link or use a class PIN without creating an email login or password.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Assignments</h3><p>Create a tracked assignment from your own words and share it with the whole class.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Progress</h3><p>See submissions, scores, missed words, and improvement across assignments.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Mastery</h3><p>Spot the words each student is learning and the words they consistently know.</p></article>
-                </div>
-            </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>Teacher Plan</h2>
-                    <p>The paid Teacher Plan adds review tools, list import, class capacity, history, and reporting.</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>Smart Review</h3><p>Build focused follow-up practice from real mistakes instead of repeating every word.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Class Join/PIN</h3><p>Give students one class code and a personal PIN for a quick return to their work.</p></article>
-                <article class="seo-panel parent-value-card"><h3>CSV</h3><p>Export assignment and student results for records, reporting, or further analysis.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Today's Review</h3><p>Open a short session built from missed words that are due for practice today.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Photo Import</h3><p>Bring in a school spelling list from a photo, then review the words before creating an assignment.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Automatic Example Sentences</h3><p>Fill known words with example sentences from the curated library, with editing before publishing.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Class-wide Missed-word Statistics</h3><p>See which missed words are most common across the class.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Teacher Plan</h3><p>Support up to 40 students with 5 active assignments, unlimited tracked submissions, and 365-day history.</p></article>
-                </div>
+            <div class="parent-value-grid">
+                <article class="parent-value-card"><h3>No student accounts</h3><p>Students open a link or use a class PIN without creating an email login or password.</p></article>
+                <article class="parent-value-card"><h3>Assignments</h3><p>Create a tracked assignment from your own words and share it with the whole class.</p></article>
+                <article class="parent-value-card"><h3>Progress</h3><p>See submissions, scores, missed words, and improvement across assignments.</p></article>
+                <article class="parent-value-card"><h3>Mastery</h3><p>Spot the words each student is learning and the words they consistently know.</p></article>
+                <article class="parent-value-card"><h3>Smart Review</h3><p>Build focused follow-up practice from real mistakes instead of repeating every word.</p></article>
+                <article class="parent-value-card"><h3>Class Join/PIN</h3><p>Give students one class code and a personal PIN for a quick return to their work.</p></article>
+                <article class="parent-value-card"><h3>CSV</h3><p>Export assignment and student results for records, reporting, or further analysis.</p></article>
+                <article class="parent-value-card"><h3>Today's Review</h3><p>Open a short session built from missed words that are due for practice today.</p></article>
+                <article class="parent-value-card"><h3>Photo Import</h3><p>Bring in a school spelling list from a photo, then review the words before creating an assignment.</p></article>
+                <article class="parent-value-card"><h3>Automatic Example Sentences</h3><p>Fill known words with example sentences from the curated library, with editing before publishing.</p></article>
+                <article class="parent-value-card"><h3>Class-wide Missed-word Statistics</h3><p>See which missed words are most common across the class.</p></article>
             </div>
         </section>
 
-        <section class="seo-panel parent-workspace-cta">
-            <h2>Ready to assign this week's spelling list?</h2>
-            <p>Open Workspace to create a tracked assignment, or compare the Teacher Plan for full class tools.</p>
-            <div class="parent-cta-actions">
-                <a class="seo-cta" href="/teacher?lang=en">Open Teacher Workspace</a>
-                <a class="seo-cta parent-secondary-cta" href="/pricing">View Teacher Plan</a>
+        <section class="parent-plan-section" aria-labelledby="teacher-plans-en">
+            <div class="parent-section-heading">
+                <h2 id="teacher-plans-en">Free Workspace vs Teacher Plan</h2>
+                <p>Start with basic assignments and progress tracking. Teacher Plan adds review, import, reporting, and classroom capacity for a complete weekly workflow.</p>
+            </div>
+            <div class="parent-plan-grid">
+                <article class="parent-plan-card">
+                    <h3>Free Workspace</h3>
+                    <p>After a teacher signs in, Free Workspace covers basic assignments, learner progress, and mastery.</p>
+                    <ul>
+                    <li>Basic assignments from your own words</li>
+                    <li>Learner progress and mastery</li>
+                    <li>No student accounts for practice</li>
+                    </ul>
+                </article>
+                <article class="parent-plan-card parent-plan-card-highlight">
+                    <h3>Teacher Plan</h3>
+                    <p>The paid Teacher Plan adds review tools, list import, class capacity, history, and reporting.</p>
+                    <ul>
+                    <li>Everything in Free Workspace</li>
+                    <li>Smart Review and Today's Review</li>
+                    <li>Photo Import and automatic example sentences</li>
+                    <li>Class Join/PIN and CSV Export</li>
+                    <li>Class-wide missed-word statistics</li>
+                    <li>Up to 40 students, 5 active assignments, and 365-day history</li>
+                    </ul>
+                    <a class="seo-cta" href="/pricing">View Teacher Plan</a>
+                </article>
             </div>
         </section>
 
@@ -141,6 +154,15 @@
             <p><strong>Do students need accounts?</strong> No. Students can open an assignment link directly or join a class with a code and personal PIN.</p>
             <p><strong>Can I use my own spelling list?</strong> Yes. Paste the exact words your class is learning, then create and share the assignment.</p>
             <p><strong>What results can teachers track?</strong> Workspace records submissions, scores, missed words, progress, and mastery. Teacher Plan also includes CSV export and longer history.</p>
+        </section>
+
+        <section class="parent-workspace-cta parent-final-cta">
+            <h2>Ready to assign this week's spelling list?</h2>
+            <p>Open Workspace to create a tracked assignment, or compare the Teacher Plan for full class tools.</p>
+            <div class="parent-cta-actions">
+                <a class="seo-cta" href="/teacher?lang=en">Open Teacher Workspace</a>
+                <a class="seo-cta parent-secondary-cta" href="/pricing">View Teacher Plan</a>
+            </div>
         </section>
     </main>
     <footer>

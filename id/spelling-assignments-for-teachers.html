@@ -70,12 +70,18 @@
         <button class="header-home-link" onclick="window.location.href='/id/'" id="back-home" title="Beranda">Beranda</button>
     </header>
     <main class="seo-landing content-page parent-landing teacher-landing">
-        <section class="seo-hero parent-practice-hero">
-            <span class="parent-eyebrow">Untuk guru</span>
-            <h1>Tugas ejaan tanpa akun siswa</h1>
-            <p>Coba latihan dikte seketika. Di ruang kerja, ubah daftar yang sama menjadi tugas, bagikan satu link, lalu pantau setiap hasil.</p>
-            <p class="teacher-flow-line">Tempel daftar ejaan → Bagikan satu link → Pantau hasil</p>
-            <form class="landing-launcher" action="/id/" data-mode="dictation" data-invalid="Masukkan setidaknya satu kata." data-limit="Latihan tanpa akun mendukung hingga 20 kata per daftar.">
+        <section class="parent-practice-hero">
+            <div class="parent-hero-copy">
+                <span class="parent-eyebrow">Untuk guru</span>
+                <h1>Tugas ejaan tanpa akun siswa</h1>
+                <p>Coba latihan dikte seketika. Di ruang kerja, ubah daftar yang sama menjadi tugas, bagikan satu link, lalu pantau setiap hasil.</p>
+                <ul class="parent-hero-points">
+                    <li>Tanpa akun atau kata sandi siswa</li>
+                    <li>Tempel daftar ejaan kelas apa adanya</li>
+                    <li>Pantau perkembangan dan ulangi kata salah</li>
+                </ul>
+            </div>
+            <form class="landing-launcher parent-hero-launcher" action="/id/" data-mode="dictation" data-invalid="Masukkan setidaknya satu kata." data-limit="Latihan tanpa akun mendukung hingga 20 kata per daftar.">
                 <label for="teacher-words-id">Daftar ejaan Anda</label>
                 <textarea id="teacher-words-id" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">Coba sekarang</button>
@@ -83,7 +89,7 @@
             </form>
         </section>
 
-        <section class="seo-panel parent-flow teacher-flow" aria-labelledby="teacher-flow-id">
+        <section class="parent-flow" aria-labelledby="teacher-flow-id">
             <h2 id="teacher-flow-id">Dari daftar ke hasil kelas</h2>
             <ol>
                 <li>Tempel daftar ejaan</li>
@@ -97,42 +103,49 @@
                 <h2 id="teacher-values-id">Semua yang dibutuhkan untuk tugas ejaan mingguan</h2>
                 <p>Akses sederhana bagi siswa dan gambaran latihan yang jelas bagi guru.</p>
             </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>Ruang Kerja Gratis</h2>
-                    <p>Setelah guru masuk, Ruang Kerja Gratis mencakup tugas dasar, perkembangan, dan penguasaan siswa.</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>Tanpa akun siswa</h3><p>Siswa membuka link atau memakai kode kelas dan PIN tanpa email, akun, atau kata sandi.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Tugas</h3><p>Buat tugas terlacak dari kata Anda sendiri dan bagikan kepada seluruh kelas.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Perkembangan</h3><p>Lihat kiriman, hasil, kata yang salah, dan peningkatan antartugas.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Penguasaan</h3><p>Ketahui kata yang masih dipelajari setiap siswa dan yang sudah dikuasai secara konsisten.</p></article>
-                </div>
-            </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>Paket Guru</h2>
-                    <p>Paket Guru berbayar menambahkan alat ulasan, impor daftar, kapasitas kelas, riwayat, dan laporan.</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>Ulasan pintar</h3><p>Buat latihan lanjutan dari kesalahan nyata tanpa mengulang seluruh daftar.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Gabung kelas/PIN</h3><p>Berikan kode kelas dan PIN pribadi agar siswa cepat kembali ke tugas mereka.</p></article>
-                <article class="seo-panel parent-value-card"><h3>CSV</h3><p>Ekspor hasil tugas dan siswa untuk arsip, laporan, atau analisis lanjutan.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Ulasan hari ini</h3><p>Buka sesi singkat berisi kata salah yang sudah waktunya dilatih hari ini.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Impor foto</h3><p>Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum membuat tugas.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Kalimat contoh otomatis</h3><p>Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum diterbitkan.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Statistik kata salah di kelas</h3><p>Lihat kata yang paling sering salah di seluruh kelas.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Paket Guru</h3><p>Hingga 40 siswa, 5 tugas aktif, kiriman terlacak tanpa batas, dan riwayat 365 hari.</p></article>
-                </div>
+            <div class="parent-value-grid">
+                <article class="parent-value-card"><h3>Tanpa akun siswa</h3><p>Siswa membuka link atau memakai kode kelas dan PIN tanpa email, akun, atau kata sandi.</p></article>
+                <article class="parent-value-card"><h3>Tugas</h3><p>Buat tugas terlacak dari kata Anda sendiri dan bagikan kepada seluruh kelas.</p></article>
+                <article class="parent-value-card"><h3>Perkembangan</h3><p>Lihat kiriman, hasil, kata yang salah, dan peningkatan antartugas.</p></article>
+                <article class="parent-value-card"><h3>Penguasaan</h3><p>Ketahui kata yang masih dipelajari setiap siswa dan yang sudah dikuasai secara konsisten.</p></article>
+                <article class="parent-value-card"><h3>Ulasan pintar</h3><p>Buat latihan lanjutan dari kesalahan nyata tanpa mengulang seluruh daftar.</p></article>
+                <article class="parent-value-card"><h3>Gabung kelas/PIN</h3><p>Berikan kode kelas dan PIN pribadi agar siswa cepat kembali ke tugas mereka.</p></article>
+                <article class="parent-value-card"><h3>CSV</h3><p>Ekspor hasil tugas dan siswa untuk arsip, laporan, atau analisis lanjutan.</p></article>
+                <article class="parent-value-card"><h3>Ulasan hari ini</h3><p>Buka sesi singkat berisi kata salah yang sudah waktunya dilatih hari ini.</p></article>
+                <article class="parent-value-card"><h3>Impor foto</h3><p>Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum membuat tugas.</p></article>
+                <article class="parent-value-card"><h3>Kalimat contoh otomatis</h3><p>Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum diterbitkan.</p></article>
+                <article class="parent-value-card"><h3>Statistik kata salah di kelas</h3><p>Lihat kata yang paling sering salah di seluruh kelas.</p></article>
             </div>
         </section>
 
-        <section class="seo-panel parent-workspace-cta">
-            <h2>Siap memberikan daftar ejaan minggu ini?</h2>
-            <p>Buka ruang kerja untuk membuat tugas terlacak atau lihat Paket Guru untuk alat kelas lengkap.</p>
-            <div class="parent-cta-actions">
-                <a class="seo-cta" href="/teacher?lang=id">Buka ruang kerja guru</a>
-                <a class="seo-cta parent-secondary-cta" href="/id/pricing">Lihat Paket Guru</a>
+        <section class="parent-plan-section" aria-labelledby="teacher-plans-id">
+            <div class="parent-section-heading">
+                <h2 id="teacher-plans-id">Ruang Kerja Gratis vs Paket Guru</h2>
+                <p>Mulai dengan tugas dasar dan pemantauan perkembangan. Paket Guru menambahkan ulasan, impor, laporan, dan kapasitas kelas.</p>
+            </div>
+            <div class="parent-plan-grid">
+                <article class="parent-plan-card">
+                    <h3>Ruang Kerja Gratis</h3>
+                    <p>Setelah guru masuk, Ruang Kerja Gratis mencakup tugas dasar, perkembangan, dan penguasaan siswa.</p>
+                    <ul>
+                    <li>Tugas dasar dengan kata-kata Anda sendiri</li>
+                    <li>Perkembangan dan penguasaan siswa</li>
+                    <li>Latihan tanpa akun siswa</li>
+                    </ul>
+                </article>
+                <article class="parent-plan-card parent-plan-card-highlight">
+                    <h3>Paket Guru</h3>
+                    <p>Paket Guru berbayar menambahkan alat ulasan, impor daftar, kapasitas kelas, riwayat, dan laporan.</p>
+                    <ul>
+                    <li>Semua fitur Ruang Kerja Gratis</li>
+                    <li>Ulasan pintar dan Ulasan hari ini</li>
+                    <li>Impor foto dan kalimat contoh otomatis</li>
+                    <li>Gabung kelas/PIN dan ekspor CSV</li>
+                    <li>Statistik kata salah di seluruh kelas</li>
+                    <li>Hingga 40 siswa, 5 tugas aktif, dan riwayat 365 hari</li>
+                    </ul>
+                    <a class="seo-cta" href="/id/pricing">Lihat Paket Guru</a>
+                </article>
             </div>
         </section>
 
@@ -141,6 +154,15 @@
             <p><strong>Apakah siswa memerlukan akun?</strong> Tidak. Siswa dapat langsung membuka link tugas atau bergabung dengan kode kelas dan PIN pribadi.</p>
             <p><strong>Bisakah saya memakai daftar ejaan sendiri?</strong> Bisa. Tempel kata yang sedang dipelajari kelas, lalu buat dan bagikan tugasnya.</p>
             <p><strong>Hasil apa yang dapat dipantau guru?</strong> Ruang kerja mencatat kiriman, hasil, kesalahan, perkembangan, dan penguasaan. Paket Guru juga mencakup ekspor CSV dan riwayat yang lebih panjang.</p>
+        </section>
+
+        <section class="parent-workspace-cta parent-final-cta">
+            <h2>Siap memberikan daftar ejaan minggu ini?</h2>
+            <p>Buka ruang kerja untuk membuat tugas terlacak atau lihat Paket Guru untuk alat kelas lengkap.</p>
+            <div class="parent-cta-actions">
+                <a class="seo-cta" href="/teacher?lang=id">Buka ruang kerja guru</a>
+                <a class="seo-cta parent-secondary-cta" href="/id/pricing">Lihat Paket Guru</a>
+            </div>
         </section>
     </main>
     <footer>

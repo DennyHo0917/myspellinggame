@@ -744,12 +744,12 @@ async function assignmentDetail(
         .first<Record<string, number>>(),
       db
         .prepare(
-          `SELECT l.id, l.name FROM assignment_learners al
+          `SELECT l.id, l.public_id, l.name FROM assignment_learners al
          JOIN learners l ON l.id = al.learner_id
          WHERE al.assignment_id = ? ORDER BY l.name_key`,
         )
         .bind(assignment.id)
-        .all<{ id: string; name: string }>(),
+        .all<{ id: string; public_id: string; name: string }>(),
       db
         .prepare("SELECT 1 FROM attempts WHERE assignment_id = ? LIMIT 1")
         .bind(assignment.id)

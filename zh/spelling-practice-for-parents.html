@@ -70,11 +70,18 @@
         <button class="header-home-link" onclick="window.location.href='/zh/'" id="back-home" title="首页">首页</button>
     </header>
     <main class="seo-landing content-page parent-landing">
-        <section class="seo-hero parent-practice-hero">
-            <span class="parent-eyebrow">为忙碌家长而做</span>
-            <h1>孩子可以独立完成的英语拼写练习</h1>
-            <p>家长不需要亲自逐个听写。粘贴学校本周词表即可开始；进入工作台后，还能分享练习链接并持续查看结果。</p>
-            <form class="landing-launcher" action="/zh/" data-mode="dictation" data-invalid="请至少输入一个英语单词。" data-limit="无需登录的练习每份词表最多 20 个单词。">
+        <section class="parent-practice-hero">
+            <div class="parent-hero-copy">
+                <span class="parent-eyebrow">为忙碌家长而做</span>
+                <h1>孩子可以独立完成的英语拼写练习</h1>
+                <p>家长不需要亲自逐个听写。粘贴学校本周词表即可开始；进入工作台后，还能分享练习链接并持续查看结果。</p>
+                <ul class="parent-hero-points">
+                    <li>无需儿童账号或密码</li>
+                    <li>直接使用学校本周原始词表</li>
+                    <li>错词可以用短轮次再次练习</li>
+                </ul>
+            </div>
+            <form class="landing-launcher parent-hero-launcher" action="/zh/" data-mode="dictation" data-invalid="请至少输入一个英语单词。" data-limit="无需登录的练习每份词表最多 20 个单词。">
                 <label for="parent-words-zh">学校本周英语单词</label>
                 <textarea id="parent-words-zh" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">开始练习</button>
@@ -82,7 +89,7 @@
             </form>
         </section>
 
-        <section class="seo-panel parent-flow" aria-labelledby="parent-flow-zh">
+        <section class="parent-flow" aria-labelledby="parent-flow-zh">
             <h2 id="parent-flow-zh">从学校词表到真实学习进度</h2>
             <ol>
                 <li>输入学校本周单词</li>
@@ -94,41 +101,45 @@
 
         <section class="parent-value-section" aria-labelledby="parent-values-zh">
             <div class="parent-section-heading">
-                <h2 id="parent-values-zh">家长工作台能带来什么</h2>
-                <p>先免费开始，再把每周练习持续关联到同一个孩子。</p>
+                <h2 id="parent-values-zh">让拼写练习更轻松的核心功能</h2>
+                <p>先使用基础功能，再按需要加入针对性复习和更快的词表准备。</p>
             </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>免费工作台</h2>
-                    <p>家长登录后，免费工作台可以保存学习者档案、进度和掌握度记录。</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>学习者档案</h3><p>每个孩子使用固定档案和简单链接，无需儿童账号或密码。</p></article>
-                <article class="seo-panel parent-value-card"><h3>学习进度</h3><p>查看已完成练习、成绩、错词，以及不同作业之间的进步。</p></article>
-                <article class="seo-panel parent-value-card"><h3>掌握度</h3><p>分清仍在学习的单词和已经能够稳定掌握的单词。</p></article>
-                </div>
-            </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>家长方案</h2>
-                    <p>家长方案付费权益增加针对性复习、词表导入、例句帮助和更长的家庭学习历史。</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>今日复习</h3><p>打开一轮短练习，复习今天正好应该再次出现的错词。</p></article>
-                <article class="seo-panel parent-value-card"><h3>智能复习</h3><p>根据真实错误生成针对性练习，不必反复重练整份词表。</p></article>
-                <article class="seo-panel parent-value-card"><h3>拍照导入</h3><p>从学校词表照片中提取单词，确认后再加入练习。</p></article>
-                <article class="seo-panel parent-value-card"><h3>自动填充例句</h3><p>使用精选例句库为已知单词补充例句，使用前仍可编辑。</p></article>
-                <article class="seo-panel parent-value-card"><h3>家长方案</h3><p>最多支持 5 个孩子，词表和提交不限量，包含智能复习及 365 天学习记录。</p></article>
-                </div>
+            <div class="parent-value-grid">
+                <article class="parent-value-card"><h3>学习者档案</h3><p>每个孩子使用固定档案和简单链接，无需儿童账号或密码。</p></article>
+                <article class="parent-value-card"><h3>学习进度</h3><p>查看已完成练习、成绩、错词，以及不同作业之间的进步。</p></article>
+                <article class="parent-value-card"><h3>掌握度</h3><p>分清仍在学习的单词和已经能够稳定掌握的单词。</p></article>
+                <article class="parent-value-card"><h3>智能复习</h3><p>根据真实错误生成针对性练习，不必反复重练整份词表。</p></article>
+                <article class="parent-value-card"><h3>拍照导入</h3><p>从学校词表照片中提取单词，确认后再加入练习。</p></article>
+                <article class="parent-value-card"><h3>自动生成例句</h3><p>使用精选例句库为已知单词补充例句，使用前仍可编辑。</p></article>
             </div>
         </section>
 
-        <section class="seo-panel parent-workspace-cta">
-            <h2>准备好不再亲自做听写了吗？</h2>
-            <p>进入工作台创建并分享可追踪作业，或查看家长方案的完整权益。</p>
-            <div class="parent-cta-actions">
-                <a class="seo-cta" href="/teacher?lang=zh">进入工作台</a>
-                <a class="seo-cta parent-secondary-cta" href="/zh/pricing">查看家长方案</a>
+        <section class="parent-plan-section" aria-labelledby="parent-plans-zh">
+            <div class="parent-section-heading">
+                <h2 id="parent-plans-zh">免费工作台 vs 家长方案</h2>
+                <p>两种方案都让孩子可以轻松开始练习。家长方案增加了更适合长期家庭学习的工具和历史记录。</p>
+            </div>
+            <div class="parent-plan-grid">
+                <article class="parent-plan-card">
+                    <h3>免费工作台</h3>
+                    <p>家长登录后，免费工作台可以保存学习者档案、进度和掌握度记录。</p>
+                    <ul>
+                    <li>学习者档案</li>
+                    <li>学习进度和掌握度</li>
+                    <li>基础作业和保存词表</li>
+                    </ul>
+                </article>
+                <article class="parent-plan-card parent-plan-card-highlight">
+                    <h3>家长方案</h3>
+                    <p>家长方案付费权益增加针对性复习、词表导入、例句帮助和更长的家庭学习历史。</p>
+                    <ul>
+                    <li>包含免费工作台全部功能</li>
+                    <li>智能复习和今日复习</li>
+                    <li>拍照导入和自动生成例句</li>
+                    <li>最多 5 个孩子和 365 天历史记录</li>
+                    </ul>
+                    <a class="seo-cta" href="/zh/pricing">查看家长方案</a>
+                </article>
             </div>
         </section>
 
@@ -137,6 +148,15 @@
             <p><strong>孩子无需账号也能开始吗？</strong> 可以。上方练习无需登录即可直接开始。工作台作业同样通过链接进入，不需要儿童账号和密码。</p>
             <p><strong>My Spelling Game 会自动读出单词吗？</strong> 会。听写模式使用浏览器语音，让孩子自己听单词并输入答案。</p>
             <p><strong>怎样查看长期练习结果？</strong> 在工作台创建学习者档案并分享可追踪作业，完成结果就会关联到该学习者的进度和掌握度记录。</p>
+        </section>
+
+        <section class="parent-workspace-cta parent-final-cta">
+            <h2>准备好不再亲自做听写了吗？</h2>
+            <p>进入工作台创建并分享可追踪作业，或查看家长方案的完整权益。</p>
+            <div class="parent-cta-actions">
+                <a class="seo-cta" href="/teacher?lang=zh">进入工作台</a>
+                <a class="seo-cta parent-secondary-cta" href="/zh/pricing">查看家长方案</a>
+            </div>
         </section>
     </main>
     <footer>

@@ -214,6 +214,25 @@ a {
   line-height: 1.45;
 }
 
+.assignment-learner-links {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.35rem 0 1rem;
+}
+
+.assignment-learner-links .assignment-student-link {
+  margin: 0;
+}
+
+.assignment-student-link > strong,
+.assignment-student-link > a {
+  display: block;
+}
+
+.assignment-student-link .actions {
+  margin-top: 0.65rem;
+}
+
 .assignment-student-link a {
   color: var(--blue);
 }
@@ -509,6 +528,11 @@ fieldset {
 .assignment-list {
   display: grid;
   gap: 0.75rem;
+}
+.product-card
+  > :is(.assignment-list, .word-list, form)
+  + :is(button, .button-link) {
+  margin-top: 1rem;
 }
 .assignment-row {
   display: grid;

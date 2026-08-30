@@ -70,12 +70,18 @@
         <button class="header-home-link" onclick="window.location.href='/zh/'" id="back-home" title="首页">首页</button>
     </header>
     <main class="seo-landing content-page parent-landing teacher-landing">
-        <section class="seo-hero parent-practice-hero">
-            <span class="parent-eyebrow">为教师而做</span>
-            <h1>无需学生账号的英语拼写作业</h1>
-            <p>立即试用听写练习；进入工作台后，可把同一份词表创建为作业，让学生通过一个链接完成，并持续追踪结果。</p>
-            <p class="teacher-flow-line">粘贴词表 → 分享一个链接 → 追踪结果</p>
-            <form class="landing-launcher" action="/zh/" data-mode="dictation" data-invalid="请至少输入一个英语单词。" data-limit="无需登录的练习每份词表最多 20 个单词。">
+        <section class="parent-practice-hero">
+            <div class="parent-hero-copy">
+                <span class="parent-eyebrow">为教师而做</span>
+                <h1>无需学生账号的英语拼写作业</h1>
+                <p>立即试用听写练习；进入工作台后，可把同一份词表创建为作业，让学生通过一个链接完成，并持续追踪结果。</p>
+                <ul class="parent-hero-points">
+                    <li>学生无需账号或密码</li>
+                    <li>直接粘贴班级正在使用的词表</li>
+                    <li>追踪进度并重练错词</li>
+                </ul>
+            </div>
+            <form class="landing-launcher parent-hero-launcher" action="/zh/" data-mode="dictation" data-invalid="请至少输入一个英语单词。" data-limit="无需登录的练习每份词表最多 20 个单词。">
                 <label for="teacher-words-zh">你的英语拼写词表</label>
                 <textarea id="teacher-words-zh" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">立即试用</button>
@@ -83,7 +89,7 @@
             </form>
         </section>
 
-        <section class="seo-panel parent-flow teacher-flow" aria-labelledby="teacher-flow-zh">
+        <section class="parent-flow" aria-labelledby="teacher-flow-zh">
             <h2 id="teacher-flow-zh">从词表到全班练习结果</h2>
             <ol>
                 <li>粘贴英语词表</li>
@@ -97,42 +103,49 @@
                 <h2 id="teacher-values-zh">每周英语拼写作业所需功能</h2>
                 <p>学生进入简单，教师也能清楚掌握练习与进步情况。</p>
             </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>免费工作台</h2>
-                    <p>教师登录后，免费工作台提供基础作业、学习进度和掌握度记录。</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>无需学生账号</h3><p>学生通过作业链接或班级代码与 PIN 进入，无需邮箱、账号或密码。</p></article>
-                <article class="seo-panel parent-value-card"><h3>作业</h3><p>用自己的词表创建可追踪作业，并分享给全班学生。</p></article>
-                <article class="seo-panel parent-value-card"><h3>学习进度</h3><p>查看提交记录、成绩、错词和不同作业之间的进步。</p></article>
-                <article class="seo-panel parent-value-card"><h3>掌握度</h3><p>分清每位学生仍在学习的单词和已经稳定掌握的单词。</p></article>
-                </div>
-            </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>教师方案</h2>
-                    <p>教师方案付费权益增加复习工具、词表导入、班级规模、历史记录和结果报告。</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>智能复习</h3><p>根据真实错词生成针对性后续练习，不必重复整份词表。</p></article>
-                <article class="seo-panel parent-value-card"><h3>班级加入/PIN</h3><p>向学生提供班级代码和个人 PIN，方便他们快速回到自己的作业。</p></article>
-                <article class="seo-panel parent-value-card"><h3>CSV</h3><p>按作业和学生导出结果，便于留档、汇报或进一步分析。</p></article>
-                <article class="seo-panel parent-value-card"><h3>今日复习</h3><p>打开一轮短练习，复习今天正好需要再次练习的错词。</p></article>
-                <article class="seo-panel parent-value-card"><h3>拍照导入</h3><p>从学校词表照片中提取单词，确认后再创建作业。</p></article>
-                <article class="seo-panel parent-value-card"><h3>自动填充例句</h3><p>使用精选例句库为已知单词补充例句，发布前仍可编辑。</p></article>
-                <article class="seo-panel parent-value-card"><h3>班级错词统计</h3><p>查看全班最常出现的错词，找到需要重点练习的内容。</p></article>
-                <article class="seo-panel parent-value-card"><h3>教师方案</h3><p>最多支持 40 名学生和 5 份活跃作业，提交追踪不限量，并保留 365 天记录。</p></article>
-                </div>
+            <div class="parent-value-grid">
+                <article class="parent-value-card"><h3>无需学生账号</h3><p>学生通过作业链接或班级代码与 PIN 进入，无需邮箱、账号或密码。</p></article>
+                <article class="parent-value-card"><h3>作业</h3><p>用自己的词表创建可追踪作业，并分享给全班学生。</p></article>
+                <article class="parent-value-card"><h3>学习进度</h3><p>查看提交记录、成绩、错词和不同作业之间的进步。</p></article>
+                <article class="parent-value-card"><h3>掌握度</h3><p>分清每位学生仍在学习的单词和已经稳定掌握的单词。</p></article>
+                <article class="parent-value-card"><h3>智能复习</h3><p>根据真实错词生成针对性后续练习，不必重复整份词表。</p></article>
+                <article class="parent-value-card"><h3>班级加入/PIN</h3><p>向学生提供班级代码和个人 PIN，方便他们快速回到自己的作业。</p></article>
+                <article class="parent-value-card"><h3>CSV</h3><p>按作业和学生导出结果，便于留档、汇报或进一步分析。</p></article>
+                <article class="parent-value-card"><h3>今日复习</h3><p>打开一轮短练习，复习今天正好需要再次练习的错词。</p></article>
+                <article class="parent-value-card"><h3>拍照导入</h3><p>从学校词表照片中提取单词，确认后再创建作业。</p></article>
+                <article class="parent-value-card"><h3>自动填充例句</h3><p>使用精选例句库为已知单词补充例句，发布前仍可编辑。</p></article>
+                <article class="parent-value-card"><h3>班级错词统计</h3><p>查看全班最常出现的错词，找到需要重点练习的内容。</p></article>
             </div>
         </section>
 
-        <section class="seo-panel parent-workspace-cta">
-            <h2>准备布置本周英语拼写作业了吗？</h2>
-            <p>进入工作台创建可追踪作业，或查看教师方案的完整班级功能。</p>
-            <div class="parent-cta-actions">
-                <a class="seo-cta" href="/teacher?lang=zh">进入教师工作台</a>
-                <a class="seo-cta parent-secondary-cta" href="/zh/pricing">查看教师方案</a>
+        <section class="parent-plan-section" aria-labelledby="teacher-plans-zh">
+            <div class="parent-section-heading">
+                <h2 id="teacher-plans-zh">免费工作台 vs 教师方案</h2>
+                <p>先用基础作业和进度追踪开始。教师方案增加复习、导入、报告和班级容量，覆盖完整的每周作业流程。</p>
+            </div>
+            <div class="parent-plan-grid">
+                <article class="parent-plan-card">
+                    <h3>免费工作台</h3>
+                    <p>教师登录后，免费工作台提供基础作业、学习进度和掌握度记录。</p>
+                    <ul>
+                    <li>使用自己的词表创建基础作业</li>
+                    <li>查看学习进度和掌握度</li>
+                    <li>学生练习无需账号</li>
+                    </ul>
+                </article>
+                <article class="parent-plan-card parent-plan-card-highlight">
+                    <h3>教师方案</h3>
+                    <p>教师方案付费权益增加复习工具、词表导入、班级规模、历史记录和结果报告。</p>
+                    <ul>
+                    <li>包含免费工作台全部功能</li>
+                    <li>智能复习和今日复习</li>
+                    <li>拍照导入和自动生成例句</li>
+                    <li>班级加入/PIN 和 CSV 导出</li>
+                    <li>班级错词统计</li>
+                    <li>最多 40 名学生、5 份活跃作业和 365 天历史记录</li>
+                    </ul>
+                    <a class="seo-cta" href="/zh/pricing">查看教师方案</a>
+                </article>
             </div>
         </section>
 
@@ -141,6 +154,15 @@
             <p><strong>学生需要注册账号吗？</strong> 不需要。学生可以直接打开作业链接，也可以使用班级代码和个人 PIN 加入。</p>
             <p><strong>可以使用自己的英语词表吗？</strong> 可以。粘贴班级正在学习的单词，即可创建并分享作业。</p>
             <p><strong>教师可以追踪哪些结果？</strong> 工作台会记录提交、成绩、错词、学习进度和掌握度；教师方案还支持 CSV 导出和更长的历史记录。</p>
+        </section>
+
+        <section class="parent-workspace-cta parent-final-cta">
+            <h2>准备布置本周英语拼写作业了吗？</h2>
+            <p>进入工作台创建可追踪作业，或查看教师方案的完整班级功能。</p>
+            <div class="parent-cta-actions">
+                <a class="seo-cta" href="/teacher?lang=zh">进入教师工作台</a>
+                <a class="seo-cta parent-secondary-cta" href="/zh/pricing">查看教师方案</a>
+            </div>
         </section>
     </main>
     <footer>

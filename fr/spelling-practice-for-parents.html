@@ -70,11 +70,18 @@
         <button class="header-home-link" onclick="window.location.href='/fr/'" id="back-home" title="Accueil">Accueil</button>
     </header>
     <main class="seo-landing content-page parent-landing">
-        <section class="seo-hero parent-practice-hero">
-            <span class="parent-eyebrow">Pour les parents pressés</span>
-            <h1>Un exercice d’orthographe que votre enfant fait en autonomie</h1>
-            <p>Vous n’avez pas à dicter chaque mot. Collez la liste de l’école et commencez maintenant, ou partagez-la depuis l’espace de travail pour suivre les résultats.</p>
-            <form class="landing-launcher" action="/fr/" data-mode="dictation" data-invalid="Saisissez au moins un mot." data-limit="L’entraînement sans compte accepte jusqu’à 20 mots par liste.">
+        <section class="parent-practice-hero">
+            <div class="parent-hero-copy">
+                <span class="parent-eyebrow">Pour les parents pressés</span>
+                <h1>Un exercice d’orthographe que votre enfant fait en autonomie</h1>
+                <p>Vous n’avez pas à dicter chaque mot. Collez la liste de l’école et commencez maintenant, ou partagez-la depuis l’espace de travail pour suivre les résultats.</p>
+                <ul class="parent-hero-points">
+                    <li>Aucun compte ni mot de passe pour l’enfant</li>
+                    <li>Utilisez exactement la liste de la semaine</li>
+                    <li>Revoyez les mots manqués en courtes séances</li>
+                </ul>
+            </div>
+            <form class="landing-launcher parent-hero-launcher" action="/fr/" data-mode="dictation" data-invalid="Saisissez au moins un mot." data-limit="L’entraînement sans compte accepte jusqu’à 20 mots par liste.">
                 <label for="parent-words-fr">Mots de cette semaine</label>
                 <textarea id="parent-words-fr" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">Commencer</button>
@@ -82,7 +89,7 @@
             </form>
         </section>
 
-        <section class="seo-panel parent-flow" aria-labelledby="parent-flow-fr">
+        <section class="parent-flow" aria-labelledby="parent-flow-fr">
             <h2 id="parent-flow-fr">De la liste de l’école aux vrais progrès</h2>
             <ol>
                 <li>Saisissez les mots de la semaine</li>
@@ -94,41 +101,45 @@
 
         <section class="parent-value-section" aria-labelledby="parent-values-fr">
             <div class="parent-section-heading">
-                <h2 id="parent-values-fr">Ce que l’espace parents ajoute</h2>
-                <p>Commencez gratuitement, puis reliez chaque semaine au même enfant.</p>
+                <h2 id="parent-values-fr">Les outils essentiels pour une routine plus simple</h2>
+                <p>Commencez avec l’essentiel, puis ajoutez la révision ciblée et une préparation plus rapide si besoin.</p>
             </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>Espace de travail gratuit</h2>
-                    <p>Après connexion, l’espace gratuit relie les profils, la progression et la maîtrise de chaque élève.</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>Profil élève</h3><p>Chaque enfant a un profil et un lien simple, sans compte ni mot de passe enfant.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Progression</h3><p>Consultez les exercices terminés, les résultats, les erreurs et l’évolution entre les devoirs.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Maîtrise</h3><p>Distinguez les mots encore en cours d’apprentissage de ceux maîtrisés régulièrement.</p></article>
-                </div>
-            </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>Offre Parents</h2>
-                    <p>L’offre Parents payante ajoute la révision ciblée, l’import de listes, l’aide aux phrases et un historique familial plus long.</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>Révision du jour</h3><p>Lancez une courte séance avec les erreurs qu’il est temps de revoir aujourd’hui.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Révision intelligente</h3><p>Transformez les vraies erreurs en exercice ciblé sans refaire toute la liste.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Import par photo</h3><p>Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de les utiliser.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Phrases d’exemple automatiques</h3><p>Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant usage.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Offre Parents</h3><p>Jusqu’à 5 enfants, listes et remises illimitées, révision intelligente et historique sur 365 jours.</p></article>
-                </div>
+            <div class="parent-value-grid">
+                <article class="parent-value-card"><h3>Profils des élèves</h3><p>Chaque enfant a un profil et un lien simple, sans compte ni mot de passe enfant.</p></article>
+                <article class="parent-value-card"><h3>Progression d’apprentissage</h3><p>Consultez les exercices terminés, les résultats, les erreurs et l’évolution entre les devoirs.</p></article>
+                <article class="parent-value-card"><h3>Maîtrise</h3><p>Distinguez les mots encore en cours d’apprentissage de ceux maîtrisés régulièrement.</p></article>
+                <article class="parent-value-card"><h3>Révision intelligente</h3><p>Transformez les vraies erreurs en exercice ciblé sans refaire toute la liste.</p></article>
+                <article class="parent-value-card"><h3>Import par photo</h3><p>Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de les utiliser.</p></article>
+                <article class="parent-value-card"><h3>Phrases d’exemple automatiques</h3><p>Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant usage.</p></article>
             </div>
         </section>
 
-        <section class="seo-panel parent-workspace-cta">
-            <h2>Prêt à ne plus faire la dictée vous-même ?</h2>
-            <p>Ouvrez l’espace de travail pour créer un devoir suivi ou découvrez l’Offre Parents.</p>
-            <div class="parent-cta-actions">
-                <a class="seo-cta" href="/teacher?lang=fr">Ouvrir l’espace de travail</a>
-                <a class="seo-cta parent-secondary-cta" href="/fr/pricing">Voir l’Offre Parents</a>
+        <section class="parent-plan-section" aria-labelledby="parent-plans-fr">
+            <div class="parent-section-heading">
+                <h2 id="parent-plans-fr">Espace gratuit vs Offre Parents</h2>
+                <p>Les deux formules gardent l’exercice simple pour les enfants. L’Offre Parents ajoute les outils et l’historique qui facilitent la routine hebdomadaire.</p>
+            </div>
+            <div class="parent-plan-grid">
+                <article class="parent-plan-card">
+                    <h3>Espace de travail gratuit</h3>
+                    <p>Après connexion, l’espace gratuit relie les profils, la progression et la maîtrise de chaque élève.</p>
+                    <ul>
+                    <li>Profils des élèves</li>
+                    <li>Progression et maîtrise</li>
+                    <li>Devoirs de base et listes enregistrées</li>
+                    </ul>
+                </article>
+                <article class="parent-plan-card parent-plan-card-highlight">
+                    <h3>Offre Parents</h3>
+                    <p>L’offre Parents payante ajoute la révision ciblée, l’import de listes, l’aide aux phrases et un historique familial plus long.</p>
+                    <ul>
+                    <li>Tout l’Espace de travail gratuit</li>
+                    <li>Révision intelligente et Révision du jour</li>
+                    <li>Import par photo et phrases automatiques</li>
+                    <li>Jusqu’à 5 enfants et historique sur 365 jours</li>
+                    </ul>
+                    <a class="seo-cta" href="/fr/pricing">Voir l’Offre Parents</a>
+                </article>
             </div>
         </section>
 
@@ -137,6 +148,15 @@
             <p><strong>Mon enfant peut-il commencer sans compte ?</strong> Oui. L’exercice ci-dessus s’ouvre sans connexion. Les devoirs de l’espace de travail utilisent aussi un lien, sans compte ni mot de passe enfant.</p>
             <p><strong>My Spelling Game prononce-t-il les mots ?</strong> Oui. Le mode dictée utilise la voix du navigateur pour que l’enfant écoute et saisisse chaque mot seul.</p>
             <p><strong>Comment suivre les résultats dans le temps ?</strong> Créez un profil dans l’espace de travail et partagez un devoir suivi. Les résultats restent liés à la progression et à la maîtrise de ce profil.</p>
+        </section>
+
+        <section class="parent-workspace-cta parent-final-cta">
+            <h2>Prêt à ne plus faire la dictée vous-même ?</h2>
+            <p>Ouvrez l’espace de travail pour créer un devoir suivi ou découvrez l’Offre Parents.</p>
+            <div class="parent-cta-actions">
+                <a class="seo-cta" href="/teacher?lang=fr">Ouvrir l’espace de travail</a>
+                <a class="seo-cta parent-secondary-cta" href="/fr/pricing">Voir l’Offre Parents</a>
+            </div>
         </section>
     </main>
     <footer>

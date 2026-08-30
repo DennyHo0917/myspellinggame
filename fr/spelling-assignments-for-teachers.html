@@ -70,12 +70,18 @@
         <button class="header-home-link" onclick="window.location.href='/fr/'" id="back-home" title="Accueil">Accueil</button>
     </header>
     <main class="seo-landing content-page parent-landing teacher-landing">
-        <section class="seo-hero parent-practice-hero">
-            <span class="parent-eyebrow">Pour les enseignants</span>
-            <h1>Des devoirs d’orthographe sans compte élève</h1>
-            <p>Testez une dictée immédiatement. Dans l’espace de travail, transformez la même liste en devoir, partagez un seul lien et suivez chaque résultat.</p>
-            <p class="teacher-flow-line">Collez votre liste → Partagez un lien → Suivez les résultats</p>
-            <form class="landing-launcher" action="/fr/" data-mode="dictation" data-invalid="Saisissez au moins un mot." data-limit="L’entraînement sans compte accepte jusqu’à 20 mots par liste.">
+        <section class="parent-practice-hero">
+            <div class="parent-hero-copy">
+                <span class="parent-eyebrow">Pour les enseignants</span>
+                <h1>Des devoirs d’orthographe sans compte élève</h1>
+                <p>Testez une dictée immédiatement. Dans l’espace de travail, transformez la même liste en devoir, partagez un seul lien et suivez chaque résultat.</p>
+                <ul class="parent-hero-points">
+                    <li>Aucun compte ni mot de passe pour les élèves</li>
+                    <li>Collez la liste exacte de la classe</li>
+                    <li>Suivez les progrès et révisez les erreurs</li>
+                </ul>
+            </div>
+            <form class="landing-launcher parent-hero-launcher" action="/fr/" data-mode="dictation" data-invalid="Saisissez au moins un mot." data-limit="L’entraînement sans compte accepte jusqu’à 20 mots par liste.">
                 <label for="teacher-words-fr">Votre liste d’orthographe</label>
                 <textarea id="teacher-words-fr" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">Tester maintenant</button>
@@ -83,7 +89,7 @@
             </form>
         </section>
 
-        <section class="seo-panel parent-flow teacher-flow" aria-labelledby="teacher-flow-fr">
+        <section class="parent-flow" aria-labelledby="teacher-flow-fr">
             <h2 id="teacher-flow-fr">De la liste aux résultats de la classe</h2>
             <ol>
                 <li>Collez votre liste</li>
@@ -97,42 +103,49 @@
                 <h2 id="teacher-values-fr">Tout le nécessaire pour les devoirs de la semaine</h2>
                 <p>Un accès simple pour les élèves et une vision claire des exercices pour l’enseignant.</p>
             </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>Espace de travail gratuit</h2>
-                    <p>Après connexion, l’espace gratuit couvre les devoirs de base, la progression et la maîtrise des élèves.</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>Sans compte élève</h3><p>Les élèves ouvrent un lien ou utilisent le code et leur PIN, sans e-mail, compte ni mot de passe.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Devoirs</h3><p>Créez un devoir suivi avec vos propres mots et partagez-le avec toute la classe.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Progression</h3><p>Consultez les remises, les résultats, les erreurs et l’évolution entre les devoirs.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Maîtrise</h3><p>Repérez les mots que chaque élève apprend encore et ceux qu’il maîtrise durablement.</p></article>
-                </div>
-            </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>Offre Enseignants</h2>
-                    <p>L’offre Enseignants payante ajoute les outils de révision, l’import de listes, la capacité de classe, l’historique et les rapports.</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>Révision intelligente</h3><p>Créez des exercices ciblés à partir des vraies erreurs sans reprendre toute la liste.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Accès classe/PIN</h3><p>Donnez aux élèves un code de classe et un PIN personnel pour retrouver rapidement leur travail.</p></article>
-                <article class="seo-panel parent-value-card"><h3>CSV</h3><p>Exportez les résultats par devoir et par élève pour vos dossiers, bilans ou analyses.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Révision du jour</h3><p>Lancez une courte séance avec les mots manqués qui doivent être revus aujourd’hui.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Import par photo</h3><p>Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de créer le devoir.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Phrases d’exemple automatiques</h3><p>Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant publication.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Statistiques des mots manqués de la classe</h3><p>Repérez les mots qui posent le plus de difficultés dans toute la classe.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Offre Enseignants</h3><p>Jusqu’à 40 élèves, 5 devoirs actifs, remises suivies illimitées et historique sur 365 jours.</p></article>
-                </div>
+            <div class="parent-value-grid">
+                <article class="parent-value-card"><h3>Sans compte élève</h3><p>Les élèves ouvrent un lien ou utilisent le code et leur PIN, sans e-mail, compte ni mot de passe.</p></article>
+                <article class="parent-value-card"><h3>Devoirs</h3><p>Créez un devoir suivi avec vos propres mots et partagez-le avec toute la classe.</p></article>
+                <article class="parent-value-card"><h3>Progression</h3><p>Consultez les remises, les résultats, les erreurs et l’évolution entre les devoirs.</p></article>
+                <article class="parent-value-card"><h3>Maîtrise</h3><p>Repérez les mots que chaque élève apprend encore et ceux qu’il maîtrise durablement.</p></article>
+                <article class="parent-value-card"><h3>Révision intelligente</h3><p>Créez des exercices ciblés à partir des vraies erreurs sans reprendre toute la liste.</p></article>
+                <article class="parent-value-card"><h3>Accès classe/PIN</h3><p>Donnez aux élèves un code de classe et un PIN personnel pour retrouver rapidement leur travail.</p></article>
+                <article class="parent-value-card"><h3>CSV</h3><p>Exportez les résultats par devoir et par élève pour vos dossiers, bilans ou analyses.</p></article>
+                <article class="parent-value-card"><h3>Révision du jour</h3><p>Lancez une courte séance avec les mots manqués qui doivent être revus aujourd’hui.</p></article>
+                <article class="parent-value-card"><h3>Import par photo</h3><p>Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de créer le devoir.</p></article>
+                <article class="parent-value-card"><h3>Phrases d’exemple automatiques</h3><p>Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant publication.</p></article>
+                <article class="parent-value-card"><h3>Statistiques des mots manqués de la classe</h3><p>Repérez les mots qui posent le plus de difficultés dans toute la classe.</p></article>
             </div>
         </section>
 
-        <section class="seo-panel parent-workspace-cta">
-            <h2>Prêt à donner la liste de cette semaine ?</h2>
-            <p>Ouvrez l’espace de travail pour créer un devoir suivi ou découvrez l’Offre Enseignants.</p>
-            <div class="parent-cta-actions">
-                <a class="seo-cta" href="/teacher?lang=fr">Ouvrir l’espace enseignant</a>
-                <a class="seo-cta parent-secondary-cta" href="/fr/pricing">Voir l’Offre Enseignants</a>
+        <section class="parent-plan-section" aria-labelledby="teacher-plans-fr">
+            <div class="parent-section-heading">
+                <h2 id="teacher-plans-fr">Espace gratuit vs Offre Enseignants</h2>
+                <p>Commencez avec les devoirs de base et le suivi des progrès. L’Offre Enseignants ajoute la révision, l’import, les rapports et la capacité de classe.</p>
+            </div>
+            <div class="parent-plan-grid">
+                <article class="parent-plan-card">
+                    <h3>Espace de travail gratuit</h3>
+                    <p>Après connexion, l’espace gratuit couvre les devoirs de base, la progression et la maîtrise des élèves.</p>
+                    <ul>
+                    <li>Devoirs de base avec vos propres mots</li>
+                    <li>Progression et maîtrise des élèves</li>
+                    <li>Exercices sans compte élève</li>
+                    </ul>
+                </article>
+                <article class="parent-plan-card parent-plan-card-highlight">
+                    <h3>Offre Enseignants</h3>
+                    <p>L’offre Enseignants payante ajoute les outils de révision, l’import de listes, la capacité de classe, l’historique et les rapports.</p>
+                    <ul>
+                    <li>Tout l’Espace de travail gratuit</li>
+                    <li>Révision intelligente et Révision du jour</li>
+                    <li>Import par photo et phrases automatiques</li>
+                    <li>Accès classe/PIN et export CSV</li>
+                    <li>Statistiques des mots manqués de la classe</li>
+                    <li>Jusqu’à 40 élèves, 5 devoirs actifs et historique sur 365 jours</li>
+                    </ul>
+                    <a class="seo-cta" href="/fr/pricing">Voir l’Offre Enseignants</a>
+                </article>
             </div>
         </section>
 
@@ -141,6 +154,15 @@
             <p><strong>Les élèves ont-ils besoin d’un compte ?</strong> Non. Ils ouvrent directement le lien du devoir ou rejoignent la classe avec un code et leur PIN personnel.</p>
             <p><strong>Puis-je utiliser ma propre liste de mots ?</strong> Oui. Collez exactement les mots étudiés en classe, puis créez et partagez le devoir.</p>
             <p><strong>Quels résultats l’enseignant peut-il suivre ?</strong> L’espace de travail enregistre remises, résultats, erreurs, progression et maîtrise. L’Offre Enseignants ajoute l’export CSV et un historique étendu.</p>
+        </section>
+
+        <section class="parent-workspace-cta parent-final-cta">
+            <h2>Prêt à donner la liste de cette semaine ?</h2>
+            <p>Ouvrez l’espace de travail pour créer un devoir suivi ou découvrez l’Offre Enseignants.</p>
+            <div class="parent-cta-actions">
+                <a class="seo-cta" href="/teacher?lang=fr">Ouvrir l’espace enseignant</a>
+                <a class="seo-cta parent-secondary-cta" href="/fr/pricing">Voir l’Offre Enseignants</a>
+            </div>
         </section>
     </main>
     <footer>

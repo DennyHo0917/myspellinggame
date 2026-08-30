@@ -70,12 +70,18 @@
         <button class="header-home-link" onclick="window.location.href='/pt-br/'" id="back-home" title="Início">Início</button>
     </header>
     <main class="seo-landing content-page parent-landing teacher-landing">
-        <section class="seo-hero parent-practice-hero">
-            <span class="parent-eyebrow">Para professores</span>
-            <h1>Atividades de ortografia sem contas de alunos</h1>
-            <p>Teste um ditado na hora. No espaço de trabalho, transforme a mesma lista em uma atividade, compartilhe um único link e acompanhe cada resultado.</p>
-            <p class="teacher-flow-line">Cole sua lista → Compartilhe um link → Acompanhe os resultados</p>
-            <form class="landing-launcher" action="/pt-br/" data-mode="dictation" data-invalid="Digite pelo menos uma palavra." data-limit="A prática sem conta aceita até 20 palavras por lista.">
+        <section class="parent-practice-hero">
+            <div class="parent-hero-copy">
+                <span class="parent-eyebrow">Para professores</span>
+                <h1>Atividades de ortografia sem contas de alunos</h1>
+                <p>Teste um ditado na hora. No espaço de trabalho, transforme a mesma lista em uma atividade, compartilhe um único link e acompanhe cada resultado.</p>
+                <ul class="parent-hero-points">
+                    <li>Sem contas ou senhas para os alunos</li>
+                    <li>Cole a lista exata da turma</li>
+                    <li>Acompanhe o progresso e revise os erros</li>
+                </ul>
+            </div>
+            <form class="landing-launcher parent-hero-launcher" action="/pt-br/" data-mode="dictation" data-invalid="Digite pelo menos uma palavra." data-limit="A prática sem conta aceita até 20 palavras por lista.">
                 <label for="teacher-words-pt-BR">Sua lista de ortografia</label>
                 <textarea id="teacher-words-pt-BR" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
                 <button type="submit">Testar agora</button>
@@ -83,7 +89,7 @@
             </form>
         </section>
 
-        <section class="seo-panel parent-flow teacher-flow" aria-labelledby="teacher-flow-pt-BR">
+        <section class="parent-flow" aria-labelledby="teacher-flow-pt-BR">
             <h2 id="teacher-flow-pt-BR">Da lista aos resultados da turma</h2>
             <ol>
                 <li>Cole sua lista</li>
@@ -97,42 +103,49 @@
                 <h2 id="teacher-values-pt-BR">Tudo para as atividades semanais de ortografia</h2>
                 <p>Entrada simples para os alunos e uma visão clara da prática para o professor.</p>
             </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>Espaço de trabalho gratuito</h2>
-                    <p>Depois de entrar, o espaço gratuito cobre atividades básicas, progresso e domínio dos alunos.</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>Sem contas de alunos</h3><p>Os alunos abrem um link ou usam o PIN da turma, sem e-mail, conta ou senha.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Atividades</h3><p>Crie uma atividade acompanhada com suas palavras e compartilhe com toda a turma.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Progresso</h3><p>Veja envios, resultados, palavras erradas e melhora entre atividades.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Domínio</h3><p>Saiba quais palavras cada aluno ainda está aprendendo e quais já domina.</p></article>
-                </div>
-            </div>
-            <div class="parent-feature-group">
-                <div class="parent-section-heading">
-                    <h2>Plano para Professores</h2>
-                    <p>O Plano para Professores pago acrescenta ferramentas de revisão, importação de listas, capacidade da turma, histórico e relatórios.</p>
-                </div>
-                <div class="parent-value-grid">
-                <article class="seo-panel parent-value-card"><h3>Revisão inteligente</h3><p>Crie práticas focadas com base nos erros reais sem repetir a lista inteira.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Entrada na turma/PIN</h3><p>Dê aos alunos um código da turma e um PIN pessoal para voltar rapidamente às atividades.</p></article>
-                <article class="seo-panel parent-value-card"><h3>CSV</h3><p>Exporte resultados por atividade e aluno para registros, relatórios ou análise.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Revisão de hoje</h3><p>Abra uma sessão curta com as palavras erradas que já devem ser praticadas hoje.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Importar por foto</h3><p>Importe a lista de ortografia da escola por foto e revise as palavras antes de criar a atividade.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Frases de exemplo automáticas</h3><p>Preencha palavras conhecidas com frases da biblioteca selecionada e edite-as antes de publicar.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Estatísticas de erros da turma</h3><p>Veja quais palavras são mais difíceis para toda a turma.</p></article>
-                <article class="seo-panel parent-value-card"><h3>Plano para Professores</h3><p>Até 40 alunos, 5 atividades ativas, envios acompanhados ilimitados e histórico de 365 dias.</p></article>
-                </div>
+            <div class="parent-value-grid">
+                <article class="parent-value-card"><h3>Sem contas de alunos</h3><p>Os alunos abrem um link ou usam o PIN da turma, sem e-mail, conta ou senha.</p></article>
+                <article class="parent-value-card"><h3>Atividades</h3><p>Crie uma atividade acompanhada com suas palavras e compartilhe com toda a turma.</p></article>
+                <article class="parent-value-card"><h3>Progresso</h3><p>Veja envios, resultados, palavras erradas e melhora entre atividades.</p></article>
+                <article class="parent-value-card"><h3>Domínio</h3><p>Saiba quais palavras cada aluno ainda está aprendendo e quais já domina.</p></article>
+                <article class="parent-value-card"><h3>Revisão inteligente</h3><p>Crie práticas focadas com base nos erros reais sem repetir a lista inteira.</p></article>
+                <article class="parent-value-card"><h3>Entrada na turma/PIN</h3><p>Dê aos alunos um código da turma e um PIN pessoal para voltar rapidamente às atividades.</p></article>
+                <article class="parent-value-card"><h3>CSV</h3><p>Exporte resultados por atividade e aluno para registros, relatórios ou análise.</p></article>
+                <article class="parent-value-card"><h3>Revisão de hoje</h3><p>Abra uma sessão curta com as palavras erradas que já devem ser praticadas hoje.</p></article>
+                <article class="parent-value-card"><h3>Importar por foto</h3><p>Importe a lista de ortografia da escola por foto e revise as palavras antes de criar a atividade.</p></article>
+                <article class="parent-value-card"><h3>Frases de exemplo automáticas</h3><p>Preencha palavras conhecidas com frases da biblioteca selecionada e edite-as antes de publicar.</p></article>
+                <article class="parent-value-card"><h3>Estatísticas de erros da turma</h3><p>Veja quais palavras são mais difíceis para toda a turma.</p></article>
             </div>
         </section>
 
-        <section class="seo-panel parent-workspace-cta">
-            <h2>Pronto para passar a lista desta semana?</h2>
-            <p>Abra o espaço de trabalho para criar uma atividade acompanhada ou veja o Plano para Professores.</p>
-            <div class="parent-cta-actions">
-                <a class="seo-cta" href="/teacher?lang=pt-BR">Abrir espaço do professor</a>
-                <a class="seo-cta parent-secondary-cta" href="/pt-br/pricing">Ver Plano para Professores</a>
+        <section class="parent-plan-section" aria-labelledby="teacher-plans-pt-BR">
+            <div class="parent-section-heading">
+                <h2 id="teacher-plans-pt-BR">Espaço gratuito vs Plano para Professores</h2>
+                <p>Comece com atividades básicas e acompanhamento do progresso. O Plano para Professores acrescenta revisão, importação, relatórios e capacidade para a turma.</p>
+            </div>
+            <div class="parent-plan-grid">
+                <article class="parent-plan-card">
+                    <h3>Espaço de trabalho gratuito</h3>
+                    <p>Depois de entrar, o espaço gratuito cobre atividades básicas, progresso e domínio dos alunos.</p>
+                    <ul>
+                    <li>Atividades básicas com suas próprias palavras</li>
+                    <li>Progresso e domínio dos alunos</li>
+                    <li>Prática sem contas para os alunos</li>
+                    </ul>
+                </article>
+                <article class="parent-plan-card parent-plan-card-highlight">
+                    <h3>Plano para Professores</h3>
+                    <p>O Plano para Professores pago acrescenta ferramentas de revisão, importação de listas, capacidade da turma, histórico e relatórios.</p>
+                    <ul>
+                    <li>Tudo do Espaço de trabalho gratuito</li>
+                    <li>Revisão inteligente e Revisão de hoje</li>
+                    <li>Importação por foto e frases automáticas</li>
+                    <li>Entrada na turma/PIN e exportação CSV</li>
+                    <li>Estatísticas de erros de toda a turma</li>
+                    <li>Até 40 alunos, 5 atividades ativas e histórico de 365 dias</li>
+                    </ul>
+                    <a class="seo-cta" href="/pt-br/pricing">Ver Plano para Professores</a>
+                </article>
             </div>
         </section>
 
@@ -141,6 +154,15 @@
             <p><strong>Os alunos precisam de conta?</strong> Não. Eles podem abrir o link da atividade diretamente ou entrar com o código da turma e o PIN pessoal.</p>
             <p><strong>Posso usar minha própria lista de palavras?</strong> Sim. Cole exatamente as palavras que a turma está estudando e crie a atividade para compartilhar.</p>
             <p><strong>Quais resultados o professor pode acompanhar?</strong> O espaço de trabalho registra envios, resultados, erros, progresso e domínio. O Plano para Professores também inclui exportação CSV e histórico ampliado.</p>
+        </section>
+
+        <section class="parent-workspace-cta parent-final-cta">
+            <h2>Pronto para passar a lista desta semana?</h2>
+            <p>Abra o espaço de trabalho para criar uma atividade acompanhada ou veja o Plano para Professores.</p>
+            <div class="parent-cta-actions">
+                <a class="seo-cta" href="/teacher?lang=pt-BR">Abrir espaço do professor</a>
+                <a class="seo-cta parent-secondary-cta" href="/pt-br/pricing">Ver Plano para Professores</a>
+            </div>
         </section>
     </main>
     <footer>

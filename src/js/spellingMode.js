@@ -1,5 +1,5 @@
 import { gameState } from './gameState.js';
-import { t } from './pageLocale.js';
+import { getPageLocale, t } from './pageLocale.js';
 import {
   ANONYMOUS_WORD_LIMIT,
   configuredWords,
@@ -33,7 +33,7 @@ function sentenceTextarea() {
   return document.getElementById('custom-example-sentences');
 }
 
-function sentenceLibraryNotice(message = productMessage('sentenceLibraryRequired', {}, pageLocale())) {
+function sentenceLibraryNotice(message = productMessage('sentenceLibraryRequired', {}, getPageLocale())) {
   const field = sentenceTextarea()?.closest('.word-entry-field');
   if (!field) return;
   field.querySelector('.sentence-library-notice')?.remove();
@@ -42,8 +42,8 @@ function sentenceLibraryNotice(message = productMessage('sentenceLibraryRequired
   notice.setAttribute('role', 'status');
   notice.textContent = message;
   const link = document.createElement('a');
-  link.href = `${productPagePath('pricing', pageLocale())}#pricing`;
-  link.textContent = productMessage('upgrade', {}, pageLocale());
+  link.href = `${productPagePath('pricing', getPageLocale())}#pricing`;
+  link.textContent = productMessage('upgrade', {}, getPageLocale());
   notice.append(' ', link);
   field.append(notice);
 }
@@ -75,8 +75,8 @@ async function autoFillExampleSentences() {
   } catch (error) {
     sentenceLibraryNotice(
       error.message === 'sentence_library_required'
-        ? productMessage('sentenceLibraryRequired', {}, pageLocale())
-        : productMessage('sentenceLibraryError', {}, pageLocale()),
+        ? productMessage('sentenceLibraryRequired', {}, getPageLocale())
+        : productMessage('sentenceLibraryError', {}, getPageLocale()),
     );
   } finally {
     button.disabled = false;

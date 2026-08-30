@@ -523,6 +523,12 @@ a {
   min-width: 0;
 }
 
+.word-entry-field > label {
+  display: flex;
+  align-items: center;
+  min-height: 30px;
+}
+
 .sentence-field-heading {
   display: flex;
   align-items: center;

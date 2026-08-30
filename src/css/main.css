@@ -529,6 +529,7 @@ a {
   min-height: 30px;
 }
 
+.word-field-heading,
 .sentence-field-heading {
   display: flex;
   align-items: center;
@@ -536,6 +537,7 @@ a {
   gap: 8px;
 }
 
+.word-field-heading label,
 .sentence-field-heading label {
   color: var(--ink);
   font-size: 0.92rem;
@@ -574,6 +576,37 @@ a {
 .sentence-library-notice a {
   color: var(--primary);
   font-weight: 800;
+}
+
+.photo-import-review {
+  display: grid;
+  gap: 7px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-soft);
+}
+
+.photo-import-review small {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.photo-import-review textarea {
+  width: 100%;
+  min-height: 86px;
+  resize: vertical;
+  padding: 10px;
+  border: 1px solid #cfded9;
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.photo-import-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
 }
 
 #custom-word-list,

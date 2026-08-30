@@ -22,6 +22,8 @@ const EASY_KEY = 'mySpellingGameEasyMode';
 let signupCtaViewTracked = false;
 let shareOptionsViewTracked = false;
 let accountPromise;
+let accountState;
+let tesseractPromise;
 
 export { parseWords };
 
@@ -31,6 +33,143 @@ function textarea() {
 
 function sentenceTextarea() {
   return document.getElementById('custom-example-sentences');
+}
+
+function photoImportNotice(account) {
+  const field = textarea()?.closest('.word-entry-field');
+  if (!field) return;
+  field.querySelector('.photo-import-notice, .photo-import-review')?.remove();
+  const notice = document.createElement('small');
+  notice.className = 'photo-import-notice sentence-library-notice';
+  notice.setAttribute('role', 'status');
+  notice.textContent = t('photoImportRequired');
+  const primary = document.createElement('a');
+  primary.href = account
+    ? `${productPagePath('pricing', getPageLocale())}#pricing`
+    : `/teacher?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
+  primary.textContent = account ? t('photoImportPlans') : t('photoImportSignIn');
+  notice.append(' ', primary);
+  if (!account) {
+    const plans = document.createElement('a');
+    plans.href = `${productPagePath('pricing', getPageLocale())}#pricing`;
+    plans.textContent = t('photoImportPlans');
+    notice.append(' · ', plans);
+  }
+  field.append(notice);
+}
+
+function photoImportStatus(message) {
+  const field = textarea()?.closest('.word-entry-field');
+  if (!field) return;
+  field.querySelector('.photo-import-notice, .photo-import-review')?.remove();
+  const notice = document.createElement('small');
+  notice.className = 'photo-import-notice sentence-library-notice';
+  notice.setAttribute('role', 'status');
+  notice.textContent = message;
+  field.append(notice);
+  return notice;
+}
+
+function loadTesseract() {
+  if (!tesseractPromise) {
+    tesseractPromise = new Promise((resolve, reject) => {
+      if (window.Tesseract) {
+        resolve(window.Tesseract);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+      script.onload = () => window.Tesseract ? resolve(window.Tesseract) : reject(new Error('tesseract_unavailable'));
+      script.onerror = () => reject(new Error('tesseract_unavailable'));
+      document.head.append(script);
+    });
+  }
+  return tesseractPromise;
+}
+
+function showPhotoImportReview(words) {
+  const field = textarea()?.closest('.word-entry-field');
+  if (!field) return;
+  field.querySelector('.photo-import-notice, .photo-import-review')?.remove();
+  const review = document.createElement('div');
+  review.className = 'photo-import-review';
+  const title = document.createElement('strong');
+  title.textContent = t('photoImportReviewTitle');
+  const help = document.createElement('small');
+  help.textContent = t('photoImportReviewHelp');
+  const input = document.createElement('textarea');
+  input.id = 'photo-import-review-words';
+  input.rows = 5;
+  input.value = words.join('\n');
+  const actions = document.createElement('div');
+  actions.className = 'photo-import-review-actions';
+  const use = document.createElement('button');
+  use.type = 'button';
+  use.className = 'auto-sentence-btn';
+  use.textContent = t('photoImportUse');
+  use.addEventListener('click', () => {
+    textarea().value = input.value
+      .split(/\r?\n/)
+      .map((word) => word.trim())
+      .filter(Boolean)
+      .join('\n');
+    textarea().dispatchEvent(new Event('input', { bubbles: true }));
+    review.remove();
+  });
+  const cancel = document.createElement('button');
+  cancel.type = 'button';
+  cancel.className = 'auto-sentence-btn';
+  cancel.textContent = t('photoImportCancel');
+  cancel.addEventListener('click', () => review.remove());
+  actions.append(use, cancel);
+  review.append(title, help, input, actions);
+  field.append(review);
+}
+
+async function importWordsFromPhoto(file) {
+  const field = textarea()?.closest('.word-entry-field');
+  if (!field) return;
+  const notice = photoImportStatus(t('photoImportProcessing'));
+  try {
+    const Tesseract = await loadTesseract();
+    const result = await Tesseract.recognize(file, 'eng');
+    const words = [...new Set(
+      (result.data?.text || '').match(/[A-Za-z]+(?:['’-][A-Za-z]+)?/g) || [],
+    )];
+    notice.remove();
+    if (!words.length) {
+      photoImportStatus(t('photoImportNoWords'));
+      return;
+    }
+    showPhotoImportReview(words);
+  } catch {
+    notice.textContent = t('photoImportError');
+  }
+}
+
+function initPhotoImport() {
+  const button = document.getElementById('photo-import-btn');
+  const input = document.getElementById('photo-import-input');
+  if (!button || !input) return;
+  button.addEventListener('click', () => {
+    if (accountState !== undefined) {
+      if (isPlusAccount(accountState)) input.click();
+      else photoImportNotice(accountState);
+      return;
+    }
+    void getAccount().then((account) => {
+      if (isPlusAccount(account)) input.click();
+      else photoImportNotice(account);
+    });
+  });
+  input.addEventListener('change', () => {
+    const file = input.files?.[0];
+    input.value = '';
+    if (file) void getAccount().then((account) => {
+      if (isPlusAccount(account)) void importWordsFromPhoto(file);
+      else photoImportNotice(account);
+    });
+  });
 }
 
 function sentenceLibraryNotice(message = productMessage('sentenceLibraryRequired', {}, getPageLocale())) {
@@ -142,6 +281,7 @@ async function getAccount() {
         };
       })
       .catch(() => null);
+    accountPromise.then((account) => { accountState = account; });
   }
   return accountPromise;
 }
@@ -246,6 +386,7 @@ export function initSpellingMode() {
   });
   syncModeUI();
   document.getElementById('auto-example-sentences-btn')?.addEventListener('click', autoFillExampleSentences);
+  initPhotoImport();
   void getAccount();
   if (readShareState(window.location).autoStart) queueMicrotask(() => window.startGame?.());
 }

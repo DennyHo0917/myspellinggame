@@ -131,6 +131,7 @@ const pages = {
       chips: ["Corrección inmediata", "Palabra oculta", "Repite los fallos"],
       noLogin: "Sin crear una cuenta",
       wordsLabel: "Tus palabras en inglés",
+      photoImport: "Importar desde una foto",
       sentencesLabel: "Frases de ejemplo (opcional)",
       autoSentences: "Autocompletar frases",
       sentencesHelp:
@@ -296,6 +297,7 @@ const pages = {
       chips: ["Correção imediata", "Palavra escondida", "Revise os erros"],
       noLogin: "Sem criar uma conta",
       wordsLabel: "Suas palavras em inglês",
+      photoImport: "Importar de uma foto",
       sentencesLabel: "Frases de exemplo (opcional)",
       autoSentences: "Preencher frases automaticamente",
       sentencesHelp:
@@ -461,6 +463,7 @@ const pages = {
       chips: ["Correction immédiate", "Mot caché", "Reprendre les erreurs"],
       noLogin: "Sans créer de compte",
       wordsLabel: "Vos mots anglais",
+      photoImport: "Importer depuis une photo",
       sentencesLabel: "Phrases d’exemple (facultatif)",
       autoSentences: "Remplir automatiquement",
       sentencesHelp:
@@ -626,6 +629,7 @@ const pages = {
       chips: ["Hasil langsung", "Kata disembunyikan", "Ulangi yang salah"],
       noLogin: "Tanpa membuat akun",
       wordsLabel: "Daftar kata bahasa Inggris",
+      photoImport: "Impor dari foto",
       sentencesLabel: "Kalimat contoh (opsional)",
       autoSentences: "Isi kalimat otomatis",
       sentencesHelp:
@@ -783,6 +787,7 @@ const pages = {
       chips: ["即时批改", "作答前隐藏单词", "错词重练"],
       noLogin: "无需创建账号",
       wordsLabel: "你的英语单词",
+      photoImport: "拍照导入",
       sentencesLabel: "例句（可选）",
       autoSentences: "自动填充例句",
       sentencesHelp:
@@ -1232,7 +1237,8 @@ ${game.chips.map((chip) => `                            <span>${chip}</span>`).j
                         <div class="spelling-builder">
                             <div class="word-entry-grid">
                                 <div class="word-entry-field">
-                                    <label for="custom-word-list">${game.wordsLabel}</label>
+                                    <div class="word-field-heading"><label for="custom-word-list">${game.wordsLabel}</label><button type="button" class="auto-sentence-btn photo-import-btn" id="photo-import-btn">${game.photoImport}</button></div>
+                                    <input type="file" id="photo-import-input" accept="image/*" capture="environment" hidden>
                                     <textarea id="custom-word-list" rows="7" spellcheck="false" placeholder="because&#10;friend&#10;beautiful&#10;answer"></textarea>
                                 </div>
                                 <div class="word-entry-field dictation-option">

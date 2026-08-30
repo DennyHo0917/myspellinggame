@@ -13,7 +13,7 @@ const locales = {
     title: "FAQ | My Spelling Game",
     heading: "Frequently asked questions",
     intro:
-      "Answers about word lists, practice modes, sharing, accounts, assignments, and reports.",
+      "Answers about word lists, practice modes, sharing, accounts, assignments, photo import, example sentences, and reports.",
     questions: [
       [
         "Can I use my own spelling words?",
@@ -62,7 +62,7 @@ const locales = {
     title: "Preguntas frecuentes | My Spelling Game",
     heading: "Preguntas frecuentes",
     intro:
-      "Respuestas sobre listas, modos de práctica, enlaces, cuentas, tareas e informes.",
+      "Respuestas sobre listas, modos de práctica, enlaces, cuentas, tareas, importación por foto, frases automáticas e informes.",
     questions: [
       [
         "¿Puedo usar mis propias palabras?",
@@ -111,7 +111,7 @@ const locales = {
     title: "Perguntas frequentes | My Spelling Game",
     heading: "Perguntas frequentes",
     intro:
-      "Respostas sobre listas, modos de prática, links, contas, tarefas e relatórios.",
+      "Respostas sobre listas, modos de prática, links, contas, tarefas, importação por foto, frases automáticas e relatórios.",
     questions: [
       [
         "Posso usar minhas próprias palavras?",
@@ -160,7 +160,7 @@ const locales = {
     title: "Questions fréquentes | My Spelling Game",
     heading: "Questions fréquentes",
     intro:
-      "Réponses sur les listes, les modes de pratique, les liens, les comptes et les devoirs.",
+      "Réponses sur les listes, les modes de pratique, les liens, les comptes, les devoirs, l’import photo et les phrases automatiques.",
     questions: [
       [
         "Puis-je utiliser mes propres mots ?",
@@ -209,7 +209,7 @@ const locales = {
     title: "Pertanyaan umum | My Spelling Game",
     heading: "Pertanyaan umum",
     intro:
-      "Jawaban tentang daftar kata, mode latihan, link, akun, tugas, dan laporan.",
+      "Jawaban tentang daftar kata, mode latihan, berbagi, akun, tugas, impor foto, kalimat otomatis, dan laporan.",
     questions: [
       [
         "Bisa memakai kata sendiri?",
@@ -257,7 +257,7 @@ const locales = {
     teacher: "工作台",
     title: "常见问题 | My Spelling Game",
     heading: "常见问题",
-    intro: "集中说明单词表、练习模式、分享链接、账号、作业和学习报告。",
+    intro: "集中说明单词表、练习模式、分享链接、账号、作业、拍照导入、自动例句和学习报告。",
     questions: [
       [
         "可以使用自己的单词吗？",
@@ -328,6 +328,10 @@ const faqUpdates = {
         "Parent and Teacher Plans include a curated sentence library that can fill example sentences for known words. Teachers and parents can still edit the sentence before publishing an assignment.",
       ],
       [
+        "Can I import spelling words from a photo?",
+        "Yes. Parent and Teacher Plans can read a school spelling list from a photo. You can edit the detected words before adding them to the list.",
+      ],
+      [
         "Does My Spelling Game charge per student?",
         "No. Parent Plan supports up to 5 child profiles and Teacher Plan supports up to 40 student profiles, without a per-profile fee.",
       ],
@@ -366,6 +370,10 @@ const faqUpdates = {
       [
         "¿My Spelling Game puede proporcionar frases automáticamente?",
         "Los planes para familias y docentes incluyen una biblioteca seleccionada de frases para completar palabras conocidas. La frase se puede editar antes de publicar.",
+      ],
+      [
+        "¿Puedo importar palabras de ortografía desde una foto?",
+        "Sí. Los planes para familias y docentes pueden leer una lista escolar desde una foto. Puedes editar las palabras detectadas antes de añadirlas a la lista.",
       ],
       [
         "¿My Spelling Game cobra por estudiante?",
@@ -408,6 +416,10 @@ const faqUpdates = {
         "Os planos para Pais e Professores incluem uma biblioteca selecionada de frases para preencher palavras conhecidas. A frase ainda pode ser editada antes de publicar.",
       ],
       [
+        "Posso importar palavras de ortografia por foto?",
+        "Sim. Os planos para Pais e Professores podem ler uma lista escolar por foto. Você pode editar as palavras detectadas antes de adicioná-las à lista.",
+      ],
+      [
         "O My Spelling Game cobra por aluno?",
         "Não. O Plano para Pais aceita até 5 perfis de crianças, e o Plano para Professores até 40 alunos, sem cobrança por perfil.",
       ],
@@ -446,6 +458,10 @@ const faqUpdates = {
       [
         "My Spelling Game peut-il fournir automatiquement des phrases ?",
         "Les offres Parents et Enseignants incluent une bibliothèque sélectionnée de phrases pour compléter les mots connus. La phrase peut être modifiée avant publication.",
+      ],
+      [
+        "Puis-je importer des mots d’orthographe depuis une photo ?",
+        "Oui. Les offres Parents et Enseignants peuvent lire une liste scolaire sur photo. Vous pouvez modifier les mots détectés avant de les ajouter à la liste.",
       ],
       [
         "My Spelling Game facture-t-il par élève ?",
@@ -488,6 +504,10 @@ const faqUpdates = {
         "Paket Orang Tua dan Guru memiliki pustaka kalimat pilihan untuk mengisi kata yang dikenal. Guru dan orang tua tetap bisa mengedit kalimat sebelum menerbitkan tugas.",
       ],
       [
+        "Bisakah saya mengimpor kata ejaan dari foto?",
+        "Bisa. Paket Orang Tua dan Guru dapat membaca daftar ejaan sekolah dari foto. Kata yang terdeteksi dapat diedit sebelum ditambahkan ke daftar.",
+      ],
+      [
         "Apakah My Spelling Game mengenakan biaya per siswa?",
         "Tidak. Paket Orang Tua mendukung hingga 5 profil anak dan Paket Guru hingga 40 siswa, tanpa biaya per profil.",
       ],
@@ -526,6 +546,10 @@ const faqUpdates = {
       [
         "My Spelling Game 能自动提供例句吗？",
         "家长方案和教师方案包含精选例句库，可以为已知单词补充例句。老师和家长发布作业前仍可编辑例句。",
+      ],
+      [
+        "可以从照片导入拼写单词吗？",
+        "可以。家长方案和教师方案支持从学校词表照片中识别单词。识别结果可以编辑，确认后再加入词表。",
       ],
       [
         "My Spelling Game 按学生收费吗？",
@@ -644,6 +668,14 @@ const footerLinks = {
   ],
   zh: ["自定义单词", "每周练习", "高频词", "家长练习", "教师作业"],
 };
+const footerSecondaryLinks = {
+  en: ["Pricing", "FAQ", "Privacy", "About", "Contact"],
+  es: ["Precios", "Preguntas frecuentes", "Privacidad", "Acerca de", "Contacto"],
+  "pt-br": ["Preços", "Perguntas frequentes", "Privacidade", "Sobre", "Contato"],
+  fr: ["Tarifs", "Questions fréquentes", "Confidentialité", "À propos", "Contact"],
+  id: ["Harga", "Pertanyaan umum", "Privasi", "Tentang", "Kontak"],
+  zh: ["价格", "常见问题", "隐私", "关于", "联系"],
+};
 const footerRights = {
   en: "All rights reserved.",
   es: "Todos los derechos reservados.",
@@ -752,7 +784,14 @@ for (const [code, item] of Object.entries(locales)) {
     `            <a href="${homePath(item)}spelling-practice-for-parents">${footerLinks[code][3]}</a>`,
     `            <a href="${homePath(item)}spelling-assignments-for-teachers">${footerLinks[code][4]}</a>`,
   ].join(" &middot; ");
-  const footer = `    <footer>\n        <p>\n            <span class="footer-links">${links}</span><br>\n            &copy; 2026 My Spelling Game ${footerRights[code]}\n        </p>\n    </footer>`;
+  const secondaryLinks = [
+    `            <a href="${homePath(item)}pricing" aria-label="${escape(footerSecondaryLinks[code][0])}">${footerSecondaryLinks[code][0]}</a>`,
+    `            <a href="${homePath(item)}faq" aria-label="${escape(footerSecondaryLinks[code][1])}">${footerSecondaryLinks[code][1]}</a>`,
+    `            <a href="${homePath(item)}privacy" aria-label="${escape(footerSecondaryLinks[code][2])}">${footerSecondaryLinks[code][2]}</a>`,
+    `            <a href="${homePath(item)}about" aria-label="${escape(footerSecondaryLinks[code][3])}">${footerSecondaryLinks[code][3]}</a>`,
+    `            <a href="${homePath(item)}contact" aria-label="${escape(footerSecondaryLinks[code][4])}">${footerSecondaryLinks[code][4]}</a>`,
+  ].join(" &middot; ");
+  const footer = `    <footer>\n        <p>\n            <span class="footer-links">${links}</span><br>\n            <span class="footer-secondary-links">${secondaryLinks}</span><br>\n            &copy; 2026 My Spelling Game ${footerRights[code]}\n        </p>\n    </footer>`;
   const html = render(code, item)
     .replace(/\s{4}<footer>[\s\S]*?<\/footer>/, footer)
     .replace("</head>", `${analytics}\n    </head>`)

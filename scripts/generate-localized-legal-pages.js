@@ -86,6 +86,13 @@ const sharedFooterLinks = [
   { href: "/spelling-practice-for-parents", key: "parents" },
   { href: "/spelling-assignments-for-teachers", key: "teachers" },
 ];
+const sharedFooterSecondaryLinks = [
+  { href: "/pricing", key: "pricing" },
+  { href: "/faq", key: "faq" },
+  { href: "/privacy", key: "privacy" },
+  { href: "/about", key: "about" },
+  { href: "/contact", key: "contact" },
+];
 
 const locale = {
   en: {
@@ -98,12 +105,15 @@ const locale = {
       sight: "Sight Words",
       parents: "For Parents",
       teachers: "For Teachers",
+      pricing: "Pricing",
+      faq: "FAQ",
       privacy: "Privacy",
       about: "About",
       contact: "Contact",
     },
     updated: "Last updated:",
     dateLocale: "en-US",
+    privacyDate: "August 30, 2026",
     about: {
       title: "About | My Spelling Game",
       description:
@@ -173,6 +183,10 @@ const locale = {
           "Your spelling list and preferences are stored in this browser. New share links put the list in the URL fragment, which is processed by the browser and is not sent to our server.",
         ],
         [
+          "Photo Import",
+          "When you use photo import, the image is read in your browser to detect words. The image is not uploaded to our server; review and edit the detected words before adding them to your list.",
+        ],
+        [
           "Assignments and Results",
           "When a signed-in teacher or parent publishes an assignment or saves a custom list, its title, words, settings, and deadline are stored in Cloudflare D1. Student nicknames and profiles, plus links between profiles and completed assignment results, are stored to show mastery across assignments and create smart review lists. Completed results and their history are stored for 14 days on Free Plan or 365 days on Parent and Teacher Plans, then expire. Saved lists remain until deleted. Student profiles can be archived and restored; archiving does not delete the profile or linked results. Deleting an assignment also deletes its results. We do not collect student email, IP address, or User-Agent.",
         ],
@@ -205,12 +219,15 @@ const locale = {
       sight: "Palabras frecuentes",
       parents: "Para familias",
       teachers: "Para docentes",
+      pricing: "Precios",
+      faq: "Preguntas frecuentes",
       privacy: "Privacidad",
       about: "Acerca de",
       contact: "Contacto",
     },
     updated: "Última actualización:",
     dateLocale: "es",
+    privacyDate: "30 de agosto de 2026",
     about: {
       title: "Acerca de | My Spelling Game",
       description:
@@ -280,6 +297,10 @@ const locale = {
           "Tu lista y tus preferencias se guardan en este navegador. Los enlaces nuevos colocan la lista en el fragmento de la URL, que el navegador procesa sin enviarlo a nuestro servidor.",
         ],
         [
+          "Importación por foto",
+          "Al usar la importación por foto, la imagen se lee en tu navegador para detectar palabras. No se sube a nuestro servidor; revisa y edita las palabras antes de añadirlas a la lista.",
+        ],
+        [
           "Tareas y resultados",
           "Cuando un docente o familiar conectado publica una tarea o guarda una lista personalizada, el título, las palabras, los ajustes y la fecha límite se guardan en Cloudflare D1. Los apodos y perfiles de estudiantes, junto con la relación entre cada perfil y los resultados completados, se usan para mostrar el dominio entre tareas y crear repasos inteligentes. Los resultados completados y su historial se guardan 14 días con el Plan Gratis o 365 días con los planes para familias y docentes, y después caducan. Las listas permanecen hasta que se eliminan. Los perfiles se pueden archivar y restaurar; archivarlos no borra el perfil ni los resultados relacionados. Al borrar una tarea también se borran sus resultados. No recopilamos email, dirección IP ni User-Agent del estudiante.",
         ],
@@ -312,12 +333,15 @@ const locale = {
       sight: "Palavras frequentes",
       parents: "Para pais",
       teachers: "Para professores",
+      pricing: "Preços",
+      faq: "Perguntas frequentes",
       privacy: "Privacidade",
       about: "Sobre",
       contact: "Contato",
     },
     updated: "Atualizado em:",
     dateLocale: "pt-BR",
+    privacyDate: "30 de agosto de 2026",
     about: {
       title: "Sobre | My Spelling Game",
       description:
@@ -387,6 +411,10 @@ const locale = {
           "Sua lista e preferências ficam neste navegador. Os links novos colocam a lista no fragmento da URL, processado pelo navegador sem ser enviado ao nosso servidor.",
         ],
         [
+          "Importação por foto",
+          "Ao usar a importação por foto, a imagem é lida no navegador para detectar palavras. Ela não é enviada ao nosso servidor; revise e edite as palavras antes de adicioná-las à lista.",
+        ],
+        [
           "Tarefas e resultados",
           "Quando um professor ou responsável conectado publica uma tarefa ou salva uma lista personalizada, título, palavras, configurações e prazo ficam no Cloudflare D1. Apelidos e perfis de alunos, além da ligação entre cada perfil e os resultados concluídos, são usados para mostrar o domínio entre tarefas e criar revisões inteligentes. Resultados concluídos e seu histórico ficam por 14 dias no Plano Grátis ou 365 dias nos planos para Pais e Professores e depois expiram. Listas salvas permanecem até serem excluídas. Perfis podem ser arquivados e restaurados; arquivar não exclui o perfil nem os resultados relacionados. Excluir uma tarefa também exclui seus resultados. Não coletamos email, endereço IP ou User-Agent do aluno.",
         ],
@@ -419,12 +447,15 @@ const locale = {
       sight: "Mots fréquents",
       parents: "Pour les parents",
       teachers: "Pour les enseignants",
+      pricing: "Tarifs",
+      faq: "Questions fréquentes",
       privacy: "Confidentialité",
       about: "À propos",
       contact: "Contact",
     },
     updated: "Dernière mise à jour :",
     dateLocale: "fr",
+    privacyDate: "30 août 2026",
     about: {
       title: "À propos | My Spelling Game",
       description:
@@ -494,6 +525,10 @@ const locale = {
           "Votre liste et vos préférences restent dans ce navigateur. Les nouveaux liens placent la liste dans le fragment de l’URL, traité par le navigateur sans être envoyé à notre serveur.",
         ],
         [
+          "Import photo",
+          "Lors d’un import photo, l’image est lue dans votre navigateur pour détecter les mots. Elle n’est pas envoyée à notre serveur ; vérifiez et modifiez les mots avant de les ajouter à la liste.",
+        ],
+        [
           "Devoirs et résultats",
           "Lorsqu’un enseignant ou un parent connecté publie un devoir ou enregistre une liste personnalisée, le titre, les mots, les réglages et l’échéance sont stockés dans Cloudflare D1. Les pseudonymes et profils des élèves, ainsi que les liens entre profils et résultats terminés, servent à afficher la maîtrise entre plusieurs devoirs et à créer des révisions intelligentes. Les résultats terminés et leur historique sont conservés 14 jours avec l’offre gratuite ou 365 jours avec les offres Parents et Enseignants, puis expirent. Les listes restent enregistrées jusqu’à leur suppression. Les profils peuvent être archivés et restaurés ; l’archivage ne supprime ni le profil ni les résultats associés. Supprimer un devoir supprime aussi ses résultats. Aucun email, adresse IP ni User-Agent d’élève n’est collecté.",
         ],
@@ -526,12 +561,15 @@ const locale = {
       sight: "Kata umum",
       parents: "Untuk orang tua",
       teachers: "Untuk guru",
+      pricing: "Harga",
+      faq: "Pertanyaan umum",
       privacy: "Privasi",
       about: "Tentang",
       contact: "Kontak",
     },
     updated: "Terakhir diperbarui:",
     dateLocale: "id-ID",
+    privacyDate: "30 Agustus 2026",
     about: {
       title: "Tentang | My Spelling Game",
       description:
@@ -601,6 +639,10 @@ const locale = {
           "Daftar kata dan pilihan latihan disimpan di browser ini. Link baru menaruh daftar di fragmen URL yang diproses browser tanpa dikirim ke server kami.",
         ],
         [
+          "Impor foto",
+          "Saat memakai impor foto, gambar dibaca di browser untuk mendeteksi kata. Gambar tidak diunggah ke server kami; periksa dan edit kata sebelum menambahkannya ke daftar.",
+        ],
+        [
           "Tugas dan hasil",
           "Saat guru atau orang tua yang sudah masuk menerbitkan tugas atau menyimpan daftar khusus, judul, kata, pengaturan, dan tenggat disimpan di Cloudflare D1. Nama panggilan dan profil siswa, beserta hubungan profil dengan hasil tugas yang selesai, dipakai untuk menampilkan penguasaan lintas tugas dan membuat ulasan pintar. Hasil yang selesai dan riwayatnya disimpan 14 hari pada Paket Gratis atau 365 hari pada Paket Orang Tua dan Guru, lalu kedaluwarsa. Daftar tersimpan tetap ada sampai dihapus. Profil dapat diarsipkan dan dipulihkan; pengarsipan tidak menghapus profil atau hasil terkait. Menghapus tugas juga menghapus hasilnya. Kami tidak mengumpulkan email, alamat IP, atau User-Agent siswa.",
         ],
@@ -633,12 +675,15 @@ const locale = {
       sight: "高频词",
       parents: "家长练习",
       teachers: "教师作业",
+      pricing: "价格",
+      faq: "常见问题",
       privacy: "隐私",
       about: "关于",
       contact: "联系",
     },
     updated: "最后更新：",
     dateLocale: "zh-CN",
+    privacyDate: "2026 年 8 月 30 日",
     about: {
       title: "关于 | My Spelling Game",
       description:
@@ -705,6 +750,10 @@ const locale = {
           "单词表和练习偏好保存在当前浏览器。新分享链接会把单词表放在 URL 片段中，由浏览器处理，不会发送到我们的服务器。",
         ],
         [
+          "拍照导入",
+          "使用拍照导入时，图片会在浏览器内读取并识别单词，不会上传到我们的服务器。识别结果会先展示给你编辑，确认后才加入词表。",
+        ],
+        [
           "作业和学习结果",
           "教师或家长登录后发布作业或保存自定义词表时，标题、单词、设置和截止时间会保存到 Cloudflare D1。学生昵称和档案，以及档案与不同作业完成结果之间的关联，用于展示跨作业掌握度并生成智能复习。已完成结果及其历史在免费方案保存 14 天，在家长方案和教师方案保存 365 天，之后过期。已保存词表会保留到用户主动删除。学生档案可归档和恢复；归档不会删除档案或关联结果。删除作业时，其结果也会一并删除。我们不采集学生邮箱、IP 地址或 User-Agent。",
         ],
@@ -732,9 +781,9 @@ const locale = {
 const aboutUpdates = {
   en: {
     description:
-      "About My Spelling Game, a custom spelling practice tool with no-account student practice, reusable word lists, assignments, progress tracking, and review.",
+      "About My Spelling Game, a custom spelling practice tool with no-account student practice, photo import, automatic example sentences, and review tools.",
     intro:
-      "My Spelling Game is a spelling practice tool for students, parents, teachers, and homeschool families. Students can practice custom word lists without creating accounts. Teachers and parents can optionally use a workspace to save lists, publish assignments, and track progress over time.",
+      "My Spelling Game is a spelling practice tool for students, parents, teachers, and homeschool families. Students can practice custom word lists without creating accounts. Teachers and parents can optionally use a workspace to save lists, publish assignments, track progress, and use Today’s Review over time.",
     panels: [
       [
         "Mission",
@@ -746,7 +795,7 @@ const aboutUpdates = {
       ],
       [
         "What It Does",
-        "<ul><li>Practice your own spelling words in Spelling Test or Typing Rain.</li><li>Add optional example sentences for dictation practice.</li><li>Replay missed words immediately after a practice round.</li><li>Save and reuse weekly spelling lists in a workspace.</li><li>Publish assignments without requiring student accounts.</li><li>Track student progress across assignments.</li><li>Identify missed words that need later review.</li><li>Use cross-day practice history to distinguish learning from mastered words.</li></ul>",
+        "<ul><li>Practice your own spelling words in Spelling Test or Typing Rain.</li><li>Add optional example sentences for dictation practice.</li><li>Replay missed words immediately after a practice round.</li><li>Save and reuse weekly spelling lists in a workspace.</li><li>Import school lists from a photo and edit the detected words before use.</li><li>Fill example sentences from the curated library and use Today’s Review on paid plans.</li><li>Publish assignments without requiring student accounts.</li><li>Track student progress across assignments.</li><li>Identify missed words that need later review.</li><li>Use cross-day practice history to distinguish learning from mastered words.</li></ul>",
       ],
       [
         "About the Developer",
@@ -756,9 +805,9 @@ const aboutUpdates = {
   },
   es: {
     description:
-      "Sobre My Spelling Game, una herramienta de práctica de spelling con práctica estudiantil sin cuenta, listas reutilizables, tareas, progreso y repaso.",
+      "Sobre My Spelling Game, una herramienta de práctica de spelling sin cuenta con importación por foto, frases automáticas y repaso.",
     intro:
-      "My Spelling Game es una herramienta de práctica de spelling para estudiantes, familias, docentes y hogares que educan en casa. Los estudiantes practican listas propias sin crear cuentas. Docentes y familias pueden usar un espacio de trabajo para guardar listas, publicar tareas y seguir el progreso.",
+      "My Spelling Game es una herramienta de práctica de spelling para estudiantes, familias, docentes y hogares que educan en casa. Los estudiantes practican listas propias sin crear cuentas. Docentes y familias pueden usar un espacio de trabajo para guardar listas, publicar tareas, seguir el progreso y usar el Repaso de hoy.",
     panels: [
       [
         "Misión",
@@ -770,7 +819,7 @@ const aboutUpdates = {
       ],
       [
         "Qué hace",
-        "<ul><li>Practica tus palabras en la prueba de spelling o Typing Rain.</li><li>Añade frases de ejemplo opcionales para dictado.</li><li>Repite las palabras falladas al terminar.</li><li>Guarda y reutiliza listas semanales en un espacio de trabajo.</li><li>Publica tareas sin cuentas de estudiantes.</li><li>Sigue el progreso entre tareas.</li><li>Identifica palabras que necesitan repaso.</li><li>Usa el historial de distintos días para distinguir aprendizaje y dominio.</li></ul>",
+        "<ul><li>Practica tus palabras en la prueba de spelling o Typing Rain.</li><li>Añade frases de ejemplo opcionales para dictado.</li><li>Repite las palabras falladas al terminar.</li><li>Guarda y reutiliza listas semanales en un espacio de trabajo.</li><li>Importa listas escolares desde una foto y edita las palabras detectadas.</li><li>Completa frases de ejemplo y usa el Repaso de hoy en los planes de pago.</li><li>Publica tareas sin cuentas de estudiantes.</li><li>Sigue el progreso entre tareas.</li><li>Identifica palabras que necesitan repaso.</li><li>Usa el historial de distintos días para distinguir aprendizaje y dominio.</li></ul>",
       ],
       [
         "Desarrollo",
@@ -780,9 +829,9 @@ const aboutUpdates = {
   },
   "pt-BR": {
     description:
-      "Sobre o My Spelling Game, uma ferramenta de prática de ortografia com estudo sem conta, listas reutilizáveis, tarefas, progresso e revisão.",
+      "Sobre o My Spelling Game, uma ferramenta de prática de ortografia sem conta com importação por foto, frases automáticas e revisão.",
     intro:
-      "My Spelling Game é uma ferramenta de prática de ortografia para alunos, responsáveis, professores e famílias que fazem educação domiciliar. Os alunos praticam listas próprias sem criar contas. Professores e responsáveis podem usar um espaço de trabalho para salvar listas, publicar tarefas e acompanhar o progresso.",
+      "My Spelling Game é uma ferramenta de prática de ortografia para alunos, responsáveis, professores e famílias que fazem educação domiciliar. Os alunos praticam listas próprias sem criar contas. Professores e responsáveis podem usar um espaço de trabalho para salvar listas, publicar tarefas, acompanhar o progresso e usar a Revisão de hoje.",
     panels: [
       [
         "Missão",
@@ -794,7 +843,7 @@ const aboutUpdates = {
       ],
       [
         "O que faz",
-        "<ul><li>Pratica suas palavras no teste de ortografia ou no Typing Rain.</li><li>Adiciona frases de exemplo opcionais para o ditado.</li><li>Repete as palavras erradas ao terminar.</li><li>Salva e reutiliza listas semanais no espaço de trabalho.</li><li>Publica tarefas sem exigir contas dos alunos.</li><li>Acompanha o progresso entre tarefas.</li><li>Identifica palavras que precisam de revisão.</li><li>Usa o histórico de dias diferentes para distinguir aprendizagem e domínio.</li></ul>",
+        "<ul><li>Pratica suas palavras no teste de ortografia ou no Typing Rain.</li><li>Adiciona frases de exemplo opcionais para o ditado.</li><li>Repete as palavras erradas ao terminar.</li><li>Salva e reutiliza listas semanais no espaço de trabalho.</li><li>Importa listas escolares por foto e edita as palavras reconhecidas.</li><li>Preenche frases de exemplo e usa a Revisão de hoje nos planos pagos.</li><li>Publica tarefas sem exigir contas dos alunos.</li><li>Acompanha o progresso entre tarefas.</li><li>Identifica palavras que precisam de revisão.</li><li>Usa o histórico de dias diferentes para distinguir aprendizagem e domínio.</li></ul>",
       ],
       [
         "Desenvolvimento",
@@ -804,9 +853,9 @@ const aboutUpdates = {
   },
   fr: {
     description:
-      "À propos de My Spelling Game, un outil de pratique de l’orthographe avec pratique élève sans compte, listes réutilisables, devoirs, progrès et révision.",
+      "À propos de My Spelling Game, un outil de pratique de l’orthographe sans compte avec import photo, phrases automatiques et révision.",
     intro:
-      "My Spelling Game est un outil de pratique de l’orthographe pour les élèves, les parents, les enseignants et les familles en instruction à domicile. Les élèves utilisent leurs listes sans créer de compte. Les adultes peuvent utiliser un espace de travail pour enregistrer les listes, publier des devoirs et suivre les progrès.",
+      "My Spelling Game est un outil de pratique de l’orthographe pour les élèves, les parents, les enseignants et les familles en instruction à domicile. Les élèves utilisent leurs listes sans créer de compte. Les adultes peuvent utiliser un espace de travail pour enregistrer les listes, publier des devoirs, suivre les progrès et lancer la Révision du jour.",
     panels: [
       [
         "Mission",
@@ -818,7 +867,7 @@ const aboutUpdates = {
       ],
       [
         "Ce que fait l’outil",
-        "<ul><li>Pratique vos mots dans le test d’orthographe ou Typing Rain.</li><li>Ajoute des phrases d’exemple facultatives pour la dictée.</li><li>Rejoue les mots manqués à la fin.</li><li>Enregistre et réutilise les listes de la semaine.</li><li>Publie des devoirs sans compte élève.</li><li>Suit les progrès entre les devoirs.</li><li>Repère les mots à revoir.</li><li>Utilise l’historique de plusieurs jours pour distinguer apprentissage et maîtrise.</li></ul>",
+        "<ul><li>Pratique vos mots dans le test d’orthographe ou Typing Rain.</li><li>Ajoute des phrases d’exemple facultatives pour la dictée.</li><li>Rejoue les mots manqués à la fin.</li><li>Enregistre et réutilise les listes de la semaine.</li><li>Importe une liste scolaire depuis une photo et modifie les mots détectés.</li><li>Complète les phrases d’exemple et utilise la Révision du jour dans les offres payantes.</li><li>Publie des devoirs sans compte élève.</li><li>Suit les progrès entre les devoirs.</li><li>Repère les mots à revoir.</li><li>Utilise l’historique de plusieurs jours pour distinguer apprentissage et maîtrise.</li></ul>",
       ],
       [
         "Développement",
@@ -828,9 +877,9 @@ const aboutUpdates = {
   },
   id: {
     description:
-      "Tentang My Spelling Game, alat latihan ejaan dengan latihan siswa tanpa akun, daftar kata yang bisa dipakai ulang, tugas, kemajuan, dan ulasan.",
+      "Tentang My Spelling Game, alat latihan ejaan tanpa akun dengan impor foto, kalimat otomatis, dan ulasan mingguan.",
     intro:
-      "My Spelling Game adalah alat latihan ejaan untuk siswa, orang tua, guru, dan keluarga homeschool. Siswa dapat berlatih dengan daftar sendiri tanpa membuat akun. Guru dan orang tua dapat memakai ruang kerja untuk menyimpan daftar, menerbitkan tugas, dan memantau kemajuan.",
+      "My Spelling Game adalah alat latihan ejaan untuk siswa, orang tua, guru, dan keluarga homeschool. Siswa dapat berlatih dengan daftar sendiri tanpa membuat akun. Guru dan orang tua dapat memakai ruang kerja untuk menyimpan daftar, menerbitkan tugas, memantau kemajuan, dan memakai Ulasan hari ini.",
     panels: [
       [
         "Misi",
@@ -842,7 +891,7 @@ const aboutUpdates = {
       ],
       [
         "Fungsi utama",
-        "<ul><li>Berlatih dengan kata sendiri dalam Spelling Test atau Typing Rain.</li><li>Menambahkan kalimat contoh opsional untuk dikte.</li><li>Mengulang kata yang salah setelah latihan.</li><li>Menyimpan dan memakai ulang daftar mingguan di ruang kerja.</li><li>Menerbitkan tugas tanpa akun siswa.</li><li>Memantau kemajuan di berbagai tugas.</li><li>Menemukan kata yang perlu diulas.</li><li>Menggunakan riwayat lintas hari untuk membedakan belajar dan penguasaan.</li></ul>",
+        "<ul><li>Berlatih dengan kata sendiri dalam Spelling Test atau Typing Rain.</li><li>Menambahkan kalimat contoh opsional untuk dikte.</li><li>Mengulang kata yang salah setelah latihan.</li><li>Menyimpan dan memakai ulang daftar mingguan di ruang kerja.</li><li>Mengimpor daftar ejaan sekolah dari foto dan mengedit kata yang terdeteksi.</li><li>Mengisi kalimat contoh dan memakai Ulasan hari ini pada paket berbayar.</li><li>Menerbitkan tugas tanpa akun siswa.</li><li>Memantau kemajuan di berbagai tugas.</li><li>Menemukan kata yang perlu diulas.</li><li>Menggunakan riwayat lintas hari untuk membedakan belajar dan penguasaan.</li></ul>",
       ],
       [
         "Pengembang",
@@ -852,9 +901,9 @@ const aboutUpdates = {
   },
   zh: {
     description:
-      "关于 My Spelling Game：支持学生免账号练习、重复使用词表、布置作业、追踪进度和复习的英语拼写练习工具。",
+      "关于 My Spelling Game：支持学生免账号练习、拍照导入词表、自动例句和每周复习的英语拼写工具。",
     intro:
-      "My Spelling Game 是一款面向学生、家长、老师和家庭教育的英语拼写练习工具。学生无需创建账号即可练习自己的单词表；家长和老师可以使用工作台保存词表、发布作业并持续追踪进度。",
+      "My Spelling Game 是一款面向学生、家长、老师和家庭教育的英语拼写练习工具。学生无需创建账号即可练习自己的单词表；家长和老师可以使用工作台保存词表、发布作业、持续追踪进度，并使用今日复习。",
     panels: [
       [
         "使命",
@@ -866,7 +915,7 @@ const aboutUpdates = {
       ],
       [
         "它能做什么",
-        "<ul><li>在拼写测试或单词雨中练习自己的单词。</li><li>为听写练习添加可选例句。</li><li>练习结束后立即重练错词。</li><li>在工作台保存并重复使用每周词表。</li><li>无需学生账号即可发布作业。</li><li>跨作业追踪学生进度。</li><li>找出之后需要复习的错词。</li><li>利用跨日期练习历史区分学习中和已掌握的单词。</li></ul>",
+        "<ul><li>在拼写测试或单词雨中练习自己的单词。</li><li>为听写练习添加可选例句。</li><li>练习结束后立即重练错词。</li><li>在工作台保存并重复使用每周词表。</li><li>从学校词表照片中识别单词，并在写入前编辑结果。</li><li>从精选例句库自动填充例句，并使用今日复习回顾到期错词。</li><li>无需学生账号即可发布作业。</li><li>跨作业追踪学生进度。</li><li>找出之后需要复习的错词。</li><li>利用跨日期练习历史区分学习中和已掌握的单词。</li></ul>",
       ],
       [
         "关于开发者",
@@ -920,6 +969,7 @@ function footer(loc) {
   return `    <footer>
         <p>
             <span class="footer-links">${sharedFooterLinks.map((item) => `<a href="${localizedSeoHref(loc, item)}">${loc.links[item.key]}</a>`).join(" &middot; ")}</span><br>
+            <span class="footer-secondary-links">${sharedFooterSecondaryLinks.map((item) => `<a href="${localizedSeoHref(loc, item)}" aria-label="${escapeAttr(loc.links[item.key])}">${loc.links[item.key]}</a>`).join(" &middot; ")}</span><br>
             &copy; 2026 My Spelling Game ${footerRights[codeForLocale(loc)]}
         </p>
     </footer>`;
@@ -1009,7 +1059,7 @@ ${data.panels
   .map(
     ([title, body], index) => `        <section class="seo-panel">
             <h2>${localizeTerms(title, code)}</h2>
-            ${localizeTerms(panelBody(body), code)}${slug === "privacy" && index === data.panels.length - 1 ? `\n            <p class="privacy-update">${loc.updated} <span id="privacy-date"></span></p>` : ""}
+            ${localizeTerms(panelBody(body), code)}${slug === "privacy" && index === data.panels.length - 1 ? `\n            <p class="privacy-update">${loc.updated} ${loc.privacyDate}</p>` : ""}
         </section>`,
   )
   .join("\n\n")}
@@ -1017,18 +1067,7 @@ ${data.panels
 
 ${footer(loc)}
 
-${
-  slug === "privacy"
-    ? `    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const el = document.getElementById('privacy-date');
-        if (el) {
-          el.textContent = new Date().toLocaleDateString('${loc.dateLocale}', { year: 'numeric', month: 'long', day: 'numeric' });
-        }
-      });
-    </script>\n\n`
-    : ""
-}    <script type="application/ld+json">
+    <script type="application/ld+json">
     ${JSON.stringify(
       {
         "@context": "https://schema.org",
@@ -1037,15 +1076,8 @@ ${
         url: canonical,
         inLanguage: loc.htmlLang,
         about: {
-          "@type": "VideoGame",
-          name: "My Spelling Game",
-          publisher: {
-            "@type": "Organization",
-            "@id": `${baseUrl}/#organization`,
-            name: "My Spelling Game",
-            url: baseUrl,
-            logo: `${baseUrl}/images/icon-512.png`,
-          },
+          "@type": "SoftwareApplication",
+          "@id": `${baseUrl}/#software`,
         },
       },
       null,

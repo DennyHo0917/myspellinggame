@@ -88,6 +88,11 @@
         </section>
 
         <section class="seo-panel">
+            <h2>Importação por foto</h2>
+            <p>Ao usar a importação por foto, a imagem é lida no navegador para detectar palavras. Ela não é enviada ao nosso servidor; revise e edite as palavras antes de adicioná-las à lista.</p>
+        </section>
+
+        <section class="seo-panel">
             <h2>Tarefas e resultados</h2>
             <p>Quando um professor ou responsável conectado publica uma tarefa ou salva uma lista personalizada, título, palavras, configurações e prazo ficam no Cloudflare D1. Apelidos e perfis de alunos, além da ligação entre cada perfil e os resultados concluídos, são usados para mostrar o domínio entre tarefas e criar revisões inteligentes. Resultados concluídos e seu histórico ficam por 14 dias no Plano Grátis ou 365 dias nos planos para Pais e Professores e depois expiram. Listas salvas permanecem até serem excluídas. Perfis podem ser arquivados e restaurados; arquivar não exclui o perfil nem os resultados relacionados. Excluir uma tarefa também exclui seus resultados. Não coletamos email, endereço IP ou User-Agent do aluno.</p>
         </section>
@@ -110,25 +115,17 @@
         <section class="seo-panel">
             <h2>Contato</h2>
             <p>Se tiver dúvidas sobre esta política, fale conosco pela <a href="/pt-br/contact">página de contato</a>.</p>
-            <p class="privacy-update">Atualizado em: <span id="privacy-date"></span></p>
+            <p class="privacy-update">Atualizado em: 30 de agosto de 2026</p>
         </section>
     </main>
 
     <footer>
         <p>
             <span class="footer-links"><a href="/pt-br/custom-spelling-words-game">Palavras personalizadas</a> &middot; <a href="/pt-br/weekly-spelling-practice">Prática semanal</a> &middot; <a href="/pt-br/sight-word-typing-game">Palavras frequentes</a> &middot; <a href="/pt-br/spelling-practice-for-parents">Para pais</a> &middot; <a href="/pt-br/spelling-assignments-for-teachers">Para professores</a></span><br>
+            <span class="footer-secondary-links"><a href="/pt-br/pricing" aria-label="Preços">Preços</a> &middot; <a href="/pt-br/faq" aria-label="Perguntas frequentes">Perguntas frequentes</a> &middot; <a href="/pt-br/privacy" aria-label="Privacidade">Privacidade</a> &middot; <a href="/pt-br/about" aria-label="Sobre">Sobre</a> &middot; <a href="/pt-br/contact" aria-label="Contato">Contato</a></span><br>
             &copy; 2026 My Spelling Game Todos os direitos reservados.
         </p>
     </footer>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const el = document.getElementById('privacy-date');
-        if (el) {
-          el.textContent = new Date().toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
-        }
-      });
-    </script>
 
     <script type="application/ld+json">
     {
@@ -138,15 +135,8 @@
       "url": "https://myspellinggame.com/pt-br/privacy",
       "inLanguage": "pt-BR",
       "about": {
-            "@type": "VideoGame",
-            "name": "My Spelling Game",
-            "publisher": {
-                  "@type": "Organization",
-                  "@id": "https://myspellinggame.com/#organization",
-                  "name": "My Spelling Game",
-                  "url": "https://myspellinggame.com",
-                  "logo": "https://myspellinggame.com/images/icon-512.png"
-            }
+            "@type": "SoftwareApplication",
+            "@id": "https://myspellinggame.com/#software"
       }
 }
     </script>

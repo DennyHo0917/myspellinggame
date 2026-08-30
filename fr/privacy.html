@@ -88,6 +88,11 @@
         </section>
 
         <section class="seo-panel">
+            <h2>Import photo</h2>
+            <p>Lors d’un import photo, l’image est lue dans votre navigateur pour détecter les mots. Elle n’est pas envoyée à notre serveur ; vérifiez et modifiez les mots avant de les ajouter à la liste.</p>
+        </section>
+
+        <section class="seo-panel">
             <h2>Devoirs et résultats</h2>
             <p>Lorsqu’un enseignant ou un parent connecté publie un devoir ou enregistre une liste personnalisée, le titre, les mots, les réglages et l’échéance sont stockés dans Cloudflare D1. Les pseudonymes et profils des élèves, ainsi que les liens entre profils et résultats terminés, servent à afficher la maîtrise entre plusieurs devoirs et à créer des révisions intelligentes. Les résultats terminés et leur historique sont conservés 14 jours avec l’offre gratuite ou 365 jours avec les offres Parents et Enseignants, puis expirent. Les listes restent enregistrées jusqu’à leur suppression. Les profils peuvent être archivés et restaurés ; l’archivage ne supprime ni le profil ni les résultats associés. Supprimer un devoir supprime aussi ses résultats. Aucun email, adresse IP ni User-Agent d’élève n’est collecté.</p>
         </section>
@@ -110,25 +115,17 @@
         <section class="seo-panel">
             <h2>Contact</h2>
             <p>Pour toute question sur cette politique, utilisez la <a href="/fr/contact">page de contact</a>.</p>
-            <p class="privacy-update">Dernière mise à jour : <span id="privacy-date"></span></p>
+            <p class="privacy-update">Dernière mise à jour : 30 août 2026</p>
         </section>
     </main>
 
     <footer>
         <p>
             <span class="footer-links"><a href="/fr/custom-spelling-words-game">Mots personnalisés</a> &middot; <a href="/fr/weekly-spelling-practice">Pratique hebdomadaire</a> &middot; <a href="/fr/sight-word-typing-game">Mots fréquents</a> &middot; <a href="/fr/spelling-practice-for-parents">Pour les parents</a> &middot; <a href="/fr/spelling-assignments-for-teachers">Pour les enseignants</a></span><br>
+            <span class="footer-secondary-links"><a href="/fr/pricing" aria-label="Tarifs">Tarifs</a> &middot; <a href="/fr/faq" aria-label="Questions fréquentes">Questions fréquentes</a> &middot; <a href="/fr/privacy" aria-label="Confidentialité">Confidentialité</a> &middot; <a href="/fr/about" aria-label="À propos">À propos</a> &middot; <a href="/fr/contact" aria-label="Contact">Contact</a></span><br>
             &copy; 2026 My Spelling Game Tous droits réservés.
         </p>
     </footer>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const el = document.getElementById('privacy-date');
-        if (el) {
-          el.textContent = new Date().toLocaleDateString('fr', { year: 'numeric', month: 'long', day: 'numeric' });
-        }
-      });
-    </script>
 
     <script type="application/ld+json">
     {
@@ -138,15 +135,8 @@
       "url": "https://myspellinggame.com/fr/privacy",
       "inLanguage": "fr",
       "about": {
-            "@type": "VideoGame",
-            "name": "My Spelling Game",
-            "publisher": {
-                  "@type": "Organization",
-                  "@id": "https://myspellinggame.com/#organization",
-                  "name": "My Spelling Game",
-                  "url": "https://myspellinggame.com",
-                  "logo": "https://myspellinggame.com/images/icon-512.png"
-            }
+            "@type": "SoftwareApplication",
+            "@id": "https://myspellinggame.com/#software"
       }
 }
     </script>

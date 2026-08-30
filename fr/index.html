@@ -241,6 +241,7 @@
                         <h4>Stockage local</h4>
                     <p>Votre liste de mots et vos préférences sont enregistrées localement dans ce navigateur.</p>
                     <p>Les nouveaux liens placent la liste dans le fragment de l’URL, traité par le navigateur sans être envoyé au serveur.</p>
+                    <p>L’import photo lit l’image dans le navigateur ; elle n’est pas envoyée au serveur et vous pouvez modifier les mots détectés avant usage.</p>
                     <p>Les devoirs publiés explicitement par un enseignant ou un parent et leurs résultats sont conservés dans Cloudflare D1 pendant 14 jours avec l’offre gratuite ou 365 jours avec les offres Parents et Enseignants. Aucun email, IP ni User-Agent élève n’est collecté.</p>
                     <p>Vous pouvez effacer ces données depuis le navigateur ou depuis ce panneau.</p>
 
@@ -321,6 +322,7 @@
                     <p>Pratique pour les devoirs, le soutien, l’apprentissage de l’anglais et l’école à la maison.</p>
                     <p>La révision se concentre sur les mots réellement manqués.</p>
                     <p>Le mode facile ralentit la partie sans changer la règle.</p>
+                    <p>Les offres Parents et Enseignants ajoutent l’import photo, les phrases automatiques et la Révision du jour.</p>
                 </div>
             </div>
         </div>
@@ -359,6 +361,7 @@
     <footer>
         <p>
             <span class="footer-links"><a href="/fr/custom-spelling-words-game">Mots personnalisés</a> &middot; <a href="/fr/weekly-spelling-practice">Pratique hebdomadaire</a> &middot; <a href="/fr/sight-word-typing-game">Mots fréquents</a> &middot; <a href="/fr/spelling-practice-for-parents">Pour les parents</a> &middot; <a href="/fr/spelling-assignments-for-teachers">Pour les enseignants</a></span><br>
+            <span class="footer-secondary-links"><a href="/fr/pricing" aria-label="Tarifs">Tarifs</a> &middot; <a href="/fr/faq" aria-label="Questions fréquentes">Questions fréquentes</a> &middot; <a href="/fr/privacy" aria-label="Confidentialité">Confidentialité</a> &middot; <a href="/fr/about" aria-label="À propos">À propos</a> &middot; <a href="/fr/contact" aria-label="Contact">Contact</a></span><br>
             &copy; 2026 My Spelling Game Tous droits réservés.
         </p>
     </footer>
@@ -366,9 +369,10 @@
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "VideoGame",
+  "@type": "SoftwareApplication",
+  "@id": "https://myspellinggame.com/#software",
   "name": "My Spelling Game",
-  "description": "Collez vos mots pour un test audio ou une pluie de mots, avec correction et reprise des erreurs.",
+  "description": "Collez vos mots pour un test audio ou une pluie de mots, avec correction, reprise des erreurs et outils payants d’import photo et de phrases automatiques.",
   "url": "https://myspellinggame.com/fr/",
   "author": {
     "@type": "Organization",
@@ -389,12 +393,11 @@
     "Spelling Game",
     "Typing Game"
   ],
-  "gamePlatform": "Web Browser",
-  "operatingSystem": "Any",
-  "applicationCategory": "Game",
+  "operatingSystem": "Web Browser",
+  "applicationCategory": "EducationalApplication",
   "inLanguage": "fr",
   "isAccessibleForFree": true,
-  "dateModified": "2026-08-23",
+  "dateModified": "2026-08-30",
   "offers": {
     "@type": "Offer",
     "price": "0",

@@ -88,6 +88,11 @@
         </section>
 
         <section class="seo-panel">
+            <h2>拍照导入</h2>
+            <p>使用拍照导入时，图片会在浏览器内读取并识别单词，不会上传到我们的服务器。识别结果会先展示给你编辑，确认后才加入词表。</p>
+        </section>
+
+        <section class="seo-panel">
             <h2>作业和学习结果</h2>
             <p>教师或家长登录后发布作业或保存自定义词表时，标题、单词、设置和截止时间会保存到 Cloudflare D1。学生昵称和档案，以及档案与不同作业完成结果之间的关联，用于展示跨作业掌握度并生成智能复习。已完成结果及其历史在免费方案保存 14 天，在家长方案和教师方案保存 365 天，之后过期。已保存词表会保留到用户主动删除。学生档案可归档和恢复；归档不会删除档案或关联结果。删除作业时，其结果也会一并删除。我们不采集学生邮箱、IP 地址或 User-Agent。</p>
         </section>
@@ -110,25 +115,17 @@
         <section class="seo-panel">
             <h2>联系</h2>
             <p>如果你对本政策有疑问，请通过 <a href="/zh/contact">联系页面</a> 告诉我们。</p>
-            <p class="privacy-update">最后更新： <span id="privacy-date"></span></p>
+            <p class="privacy-update">最后更新： 2026 年 8 月 30 日</p>
         </section>
     </main>
 
     <footer>
         <p>
             <span class="footer-links"><a href="/zh/custom-spelling-words-game">自定义单词</a> &middot; <a href="/zh/weekly-spelling-practice">每周练习</a> &middot; <a href="/zh/sight-word-typing-game">高频词</a> &middot; <a href="/zh/spelling-practice-for-parents">家长练习</a> &middot; <a href="/zh/spelling-assignments-for-teachers">教师作业</a></span><br>
+            <span class="footer-secondary-links"><a href="/zh/pricing" aria-label="价格">价格</a> &middot; <a href="/zh/faq" aria-label="常见问题">常见问题</a> &middot; <a href="/zh/privacy" aria-label="隐私">隐私</a> &middot; <a href="/zh/about" aria-label="关于">关于</a> &middot; <a href="/zh/contact" aria-label="联系">联系</a></span><br>
             &copy; 2026 My Spelling Game 版权所有。
         </p>
     </footer>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const el = document.getElementById('privacy-date');
-        if (el) {
-          el.textContent = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
-        }
-      });
-    </script>
 
     <script type="application/ld+json">
     {
@@ -138,15 +135,8 @@
       "url": "https://myspellinggame.com/zh/privacy",
       "inLanguage": "zh-CN",
       "about": {
-            "@type": "VideoGame",
-            "name": "My Spelling Game",
-            "publisher": {
-                  "@type": "Organization",
-                  "@id": "https://myspellinggame.com/#organization",
-                  "name": "My Spelling Game",
-                  "url": "https://myspellinggame.com",
-                  "logo": "https://myspellinggame.com/images/icon-512.png"
-            }
+            "@type": "SoftwareApplication",
+            "@id": "https://myspellinggame.com/#software"
       }
 }
     </script>

@@ -28,7 +28,20 @@ const localizedSeoSlugs = [
   "custom-spelling-words-game",
   "spelling-assignments-for-teachers",
   "weekly-spelling-practice",
+  "pricing",
+  "faq",
+  "privacy",
+  "about",
+  "contact",
 ];
+const secondaryLinks = {
+  en: [["/pricing", "Pricing"], ["/faq", "FAQ"], ["/privacy", "Privacy"], ["/about", "About"], ["/contact", "Contact"]],
+  es: [["/pricing", "Precios"], ["/faq", "Preguntas frecuentes"], ["/privacy", "Privacidad"], ["/about", "Acerca de"], ["/contact", "Contacto"]],
+  "pt-BR": [["/pricing", "Preços"], ["/faq", "Perguntas frequentes"], ["/privacy", "Privacidade"], ["/about", "Sobre"], ["/contact", "Contato"]],
+  fr: [["/pricing", "Tarifs"], ["/faq", "Questions fréquentes"], ["/privacy", "Confidentialité"], ["/about", "À propos"], ["/contact", "Contact"]],
+  id: [["/pricing", "Harga"], ["/faq", "Pertanyaan umum"], ["/privacy", "Privasi"], ["/about", "Tentang"], ["/contact", "Kontak"]],
+  zh: [["/pricing", "价格"], ["/faq", "常见问题"], ["/privacy", "隐私"], ["/about", "关于"], ["/contact", "联系"]],
+};
 const footerRights = {
   en: "All rights reserved.",
   es: "Todos los derechos reservados.",
@@ -165,6 +178,7 @@ const pages = {
       local: [
         "Tu lista de palabras y tus preferencias se guardan localmente en este navegador.",
         "Los enlaces nuevos guardan la lista en el fragmento de la URL, que el navegador procesa sin enviarlo al servidor.",
+        "La importación por foto lee la imagen en tu navegador; no se sube al servidor y puedes editar las palabras detectadas antes de usarlas.",
         "Las tareas que un docente o familiar publica de forma explícita y sus resultados se guardan en Cloudflare D1 durante 14 días con el Plan Gratis o 365 días con los planes para familias y docentes. No recopilamos email, IP ni User-Agent del estudiante.",
         "Puedes borrar estos datos desde el navegador o desde este panel.",
       ],
@@ -209,6 +223,7 @@ const pages = {
         "Sirve para deberes, tutorías, estudiantes de inglés y práctica en casa.",
         "El repaso se concentra en las palabras que el estudiante falló.",
         "El modo fácil baja la velocidad sin cambiar las reglas de ortografía.",
+        "Los planes para familias y docentes añaden importación por foto, frases automáticas y Repaso de hoy.",
       ],
       seoTitle: "Dos formas de practicar tu propia lista",
       seoIntro:
@@ -236,7 +251,7 @@ const pages = {
     legalLinks: ["Privacidad", "Acerca de", "Contacto"],
     schema: {
       description:
-        "Pega tus palabras para una prueba de ortografía por audio o una lluvia de palabras, con corrección y repaso de fallos.",
+        "Pega tus palabras para una prueba de ortografía por audio o una lluvia de palabras, con corrección, repaso de fallos y herramientas de pago para importar fotos y completar frases.",
       faq: [
         [
           "¿Puedo usar mis propias palabras?",
@@ -331,6 +346,7 @@ const pages = {
       local: [
         "Sua lista de palavras e preferências ficam salvas neste navegador.",
         "Os links novos guardam a lista no fragmento da URL, processado pelo navegador sem ser enviado ao servidor.",
+        "A importação por foto lê a imagem no navegador; ela não é enviada ao servidor e você pode editar as palavras reconhecidas antes de usá-las.",
         "Tarefas publicadas explicitamente por professores ou responsáveis e seus resultados ficam no Cloudflare D1 por 14 dias no Plano Grátis ou 365 dias nos planos para Pais e Professores. Não coletamos email, IP ou User-Agent do aluno.",
         "Você pode apagar esses dados pelo navegador ou por este painel.",
       ],
@@ -375,6 +391,7 @@ const pages = {
         "Ajuda em tarefa de casa, reforço, estudantes de inglês e educação em casa.",
         "A revisão foca nas palavras que o aluno errou.",
         "O modo fácil reduz a velocidade sem mudar as regras de ortografia.",
+        "Os planos para Pais e Professores acrescentam importação por foto, frases automáticas e Revisão de hoje.",
       ],
       seoTitle: "Duas formas de praticar sua própria lista",
       seoIntro:
@@ -402,7 +419,7 @@ const pages = {
     legalLinks: ["Privacidade", "Sobre", "Contato"],
     schema: {
       description:
-        "Cole suas palavras para um teste de ortografia por áudio ou uma chuva de palavras, com correção e revisão de erros.",
+        "Cole suas palavras para um teste de ortografia por áudio ou uma chuva de palavras, com correção, revisão de erros e recursos pagos para importar fotos e preencher frases.",
       faq: [
         [
           "Posso usar minhas próprias palavras?",
@@ -497,6 +514,7 @@ const pages = {
       local: [
         "Votre liste de mots et vos préférences sont enregistrées localement dans ce navigateur.",
         "Les nouveaux liens placent la liste dans le fragment de l’URL, traité par le navigateur sans être envoyé au serveur.",
+        "L’import photo lit l’image dans le navigateur ; elle n’est pas envoyée au serveur et vous pouvez modifier les mots détectés avant usage.",
         "Les devoirs publiés explicitement par un enseignant ou un parent et leurs résultats sont conservés dans Cloudflare D1 pendant 14 jours avec l’offre gratuite ou 365 jours avec les offres Parents et Enseignants. Aucun email, IP ni User-Agent élève n’est collecté.",
         "Vous pouvez effacer ces données depuis le navigateur ou depuis ce panneau.",
       ],
@@ -541,6 +559,7 @@ const pages = {
         "Pratique pour les devoirs, le soutien, l’apprentissage de l’anglais et l’école à la maison.",
         "La révision se concentre sur les mots réellement manqués.",
         "Le mode facile ralentit la partie sans changer la règle.",
+        "Les offres Parents et Enseignants ajoutent l’import photo, les phrases automatiques et la Révision du jour.",
       ],
       seoTitle: "Deux façons de travailler votre propre liste",
       seoIntro:
@@ -568,7 +587,7 @@ const pages = {
     legalLinks: ["Confidentialité", "À propos", "Contact"],
     schema: {
       description:
-        "Collez vos mots pour un test audio ou une pluie de mots, avec correction et reprise des erreurs.",
+        "Collez vos mots pour un test audio ou une pluie de mots, avec correction, reprise des erreurs et outils payants d’import photo et de phrases automatiques.",
       faq: [
         [
           "Puis-je utiliser mes propres mots ?",
@@ -663,6 +682,7 @@ const pages = {
       local: [
         "Daftar kata dan pilihan latihan disimpan di browser ini.",
         "Link baru menyimpan daftar di fragmen URL yang diproses browser tanpa dikirim ke server.",
+        "Impor foto membaca gambar di browser; gambar tidak diunggah ke server dan kata yang terdeteksi bisa diedit sebelum digunakan.",
         "Tugas yang diterbitkan guru atau orang tua dan hasilnya disimpan di Cloudflare D1 selama 14 hari pada Paket Gratis atau 365 hari pada Paket Orang Tua dan Guru. Email, IP, dan User-Agent siswa tidak dikumpulkan.",
         "Kamu bisa menghapus data ini lewat browser atau panel ini.",
       ],
@@ -707,6 +727,7 @@ const pages = {
         "Cocok untuk PR, les, pelajar bahasa Inggris, dan belajar di rumah.",
         "Ronde ulang fokus pada kata yang benar-benar salah.",
         "Mode mudah memperlambat permainan tanpa mengubah aturan ejaan.",
+        "Paket Orang Tua dan Guru menambahkan impor foto, kalimat otomatis, dan Ulasan hari ini.",
       ],
       seoTitle: "Dua cara berlatih dengan daftar sendiri",
       seoIntro:
@@ -734,7 +755,7 @@ const pages = {
     legalLinks: ["Privasi", "Tentang", "Kontak"],
     schema: {
       description:
-        "Tempel kata sendiri untuk tes ejaan dengan audio atau hujan kata, lengkap dengan hasil dan latihan ulang.",
+        "Tempel kata sendiri untuk tes ejaan dengan audio atau hujan kata, lengkap dengan hasil, latihan ulang, dan fitur berbayar untuk impor foto serta kalimat otomatis.",
       faq: [
         [
           "Bisa memakai daftar kata sendiri?",
@@ -821,6 +842,7 @@ const pages = {
       local: [
         "你的单词表和练习偏好会保存在当前浏览器里。",
         "新分享链接把单词表放在 URL 片段中，由浏览器处理，不会发送到服务器。",
+        "拍照导入会在浏览器内读取图片，图片不会上传到服务器；识别结果可先编辑，再加入词表。",
         "教师或家长明确发布的作业及学生成绩会保存到 Cloudflare D1：免费方案 14 天，家长方案和教师方案 365 天。我们不采集学生邮箱、IP 或 User-Agent。",
         "你可以在浏览器设置里清除，也可以用这里的清除按钮。",
       ],
@@ -863,6 +885,7 @@ const pages = {
         "适合家庭作业、课后辅导、英语学习和家庭教育场景。",
         "重练只围绕漏掉的词，不浪费时间。",
         "简单模式只降低速度，不改变拼写规则。",
+        "家长方案和教师方案还支持拍照导入、自动填充例句和今日复习。",
       ],
       seoTitle: "同一份单词表，两种练习方式",
       seoIntro:
@@ -884,7 +907,7 @@ const pages = {
     legalLinks: ["隐私", "关于", "联系"],
     schema: {
       description:
-        "粘贴自己的英语单词，选择隐藏单词听写测试或单词雨，并在结束后重练错词。",
+        "粘贴自己的英语单词，选择隐藏单词听写测试或单词雨，并在结束后重练错词；家长和教师方案还支持拍照导入与自动例句。",
       faq: [
         [
           "可以用自己的英语单词吗？",
@@ -1395,6 +1418,7 @@ ${listItems(info.bullets)}
     <footer>
         <p>
             <span class="footer-links">${sharedLinks.map((href, index) => `<a href="${localizedSharedHref(page, href)}">${page.footerLinks[index]}</a>`).join(" &middot; ")}</span><br>
+            <span class="footer-secondary-links">${secondaryLinks[page.pageLocale].map(([href, label]) => `<a href="${localizedSharedHref(page, href)}" aria-label="${escapeAttr(label)}">${label}</a>`).join(" &middot; ")}</span><br>
             &copy; 2026 My Spelling Game ${footerRights[page.pageLocale]}
         </p>
     </footer>
@@ -1407,7 +1431,8 @@ ${schemaScripts(page)}
 function schemaScripts(page) {
   const game = {
     "@context": "https://schema.org",
-    "@type": "VideoGame",
+    "@type": "SoftwareApplication",
+    "@id": `${baseUrl}/#software`,
     name: "My Spelling Game",
     description: page.schema.description,
     url: `${baseUrl}${page.path}`,
@@ -1426,12 +1451,11 @@ function schemaScripts(page) {
       logo: `${baseUrl}/images/icon-512.png`,
     },
     genre: ["Educational Game", "Spelling Game", "Typing Game"],
-    gamePlatform: "Web Browser",
-    operatingSystem: "Any",
-    applicationCategory: "Game",
+    operatingSystem: "Web Browser",
+    applicationCategory: "EducationalApplication",
     inLanguage: page.htmlLang,
     isAccessibleForFree: true,
-    dateModified: "2026-08-23",
+    dateModified: "2026-08-30",
     offers: {
       "@type": "Offer",
       price: "0",

@@ -88,6 +88,11 @@
         </section>
 
         <section class="seo-panel">
+            <h2>Photo Import</h2>
+            <p>When you use photo import, the image is read in your browser to detect words. The image is not uploaded to our server; review and edit the detected words before adding them to your list.</p>
+        </section>
+
+        <section class="seo-panel">
             <h2>Assignments and Results</h2>
             <p>When a signed-in teacher or parent publishes an assignment or saves a custom list, its title, words, settings, and deadline are stored in Cloudflare D1. Student nicknames and profiles, plus links between profiles and completed assignment results, are stored to show mastery across assignments and create smart review lists. Completed results and their history are stored for 14 days on Free Plan or 365 days on Parent and Teacher Plans, then expire. Saved lists remain until deleted. Student profiles can be archived and restored; archiving does not delete the profile or linked results. Deleting an assignment also deletes its results. We do not collect student email, IP address, or User-Agent.</p>
         </section>
@@ -110,25 +115,17 @@
         <section class="seo-panel">
             <h2>Contact</h2>
             <p>If you have questions about this policy, please contact us through the <a href="/contact">contact page</a>.</p>
-            <p class="privacy-update">Last updated: <span id="privacy-date"></span></p>
+            <p class="privacy-update">Last updated: August 30, 2026</p>
         </section>
     </main>
 
     <footer>
         <p>
             <span class="footer-links"><a href="/custom-spelling-words-game">Custom Words</a> &middot; <a href="/weekly-spelling-practice">Weekly Practice</a> &middot; <a href="/sight-word-typing-game">Sight Words</a> &middot; <a href="/spelling-practice-for-parents">For Parents</a> &middot; <a href="/spelling-assignments-for-teachers">For Teachers</a></span><br>
+            <span class="footer-secondary-links"><a href="/pricing" aria-label="Pricing">Pricing</a> &middot; <a href="/faq" aria-label="FAQ">FAQ</a> &middot; <a href="/privacy" aria-label="Privacy">Privacy</a> &middot; <a href="/about" aria-label="About">About</a> &middot; <a href="/contact" aria-label="Contact">Contact</a></span><br>
             &copy; 2026 My Spelling Game All rights reserved.
         </p>
     </footer>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const el = document.getElementById('privacy-date');
-        if (el) {
-          el.textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-        }
-      });
-    </script>
 
     <script type="application/ld+json">
     {
@@ -138,15 +135,8 @@
       "url": "https://myspellinggame.com/privacy",
       "inLanguage": "en",
       "about": {
-            "@type": "VideoGame",
-            "name": "My Spelling Game",
-            "publisher": {
-                  "@type": "Organization",
-                  "@id": "https://myspellinggame.com/#organization",
-                  "name": "My Spelling Game",
-                  "url": "https://myspellinggame.com",
-                  "logo": "https://myspellinggame.com/images/icon-512.png"
-            }
+            "@type": "SoftwareApplication",
+            "@id": "https://myspellinggame.com/#software"
       }
 }
     </script>

@@ -241,6 +241,7 @@
                         <h4>本地保存</h4>
                     <p>你的单词表和练习偏好会保存在当前浏览器里。</p>
                     <p>新分享链接把单词表放在 URL 片段中，由浏览器处理，不会发送到服务器。</p>
+                    <p>拍照导入会在浏览器内读取图片，图片不会上传到服务器；识别结果可先编辑，再加入词表。</p>
                     <p>教师或家长明确发布的作业及学生成绩会保存到 Cloudflare D1：免费方案 14 天，家长方案和教师方案 365 天。我们不采集学生邮箱、IP 或 User-Agent。</p>
                     <p>你可以在浏览器设置里清除，也可以用这里的清除按钮。</p>
 
@@ -321,6 +322,7 @@
                     <p>适合家庭作业、课后辅导、英语学习和家庭教育场景。</p>
                     <p>重练只围绕漏掉的词，不浪费时间。</p>
                     <p>简单模式只降低速度，不改变拼写规则。</p>
+                    <p>家长方案和教师方案还支持拍照导入、自动填充例句和今日复习。</p>
                 </div>
             </div>
         </div>
@@ -359,6 +361,7 @@
     <footer>
         <p>
             <span class="footer-links"><a href="/zh/custom-spelling-words-game">自定义单词</a> &middot; <a href="/zh/weekly-spelling-practice">每周练习</a> &middot; <a href="/zh/sight-word-typing-game">高频词</a> &middot; <a href="/zh/spelling-practice-for-parents">家长练习</a> &middot; <a href="/zh/spelling-assignments-for-teachers">教师作业</a></span><br>
+            <span class="footer-secondary-links"><a href="/zh/pricing" aria-label="价格">价格</a> &middot; <a href="/zh/faq" aria-label="常见问题">常见问题</a> &middot; <a href="/zh/privacy" aria-label="隐私">隐私</a> &middot; <a href="/zh/about" aria-label="关于">关于</a> &middot; <a href="/zh/contact" aria-label="联系">联系</a></span><br>
             &copy; 2026 My Spelling Game 版权所有。
         </p>
     </footer>
@@ -366,9 +369,10 @@
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "VideoGame",
+  "@type": "SoftwareApplication",
+  "@id": "https://myspellinggame.com/#software",
   "name": "My Spelling Game",
-  "description": "粘贴自己的英语单词，选择隐藏单词听写测试或单词雨，并在结束后重练错词。",
+  "description": "粘贴自己的英语单词，选择隐藏单词听写测试或单词雨，并在结束后重练错词；家长和教师方案还支持拍照导入与自动例句。",
   "url": "https://myspellinggame.com/zh/",
   "author": {
     "@type": "Organization",
@@ -389,12 +393,11 @@
     "Spelling Game",
     "Typing Game"
   ],
-  "gamePlatform": "Web Browser",
-  "operatingSystem": "Any",
-  "applicationCategory": "Game",
+  "operatingSystem": "Web Browser",
+  "applicationCategory": "EducationalApplication",
   "inLanguage": "zh-CN",
   "isAccessibleForFree": true,
-  "dateModified": "2026-08-23",
+  "dateModified": "2026-08-30",
   "offers": {
     "@type": "Offer",
     "price": "0",

@@ -11,7 +11,8 @@ footer p {
   line-height: 1.8;
 }
 
-.footer-links {
+.footer-links,
+.footer-secondary-links {
   display: block;
   width: fit-content;
   max-width: 100%;

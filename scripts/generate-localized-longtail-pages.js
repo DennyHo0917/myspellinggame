@@ -93,6 +93,7 @@ const footerSlugs = [
   "spelling-practice-for-parents",
   "spelling-assignments-for-teachers",
 ];
+const footerSecondarySlugs = ["pricing", "faq", "privacy", "about", "contact"];
 const newLongtailSlugs = [
   "custom-spelling-words-game",
   "sight-word-typing-game",
@@ -241,6 +242,14 @@ const footerLinks = {
     "spelling-practice-for-parents": "家长练习",
     "spelling-assignments-for-teachers": "教师作业",
   },
+};
+const footerSecondaryLinks = {
+  en: { pricing: "Pricing", faq: "FAQ", privacy: "Privacy", about: "About", contact: "Contact" },
+  es: { pricing: "Precios", faq: "Preguntas frecuentes", privacy: "Privacidad", about: "Acerca de", contact: "Contacto" },
+  "pt-BR": { pricing: "Preços", faq: "Perguntas frequentes", privacy: "Privacidade", about: "Sobre", contact: "Contato" },
+  fr: { pricing: "Tarifs", faq: "Questions fréquentes", privacy: "Confidentialité", about: "À propos", contact: "Contact" },
+  id: { pricing: "Harga", faq: "Pertanyaan umum", privacy: "Privasi", about: "Tentang", contact: "Kontak" },
+  zh: { pricing: "价格", faq: "常见问题", privacy: "隐私", about: "关于", contact: "联系" },
 };
 const footerRights = {
   en: "All rights reserved.",
@@ -2552,9 +2561,9 @@ const parentLandingCopy = {
   en: {
     title: "Spelling Practice for Parents | My Spelling Game",
     description:
-      "Paste this week's school spelling words and start a no-login listening practice. Share assignments, see results, and track long-term progress in Workspace.",
+      "Paste this week's school spelling words and start a no-login listening practice. Paid Parent tools add photo import, automatic example sentences, Today's Review, and long-term progress in Workspace.",
     ogDescription:
-      "Turn this week's school words into independent spelling practice, then track results and progress.",
+      "Turn this week's school words into independent spelling practice with optional photo import and sentence help, then track results and progress.",
     h1: "Spelling Practice Your Child Can Do Independently",
     eyebrow: "For busy parents",
     intro:
@@ -2621,9 +2630,9 @@ const parentLandingCopy = {
   es: {
     title: "Práctica de ortografía para familias | My Spelling Game",
     description:
-      "Pega las palabras de ortografía de esta semana y empieza una práctica de dictado sin cuenta. Comparte tareas y sigue resultados y progreso en el espacio de trabajo.",
+      "Pega las palabras de ortografía de esta semana y empieza una práctica de dictado sin cuenta. Los planes para familias añaden importación por foto, frases automáticas, Repaso de hoy y progreso en el espacio de trabajo.",
     ogDescription:
-      "Convierte las palabras de la escuela en práctica independiente y sigue el progreso.",
+      "Convierte las palabras de la escuela en práctica independiente con importación por foto y frases de apoyo, y sigue el progreso.",
     h1: "Práctica de ortografía que tu hijo puede hacer solo",
     eyebrow: "Para familias con poco tiempo",
     intro:
@@ -2690,9 +2699,9 @@ const parentLandingCopy = {
   "pt-BR": {
     title: "Prática de ortografia para pais | My Spelling Game",
     description:
-      "Cole as palavras da escola desta semana e comece um ditado sem conta. Compartilhe atividades e acompanhe resultados e progresso no espaço de trabalho.",
+      "Cole as palavras da escola desta semana e comece um ditado sem conta. O plano para Pais acrescenta importação por foto, frases automáticas, Revisão de hoje e progresso no espaço de trabalho.",
     ogDescription:
-      "Transforme as palavras da escola em prática independente e acompanhe o progresso.",
+      "Transforme as palavras da escola em prática independente com importação por foto e frases de apoio, e acompanhe o progresso.",
     h1: "Prática de ortografia que seu filho faz sozinho",
     eyebrow: "Para responsáveis com pouco tempo",
     intro:
@@ -2759,9 +2768,9 @@ const parentLandingCopy = {
   fr: {
     title: "Exercices d’orthographe pour les parents | My Spelling Game",
     description:
-      "Collez les mots de la semaine et lancez une dictée sans compte. Partagez des exercices et suivez résultats et progrès dans l’espace de travail.",
+      "Collez les mots de la semaine et lancez une dictée sans compte. L’offre Parents ajoute l’import photo, les phrases automatiques, la Révision du jour et le suivi dans l’espace de travail.",
     ogDescription:
-      "Transformez la liste de l’école en exercice autonome et suivez les progrès.",
+      "Transformez la liste de l’école en exercice autonome avec import photo et phrases d’aide, puis suivez les progrès.",
     h1: "Un exercice d’orthographe que votre enfant fait en autonomie",
     eyebrow: "Pour les parents pressés",
     intro:
@@ -2828,9 +2837,9 @@ const parentLandingCopy = {
   id: {
     title: "Latihan ejaan untuk orang tua | My Spelling Game",
     description:
-      "Tempel kata sekolah minggu ini dan mulai latihan dikte tanpa akun. Bagikan tugas serta pantau hasil dan perkembangan di ruang kerja.",
+      "Tempel kata sekolah minggu ini dan mulai latihan dikte tanpa akun. Paket Orang Tua menambahkan impor foto, kalimat otomatis, Ulasan hari ini, dan perkembangan di ruang kerja.",
     ogDescription:
-      "Ubah kata dari sekolah menjadi latihan mandiri dan pantau perkembangannya.",
+      "Ubah kata dari sekolah menjadi latihan mandiri dengan impor foto dan kalimat bantuan, lalu pantau perkembangannya.",
     h1: "Latihan ejaan yang bisa dilakukan anak secara mandiri",
     eyebrow: "Untuk orang tua yang sibuk",
     intro:
@@ -2897,8 +2906,8 @@ const parentLandingCopy = {
   zh: {
     title: "家长英语拼写练习 | My Spelling Game",
     description:
-      "粘贴学校本周英语单词，无需登录即可开始听写练习；在工作台分享作业、查看结果并长期追踪学习进度。",
-    ogDescription: "把学校本周词表变成孩子可独立完成的英语拼写练习。",
+      "粘贴学校本周英语单词，无需登录即可开始听写练习；家长方案还支持拍照导入、自动例句、今日复习，并在工作台长期追踪进度。",
+    ogDescription: "把学校本周词表变成孩子可独立完成的英语拼写练习，并支持拍照导入和自动例句。",
     h1: "孩子可以独立完成的英语拼写练习",
     eyebrow: "为忙碌家长而做",
     intro:
@@ -2951,9 +2960,9 @@ const teacherLandingCopy = {
   en: {
     title: "Spelling Assignments for Teachers | My Spelling Game",
     description:
-      "Paste a spelling list, share one link, and track results without student accounts. Create assignments, monitor mastery, use Smart Review, and export CSV reports.",
+      "Paste a spelling list, share one link, and track results without student accounts. Teacher Plan adds photo import, automatic example sentences, Today's Review, Smart Review, mastery, and CSV reports.",
     ogDescription:
-      "Turn any spelling list into a shareable assignment and track class results without student accounts.",
+      "Turn any spelling list into a shareable assignment with photo import and sentence help, then track class results without student accounts.",
     h1: "Spelling Assignments Without Student Accounts",
     eyebrow: "For teachers",
     intro:
@@ -3024,9 +3033,9 @@ const teacherLandingCopy = {
   es: {
     title: "Tareas de ortografía para docentes | My Spelling Game",
     description:
-      "Pega una lista de ortografía, comparte un enlace y sigue los resultados sin crear cuentas para alumnos. Consulta progreso y dominio, usa el repaso inteligente y exporta CSV.",
+      "Pega una lista de ortografía, comparte un enlace y sigue los resultados sin cuentas para alumnos. El plan para docentes añade importación por foto, frases automáticas, Repaso de hoy, dominio y CSV.",
     ogDescription:
-      "Convierte cualquier lista de ortografía en una tarea compartida y sigue los resultados sin cuentas de alumnos.",
+      "Convierte cualquier lista de ortografía en una tarea compartida con importación por foto y frases automáticas, y sigue los resultados sin cuentas.",
     h1: "Tareas de ortografía sin cuentas de alumnos",
     eyebrow: "Para docentes",
     intro:
@@ -3097,9 +3106,9 @@ const teacherLandingCopy = {
   "pt-BR": {
     title: "Atividades de ortografia para professores | My Spelling Game",
     description:
-      "Cole uma lista de ortografia, compartilhe um link e acompanhe os resultados sem contas de alunos. Veja progresso e domínio, use a revisão inteligente e exporte CSV.",
+      "Cole uma lista de ortografia, compartilhe um link e acompanhe os resultados sem contas de alunos. O plano para Professores acrescenta importação por foto, frases automáticas, Revisão de hoje, domínio e CSV.",
     ogDescription:
-      "Transforme qualquer lista de ortografia em uma atividade compartilhável e acompanhe a turma sem contas de alunos.",
+      "Transforme qualquer lista de ortografia em uma atividade compartilhável com importação por foto e frases automáticas, e acompanhe a turma sem contas.",
     h1: "Atividades de ortografia sem contas de alunos",
     eyebrow: "Para professores",
     intro:
@@ -3170,9 +3179,9 @@ const teacherLandingCopy = {
   fr: {
     title: "Devoirs d’orthographe pour enseignants | My Spelling Game",
     description:
-      "Collez une liste d’orthographe, partagez un lien et suivez les résultats sans compte élève. Consultez progression et maîtrise, utilisez la révision intelligente et exportez en CSV.",
+      "Collez une liste d’orthographe, partagez un lien et suivez les résultats sans compte élève. L’offre Enseignants ajoute l’import photo, les phrases automatiques, la Révision du jour, la maîtrise et le CSV.",
     ogDescription:
-      "Transformez une liste d’orthographe en devoir à partager et suivez la classe sans compte élève.",
+      "Transformez une liste d’orthographe en devoir à partager avec import photo et phrases automatiques, puis suivez la classe sans compte élève.",
     h1: "Des devoirs d’orthographe sans compte élève",
     eyebrow: "Pour les enseignants",
     intro:
@@ -3243,9 +3252,9 @@ const teacherLandingCopy = {
   id: {
     title: "Tugas ejaan untuk guru | My Spelling Game",
     description:
-      "Tempel daftar ejaan, bagikan satu link, dan pantau hasil tanpa akun siswa. Lihat perkembangan dan penguasaan, gunakan ulasan pintar, serta ekspor CSV.",
+      "Tempel daftar ejaan, bagikan satu link, dan pantau hasil tanpa akun siswa. Paket Guru menambahkan impor foto, kalimat otomatis, Ulasan hari ini, penguasaan, dan CSV.",
     ogDescription:
-      "Ubah daftar ejaan menjadi tugas yang mudah dibagikan dan pantau kelas tanpa akun siswa.",
+      "Ubah daftar ejaan menjadi tugas yang mudah dibagikan dengan impor foto dan kalimat otomatis, lalu pantau kelas tanpa akun siswa.",
     h1: "Tugas ejaan tanpa akun siswa",
     eyebrow: "Untuk guru",
     intro:
@@ -3316,8 +3325,8 @@ const teacherLandingCopy = {
   zh: {
     title: "教师英语拼写作业 | My Spelling Game",
     description:
-      "粘贴英语词表，分享一个链接，无需学生账号即可追踪结果；还能查看学习进度与掌握度、使用智能复习并导出 CSV。",
-    ogDescription: "把任意英语词表变成可分享、可追踪的班级作业，无需学生账号。",
+      "粘贴英语词表，分享一个链接，无需学生账号即可追踪结果；教师方案还支持拍照导入、自动例句、今日复习、掌握度、智能复习和 CSV。",
+    ogDescription: "把任意英语词表变成可分享、可追踪的班级作业，支持拍照导入和自动例句，无需学生账号。",
     h1: "无需学生账号的英语拼写作业",
     eyebrow: "为教师而做",
     intro:
@@ -3369,6 +3378,47 @@ const teacherLandingCopy = {
     ],
   },
 };
+
+const paidLandingFeatures = {
+  en: {
+    parent: [
+      ["Photo Import", "Bring in a school spelling list from a photo, then review the words before using them."],
+      ["Automatic Example Sentences", "Fill known words with example sentences from the curated library, with editing before use."],
+    ],
+    teacher: [
+      ["Today's Review", "Open a short session built from missed words that are due for practice today."],
+      ["Photo Import", "Bring in a school spelling list from a photo, then review the words before creating an assignment."],
+      ["Automatic Example Sentences", "Fill known words with example sentences from the curated library, with editing before publishing."],
+    ],
+  },
+  es: {
+    parent: [["Importar desde una foto", "Importa la lista de spelling de la escuela desde una foto y revisa las palabras antes de usarlas."], ["Frases de ejemplo automáticas", "Completa palabras conocidas con frases de la biblioteca seleccionada y edítalas antes de usarlas."]],
+    teacher: [["Repaso de hoy", "Abre una sesión corta con las palabras falladas que toca practicar hoy."], ["Importar desde una foto", "Importa la lista de spelling de la escuela desde una foto y revisa las palabras antes de crear la tarea."], ["Frases de ejemplo automáticas", "Completa palabras conocidas con frases de la biblioteca seleccionada y edítalas antes de publicar."]],
+  },
+  "pt-BR": {
+    parent: [["Importar por foto", "Importe a lista de ortografia da escola por foto e revise as palavras antes de usá-las."], ["Frases de exemplo automáticas", "Preencha palavras conhecidas com frases da biblioteca selecionada e edite-as antes de usar."]],
+    teacher: [["Revisão de hoje", "Abra uma sessão curta com as palavras erradas que já devem ser praticadas hoje."], ["Importar por foto", "Importe a lista de ortografia da escola por foto e revise as palavras antes de criar a atividade."], ["Frases de exemplo automáticas", "Preencha palavras conhecidas com frases da biblioteca selecionada e edite-as antes de publicar."]],
+  },
+  fr: {
+    parent: [["Import par photo", "Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de les utiliser."], ["Phrases d’exemple automatiques", "Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant usage."]],
+    teacher: [["Révision du jour", "Lancez une courte séance avec les mots manqués qui doivent être revus aujourd’hui."], ["Import par photo", "Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de créer le devoir."], ["Phrases d’exemple automatiques", "Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant publication."]],
+  },
+  id: {
+    parent: [["Impor foto", "Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum digunakan."], ["Kalimat contoh otomatis", "Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum digunakan."]],
+    teacher: [["Ulasan hari ini", "Buka sesi singkat berisi kata salah yang sudah waktunya dilatih hari ini."], ["Impor foto", "Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum membuat tugas."], ["Kalimat contoh otomatis", "Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum diterbitkan."]],
+  },
+  zh: {
+    parent: [["拍照导入", "从学校词表照片中提取单词，确认后再加入练习。"], ["自动填充例句", "使用精选例句库为已知单词补充例句，使用前仍可编辑。"]],
+    teacher: [["今日复习", "打开一轮短练习，复习今天正好需要再次练习的错词。"], ["拍照导入", "从学校词表照片中提取单词，确认后再创建作业。"], ["自动填充例句", "使用精选例句库为已知单词补充例句，发布前仍可编辑。"]],
+  },
+};
+
+for (const [code, features] of Object.entries(paidLandingFeatures)) {
+  const parentPlan = parentLandingCopy[code].features.pop();
+  parentLandingCopy[code].features.push(...features.parent, parentPlan);
+  const teacherPlan = teacherLandingCopy[code].features.pop();
+  teacherLandingCopy[code].features.push(...features.teacher, teacherPlan);
+}
 
 const customLauncher = {
   en: {
@@ -3544,6 +3594,7 @@ function footerHtml(langCode) {
   return `    <footer>
         <p>
             <span class="footer-links">${footerSlugs.map((slug) => `<a href="${pagePath(lang, slug)}">${footerLinks[langCode][slug]}</a>`).join(" &middot; ")}</span><br>
+            <span class="footer-secondary-links">${footerSecondarySlugs.map((slug) => `<a href="${pagePath(lang, slug)}" aria-label="${escapeAttr(footerSecondaryLinks[langCode][slug])}">${footerSecondaryLinks[langCode][slug]}</a>`).join(" &middot; ")}</span><br>
             &copy; 2026 My Spelling Game ${footerRights[langCode]}
         </p>
     </footer>`;

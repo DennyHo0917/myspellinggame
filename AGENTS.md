@@ -12,6 +12,7 @@ These instructions apply to the entire repository.
 ## Shared Page Layout
 
 - Every new page must reuse the existing shared header and footer templates, including their button styles, spacing, responsive behavior, and localized labels.
+- New pages must preserve the shared header and footer's structure, visible copy, link set and order, typography, colors, and interaction behavior so every page keeps one consistent visual style.
 - Do not create page-specific copies of header or footer styles. When a change is needed, update the shared template or shared stylesheet so all pages remain consistent.
 
 ## Change Workflow

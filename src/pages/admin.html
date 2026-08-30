@@ -7,7 +7,7 @@
     <meta name="referrer" content="strict-origin" />
     <title>MySpellingGame 管理后台</title>
     <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="stylesheet" href="/src/css/product.css?v=admin2" />
+    <link rel="stylesheet" href="/src/css/product.css?v=admin3" />
   </head>
   <body class="product-page">
     <div class="product-shell">
@@ -90,127 +90,228 @@
         </section>
 
         <div id="admin-dashboard" hidden>
-          <section class="product-card">
+          <section class="product-card admin-overview">
             <div class="admin-heading">
               <div>
-                <h1>MySpellingGame 管理后台</h1>
-                <p class="muted">用户、方案调度与充值订单概览。</p>
+                <h1>管理后台</h1>
+                <p class="muted">用户、方案与订阅订单管理</p>
               </div>
               <button class="button-secondary" id="admin-refresh" type="button">
                 刷新
               </button>
             </div>
             <div class="grid admin-stats" id="admin-stats"></div>
+            <p class="admin-secondary-stats" id="admin-secondary-stats"></p>
           </section>
 
-          <section class="product-card">
-            <form class="inline-form admin-search" id="admin-search">
-              <div class="field">
-                <label for="admin-query">搜索用户</label>
-                <input
-                  id="admin-query"
-                  name="q"
-                  type="search"
-                  maxlength="200"
-                  placeholder="邮箱、姓名或用户 ID"
-                />
-              </div>
-              <button type="submit">搜索</button>
-            </form>
-            <p class="status" id="admin-users-status" role="status"></p>
-            <div class="table-wrap admin-table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>姓名</th>
-                    <th>邮箱</th>
-                    <th>登录方式</th>
-                    <th>方案</th>
-                    <th>订阅状态</th>
-                    <th>计费周期</th>
-                    <th>当前周期结束时间</th>
-                    <th>注册时间</th>
-                    <th>方案调度</th>
-                  </tr>
-                </thead>
-                <tbody id="admin-users"></tbody>
-              </table>
-            </div>
-            <div class="admin-pagination">
+          <section class="product-card admin-data-card">
+            <div class="admin-tabs" role="tablist" aria-label="管理内容">
               <button
-                class="button-secondary"
-                id="admin-previous"
+                class="admin-tab"
+                id="admin-users-tab"
                 type="button"
+                role="tab"
+                aria-selected="true"
+                aria-controls="admin-users-panel"
               >
-                上一页
+                用户
               </button>
-              <span id="admin-page"></span>
-              <button class="button-secondary" id="admin-next" type="button">
-                下一页
+              <button
+                class="admin-tab"
+                id="admin-orders-tab"
+                type="button"
+                role="tab"
+                aria-selected="false"
+                aria-controls="admin-orders-panel"
+              >
+                订单
               </button>
             </div>
-          </section>
 
-          <section class="product-card">
-            <div class="admin-heading">
-              <div>
-                <h2>充值订单日志</h2>
-                <p class="muted">
-                  记录所有已创建的订单，包括未完成、取消、失败和成功订单。
-                </p>
+            <div
+              class="admin-tab-panel"
+              id="admin-users-panel"
+              role="tabpanel"
+              aria-labelledby="admin-users-tab"
+            >
+              <form class="admin-toolbar" id="admin-search">
+                <div class="field admin-search-field">
+                  <label for="admin-query">搜索用户</label>
+                  <input
+                    id="admin-query"
+                    name="q"
+                    type="search"
+                    maxlength="200"
+                    placeholder="姓名 / 邮箱 / 用户 ID"
+                  />
+                </div>
+                <div class="field">
+                  <label for="admin-plan-filter">方案</label>
+                  <select id="admin-plan-filter" name="plan">
+                    <option value="">全部方案</option>
+                    <option value="free">免费方案</option>
+                    <option value="parent">家长方案</option>
+                    <option value="teacher">教师方案</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="admin-provider-filter">登录方式</label>
+                  <select id="admin-provider-filter" name="provider">
+                    <option value="">全部方式</option>
+                    <option value="google">Google</option>
+                    <option value="microsoft">Microsoft</option>
+                  </select>
+                </div>
+                <button type="submit">筛选</button>
+              </form>
+              <p class="status" id="admin-users-status" role="status"></p>
+              <div class="table-wrap admin-table-wrap admin-users-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>姓名</th>
+                      <th>邮箱</th>
+                      <th>登录方式</th>
+                      <th>当前方案</th>
+                      <th>注册时间</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-users"></tbody>
+                </table>
+              </div>
+              <div class="admin-pagination">
+                <button
+                  class="button-secondary"
+                  id="admin-previous"
+                  type="button"
+                >
+                  上一页
+                </button>
+                <span id="admin-page"></span>
+                <button class="button-secondary" id="admin-next" type="button">
+                  下一页
+                </button>
               </div>
             </div>
-            <form class="inline-form admin-search" id="admin-order-search">
-              <div class="field">
-                <label for="admin-order-query">搜索订单</label>
-                <input
-                  id="admin-order-query"
-                  name="q"
-                  type="search"
-                  maxlength="200"
-                  placeholder="邮箱、姓名或订单 ID"
-                />
+
+            <div
+              class="admin-tab-panel"
+              id="admin-orders-panel"
+              role="tabpanel"
+              aria-labelledby="admin-orders-tab"
+              hidden
+            >
+              <form
+                class="admin-toolbar admin-order-toolbar"
+                id="admin-order-search"
+              >
+                <div class="field admin-search-field">
+                  <label for="admin-order-query">搜索订单</label>
+                  <input
+                    id="admin-order-query"
+                    name="q"
+                    type="search"
+                    maxlength="200"
+                    placeholder="姓名 / 邮箱 / 订单 ID"
+                  />
+                </div>
+                <div class="field">
+                  <label for="admin-order-status-filter">状态</label>
+                  <select id="admin-order-status-filter" name="status">
+                    <option value="">全部状态</option>
+                    <option value="pending">待完成</option>
+                    <option value="completed">待确认支付</option>
+                    <option value="paid">支付成功</option>
+                    <option value="failed">支付失败</option>
+                    <option value="canceled">已取消</option>
+                    <option value="expired">已过期</option>
+                  </select>
+                </div>
+                <button type="submit">筛选</button>
+              </form>
+              <p class="status" id="admin-orders-status" role="status"></p>
+              <div class="table-wrap admin-table-wrap admin-orders-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>创建时间</th>
+                      <th>用户</th>
+                      <th>方案</th>
+                      <th>周期</th>
+                      <th>金额</th>
+                      <th>状态</th>
+                      <th>订单 ID</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-orders"></tbody>
+                </table>
               </div>
-              <button type="submit">搜索</button>
-            </form>
-            <p class="status" id="admin-orders-status" role="status"></p>
-            <div class="table-wrap admin-table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>创建时间</th>
-                    <th>用户</th>
-                    <th>邮箱</th>
-                    <th>方案</th>
-                    <th>计费周期</th>
-                    <th>金额</th>
-                    <th>状态</th>
-                    <th>订单 ID</th>
-                    <th>更新时间</th>
-                  </tr>
-                </thead>
-                <tbody id="admin-orders"></tbody>
-              </table>
-            </div>
-            <div class="admin-pagination">
-              <button
-                class="button-secondary"
-                id="admin-orders-previous"
-                type="button"
-              >
-                上一页
-              </button>
-              <span id="admin-orders-page"></span>
-              <button
-                class="button-secondary"
-                id="admin-orders-next"
-                type="button"
-              >
-                下一页
-              </button>
+              <div class="admin-pagination">
+                <button
+                  class="button-secondary"
+                  id="admin-orders-previous"
+                  type="button"
+                >
+                  上一页
+                </button>
+                <span id="admin-orders-page"></span>
+                <button
+                  class="button-secondary"
+                  id="admin-orders-next"
+                  type="button"
+                >
+                  下一页
+                </button>
+              </div>
             </div>
           </section>
         </div>
+
+        <dialog class="admin-drawer" id="admin-user-drawer">
+          <div class="admin-drawer-heading">
+            <div>
+              <p class="admin-drawer-eyebrow">用户详情</p>
+              <h2 id="admin-drawer-title">用户</h2>
+            </div>
+            <button
+              class="button-secondary admin-drawer-close"
+              id="admin-drawer-close"
+              type="button"
+              aria-label="关闭用户详情"
+            >
+              ×
+            </button>
+          </div>
+          <div class="admin-drawer-body">
+            <section class="admin-detail-section">
+              <h3>基本信息</h3>
+              <dl class="admin-detail-list" id="admin-user-details"></dl>
+            </section>
+            <section class="admin-detail-section">
+              <h3>方案调度</h3>
+              <div class="admin-plan-controls">
+                <select id="admin-drawer-plan" aria-label="调整用户方案">
+                  <option value="">按订阅自动判断</option>
+                  <option value="parent">家长方案</option>
+                  <option value="teacher">教师方案</option>
+                </select>
+                <button
+                  class="button-secondary"
+                  id="admin-drawer-plan-save"
+                  type="button"
+                >
+                  保存
+                </button>
+              </div>
+              <p class="status" id="admin-drawer-status" role="status"></p>
+            </section>
+            <section class="admin-detail-section">
+              <h3>相关订单</h3>
+              <div id="admin-user-orders" class="admin-related-orders"></div>
+            </section>
+          </div>
+        </dialog>
       </main>
 
       <footer class="product-footer">
@@ -226,6 +327,6 @@
         </p>
       </footer>
     </div>
-    <script type="module" src="/src/js/adminApp.mjs?v=admin2"></script>
+    <script type="module" src="/src/js/adminApp.mjs?v=admin3"></script>
   </body>
 </html>

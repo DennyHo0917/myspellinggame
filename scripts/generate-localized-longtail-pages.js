@@ -93,6 +93,7 @@ const footerSlugs = [
 const newLongtailSlugs = [
   "homeschool-spelling-practice",
   "sight-word-typing-game",
+  "spelling-practice-for-parents",
   "vocabulary-typing-game",
 ];
 const existingLocalizedSlugs = [];
@@ -2315,6 +2316,405 @@ function escapeAttr(value) {
   return String(value).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 }
 
+const parentLandingCopy = {
+  en: {
+    title: "Spelling Practice for Parents | My Spelling Game",
+    description:
+      "Paste this week's school spelling words and start a no-login listening practice. Share assignments, see results, and track long-term progress in Workspace.",
+    ogDescription:
+      "Turn this week's school words into independent spelling practice, then track results and progress.",
+    h1: "Spelling Practice Your Child Can Do Independently",
+    eyebrow: "For busy parents",
+    intro:
+      "You do not have to read every word aloud. Paste the school's list, start a listening practice now, or use Workspace to share it and follow the results.",
+    launcherLabel: "This week's spelling words",
+    launcherButton: "Start Practice",
+    launcherHelp: "No login needed · Up to 20 words",
+    flowTitle: "From the school list to useful progress",
+    flow: [
+      "Enter this week's words",
+      "Share the practice link",
+      "Your child practices independently",
+      "See results and long-term progress",
+    ],
+    featuresTitle: "What the parent workspace adds",
+    featuresIntro:
+      "Start free, then keep each week's practice connected to the same child.",
+    features: [
+      [
+        "Learner",
+        "Give each child one profile and a simple practice link—no child account or password.",
+      ],
+      [
+        "Progress",
+        "See completed practices, scores, missed words, and improvement across assignments.",
+      ],
+      [
+        "Mastery",
+        "Know which words are still being learned and which are consistently mastered.",
+      ],
+      [
+        "Today's Review",
+        "Open one short session built from missed words that are ready to come back today.",
+      ],
+      [
+        "Smart Review",
+        "Turn real mistakes into focused follow-up practice instead of repeating the whole list.",
+      ],
+      [
+        "Parent Plan",
+        "Support up to 5 children with unlimited saved lists, tracked submissions, Smart Review, and 365-day history.",
+      ],
+    ],
+    ctaTitle: "Ready to stop running the spelling test yourself?",
+    ctaText:
+      "Open Workspace to create and share a tracked assignment, or compare the Parent Plan for a longer family history.",
+    workspace: "Open Workspace",
+    plan: "View Parent Plan",
+    faq: [
+      [
+        "Can my child start without an account?",
+        "Yes. The practice above opens immediately without a login. Workspace assignments also use a child-friendly link instead of a child account or password.",
+      ],
+      [
+        "Will My Spelling Game read the words aloud?",
+        "Yes. Listening practice uses browser speech so your child can hear each word and type it independently.",
+      ],
+      [
+        "How do I see results over time?",
+        "Create a learner in Workspace and share a tracked assignment. Completed results then stay connected to that learner's progress and mastery history.",
+      ],
+    ],
+  },
+  es: {
+    title: "Práctica de ortografía para familias | My Spelling Game",
+    description:
+      "Pega las palabras de ortografía de esta semana y empieza una práctica de dictado sin cuenta. Comparte tareas y sigue resultados y progreso en el espacio de trabajo.",
+    ogDescription:
+      "Convierte las palabras de la escuela en práctica independiente y sigue el progreso.",
+    h1: "Práctica de ortografía que tu hijo puede hacer solo",
+    eyebrow: "Para familias con poco tiempo",
+    intro:
+      "No tienes que dictar cada palabra. Pega la lista de la escuela y empieza ahora, o compártela desde el espacio de trabajo para seguir los resultados.",
+    launcherLabel: "Palabras de esta semana",
+    launcherButton: "Empezar práctica",
+    launcherHelp: "Sin iniciar sesión · Hasta 20 palabras",
+    flowTitle: "De la lista escolar al progreso real",
+    flow: [
+      "Introduce las palabras de la semana",
+      "Comparte el enlace de práctica",
+      "Tu hijo practica de forma independiente",
+      "Consulta resultados y progreso a largo plazo",
+    ],
+    featuresTitle: "Qué aporta el espacio de trabajo para familias",
+    featuresIntro:
+      "Empieza gratis y mantén la práctica de cada semana vinculada al mismo niño.",
+    features: [
+      [
+        "Perfil del estudiante",
+        "Cada niño tiene un perfil y un enlace sencillo, sin cuenta ni contraseña infantil.",
+      ],
+      [
+        "Progreso",
+        "Consulta prácticas terminadas, resultados, errores y mejoras entre tareas.",
+      ],
+      [
+        "Dominio",
+        "Distingue las palabras que aún está aprendiendo de las que ya domina de forma constante.",
+      ],
+      [
+        "Repaso de hoy",
+        "Abre una sesión corta con los errores que conviene volver a practicar hoy.",
+      ],
+      [
+        "Repaso inteligente",
+        "Convierte errores reales en práctica específica sin repetir toda la lista.",
+      ],
+      [
+        "Plan para familias",
+        "Hasta 5 hijos, listas guardadas y entregas ilimitadas, repaso inteligente y 365 días de historial.",
+      ],
+    ],
+    ctaTitle: "¿Quieres dejar de hacer tú el dictado?",
+    ctaText:
+      "Abre el espacio de trabajo para crear una tarea con seguimiento o consulta el Plan para familias.",
+    workspace: "Abrir espacio de trabajo",
+    plan: "Ver Plan para familias",
+    faq: [
+      [
+        "¿Mi hijo puede empezar sin una cuenta?",
+        "Sí. La práctica de arriba se abre sin iniciar sesión. Las tareas del espacio de trabajo también usan un enlace, sin cuenta ni contraseña infantil.",
+      ],
+      [
+        "¿My Spelling Game lee las palabras en voz alta?",
+        "Sí. El modo de dictado usa la voz del navegador para que el niño escuche y escriba cada palabra por su cuenta.",
+      ],
+      [
+        "¿Cómo veo los resultados a lo largo del tiempo?",
+        "Crea un perfil en el espacio de trabajo y comparte una tarea con seguimiento. Los resultados quedarán vinculados a su progreso y dominio.",
+      ],
+    ],
+  },
+  "pt-BR": {
+    title: "Prática de ortografia para pais | My Spelling Game",
+    description:
+      "Cole as palavras da escola desta semana e comece um ditado sem conta. Compartilhe atividades e acompanhe resultados e progresso no espaço de trabalho.",
+    ogDescription:
+      "Transforme as palavras da escola em prática independente e acompanhe o progresso.",
+    h1: "Prática de ortografia que seu filho faz sozinho",
+    eyebrow: "Para responsáveis com pouco tempo",
+    intro:
+      "Você não precisa ditar cada palavra. Cole a lista da escola e comece agora, ou compartilhe pelo espaço de trabalho para acompanhar os resultados.",
+    launcherLabel: "Palavras desta semana",
+    launcherButton: "Começar prática",
+    launcherHelp: "Sem login · Até 20 palavras",
+    flowTitle: "Da lista da escola ao progresso real",
+    flow: [
+      "Digite as palavras da semana",
+      "Compartilhe o link da prática",
+      "Seu filho pratica sozinho",
+      "Veja resultados e progresso a longo prazo",
+    ],
+    featuresTitle: "O que o espaço de trabalho oferece aos pais",
+    featuresIntro:
+      "Comece grátis e mantenha a prática de cada semana ligada à mesma criança.",
+    features: [
+      [
+        "Perfil do aluno",
+        "Cada criança tem um perfil e um link simples, sem conta ou senha infantil.",
+      ],
+      [
+        "Progresso",
+        "Veja práticas concluídas, resultados, erros e melhora entre atividades.",
+      ],
+      [
+        "Domínio",
+        "Saiba quais palavras ainda estão sendo aprendidas e quais já foram dominadas com consistência.",
+      ],
+      [
+        "Revisão de hoje",
+        "Abra uma sessão curta com os erros que já estão no momento certo para voltar.",
+      ],
+      [
+        "Revisão inteligente",
+        "Transforme erros reais em prática focada sem repetir a lista inteira.",
+      ],
+      [
+        "Plano para Pais",
+        "Até 5 filhos, listas e envios ilimitados, revisão inteligente e histórico de 365 dias.",
+      ],
+    ],
+    ctaTitle: "Pronto para não precisar mais fazer o ditado?",
+    ctaText:
+      "Abra o espaço de trabalho para criar uma atividade acompanhada ou conheça o Plano para Pais.",
+    workspace: "Abrir espaço de trabalho",
+    plan: "Ver Plano para Pais",
+    faq: [
+      [
+        "Meu filho pode começar sem uma conta?",
+        "Sim. A prática acima abre sem login. As atividades do espaço de trabalho também usam um link, sem conta ou senha infantil.",
+      ],
+      [
+        "O My Spelling Game fala as palavras?",
+        "Sim. O modo ditado usa a voz do navegador para a criança ouvir e digitar cada palavra sozinha.",
+      ],
+      [
+        "Como vejo os resultados ao longo do tempo?",
+        "Crie um perfil no espaço de trabalho e compartilhe uma atividade acompanhada. Os resultados ficam ligados ao progresso e domínio desse perfil.",
+      ],
+    ],
+  },
+  fr: {
+    title: "Exercices d’orthographe pour les parents | My Spelling Game",
+    description:
+      "Collez les mots de la semaine et lancez une dictée sans compte. Partagez des exercices et suivez résultats et progrès dans l’espace de travail.",
+    ogDescription:
+      "Transformez la liste de l’école en exercice autonome et suivez les progrès.",
+    h1: "Un exercice d’orthographe que votre enfant fait en autonomie",
+    eyebrow: "Pour les parents pressés",
+    intro:
+      "Vous n’avez pas à dicter chaque mot. Collez la liste de l’école et commencez maintenant, ou partagez-la depuis l’espace de travail pour suivre les résultats.",
+    launcherLabel: "Mots de cette semaine",
+    launcherButton: "Commencer",
+    launcherHelp: "Sans connexion · Jusqu’à 20 mots",
+    flowTitle: "De la liste de l’école aux vrais progrès",
+    flow: [
+      "Saisissez les mots de la semaine",
+      "Partagez le lien d’exercice",
+      "Votre enfant s’entraîne en autonomie",
+      "Consultez les résultats et les progrès dans le temps",
+    ],
+    featuresTitle: "Ce que l’espace parents ajoute",
+    featuresIntro:
+      "Commencez gratuitement, puis reliez chaque semaine au même enfant.",
+    features: [
+      [
+        "Profil élève",
+        "Chaque enfant a un profil et un lien simple, sans compte ni mot de passe enfant.",
+      ],
+      [
+        "Progression",
+        "Consultez les exercices terminés, les résultats, les erreurs et l’évolution entre les devoirs.",
+      ],
+      [
+        "Maîtrise",
+        "Distinguez les mots encore en cours d’apprentissage de ceux maîtrisés régulièrement.",
+      ],
+      [
+        "Révision du jour",
+        "Lancez une courte séance avec les erreurs qu’il est temps de revoir aujourd’hui.",
+      ],
+      [
+        "Révision intelligente",
+        "Transformez les vraies erreurs en exercice ciblé sans refaire toute la liste.",
+      ],
+      [
+        "Offre Parents",
+        "Jusqu’à 5 enfants, listes et remises illimitées, révision intelligente et historique sur 365 jours.",
+      ],
+    ],
+    ctaTitle: "Prêt à ne plus faire la dictée vous-même ?",
+    ctaText:
+      "Ouvrez l’espace de travail pour créer un devoir suivi ou découvrez l’Offre Parents.",
+    workspace: "Ouvrir l’espace de travail",
+    plan: "Voir l’Offre Parents",
+    faq: [
+      [
+        "Mon enfant peut-il commencer sans compte ?",
+        "Oui. L’exercice ci-dessus s’ouvre sans connexion. Les devoirs de l’espace de travail utilisent aussi un lien, sans compte ni mot de passe enfant.",
+      ],
+      [
+        "My Spelling Game prononce-t-il les mots ?",
+        "Oui. Le mode dictée utilise la voix du navigateur pour que l’enfant écoute et saisisse chaque mot seul.",
+      ],
+      [
+        "Comment suivre les résultats dans le temps ?",
+        "Créez un profil dans l’espace de travail et partagez un devoir suivi. Les résultats restent liés à la progression et à la maîtrise de ce profil.",
+      ],
+    ],
+  },
+  id: {
+    title: "Latihan ejaan untuk orang tua | My Spelling Game",
+    description:
+      "Tempel kata sekolah minggu ini dan mulai latihan dikte tanpa akun. Bagikan tugas serta pantau hasil dan perkembangan di ruang kerja.",
+    ogDescription:
+      "Ubah kata dari sekolah menjadi latihan mandiri dan pantau perkembangannya.",
+    h1: "Latihan ejaan yang bisa dilakukan anak secara mandiri",
+    eyebrow: "Untuk orang tua yang sibuk",
+    intro:
+      "Anda tidak perlu mendikte setiap kata. Tempel daftar dari sekolah dan mulai sekarang, atau bagikan melalui ruang kerja untuk memantau hasilnya.",
+    launcherLabel: "Kata minggu ini",
+    launcherButton: "Mulai latihan",
+    launcherHelp: "Tanpa login · Hingga 20 kata",
+    flowTitle: "Dari daftar sekolah ke perkembangan nyata",
+    flow: [
+      "Masukkan kata minggu ini",
+      "Bagikan link latihan",
+      "Anak berlatih sendiri",
+      "Lihat hasil dan perkembangan jangka panjang",
+    ],
+    featuresTitle: "Manfaat ruang kerja untuk orang tua",
+    featuresIntro:
+      "Mulai gratis, lalu hubungkan latihan setiap minggu ke anak yang sama.",
+    features: [
+      [
+        "Profil pelajar",
+        "Setiap anak memiliki profil dan link sederhana, tanpa akun atau kata sandi anak.",
+      ],
+      [
+        "Perkembangan",
+        "Lihat latihan selesai, hasil, kata yang salah, dan peningkatan antar-tugas.",
+      ],
+      [
+        "Penguasaan",
+        "Ketahui kata yang masih dipelajari dan kata yang sudah dikuasai secara konsisten.",
+      ],
+      [
+        "Ulasan hari ini",
+        "Buka sesi singkat berisi kata salah yang sudah waktunya dilatih lagi hari ini.",
+      ],
+      [
+        "Ulasan pintar",
+        "Ubah kesalahan nyata menjadi latihan terarah tanpa mengulang seluruh daftar.",
+      ],
+      [
+        "Paket Orang Tua",
+        "Hingga 5 anak, daftar dan kiriman tanpa batas, ulasan pintar, serta riwayat 365 hari.",
+      ],
+    ],
+    ctaTitle: "Siap berhenti mendikte sendiri?",
+    ctaText:
+      "Buka ruang kerja untuk membuat tugas terlacak atau lihat Paket Orang Tua.",
+    workspace: "Buka ruang kerja",
+    plan: "Lihat Paket Orang Tua",
+    faq: [
+      [
+        "Bisakah anak mulai tanpa akun?",
+        "Bisa. Latihan di atas langsung terbuka tanpa login. Tugas dari ruang kerja juga memakai link tanpa akun atau kata sandi anak.",
+      ],
+      [
+        "Apakah My Spelling Game membacakan kata?",
+        "Ya. Mode dikte memakai suara browser agar anak dapat mendengar dan mengetik setiap kata sendiri.",
+      ],
+      [
+        "Bagaimana cara melihat hasil dari waktu ke waktu?",
+        "Buat profil di ruang kerja dan bagikan tugas terlacak. Hasilnya tetap terhubung dengan perkembangan dan riwayat penguasaan profil itu.",
+      ],
+    ],
+  },
+  zh: {
+    title: "家长英语拼写练习 | My Spelling Game",
+    description:
+      "粘贴学校本周英语单词，无需登录即可开始听写练习；在工作台分享作业、查看结果并长期追踪学习进度。",
+    ogDescription: "把学校本周词表变成孩子可独立完成的英语拼写练习。",
+    h1: "孩子可以独立完成的英语拼写练习",
+    eyebrow: "为忙碌家长而做",
+    intro:
+      "家长不需要亲自逐个听写。粘贴学校本周词表即可开始；进入工作台后，还能分享练习链接并持续查看结果。",
+    launcherLabel: "学校本周英语单词",
+    launcherButton: "开始练习",
+    launcherHelp: "无需登录 · 最多 20 个单词",
+    flowTitle: "从学校词表到真实学习进度",
+    flow: [
+      "输入学校本周单词",
+      "分享练习链接",
+      "孩子独立练习",
+      "家长查看结果和长期进度",
+    ],
+    featuresTitle: "家长工作台能带来什么",
+    featuresIntro: "先免费开始，再把每周练习持续关联到同一个孩子。",
+    features: [
+      ["学习者档案", "每个孩子使用固定档案和简单链接，无需儿童账号或密码。"],
+      ["学习进度", "查看已完成练习、成绩、错词，以及不同作业之间的进步。"],
+      ["掌握度", "分清仍在学习的单词和已经能够稳定掌握的单词。"],
+      ["今日复习", "打开一轮短练习，复习今天正好应该再次出现的错词。"],
+      ["智能复习", "根据真实错误生成针对性练习，不必反复重练整份词表。"],
+      [
+        "家长方案",
+        "最多支持 5 个孩子，词表和提交不限量，包含智能复习及 365 天学习记录。",
+      ],
+    ],
+    ctaTitle: "准备好不再亲自做听写了吗？",
+    ctaText: "进入工作台创建并分享可追踪作业，或查看家长方案的完整权益。",
+    workspace: "进入工作台",
+    plan: "查看家长方案",
+    faq: [
+      [
+        "孩子无需账号也能开始吗？",
+        "可以。上方练习无需登录即可直接开始。工作台作业同样通过链接进入，不需要儿童账号和密码。",
+      ],
+      [
+        "My Spelling Game 会自动读出单词吗？",
+        "会。听写模式使用浏览器语音，让孩子自己听单词并输入答案。",
+      ],
+      [
+        "怎样查看长期练习结果？",
+        "在工作台创建学习者档案并分享可追踪作业，完成结果就会关联到该学习者的进度和掌握度记录。",
+      ],
+    ],
+  },
+};
+
 const customLauncher = {
   en: {
     label: "Words for Typing Rain",
@@ -2483,6 +2883,7 @@ function schemaScripts(lang, slug, page) {
     webpage.dateModified = {
       "homeschool-spelling-practice": "2026-08-23",
       "sight-word-typing-game": "2026-06-22",
+      "spelling-practice-for-parents": "2026-08-30",
       "vocabulary-typing-game": "2026-06-22",
     }[slug];
   }
@@ -2520,9 +2921,59 @@ function schemaScripts(lang, slug, page) {
     .join("\n");
 }
 
+function parentLandingMain(langCode, lang, copy) {
+  const workspaceUrl = `/teacher?lang=${encodeURIComponent(langCode)}`;
+  const pricingUrl = pagePath(lang, "pricing");
+  return `    <main class="seo-landing content-page parent-landing">
+        <section class="seo-hero parent-practice-hero">
+            <span class="parent-eyebrow">${copy.eyebrow}</span>
+            <h1>${copy.h1}</h1>
+            <p>${copy.intro}</p>
+            <form class="landing-launcher" action="${dirPath(lang)}" data-mode="dictation" data-invalid="${escapeAttr(customLauncher[langCode].invalid)}" data-limit="${escapeAttr(customLauncher[langCode].limit)}">
+                <label for="parent-words-${langCode}">${copy.launcherLabel}</label>
+                <textarea id="parent-words-${langCode}" name="words" required spellcheck="false" placeholder="because&#10;friend&#10;beautiful"></textarea>
+                <button type="submit">${copy.launcherButton}</button>
+                <small>${copy.launcherHelp}</small>
+            </form>
+        </section>
+
+        <section class="seo-panel parent-flow" aria-labelledby="parent-flow-${langCode}">
+            <h2 id="parent-flow-${langCode}">${copy.flowTitle}</h2>
+            <ol>
+${copy.flow.map((step) => `                <li>${step}</li>`).join("\n")}
+            </ol>
+        </section>
+
+        <section class="parent-value-section" aria-labelledby="parent-values-${langCode}">
+            <div class="parent-section-heading">
+                <h2 id="parent-values-${langCode}">${copy.featuresTitle}</h2>
+                <p>${copy.featuresIntro}</p>
+            </div>
+            <div class="parent-value-grid">
+${copy.features.map(([title, body]) => `                <article class="seo-panel parent-value-card"><h3>${title}</h3><p>${body}</p></article>`).join("\n")}
+            </div>
+        </section>
+
+        <section class="seo-panel parent-workspace-cta">
+            <h2>${copy.ctaTitle}</h2>
+            <p>${copy.ctaText}</p>
+            <div class="parent-cta-actions">
+                <a class="seo-cta" href="${workspaceUrl}">${copy.workspace}</a>
+                <a class="seo-cta parent-secondary-cta" href="${pricingUrl}">${copy.plan}</a>
+            </div>
+        </section>
+
+${faqHtml(langCode, copy.faq)}
+    </main>`;
+}
+
 function renderPage(langCode, slug) {
   const lang = languages.find((item) => item.code === langCode);
-  const page = pages[langCode][slug];
+  const parentCopy =
+    slug === "spelling-practice-for-parents"
+      ? parentLandingCopy[langCode]
+      : null;
+  const page = parentCopy || pages[langCode][slug];
   const launcher = customLauncher[langCode];
   return `<!DOCTYPE html>
 <html lang="${lang.htmlLang}">
@@ -2571,7 +3022,10 @@ ${alternateLinks(slug)}
 </head>
 <body>
 ${languageMenu(langCode, slug)}
-    <main class="seo-landing content-page">
+${
+  parentCopy
+    ? parentLandingMain(langCode, lang, parentCopy)
+    : `    <main class="seo-landing content-page">
         <section class="seo-hero">
             <h1>${localizeLegacyTerms(page.h1, langCode)}</h1>
             <p>${localizeLegacyTerms(page.intro, langCode)}</p>
@@ -2595,7 +3049,8 @@ ${page.panels.map((panel) => panelHtml(panel, langCode)).join("\n\n")}
 ${faqHtml(langCode, page.faq)}
 
 ${relatedHtml(langCode, slug)}
-    </main>
+    </main>`
+}
 ${footerHtml(langCode)}
 ${schemaScripts(lang, slug, page)}
     <script type="module" src="/src/js/landingLauncher.mjs"></script>
@@ -2726,7 +3181,9 @@ function normalizePublicUrls() {
     .filter((lang) => lang.dir)
     .map((lang) => `${lang.dir}/`)
     .join("|");
-  const slugs = [...seoSlugs, ...legalSlugs].join("|");
+  const slugs = [
+    ...new Set([...seoSlugs, ...newLongtailSlugs, ...legalSlugs]),
+  ].join("|");
   const htmlUrl = new RegExp(`/(?:${localizedDirs})?(?:${slugs})\\.html`, "g");
   const files = ["sitemap.xml"];
 

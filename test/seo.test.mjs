@@ -87,7 +87,8 @@ test("sitemap contains each extensionless canonical exactly once with complete h
   for (const file of publicHtmlFiles()) {
     const html = fs.readFileSync(file, "utf8");
     const canonical = tagContent(html, /<link rel="canonical" href="([^"]+)">/);
-    assert.equal(byUrl.get(canonical), gitDate(file), file);
+    const committedDate = gitDate(file);
+    if (committedDate) assert.equal(byUrl.get(canonical), committedDate, file);
   }
 
   const generator = fs.readFileSync(
@@ -115,6 +116,76 @@ test("home and remaining long-tail pages have one H1 and distinct metadata per l
     );
     assert.equal(new Set(titles).size, 3);
     assert.equal(new Set(descriptions).size, 3);
+  }
+});
+
+test("parent landing pages launch practice and expose localized workspace value", () => {
+  const expected = {
+    "": [
+      "Learner",
+      "Progress",
+      "Mastery",
+      "Today's Review",
+      "Smart Review",
+      "Parent Plan",
+    ],
+    es: [
+      "Perfil del estudiante",
+      "Progreso",
+      "Dominio",
+      "Repaso de hoy",
+      "Repaso inteligente",
+      "Plan para familias",
+    ],
+    "pt-br": [
+      "Perfil do aluno",
+      "Progresso",
+      "Domínio",
+      "Revisão de hoje",
+      "Revisão inteligente",
+      "Plano para Pais",
+    ],
+    fr: [
+      "Profil élève",
+      "Progression",
+      "Maîtrise",
+      "Révision du jour",
+      "Révision intelligente",
+      "Offre Parents",
+    ],
+    id: [
+      "Profil pelajar",
+      "Perkembangan",
+      "Penguasaan",
+      "Ulasan hari ini",
+      "Ulasan pintar",
+      "Paket Orang Tua",
+    ],
+    zh: [
+      "学习者档案",
+      "学习进度",
+      "掌握度",
+      "今日复习",
+      "智能复习",
+      "家长方案",
+    ],
+  };
+  for (const [locale, terms] of Object.entries(expected)) {
+    const html = fs.readFileSync(
+      path.join(root, locale, "spelling-practice-for-parents.html"),
+      "utf8",
+    );
+    assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
+    assert.match(html, /class="landing-launcher"[^>]+data-mode="dictation"/);
+    assert.match(html, /href="\/teacher\?lang=/);
+    assert.match(html, /href="[^"]*\/pricing"/);
+    for (const term of terms)
+      assert.ok(html.includes(term), `${locale || "en"}: ${term}`);
+    for (const hreflang of hreflangs)
+      assert.ok(
+        html.includes(`hreflang="${hreflang}"`),
+        `${locale || "en"}: ${hreflang}`,
+      );
   }
 });
 

@@ -270,6 +270,39 @@ describe("admin dashboard", () => {
     expect((await call("/api/admin/users?page=0")).status).toBe(400);
   });
 
+  it("filters users by effective plan and login provider", async () => {
+    const future = new Date(Date.now() + 86_400_000).toISOString();
+    await insertAccount(admin.id, "google");
+    await insertAccount(member.id, "microsoft");
+    await insertSubscription(
+      admin.id,
+      "active",
+      "month",
+      future,
+      "price_parent_monthly",
+    );
+    await bindings.DB.prepare(
+      "UPDATE user SET admin_plan = 'teacher' WHERE id = ?",
+    )
+      .bind(member.id)
+      .run();
+
+    const parent = (await (
+      await call("/api/admin/users?plan=parent")
+    ).json()) as { users: Array<{ id: string }> };
+    expect(parent.users.map((user) => user.id)).toEqual([admin.id]);
+    const teacher = (await (
+      await call("/api/admin/users?plan=teacher")
+    ).json()) as { users: Array<{ id: string }> };
+    expect(teacher.users.map((user) => user.id)).toEqual([member.id]);
+    const microsoft = (await (
+      await call("/api/admin/users?provider=microsoft")
+    ).json()) as { users: Array<{ id: string }> };
+    expect(microsoft.users.map((user) => user.id)).toEqual([member.id]);
+    expect((await call("/api/admin/users?plan=invalid")).status).toBe(400);
+    expect((await call("/api/admin/users?provider=invalid")).status).toBe(400);
+  });
+
   it("lets only the admin assign and clear a user's effective plan", async () => {
     expect(
       (
@@ -359,5 +392,10 @@ describe("admin dashboard", () => {
       await call("/api/admin/orders?q=member%40example.test")
     ).json()) as { orders: Array<{ id: string }> };
     expect(searched.orders.map((order) => order.id)).toEqual(["cs_canceled"]);
+    const canceled = (await (
+      await call("/api/admin/orders?status=canceled")
+    ).json()) as { orders: Array<{ id: string }> };
+    expect(canceled.orders.map((order) => order.id)).toEqual(["cs_canceled"]);
+    expect((await call("/api/admin/orders?status=invalid")).status).toBe(400);
   });
 });

@@ -2150,6 +2150,136 @@ body {
   border-radius: 6px;
 }
 
+.parent-landing {
+  width: min(100%, 1040px);
+}
+
+.parent-practice-hero {
+  padding: clamp(24px, 5vw, 52px);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 88% 8%, rgba(242, 193, 78, 0.2), transparent 30%),
+    rgba(255, 255, 255, 0.84);
+  box-shadow: 0 14px 34px rgba(39, 62, 70, 0.08);
+}
+
+.parent-eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--primary);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.parent-practice-hero .landing-launcher small {
+  color: var(--muted);
+  text-align: center;
+}
+
+.parent-flow ol {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: parent-flow;
+}
+
+.parent-flow li {
+  color: var(--ink);
+  font-weight: 750;
+  counter-increment: parent-flow;
+}
+
+.parent-flow li::before {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 9px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  content: counter(parent-flow);
+  font-size: 0.85rem;
+}
+
+.parent-section-heading {
+  margin: 32px 0 16px;
+}
+
+.parent-section-heading h2 {
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+
+.parent-section-heading p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.parent-value-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.content-page .parent-value-card {
+  margin: 0;
+}
+
+.parent-value-card h3 {
+  margin: 0 0 8px;
+  color: var(--primary);
+  font-size: 1.05rem;
+}
+
+.parent-workspace-cta {
+  margin-top: 18px;
+  text-align: center;
+}
+
+.parent-cta-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.parent-secondary-cta {
+  border: 1px solid var(--primary);
+  background: transparent;
+  color: var(--primary);
+}
+
+@media (max-width: 700px) {
+  .parent-flow ol,
+  .parent-value-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .parent-flow li {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .parent-flow li::before {
+    margin: 0;
+  }
+
+  .parent-cta-actions,
+  .parent-cta-actions .seo-cta {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 .faq-list {
   display: grid;
   gap: 10px;

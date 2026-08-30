@@ -336,33 +336,88 @@ async function adminUsers(env: Env, url: URL) {
   const page = Number(rawPage);
   const pageSize = 50;
   const query = (url.searchParams.get("q") ?? "").trim().slice(0, 200);
+  const plan = url.searchParams.get("plan") ?? "";
+  const provider = url.searchParams.get("provider") ?? "";
+  if (plan && !["free", "parent", "teacher"].includes(plan))
+    throw new HttpError(
+      400,
+      "invalid_plan_filter",
+      "请选择有效的方案筛选条件。",
+    );
+  if (provider && !["google", "microsoft"].includes(provider))
+    throw new HttpError(
+      400,
+      "invalid_provider_filter",
+      "请选择有效的登录方式筛选条件。",
+    );
   const search = `%${query.toLowerCase()}%`;
-  const where = query
-    ? "WHERE lower(u.email) LIKE ? OR lower(u.name) LIKE ? OR lower(u.id) LIKE ?"
-    : "";
+  const conditions: string[] = [];
+  const filters: unknown[] = [];
+  if (query) {
+    conditions.push(
+      "(lower(email) LIKE ? OR lower(name) LIKE ? OR lower(id) LIKE ?)",
+    );
+    filters.push(search, search, search);
+  }
+  if (plan) {
+    conditions.push("effective_plan = ?");
+    filters.push(plan);
+  }
+  if (provider) {
+    conditions.push(
+      "EXISTS (SELECT 1 FROM account a WHERE a.userId = admin_users.id AND a.providerId = ?)",
+    );
+    filters.push(provider);
+  }
+  const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+  const now = new Date().toISOString();
+  const userQuery = `WITH admin_users AS (
+    SELECT u.id, u.name, u.email, u.createdAt,
+           (SELECT GROUP_CONCAT(DISTINCT a.providerId)
+            FROM account a WHERE a.userId = u.id) AS loginProvider,
+           u.workspace_type, u.admin_plan, u.admin_plan_updated_at,
+           s.plan, s.status, s.billing_interval, s.current_period_end,
+           s.stripe_price_id,
+           CASE
+             WHEN u.admin_plan IN ('parent', 'teacher') THEN u.admin_plan
+             WHEN s.status IN ('active', 'trialing')
+              AND (s.current_period_end IS NULL OR s.current_period_end > ?)
+              AND s.stripe_price_id IN (?, ?, ?, ?, ?, ?)
+             THEN CASE
+               WHEN s.stripe_price_id IN (?, ?) THEN 'parent'
+               WHEN s.stripe_price_id IN (?, ?) THEN 'teacher'
+               WHEN s.plan IN ('parent', 'teacher') THEN s.plan
+               WHEN u.workspace_type = 'family' THEN 'parent'
+               ELSE 'teacher'
+             END
+             ELSE 'free'
+           END AS effective_plan
+    FROM user u LEFT JOIN subscriptions s ON s.user_id = u.id
+  )`;
+  const planBindings = [
+    now,
+    env.STRIPE_PARENT_PRICE_MONTHLY || "",
+    env.STRIPE_PARENT_PRICE_YEARLY || "",
+    env.STRIPE_TEACHER_PRICE_MONTHLY || "",
+    env.STRIPE_TEACHER_PRICE_YEARLY || "",
+    env.STRIPE_PRICE_MONTHLY || "",
+    env.STRIPE_PRICE_YEARLY || "",
+    env.STRIPE_PARENT_PRICE_MONTHLY || "",
+    env.STRIPE_PARENT_PRICE_YEARLY || "",
+    env.STRIPE_TEACHER_PRICE_MONTHLY || "",
+    env.STRIPE_TEACHER_PRICE_YEARLY || "",
+  ];
   const count = await env.DB.prepare(
-    `SELECT COUNT(*) AS count FROM user u ${where}`,
+    `${userQuery} SELECT COUNT(*) AS count FROM admin_users ${where}`,
   )
-    .bind(...(query ? [search, search, search] : []))
+    .bind(...planBindings, ...filters)
     .first<{ count: number }>();
   const rows = await env.DB.prepare(
-    `SELECT u.id, u.name, u.email, u.createdAt,
-            (SELECT GROUP_CONCAT(DISTINCT a.providerId)
-             FROM account a WHERE a.userId = u.id) AS loginProvider,
-            u.workspace_type, u.admin_plan, u.admin_plan_updated_at,
-            s.plan, s.status, s.billing_interval, s.current_period_end,
-            s.stripe_price_id
-     FROM user u
-     LEFT JOIN subscriptions s ON s.user_id = u.id
-     ${where}
-     ORDER BY u.createdAt DESC
-     LIMIT ? OFFSET ?`,
+    `${userQuery}
+     SELECT * FROM admin_users ${where}
+     ORDER BY createdAt DESC LIMIT ? OFFSET ?`,
   )
-    .bind(
-      ...(query ? [search, search, search] : []),
-      pageSize,
-      (page - 1) * pageSize,
-    )
+    .bind(...planBindings, ...filters, pageSize, (page - 1) * pageSize)
     .all<{
       id: string;
       name: string;
@@ -377,6 +432,7 @@ async function adminUsers(env: Env, url: URL) {
       billing_interval: "month" | "year" | null;
       current_period_end: string | null;
       stripe_price_id: string | null;
+      effective_plan: Plan;
     }>();
   return {
     users: rows.results.map((row) => ({
@@ -384,19 +440,7 @@ async function adminUsers(env: Env, url: URL) {
       name: row.name,
       email: row.email,
       loginProvider: row.loginProvider,
-      plan: resolvePlan(
-        row.plan,
-        row.workspace_type,
-        hasActiveSubscription(
-          {
-            status: row.status ?? "",
-            current_period_end: row.current_period_end,
-            stripe_price_id: row.stripe_price_id,
-          },
-          env,
-        ),
-        row.admin_plan,
-      ),
+      plan: row.effective_plan,
       adminPlan: row.admin_plan,
       adminPlanUpdatedAt: row.admin_plan_updated_at,
       subscriptionStatus: row.status,
@@ -421,11 +465,32 @@ async function adminOrders(env: Env, url: URL) {
   const page = Number(rawPage);
   const pageSize = 50;
   const query = (url.searchParams.get("q") ?? "").trim().slice(0, 200);
+  const status = url.searchParams.get("status") ?? "";
+  if (
+    status &&
+    !["pending", "completed", "paid", "failed", "canceled", "expired"].includes(
+      status,
+    )
+  )
+    throw new HttpError(
+      400,
+      "invalid_order_status_filter",
+      "请选择有效的订单状态筛选条件。",
+    );
   const search = `%${query.toLowerCase()}%`;
-  const where = query
-    ? "WHERE lower(u.email) LIKE ? OR lower(u.name) LIKE ? OR lower(o.id) LIKE ?"
-    : "";
-  const bindings = query ? [search, search, search] : [];
+  const conditions: string[] = [];
+  const bindings: unknown[] = [];
+  if (query) {
+    conditions.push(
+      "(lower(u.email) LIKE ? OR lower(u.name) LIKE ? OR lower(o.id) LIKE ?)",
+    );
+    bindings.push(search, search, search);
+  }
+  if (status) {
+    conditions.push("o.status = ?");
+    bindings.push(status);
+  }
+  const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
   const count = await env.DB.prepare(
     `SELECT COUNT(*) AS count FROM payment_orders o JOIN user u ON u.id = o.user_id ${where}`,
   )

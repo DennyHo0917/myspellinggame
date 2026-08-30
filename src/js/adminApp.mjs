@@ -1,24 +1,37 @@
-const statusCard = document.getElementById("admin-status");
-const loginCard = document.getElementById("admin-login");
-const deniedCard = document.getElementById("admin-denied");
-const dashboard = document.getElementById("admin-dashboard");
-const signOut = document.getElementById("sign-out");
-const usersBody = document.getElementById("admin-users");
-const usersStatus = document.getElementById("admin-users-status");
-const pageLabel = document.getElementById("admin-page");
-const previous = document.getElementById("admin-previous");
-const next = document.getElementById("admin-next");
-const queryInput = document.getElementById("admin-query");
-const ordersBody = document.getElementById("admin-orders");
-const ordersStatus = document.getElementById("admin-orders-status");
-const ordersPageLabel = document.getElementById("admin-orders-page");
-const ordersPrevious = document.getElementById("admin-orders-previous");
-const ordersNext = document.getElementById("admin-orders-next");
-const orderQueryInput = document.getElementById("admin-order-query");
+const $ = (id) => document.getElementById(id);
+const statusCard = $("admin-status");
+const loginCard = $("admin-login");
+const deniedCard = $("admin-denied");
+const dashboard = $("admin-dashboard");
+const signOut = $("sign-out");
+const usersBody = $("admin-users");
+const usersStatus = $("admin-users-status");
+const pageLabel = $("admin-page");
+const previous = $("admin-previous");
+const next = $("admin-next");
+const queryInput = $("admin-query");
+const planFilter = $("admin-plan-filter");
+const providerFilter = $("admin-provider-filter");
+const ordersBody = $("admin-orders");
+const ordersStatus = $("admin-orders-status");
+const ordersPageLabel = $("admin-orders-page");
+const ordersPrevious = $("admin-orders-previous");
+const ordersNext = $("admin-orders-next");
+const orderQueryInput = $("admin-order-query");
+const orderStatusFilter = $("admin-order-status-filter");
+const drawer = $("admin-user-drawer");
+const drawerStatus = $("admin-drawer-status");
+const drawerPlan = $("admin-drawer-plan");
+const relatedOrders = $("admin-user-orders");
 let page = 1;
 let query = "";
+let plan = "";
+let provider = "";
 let ordersPage = 1;
 let orderQuery = "";
+let orderStatus = "";
+let ordersLoaded = false;
+let selectedUser = null;
 
 async function api(path, options = {}) {
   const response = await fetch(path, {
@@ -40,6 +53,9 @@ async function api(path, options = {}) {
         body_too_large: "请求内容过大。",
         invalid_page: "页码必须是正整数。",
         invalid_admin_plan: "请选择有效的方案。",
+        invalid_plan_filter: "请选择有效的方案筛选条件。",
+        invalid_provider_filter: "请选择有效的登录方式筛选条件。",
+        invalid_order_status_filter: "请选择有效的订单状态筛选条件。",
         user_not_found: "未找到该用户。",
         method_not_allowed: "不支持此请求方式。",
         admin_not_found: "未找到该管理接口。",
@@ -54,11 +70,19 @@ async function api(path, options = {}) {
 function show(element) {
   for (const item of [statusCard, loginCard, deniedCard, dashboard])
     item.hidden = item !== element;
+  if (element !== dashboard && drawer.open) drawer.close();
 }
 
 function formatDate(value) {
   return value
-    ? new Date(value).toLocaleString("zh-CN", { hour12: false })
+    ? new Date(value).toLocaleString("zh-CN", {
+        hour12: false,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
     : "-";
 }
 
@@ -67,9 +91,8 @@ function formatProvider(value) {
     ? value
         .split(",")
         .map(
-          (provider) =>
-            ({ google: "Google", microsoft: "Microsoft" })[provider] ||
-            provider,
+          (item) =>
+            ({ google: "Google", microsoft: "Microsoft" })[item] || item,
         )
         .join("、")
     : "-";
@@ -82,6 +105,7 @@ function formatSubscriptionStatus(value) {
       trialing: "生效",
       canceled: "已取消",
       incomplete: "未完成",
+      pending: "待处理",
       past_due: "已逾期",
       unpaid: "未付款",
     }[value] ||
@@ -110,7 +134,7 @@ function formatOrderStatus(value) {
   return (
     {
       pending: "待完成",
-      completed: "已完成，待确认支付",
+      completed: "待确认支付",
       paid: "支付成功",
       failed: "支付失败",
       canceled: "已取消",
@@ -133,93 +157,79 @@ function formatAmount(amount, currency) {
   }
 }
 
+function textCell(value, className = "") {
+  const cell = document.createElement("td");
+  cell.className = className;
+  cell.textContent = value;
+  return cell;
+}
+
+function badgeCell(value, kind) {
+  const cell = document.createElement("td");
+  const badge = document.createElement("span");
+  badge.className = `admin-badge admin-badge-${kind}`;
+  badge.textContent = value;
+  cell.append(badge);
+  return cell;
+}
+
 function renderStats(stats) {
   const labels = [
-    ["注册用户总数", stats.totalUsers],
-    ["Google 用户", stats.googleUsers],
-    ["Microsoft 用户", stats.microsoftUsers],
-    ["当前付费用户", stats.proUsers],
-    ["正式付费", stats.activePaidUsers],
-    ["月付用户", stats.monthlyUsers],
-    ["年付用户", stats.yearlyUsers],
+    ["总用户", stats.totalUsers],
+    ["付费用户", stats.proUsers],
     ["今日新增", stats.todayUsers],
     ["近 7 日新增", stats.last7DaysUsers],
   ];
-  const grid = document.getElementById("admin-stats");
-  grid.replaceChildren(
+  $("admin-stats").replaceChildren(
     ...labels.map(([label, value]) => {
       const card = document.createElement("div");
       card.className = "stat-card";
       const number = document.createElement("strong");
       number.className = "stat-value";
       number.textContent = value;
-      card.append(number, label);
+      const name = document.createElement("span");
+      name.textContent = label;
+      card.append(name, number);
       return card;
     }),
   );
+  $("admin-secondary-stats").textContent =
+    `登录方式：Google ${stats.googleUsers} · Microsoft ${stats.microsoftUsers}` +
+    ` · 计费周期：月付 ${stats.monthlyUsers} · 年付 ${stats.yearlyUsers}`;
 }
 
 async function loadUsers() {
   usersStatus.textContent = "正在加载用户……";
-  const params = new URLSearchParams({ page: String(page), q: query });
+  const params = new URLSearchParams({
+    page: String(page),
+    q: query,
+    plan,
+    provider,
+  });
   const data = await api(`/api/admin/users?${params}`);
   usersBody.replaceChildren(
     ...data.users.map((user) => {
       const row = document.createElement("tr");
-      for (const value of [
-        user.name,
-        user.email,
-        formatProvider(user.loginProvider),
-        `${formatPlan(user.plan)}${user.adminPlan ? "（管理员指定）" : ""}`,
-        formatSubscriptionStatus(user.subscriptionStatus),
-        formatBillingInterval(user.billingInterval),
-        formatDate(user.currentPeriodEnd),
-        formatDate(user.createdAt),
-      ]) {
-        const cell = document.createElement("td");
-        cell.textContent = value;
-        row.append(cell);
-      }
-      const actionCell = document.createElement("td");
-      const controls = document.createElement("div");
-      controls.className = "admin-plan-controls";
-      const select = document.createElement("select");
-      select.setAttribute("aria-label", `调整 ${user.email} 的方案`);
-      for (const [value, label] of [
-        ["", "按订阅自动判断"],
-        ["parent", "家长方案"],
-        ["teacher", "教师方案"],
-      ]) {
-        const option = document.createElement("option");
-        option.value = value;
-        option.textContent = label;
-        option.selected = (user.adminPlan || "") === value;
-        select.append(option);
-      }
-      const save = document.createElement("button");
-      save.type = "button";
-      save.className = "button-secondary";
-      save.textContent = "保存";
-      save.addEventListener("click", async () => {
-        select.disabled = true;
-        save.disabled = true;
-        usersStatus.textContent = "正在保存方案……";
-        try {
-          await api(`/api/admin/users/${encodeURIComponent(user.id)}/plan`, {
-            method: "PUT",
-            body: JSON.stringify({ plan: select.value || null }),
-          });
-          usersStatus.textContent = "方案已更新。";
-          await loadUsers();
-        } catch (error) {
-          usersStatus.textContent = error.message;
-          select.disabled = false;
-          save.disabled = false;
-        }
+      row.className = "admin-clickable-row";
+      row.append(
+        textCell(user.name),
+        textCell(user.email),
+        textCell(formatProvider(user.loginProvider)),
+        badgeCell(formatPlan(user.plan), user.plan),
+        textCell(formatDate(user.createdAt)),
+      );
+      const action = document.createElement("td");
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "button-secondary admin-detail-button";
+      button.textContent = "查看详情";
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        void openUserDrawer(user);
       });
-      controls.append(select, save);
-      actionCell.append(controls);
-      row.append(actionCell);
+      action.append(button);
+      row.append(action);
+      row.addEventListener("click", () => void openUserDrawer(user));
       return row;
     }),
   );
@@ -230,31 +240,37 @@ async function loadUsers() {
   usersStatus.textContent = data.users.length ? "" : "没有找到用户。";
 }
 
+function renderOrderUser(order) {
+  const cell = document.createElement("td");
+  const name = document.createElement("strong");
+  name.textContent = order.name;
+  const email = document.createElement("small");
+  email.textContent = order.email;
+  cell.append(name, email);
+  return cell;
+}
+
 async function loadOrders() {
-  ordersStatus.textContent = "正在加载充值订单……";
+  ordersStatus.textContent = "正在加载订单……";
   const params = new URLSearchParams({
     page: String(ordersPage),
     q: orderQuery,
+    status: orderStatus,
   });
   const data = await api(`/api/admin/orders?${params}`);
+  ordersLoaded = true;
   ordersBody.replaceChildren(
     ...data.orders.map((order) => {
       const row = document.createElement("tr");
-      for (const value of [
-        formatDate(order.createdAt),
-        order.name,
-        order.email,
-        formatPlan(order.plan),
-        formatBillingInterval(order.billingInterval),
-        formatAmount(order.amountTotal, order.currency),
-        formatOrderStatus(order.status),
-        order.id,
-        formatDate(order.updatedAt),
-      ]) {
-        const cell = document.createElement("td");
-        cell.textContent = value;
-        row.append(cell);
-      }
+      row.append(
+        textCell(formatDate(order.createdAt)),
+        renderOrderUser(order),
+        badgeCell(formatPlan(order.plan), order.plan),
+        textCell(formatBillingInterval(order.billingInterval)),
+        textCell(formatAmount(order.amountTotal, order.currency)),
+        badgeCell(formatOrderStatus(order.status), order.status),
+        textCell(order.id, "admin-order-id"),
+      );
       return row;
     }),
   );
@@ -262,7 +278,73 @@ async function loadOrders() {
   ordersPageLabel.textContent = `第 ${data.page} / ${pages} 页 · 共 ${data.total} 笔订单`;
   ordersPrevious.disabled = data.page <= 1;
   ordersNext.disabled = data.page >= pages;
-  ordersStatus.textContent = data.orders.length ? "" : "没有找到充值订单。";
+  ordersStatus.textContent = data.orders.length ? "" : "没有找到订单。";
+}
+
+function detailPair(label, value) {
+  const term = document.createElement("dt");
+  term.textContent = label;
+  const description = document.createElement("dd");
+  description.textContent = value;
+  return [term, description];
+}
+
+function renderUserDetails(user) {
+  $("admin-drawer-title").textContent = user.name || "未命名用户";
+  $("admin-user-details").replaceChildren(
+    ...[
+      ["用户 ID", user.id],
+      ["姓名", user.name],
+      ["邮箱", user.email],
+      ["登录方式", formatProvider(user.loginProvider)],
+      ["当前方案", formatPlan(user.plan)],
+      ["订阅状态", formatSubscriptionStatus(user.subscriptionStatus)],
+      ["计费周期", formatBillingInterval(user.billingInterval)],
+      ["周期结束时间", formatDate(user.currentPeriodEnd)],
+      [
+        "管理员指定",
+        user.adminPlan ? formatPlan(user.adminPlan) : "按订阅自动判断",
+      ],
+      ["注册时间", formatDate(user.createdAt)],
+    ].flatMap(([label, value]) => detailPair(label, value)),
+  );
+  drawerPlan.value = user.adminPlan || "";
+}
+
+function renderRelatedOrders(orders) {
+  if (!orders.length) {
+    relatedOrders.textContent = "该用户暂无订单记录。";
+    return;
+  }
+  relatedOrders.replaceChildren(
+    ...orders.slice(0, 5).map((order) => {
+      const item = document.createElement("div");
+      item.className = "admin-related-order";
+      const title = document.createElement("strong");
+      title.textContent = `${formatPlan(order.plan)} · ${formatBillingInterval(order.billingInterval)}`;
+      const meta = document.createElement("span");
+      meta.textContent = `${formatDate(order.createdAt)} · ${formatOrderStatus(order.status)} · ${formatAmount(order.amountTotal, order.currency)}`;
+      const id = document.createElement("small");
+      id.textContent = order.id;
+      item.append(title, meta, id);
+      return item;
+    }),
+  );
+}
+
+async function openUserDrawer(user) {
+  selectedUser = user;
+  drawerStatus.textContent = "";
+  relatedOrders.textContent = "正在加载订单……";
+  renderUserDetails(user);
+  if (!drawer.open) drawer.showModal();
+  try {
+    const params = new URLSearchParams({ page: "1", q: user.email });
+    const data = await api(`/api/admin/orders?${params}`);
+    if (selectedUser?.id === user.id) renderRelatedOrders(data.orders);
+  } catch (error) {
+    if (selectedUser?.id === user.id) relatedOrders.textContent = error.message;
+  }
 }
 
 async function loadDashboard() {
@@ -270,19 +352,32 @@ async function loadDashboard() {
   show(dashboard);
   signOut.hidden = false;
   renderStats(stats);
-  await Promise.all([loadUsers(), loadOrders()]);
+  await loadUsers();
 }
 
-document
-  .getElementById("admin-search")
-  .addEventListener("submit", async (event) => {
-    event.preventDefault();
-    query = queryInput.value.trim();
-    page = 1;
-    await loadUsers().catch(
-      (error) => (usersStatus.textContent = error.message),
+function selectTab(name) {
+  const usersSelected = name === "users";
+  $("admin-users-tab").setAttribute("aria-selected", String(usersSelected));
+  $("admin-orders-tab").setAttribute("aria-selected", String(!usersSelected));
+  $("admin-users-panel").hidden = !usersSelected;
+  $("admin-orders-panel").hidden = usersSelected;
+  if (!usersSelected && !ordersLoaded)
+    void loadOrders().catch(
+      (error) => (ordersStatus.textContent = error.message),
     );
-  });
+}
+
+$("admin-users-tab").addEventListener("click", () => selectTab("users"));
+$("admin-orders-tab").addEventListener("click", () => selectTab("orders"));
+
+$("admin-search").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  query = queryInput.value.trim();
+  plan = planFilter.value;
+  provider = providerFilter.value;
+  page = 1;
+  await loadUsers().catch((error) => (usersStatus.textContent = error.message));
+});
 
 previous.addEventListener("click", async () => {
   page -= 1;
@@ -294,16 +389,15 @@ next.addEventListener("click", async () => {
   await loadUsers().catch((error) => (usersStatus.textContent = error.message));
 });
 
-document
-  .getElementById("admin-order-search")
-  .addEventListener("submit", async (event) => {
-    event.preventDefault();
-    orderQuery = orderQueryInput.value.trim();
-    ordersPage = 1;
-    await loadOrders().catch(
-      (error) => (ordersStatus.textContent = error.message),
-    );
-  });
+$("admin-order-search").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  orderQuery = orderQueryInput.value.trim();
+  orderStatus = orderStatusFilter.value;
+  ordersPage = 1;
+  await loadOrders().catch(
+    (error) => (ordersStatus.textContent = error.message),
+  );
+});
 
 ordersPrevious.addEventListener("click", async () => {
   ordersPage -= 1;
@@ -319,27 +413,64 @@ ordersNext.addEventListener("click", async () => {
   );
 });
 
-document.getElementById("admin-refresh").addEventListener("click", async () => {
-  await loadDashboard().catch((error) => {
+$("admin-drawer-close").addEventListener("click", () => drawer.close());
+drawer.addEventListener("click", (event) => {
+  if (event.target === drawer) drawer.close();
+});
+
+$("admin-drawer-plan-save").addEventListener("click", async () => {
+  if (!selectedUser) return;
+  const save = $("admin-drawer-plan-save");
+  drawerPlan.disabled = true;
+  save.disabled = true;
+  drawerStatus.textContent = "正在保存方案……";
+  try {
+    await api(`/api/admin/users/${encodeURIComponent(selectedUser.id)}/plan`, {
+      method: "PUT",
+      body: JSON.stringify({ plan: drawerPlan.value || null }),
+    });
+    const data = await api(
+      `/api/admin/users?${new URLSearchParams({ q: selectedUser.email })}`,
+    );
+    selectedUser = data.users.find((user) => user.id === selectedUser.id);
+    if (selectedUser) renderUserDetails(selectedUser);
+    drawerStatus.textContent = "方案已更新。";
+    await loadUsers();
+  } catch (error) {
+    drawerStatus.textContent = error.message;
+  } finally {
+    drawerPlan.disabled = false;
+    save.disabled = false;
+  }
+});
+
+$("admin-refresh").addEventListener("click", async () => {
+  try {
+    renderStats(await api("/api/admin/stats"));
+    if ($("admin-users-tab").getAttribute("aria-selected") === "true")
+      await loadUsers();
+    else await loadOrders();
+  } catch (error) {
     usersStatus.textContent = error.message;
     ordersStatus.textContent = error.message;
-  });
+  }
 });
 
 for (const button of document.querySelectorAll("[data-auth-provider]")) {
   button.addEventListener("click", async () => {
-    const provider = button.dataset.authProvider;
-    const providerName = provider === "microsoft" ? "Microsoft" : "Google";
-    const status = document.getElementById("admin-login-status");
+    const providerName =
+      button.dataset.authProvider === "microsoft" ? "Microsoft" : "Google";
+    const status = $("admin-login-status");
     button.disabled = true;
     status.textContent = `正在打开 ${providerName} 登录……`;
     try {
       const config = await api("/api/config");
-      if (!config[`${provider}AuthConfigured`])
+      const providerId = button.dataset.authProvider;
+      if (!config[`${providerId}AuthConfigured`])
         throw new Error(`${providerName} 登录尚未配置。`);
       const result = await api("/api/auth/sign-in/social", {
         method: "POST",
-        body: JSON.stringify({ provider, callbackURL: "/admin" }),
+        body: JSON.stringify({ provider: providerId, callbackURL: "/admin" }),
       });
       if (!result.url) throw new Error(`${providerName} 登录暂不可用。`);
       location.href = result.url;

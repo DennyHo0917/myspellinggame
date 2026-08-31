@@ -9,7 +9,7 @@ import {
   typingCompletionStats,
 } from './spellingCore.mjs';
 import { speakWord as speak } from './speech.js';
-import { entryPage, pageLocale, setAssignmentEntryPoint, trackEvent } from './analytics.mjs';
+import { entryPage, pageLocale, setAssignmentEntryPoint, trackEvent, trackLockedFeature } from './analytics.mjs';
 import { buildShareHash, readShareState } from './shareState.mjs';
 import { productMessage, productPagePath } from './productLocale.mjs';
 
@@ -23,6 +23,7 @@ let shareOptionsViewTracked = false;
 let accountPromise;
 let accountState;
 let tesseractPromise;
+let wordLimitHitTracked = false;
 
 export { parseWords };
 
@@ -153,12 +154,18 @@ function initPhotoImport() {
   button.addEventListener('click', () => {
     if (accountState !== undefined) {
       if (isPlusAccount(accountState)) input.click();
-      else photoImportNotice(accountState);
+      else {
+        trackLockedFeature('photo_import', accountState?.plan || 'anonymous');
+        photoImportNotice(accountState);
+      }
       return;
     }
     void getAccount().then((account) => {
       if (isPlusAccount(account)) input.click();
-      else photoImportNotice(account);
+      else {
+        trackLockedFeature('photo_import', account?.plan || 'anonymous');
+        photoImportNotice(account);
+      }
     });
   });
   input.addEventListener('change', () => {
@@ -166,7 +173,10 @@ function initPhotoImport() {
     input.value = '';
     if (file) void getAccount().then((account) => {
       if (isPlusAccount(account)) void importWordsFromPhoto(file);
-      else photoImportNotice(account);
+      else {
+        trackLockedFeature('photo_import', account?.plan || 'anonymous');
+        photoImportNotice(account);
+      }
     });
   });
 }
@@ -194,6 +204,7 @@ async function autoFillExampleSentences() {
   try {
     const account = await getAccount();
     if (!isPlusAccount(account)) {
+      trackLockedFeature('example_sentences', account?.plan || 'anonymous');
       sentenceLibraryNotice();
       return;
     }
@@ -211,6 +222,8 @@ async function autoFillExampleSentences() {
       .map((word, index) => existing[index]?.trim() || data.matches?.[word.toLowerCase()] || '')
       .join('\n');
   } catch (error) {
+    if (error.message === 'sentence_library_required')
+      trackLockedFeature('example_sentences', accountState?.plan || 'free');
     sentenceLibraryNotice(
       error.message === 'sentence_library_required'
         ? productMessage('sentenceLibraryRequired', {}, getPageLocale())
@@ -306,12 +319,16 @@ export async function canStartPractice({ anonymousOnly = false } = {}) {
   } else {
     showLimitCta('freeWordLimit', `${productPagePath('pricing', pageLocale())}#pricing`, 'upgradePlus');
   }
-  track('word_limit_hit', {
-    limit,
-    account_tier: isPlusAccount(account) ? 'plus' : account ? 'free' : 'anonymous',
-    word_count_range: words.length > 80 ? '81+' : `${limit + 1}-80`,
-    action: anonymous ? 'practice_link' : selectedMode() === 'typing' ? 'typing_rain' : 'spelling_test',
-  });
+  if (!wordLimitHitTracked) {
+    wordLimitHitTracked = true;
+    track('word_limit_hit', {
+      limit,
+      account_tier: isPlusAccount(account) ? 'plus' : account ? 'free' : 'anonymous',
+      word_count_range: words.length > 80 ? '81+' : `${limit + 1}-80`,
+      action: anonymous ? 'practice_link' : selectedMode() === 'typing' ? 'typing_rain' : 'spelling_test',
+    });
+    trackLockedFeature('word_limit', account?.plan || 'anonymous');
+  }
   return false;
 }
 

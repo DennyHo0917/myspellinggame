@@ -61,6 +61,16 @@ const conversionEvents = (page) =>
       .filter((name) => ["subscription_started", "purchase"].includes(name)),
   );
 
+const analyticsEvents = (page, name) =>
+  page.evaluate(
+    (eventName) =>
+      (window.dataLayer || [])
+        .map((entry) => Array.from(entry))
+        .filter((entry) => entry[0] === "event" && entry[1] === eventName)
+        .map((entry) => entry[2]),
+    name,
+  );
+
 test("ordinary teacher routes do not override the stored locale", async ({
   page,
 }) => {
@@ -150,7 +160,12 @@ test("Parent Checkout success waits for Parent activation and records the Parent
             (entry) => entry[0] === "event" && entry[1] === "purchase",
           )?.[2],
     ),
-  ).toEqual({ billing_interval: "month", value: 4.99, currency: "USD" });
+  ).toEqual({
+    plan: "parent",
+    billing_interval: "month",
+    value: 4.99,
+    currency: "USD",
+  });
 });
 
 test("Teacher Checkout success waits for Teacher activation and records the Teacher price", async ({
@@ -184,7 +199,12 @@ test("Teacher Checkout success waits for Teacher activation and records the Teac
             (entry) => entry[0] === "event" && entry[1] === "purchase",
           )?.[2],
     ),
-  ).toEqual({ billing_interval: "month", value: 9.99, currency: "USD" });
+  ).toEqual({
+    plan: "teacher",
+    billing_interval: "month",
+    value: 9.99,
+    currency: "USD",
+  });
 });
 
 test("Checkout success handles an account that is already Teacher", async ({
@@ -393,15 +413,27 @@ test("the teacher sends its locale when opening Billing Portal", async ({
 });
 
 test("a cancelled Checkout clears its pending locale", async ({ page }) => {
-  await page.addInitScript(() =>
-    sessionStorage.setItem("pendingCheckoutLocale", "zh"),
-  );
+  await page.addInitScript(() => {
+    sessionStorage.setItem("pendingCheckoutLocale", "zh");
+    sessionStorage.setItem("pendingCheckoutPlan", "parent");
+    sessionStorage.setItem("pendingCheckoutInterval", "year");
+  });
 
   await page.goto("/zh/pricing?checkout=cancelled");
 
   expect(
     await page.evaluate(() => sessionStorage.getItem("pendingCheckoutLocale")),
   ).toBeNull();
+  expect(
+    await page.evaluate(() =>
+      window.dataLayer
+        .map((entry) => Array.from(entry))
+        .filter(
+          (entry) => entry[0] === "event" && entry[1] === "checkout_cancelled",
+        )
+        .map((entry) => entry[2]),
+    ),
+  ).toEqual([{ plan: "parent", billing_interval: "year" }]);
 });
 
 test("Checkout activation recovers from a temporary network error", async ({
@@ -512,6 +544,53 @@ test("Microsoft sign-in submits the Microsoft provider", async ({ page }) => {
     provider: "microsoft",
     callbackURL: "/teacher?lang=en",
   });
+});
+
+test("successful social auth records signup dimensions once", async ({
+  page,
+}) => {
+  let signedIn = false;
+  await page.route("**/api/config", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ googleAuthConfigured: true }),
+    }),
+  );
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      status: signedIn ? 200 : 401,
+      contentType: "application/json",
+      body: JSON.stringify(
+        signedIn
+          ? {
+              user: { id: "teacher-a", name: "Teacher A" },
+              plan: "free",
+              workspaceType: "teacher",
+            }
+          : { error: "sign_in_required" },
+      ),
+    }),
+  );
+  await page.route("**/api/auth/sign-in/social", async (route) => {
+    signedIn = true;
+    const body = route.request().postDataJSON();
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ url: body.newUserCallbackURL }),
+    });
+  });
+  await page.goto("/teacher?lang=en");
+  await Promise.all([
+    page.waitForURL(/\/teacher\?lang=en$/, { waitUntil: "domcontentloaded" }),
+    page.getByRole("button", { name: "Continue with Google" }).click(),
+  ]);
+  await page.waitForTimeout(500);
+  expect(await analyticsEvents(page, "sign_up")).toEqual([
+    { provider: "google", workspace_type: "teacher" },
+  ]);
+  await expect(page).toHaveURL("/teacher?lang=en");
+  await page.reload({ waitUntil: "domcontentloaded" });
+  expect(await analyticsEvents(page, "sign_up")).toEqual([]);
 });
 
 test("standalone Free CTA opens the matching teacher sign-in area", async ({

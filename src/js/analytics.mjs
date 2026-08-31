@@ -54,13 +54,20 @@ const EVENT_PARAMS = {
   ],
   assignment_abandoned: ["mode", "word_count"],
   upgrade_viewed: [],
-  upgrade_clicked: ["billing_interval"],
+  upgrade_clicked: ["plan", "billing_interval"],
   upgrade_cta_clicked: ["cta_location"],
   usage_limit_reached: ["limit_type"],
-  checkout_started: ["billing_interval"],
-  checkout_redirected: ["billing_interval"],
-  subscription_started: ["billing_interval"],
-  purchase: ["billing_interval", "value", "currency"],
+  checkout_started: ["plan", "billing_interval"],
+  checkout_redirected: ["plan", "billing_interval"],
+  subscription_started: ["plan", "billing_interval"],
+  purchase: ["plan", "billing_interval", "value", "currency"],
+  word_limit_hit: ["limit", "account_tier", "word_count_range", "action"],
+  sign_up: ["provider", "workspace_type"],
+  learner_created: [],
+  saved_list_created: [],
+  locked_feature_attempted: ["feature", "current_plan"],
+  checkout_cancelled: ["plan", "billing_interval"],
+  checkout_failed: ["plan", "billing_interval", "error_code"],
 };
 
 const LIMIT_TYPES = {
@@ -71,6 +78,17 @@ const LIMIT_TYPES = {
   learner_limit: "learner_profiles",
 };
 const reportedLimits = new Set();
+const reportedLockedFeatures = new Set();
+const reportedCheckoutCancellations = new Set();
+const LOCKED_FEATURE_ERRORS = {
+  active_assignment_limit: "active_assignments",
+  monthly_submission_limit: "monthly_submissions",
+  word_limit: "word_limit",
+  saved_list_limit: "saved_list_limit",
+  learner_limit: "learner_limit",
+  smart_review_required: "smart_review",
+  sentence_library_required: "example_sentences",
+};
 
 export function cleanPageLocation(locationLike) {
   const location =
@@ -138,6 +156,30 @@ export function trackUsageLimit(errorCode) {
   if (!limitType || reportedLimits.has(limitType)) return;
   reportedLimits.add(limitType);
   trackEvent("usage_limit_reached", { limit_type: limitType });
+}
+
+export function trackLockedFeature(feature, currentPlan = "free") {
+  if (!feature || reportedLockedFeatures.has(feature)) return;
+  reportedLockedFeatures.add(feature);
+  trackEvent("locked_feature_attempted", {
+    feature,
+    current_plan: currentPlan || "free",
+  });
+}
+
+export function trackLockedFeatureError(errorCode, currentPlan = "free") {
+  const feature = LOCKED_FEATURE_ERRORS[errorCode];
+  if (feature) trackLockedFeature(feature, currentPlan);
+}
+
+export function trackCheckoutCancelled(plan, billingInterval) {
+  const key = `${plan || "unknown"}:${billingInterval || "unknown"}`;
+  if (reportedCheckoutCancellations.has(key)) return;
+  reportedCheckoutCancellations.add(key);
+  trackEvent("checkout_cancelled", {
+    plan: plan || "unknown",
+    billing_interval: billingInterval || "unknown",
+  });
 }
 
 function visitRange(count) {

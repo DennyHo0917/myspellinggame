@@ -1,4 +1,4 @@
-import { trackEvent } from "./analytics.mjs";
+import { trackCheckoutCancelled, trackEvent } from "./analytics.mjs";
 import {
   normalizeProductLocale,
   PENDING_CHECKOUT_LOCALE_KEY,
@@ -23,6 +23,17 @@ try {
   checkoutCanceled =
     new URLSearchParams(location.search).get("checkout") === "cancelled";
   if (checkoutCanceled) {
+    const canceledCheckoutPlan = ["parent", "teacher"].includes(
+      sessionStorage.getItem("pendingCheckoutPlan"),
+    )
+      ? sessionStorage.getItem("pendingCheckoutPlan")
+      : "unknown";
+    const canceledCheckoutInterval = ["month", "year"].includes(
+      sessionStorage.getItem("pendingCheckoutInterval"),
+    )
+      ? sessionStorage.getItem("pendingCheckoutInterval")
+      : "unknown";
+    trackCheckoutCancelled(canceledCheckoutPlan, canceledCheckoutInterval);
     sessionStorage.removeItem("pendingCheckoutInterval");
     sessionStorage.removeItem("pendingCheckoutPlan");
     sessionStorage.removeItem(PENDING_CHECKOUT_LOCALE_KEY);
@@ -127,7 +138,7 @@ for (const choice of planChoices)
       sessionStorage.setItem("pendingCheckoutPlan", plan);
       sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
     } catch {}
-    trackEvent("upgrade_clicked", { billing_interval: interval });
+    trackEvent("upgrade_clicked", { plan, billing_interval: interval });
     try {
       const response = await fetch("/api/billing/checkout", {
         method: "POST",
@@ -140,8 +151,8 @@ for (const choice of planChoices)
         location.href = `/teacher?lang=${encodeURIComponent(locale)}`;
         return;
       }
-      if (!response.ok || !data.url)
-        throw new Error(
+      if (!response.ok || !data.url) {
+        const error = new Error(
           data.error === "billing_not_configured"
             ? productMessage("billingUnavailable", {}, locale)
             : data.error === "already_subscribed"
@@ -150,13 +161,21 @@ for (const choice of planChoices)
                 ? productMessage("checkoutPending", {}, locale)
                 : productMessage("error", {}, locale),
         );
-      trackEvent("checkout_started", { billing_interval: interval });
-      trackEvent("checkout_redirected", { billing_interval: interval });
+        error.code = data.error || "checkout_unavailable";
+        throw error;
+      }
+      trackEvent("checkout_started", { plan, billing_interval: interval });
+      trackEvent("checkout_redirected", { plan, billing_interval: interval });
       try {
         sessionStorage.removeItem("pendingCheckoutInterval");
       } catch {}
       location.href = data.url;
     } catch (error) {
+      trackEvent("checkout_failed", {
+        plan,
+        billing_interval: interval,
+        error_code: error.code || "checkout_unavailable",
+      });
       choice.textContent = label;
       choice.disabled = false;
       alert(error.message);

@@ -7,6 +7,9 @@ import {
   initReturnVisit,
   sanitizeEventParams,
   setAssignmentEntryPoint,
+  trackCheckoutCancelled,
+  trackLockedFeature,
+  trackLockedFeatureError,
   trackUsageLimit,
 } from "../src/js/analytics.mjs";
 import { launcherUrl } from "../src/js/landingLauncher.mjs";
@@ -66,6 +69,91 @@ test("analytics allowlists omit raw words and typed answers", () => {
     }),
     { mode: "dictation", word_length: 7, correct: true },
   );
+});
+
+test("commercial funnel analytics keep their dimensions and omit PII", () => {
+  const pii = {
+    email: "teacher@example.test",
+    name: "Teacher A",
+    word: "because",
+    words: ["because"],
+  };
+  assert.deepEqual(
+    sanitizeEventParams("word_limit_hit", {
+      ...pii,
+      limit: 30,
+      account_tier: "free",
+      word_count_range: "31-80",
+      action: "spelling_test",
+    }),
+    {
+      limit: 30,
+      account_tier: "free",
+      word_count_range: "31-80",
+      action: "spelling_test",
+    },
+  );
+  for (const event of [
+    "upgrade_clicked",
+    "checkout_started",
+    "checkout_redirected",
+    "subscription_started",
+  ]) {
+    assert.deepEqual(
+      sanitizeEventParams(event, {
+        ...pii,
+        plan: "parent",
+        billing_interval: "year",
+      }),
+      { plan: "parent", billing_interval: "year" },
+    );
+  }
+  assert.deepEqual(
+    sanitizeEventParams("purchase", {
+      ...pii,
+      plan: "teacher",
+      billing_interval: "month",
+      value: 9.99,
+      currency: "USD",
+    }),
+    {
+      plan: "teacher",
+      billing_interval: "month",
+      value: 9.99,
+      currency: "USD",
+    },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("sign_up", {
+      ...pii,
+      provider: "google",
+      workspace_type: "teacher",
+    }),
+    { provider: "google", workspace_type: "teacher" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("locked_feature_attempted", {
+      ...pii,
+      feature: "photo_import",
+      current_plan: "free",
+    }),
+    { feature: "photo_import", current_plan: "free" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("checkout_failed", {
+      ...pii,
+      plan: "parent",
+      billing_interval: "year",
+      error_code: "checkout_pending",
+    }),
+    {
+      plan: "parent",
+      billing_interval: "year",
+      error_code: "checkout_pending",
+    },
+  );
+  assert.deepEqual(sanitizeEventParams("learner_created", pii), {});
+  assert.deepEqual(sanitizeEventParams("saved_list_created", pii), {});
 });
 
 test("signup CTA analytics keep only conversion funnel fields", () => {
@@ -141,16 +229,18 @@ test("teacher analytics omit student, assignment, and Stripe identifiers", () =>
   assert.deepEqual(
     sanitizeEventParams("checkout_started", {
       ...privateValues,
+      plan: "teacher",
       billing_interval: "year",
     }),
-    { billing_interval: "year" },
+    { plan: "teacher", billing_interval: "year" },
   );
   assert.deepEqual(
     sanitizeEventParams("checkout_redirected", {
       ...privateValues,
+      plan: "teacher",
       billing_interval: "year",
     }),
-    { billing_interval: "year" },
+    { plan: "teacher", billing_interval: "year" },
   );
   assert.deepEqual(
     sanitizeEventParams("assignment_entry_clicked", {
@@ -194,9 +284,10 @@ test("teacher analytics omit student, assignment, and Stripe identifiers", () =>
   assert.deepEqual(
     sanitizeEventParams("upgrade_clicked", {
       ...privateValues,
+      plan: "teacher",
       billing_interval: "month",
     }),
-    { billing_interval: "month" },
+    { plan: "teacher", billing_interval: "month" },
   );
   assert.deepEqual(
     sanitizeEventParams("upgrade_cta_clicked", {
@@ -208,11 +299,17 @@ test("teacher analytics omit student, assignment, and Stripe identifiers", () =>
   assert.deepEqual(
     sanitizeEventParams("purchase", {
       ...privateValues,
+      plan: "teacher",
       billing_interval: "year",
       value: 49.99,
       currency: "USD",
     }),
-    { billing_interval: "year", value: 49.99, currency: "USD" },
+    {
+      plan: "teacher",
+      billing_interval: "year",
+      value: 49.99,
+      currency: "USD",
+    },
   );
   assert.deepEqual(
     sanitizeEventParams("teacher_auth_completed", privateValues),
@@ -268,6 +365,38 @@ test("usage limits report a known type at most once per page", () => {
       ["event", "usage_limit_reached", { limit_type: "monthly_submissions" }],
       ["event", "usage_limit_reached", { limit_type: "saved_lists" }],
       ["event", "usage_limit_reached", { limit_type: "learner_profiles" }],
+    ]);
+  } finally {
+    delete globalThis.window;
+  }
+});
+
+test("locked features and Checkout cancellation report once", () => {
+  const events = [];
+  globalThis.window = { gtag: (...args) => events.push(args) };
+  try {
+    trackLockedFeature("photo_import", "free");
+    trackLockedFeature("photo_import", "free");
+    trackLockedFeatureError("saved_list_limit", "free");
+    trackLockedFeatureError("not_a_paywall", "free");
+    trackCheckoutCancelled("parent", "year");
+    trackCheckoutCancelled("parent", "year");
+    assert.deepEqual(events, [
+      [
+        "event",
+        "locked_feature_attempted",
+        { feature: "photo_import", current_plan: "free" },
+      ],
+      [
+        "event",
+        "locked_feature_attempted",
+        { feature: "saved_list_limit", current_plan: "free" },
+      ],
+      [
+        "event",
+        "checkout_cancelled",
+        { plan: "parent", billing_interval: "year" },
+      ],
     ]);
   } finally {
     delete globalThis.window;

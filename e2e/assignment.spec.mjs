@@ -1241,6 +1241,18 @@ test("practice advises signed-in plans after 20 words and preserves hard limits"
   await expect(page.locator("#spelling-status")).toContainText(
     "Free accounts support up to 30 words",
   );
+  await page.getByRole("button", { name: "Start Spelling Test" }).click();
+  expect(await analyticsEvents(page, "word_limit_hit")).toEqual([
+    {
+      limit: 30,
+      account_tier: "free",
+      word_count_range: "31-80",
+      action: "spelling_test",
+    },
+  ]);
+  expect(await analyticsEvents(page, "locked_feature_attempted")).toEqual([
+    { feature: "word_limit", current_plan: "free" },
+  ]);
   await expect(page.locator("#spelling-limit-cta")).toHaveAttribute(
     "href",
     "/pricing#pricing",
@@ -2449,6 +2461,15 @@ test("Parent plan starts Checkout with its plan and interval", async ({
     interval: "year",
     locale: "en",
   });
+  expect(await analyticsEvents(page, "upgrade_clicked")).toEqual([
+    { plan: "parent", billing_interval: "year" },
+  ]);
+  expect(await analyticsEvents(page, "checkout_started")).toEqual([
+    { plan: "parent", billing_interval: "year" },
+  ]);
+  expect(await analyticsEvents(page, "checkout_redirected")).toEqual([
+    { plan: "parent", billing_interval: "year" },
+  ]);
 });
 
 test("Teacher plan starts Checkout with its plan and interval", async ({
@@ -2480,6 +2501,9 @@ test("Teacher plan starts Checkout with its plan and interval", async ({
     interval: "month",
     locale: "en",
   });
+  expect(await analyticsEvents(page, "upgrade_clicked")).toEqual([
+    { plan: "teacher", billing_interval: "month" },
+  ]);
 });
 
 test("failed automatic Checkout stays retryable on the teacher page", async ({
@@ -2562,6 +2586,13 @@ test("failed automatic Checkout stays retryable on the teacher page", async ({
   expect(checkoutBodies).toEqual([
     { plan: "parent", interval: "year", locale: "en" },
     { plan: "parent", interval: "year", locale: "en" },
+  ]);
+  expect(await analyticsEvents(page, "checkout_failed")).toEqual([
+    {
+      plan: "parent",
+      billing_interval: "year",
+      error_code: "internal_error",
+    },
   ]);
 });
 

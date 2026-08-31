@@ -3,6 +3,8 @@ import {
   getAssignmentEntryPoint,
   setAssignmentEntryPoint,
   trackEvent,
+  trackLockedFeature,
+  trackLockedFeatureError,
   trackUsageLimit,
 } from "./analytics.mjs";
 import {
@@ -20,6 +22,7 @@ const locale = productLocale();
 const copy = productMessages(locale);
 const PURCHASE_RECORDED_KEY = "teacherPurchaseRecorded";
 const AUTH_PENDING_KEY = "teacherOAuthPending";
+const AUTH_PROVIDER_KEY = "teacherOAuthProvider";
 const ACTIVATION_POLL_ATTEMPTS = 10;
 let assignmentResultsViewed = false;
 let workspaceState = null;
@@ -89,6 +92,7 @@ async function api(path, options = {}) {
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     trackUsageLimit(data.error);
+    trackLockedFeatureError(data.error, workspaceState?.me?.plan || "free");
     const error = new Error(m(ERROR_KEYS[data.error] || "error"));
     error.code = data.error;
     error.status = response.status;
@@ -164,6 +168,10 @@ function attachWordLimit(form, me, wordsSelector, { locked = false } = {}) {
     upgrade.hidden = locked || me.plan !== "free" || !overLimit;
   };
   input.addEventListener("input", update);
+  form.addEventListener("submit", () => {
+    if (analyzeWords(input.value).words.length > limit && me.plan === "free")
+      trackLockedFeature("word_limit", me.plan);
+  });
   update();
 }
 
@@ -677,6 +685,15 @@ function showLockedFeaturePlan(host, message, ctaLocation) {
   notice.className = "notice locked-feature-plan";
   const text = document.createElement("p");
   text.textContent = message;
+  const feature = {
+    sentence_library: "example_sentences",
+    smart_review: "smart_review",
+    todays_review: "todays_review",
+    word_limit: "word_limit",
+    saved_list_limit: "saved_list_limit",
+    learner_limit: "learner_limit",
+  }[ctaLocation];
+  if (feature) trackLockedFeature(feature, workspaceState?.me?.plan || "free");
   notice.append(text, upgradeLink(ctaLocation));
   host.append(notice);
 }
@@ -707,6 +724,10 @@ function teacherCallbackURL() {
     ? location.pathname
     : "/teacher";
   return `${pathname}?lang=${encodeURIComponent(locale)}`;
+}
+
+function teacherNewUserCallbackURL() {
+  return `${teacherCallbackURL()}&signup=1`;
 }
 
 function focusTeacherSignIn() {
@@ -784,11 +805,13 @@ async function renderLogin() {
           body: JSON.stringify({
             provider: provider.id,
             callbackURL: teacherCallbackURL(),
+            newUserCallbackURL: teacherNewUserCallbackURL(),
           }),
         });
         if (!response.url) throw new Error(copy.error);
         try {
           sessionStorage.setItem(AUTH_PENDING_KEY, "1");
+          sessionStorage.setItem(AUTH_PROVIDER_KEY, provider.id);
         } catch {}
         location.href = response.url;
       } catch (error) {
@@ -1170,6 +1193,7 @@ function renderSavedLists(me, savedLists) {
                 ),
               }),
             });
+            trackEvent("saved_list_created");
             await refreshWorkspace(me);
           } catch (error) {
             showSectionError(
@@ -1271,6 +1295,7 @@ function renderSavedLists(me, savedLists) {
             body: JSON.stringify(payload),
           },
         );
+        if (!editingList) trackEvent("saved_list_created");
         await refreshWorkspace(me);
       } catch (error) {
         button.disabled = form.querySelector('[aria-invalid="true"]') !== null;
@@ -1557,6 +1582,7 @@ function renderLearners(me, learners) {
           name: form.querySelector("#learner-name").value,
         }),
       });
+      trackEvent("learner_created");
       dialog.close();
       await refreshWorkspace(me);
     } catch (error) {
@@ -2214,19 +2240,33 @@ async function startCheckout(interval, plan = "teacher") {
   try {
     sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
     sessionStorage.setItem("pendingCheckoutPlan", plan);
+    sessionStorage.setItem("pendingCheckoutInterval", interval);
   } catch {}
-  trackEvent("checkout_started", { billing_interval: interval });
-  const checkout = await api("/api/billing/checkout", {
-    method: "POST",
-    body: JSON.stringify({ plan, interval, locale }),
-  });
-  if (!checkout?.url) throw new Error(copy.error);
-  trackEvent("checkout_redirected", { billing_interval: interval });
   try {
-    sessionStorage.removeItem("pendingCheckoutInterval");
-    sessionStorage.removeItem(PURCHASE_RECORDED_KEY);
-  } catch {}
-  location.href = checkout.url;
+    trackEvent("checkout_started", { plan, billing_interval: interval });
+    const checkout = await api("/api/billing/checkout", {
+      method: "POST",
+      body: JSON.stringify({ plan, interval, locale }),
+    });
+    if (!checkout?.url) {
+      const error = new Error(copy.error);
+      error.code = "checkout_unavailable";
+      throw error;
+    }
+    trackEvent("checkout_redirected", { plan, billing_interval: interval });
+    try {
+      sessionStorage.removeItem("pendingCheckoutInterval");
+      sessionStorage.removeItem(PURCHASE_RECORDED_KEY);
+    } catch {}
+    location.href = checkout.url;
+  } catch (error) {
+    trackEvent("checkout_failed", {
+      plan,
+      billing_interval: interval,
+      error_code: error.code || "checkout_unavailable",
+    });
+    throw error;
+  }
 }
 
 function showCheckoutRetry(interval, plan, error) {
@@ -2779,6 +2819,7 @@ async function renderDetail(me, id) {
           exampleSentences: data.words.map((word) => word.example_sentence),
         }),
       });
+      trackEvent("saved_list_created");
       saveList.disabled = true;
       saveList.textContent = copy.listSaved;
     } catch (error) {
@@ -3268,8 +3309,12 @@ function recordPurchase(me) {
   } catch {}
   if (!shouldRecord || me.subscriptionStatus !== "active") return;
   const billingInterval = me.billingInterval === "year" ? "year" : "month";
-  trackEvent("subscription_started", { billing_interval: billingInterval });
+  trackEvent("subscription_started", {
+    plan: me.plan,
+    billing_interval: billingInterval,
+  });
   trackEvent("purchase", {
+    plan: me.plan,
     billing_interval: billingInterval,
     value:
       me.plan === "parent"
@@ -3389,11 +3434,30 @@ async function init() {
   try {
     if (sessionStorage.getItem(AUTH_PENDING_KEY) === "1") {
       const entryPoint = getAssignmentEntryPoint();
+      const provider = sessionStorage.getItem(AUTH_PROVIDER_KEY);
       trackEvent(
         "teacher_auth_completed",
         entryPoint ? { entry_point: entryPoint } : {},
       );
+      if (
+        (provider === "google" || provider === "microsoft") &&
+        new URLSearchParams(location.search).get("signup") === "1"
+      ) {
+        trackEvent("sign_up", {
+          provider,
+          workspace_type:
+            me.workspaceType ||
+            (me.plan === "parent" ||
+            sessionStorage.getItem("pendingCheckoutPlan") === "parent"
+              ? "family"
+              : "teacher"),
+        });
+      }
       sessionStorage.removeItem(AUTH_PENDING_KEY);
+      sessionStorage.removeItem(AUTH_PROVIDER_KEY);
+      const url = new URL(location.href);
+      url.searchParams.delete("signup");
+      history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
     }
   } catch {}
   workspaceState = { me };

@@ -675,3 +675,109 @@ test("signed-in plan selection keeps all three plan cards available", async ({
     "Current plan",
   );
 });
+
+test("paid pricing shows renewal beside the expiration notice", async ({
+  page,
+}) => {
+  let portalBody;
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        ...account("parent", "month"),
+        currentPeriodEnd: "2026-09-25T00:00:00.000Z",
+      }),
+    }),
+  );
+  await page.route("**/api/billing/portal", (route) => {
+    portalBody = route.request().postDataJSON();
+    return route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ url: "/pricing?from=renewal" }),
+    });
+  });
+
+  await page.goto("/pricing");
+  const status = page.locator("[data-subscription-status]");
+  await expect(status).toContainText("Parent Plan active through");
+  const renew = status.getByRole("button", { name: "Renew subscription" });
+  await expect(renew).toBeVisible();
+  await expect(page.locator('[data-plan-card="parent"]')).toContainText(
+    "Current plan",
+  );
+  await renew.click();
+  await expect(page).toHaveURL(/\/pricing\?from=renewal$/);
+  expect(portalBody).toEqual({ locale: "en" });
+});
+
+test("paid pricing changes plan through the prorated billing endpoint", async ({
+  page,
+}) => {
+  let changeBody;
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(account("parent", "month")),
+    }),
+  );
+  await page.route("**/api/billing/change-plan", (route) => {
+    changeBody = route.request().postDataJSON();
+    return route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ url: "/pricing?plan-change=payment" }),
+    });
+  });
+
+  await page.goto("/pricing");
+  await page.getByRole("button", { name: "Select Teacher Plan" }).click();
+  await expect(page).toHaveURL(/\/pricing\?plan-change=payment$/);
+  expect(changeBody).toEqual({
+    plan: "teacher",
+    interval: "month",
+    locale: "en",
+  });
+});
+
+test("Teacher pricing schedules Parent for the renewal date", async ({
+  page,
+}) => {
+  let changeBody;
+  let message = "";
+  page.on("dialog", async (dialog) => {
+    message = dialog.message();
+    await dialog.accept();
+  });
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        ...account("teacher", "month"),
+        currentPeriodEnd: "2026-09-25T00:00:00.000Z",
+      }),
+    }),
+  );
+  await page.route("**/api/billing/change-plan", (route) => {
+    changeBody = route.request().postDataJSON();
+    return route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        scheduled: true,
+        effectiveAt: "2026-09-25T00:00:00.000Z",
+      }),
+    });
+  });
+
+  await page.goto("/pricing");
+  await page.getByRole("button", { name: "Select Parent Plan" }).click();
+  await expect
+    .poll(() => message)
+    .toContain("Teacher Plan remains active through September 25, 2026");
+  expect(changeBody).toEqual({
+    plan: "parent",
+    interval: "month",
+    locale: "en",
+  });
+  await expect(page.locator('[data-plan-card="teacher"]')).toContainText(
+    "Current plan",
+  );
+});

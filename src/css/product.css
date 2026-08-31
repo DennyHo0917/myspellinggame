@@ -755,6 +755,11 @@ th {
   justify-content: center;
 }
 .subscription-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
   width: min(100%, 720px);
   margin: 0 auto 1rem;
   padding: 0.75rem 1rem;
@@ -764,6 +769,10 @@ th {
   color: var(--brand-dark);
   font-weight: 750;
   text-align: center;
+}
+.subscription-status button {
+  min-height: 36px;
+  padding: 0.45rem 0.85rem;
 }
 .pricing-card {
   position: relative;

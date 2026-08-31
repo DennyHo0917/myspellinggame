@@ -50,6 +50,25 @@ type PortalOptions = {
   ) => Promise<Pick<Stripe.BillingPortal.Session, "url">>;
 };
 
+type ChangePlanOptions = {
+  locale?: string;
+  retrieveSubscription?: (id: string) => Promise<Stripe.Subscription>;
+  updateSubscription?: (
+    id: string,
+    params: Stripe.SubscriptionUpdateParams,
+  ) => Promise<Stripe.Subscription>;
+  retrieveInvoice?: (id: string) => Promise<Stripe.Invoice>;
+  createSchedule?: (
+    params: Stripe.SubscriptionScheduleCreateParams,
+  ) => Promise<Stripe.SubscriptionSchedule>;
+  retrieveSchedule?: (id: string) => Promise<Stripe.SubscriptionSchedule>;
+  updateSchedule?: (
+    id: string,
+    params: Stripe.SubscriptionScheduleUpdateParams,
+  ) => Promise<Stripe.SubscriptionSchedule>;
+  releaseSchedule?: (id: string) => Promise<Stripe.SubscriptionSchedule>;
+};
+
 const STRIPE_LOCALE_PATHS = {
   en: "",
   es: "/es",
@@ -148,6 +167,21 @@ function subscriptionPeriodEnd(
     .current_period_end;
   const itemEnd = subscription.items?.data?.[0]?.current_period_end;
   return unixToIso(legacy ?? itemEnd);
+}
+
+function scheduleDiscounts(
+  discounts: Stripe.SubscriptionSchedule.Phase["discounts"],
+) {
+  return discounts
+    .map((value) => {
+      const discount = objectId(value.discount);
+      if (discount) return { discount };
+      const promotionCode = objectId(value.promotion_code);
+      if (promotionCode) return { promotion_code: promotionCode };
+      const coupon = objectId(value.coupon);
+      return coupon ? { coupon } : null;
+    })
+    .filter((value) => value !== null);
 }
 
 async function ownerFromStripeObject(
@@ -501,6 +535,167 @@ export async function createPortal(
   });
 }
 
+export async function changeSubscriptionPlan(
+  env: StripeEnv,
+  db: D1Database,
+  userId: string,
+  plan: "parent" | "teacher",
+  interval: "month" | "year",
+  origin: string,
+  options: ChangePlanOptions = {},
+) {
+  const price = checkoutPrice(env, plan, interval);
+  if (!price)
+    throw new HttpError(
+      503,
+      "billing_not_configured",
+      "Billing is not configured yet.",
+    );
+  const stored = await db
+    .prepare(
+      `SELECT status, current_period_end, stripe_price_id,
+              stripe_customer_id, stripe_subscription_id
+       FROM subscriptions WHERE user_id = ?`,
+    )
+    .bind(userId)
+    .first<{
+      status: string;
+      current_period_end: string | null;
+      stripe_price_id: string | null;
+      stripe_customer_id: string | null;
+      stripe_subscription_id: string | null;
+    }>();
+  if (
+    !hasActiveSubscription(stored ?? null, env) ||
+    !stored?.stripe_subscription_id
+  ) {
+    throw new HttpError(
+      409,
+      "no_active_subscription",
+      "No active Stripe subscription is available to change.",
+    );
+  }
+  const locale = stripeLocale(options.locale);
+  const successUrl = `${origin}/teacher?lang=${locale}&checkout=success&interval=${interval}&plan=${plan}`;
+  if (stored.stripe_price_id === price) return { url: successUrl };
+
+  const stripeClient = stripe(env);
+  const retrieveSubscription =
+    options.retrieveSubscription ??
+    ((id) => stripeClient.subscriptions.retrieve(id));
+  const updateSubscription =
+    options.updateSubscription ??
+    ((id, params) => stripeClient.subscriptions.update(id, params));
+  const retrieveInvoice =
+    options.retrieveInvoice ?? ((id) => stripeClient.invoices.retrieve(id));
+  const createSchedule =
+    options.createSchedule ??
+    ((params) => stripeClient.subscriptionSchedules.create(params));
+  const retrieveSchedule =
+    options.retrieveSchedule ??
+    ((id) => stripeClient.subscriptionSchedules.retrieve(id));
+  const updateSchedule =
+    options.updateSchedule ??
+    ((id, params) => stripeClient.subscriptionSchedules.update(id, params));
+  const releaseSchedule =
+    options.releaseSchedule ??
+    ((id) => stripeClient.subscriptionSchedules.release(id));
+  const subscription = await retrieveSubscription(
+    stored.stripe_subscription_id,
+  );
+  const item = subscription.items.data[0];
+  if (!item?.id) {
+    throw new HttpError(
+      409,
+      "subscription_not_changeable",
+      "This Stripe subscription cannot be changed automatically.",
+    );
+  }
+  if (item.price.id === price) return { url: successUrl };
+
+  if (
+    configuredPricePlan(item.price.id, env) === "teacher" &&
+    plan === "parent"
+  ) {
+    const scheduleValue = subscription.schedule;
+    const schedule = scheduleValue
+      ? typeof scheduleValue === "string"
+        ? await retrieveSchedule(scheduleValue)
+        : scheduleValue
+      : await createSchedule({ from_subscription: subscription.id });
+    const currentPhase = schedule.current_phase
+      ? schedule.phases.find(
+          (phase) =>
+            phase.start_date === schedule.current_phase?.start_date &&
+            phase.end_date === schedule.current_phase?.end_date,
+        )
+      : schedule.phases[0];
+    if (!currentPhase) {
+      throw new HttpError(
+        409,
+        "subscription_not_changeable",
+        "This Stripe subscription cannot be changed automatically.",
+      );
+    }
+    const discounts = scheduleDiscounts(currentPhase.discounts);
+    await updateSchedule(schedule.id, {
+      end_behavior: "release",
+      metadata: { owner_user_id: userId, purpose: "plan_change" },
+      proration_behavior: "none",
+      phases: [
+        {
+          start_date: currentPhase.start_date,
+          end_date: currentPhase.end_date,
+          items: [{ price: item.price.id, quantity: item.quantity ?? 1 }],
+          ...(discounts.length ? { discounts } : {}),
+          proration_behavior: "none",
+        },
+        {
+          start_date: currentPhase.end_date,
+          duration: { interval, interval_count: 1 },
+          items: [{ price, quantity: item.quantity ?? 1 }],
+          ...(discounts.length ? { discounts } : {}),
+          metadata: {
+            owner_user_id: userId,
+            plan,
+            billing_interval: interval,
+          },
+          proration_behavior: "none",
+        },
+      ],
+    });
+    return {
+      scheduled: true,
+      effectiveAt: new Date(currentPhase.end_date * 1000).toISOString(),
+    };
+  }
+
+  const scheduleId = objectId(subscription.schedule);
+  if (scheduleId) await releaseSchedule(scheduleId);
+
+  const updated = await updateSubscription(subscription.id, {
+    items: [{ id: item.id, price }],
+    proration_behavior: "always_invoice",
+    payment_behavior: "pending_if_incomplete",
+    expand: ["latest_invoice"],
+  });
+  let invoice =
+    updated.latest_invoice && typeof updated.latest_invoice !== "string"
+      ? updated.latest_invoice
+      : null;
+  if (!invoice && typeof updated.latest_invoice === "string")
+    invoice = await retrieveInvoice(updated.latest_invoice);
+  if (updated.pending_update || (invoice && invoice.status !== "paid")) {
+    if (invoice?.hosted_invoice_url) return { url: invoice.hosted_invoice_url };
+    throw new HttpError(
+      502,
+      "plan_change_payment_unavailable",
+      "Stripe could not open the prorated payment page.",
+    );
+  }
+  return { url: successUrl };
+}
+
 async function applySubscription(
   db: D1Database,
   subscription: Stripe.Subscription,
@@ -745,6 +940,11 @@ export async function applyStripeEvent(
       );
       break;
     case "invoice.payment_failed":
+      if (
+        (event.data.object as Stripe.Invoice).billing_reason ===
+        "subscription_update"
+      )
+        break;
       await applyInvoiceStatus(
         db,
         event.data.object as Stripe.Invoice,

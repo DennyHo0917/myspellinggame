@@ -21,6 +21,7 @@ import {
 import { handleRequest, scheduled, type Env } from "../src/worker/index";
 import {
   cancelCheckout,
+  changeSubscriptionPlan,
   createCheckout,
   createPortal,
   processStripeEvent,
@@ -3416,6 +3417,184 @@ describe("Stripe checkout", () => {
     ).resolves.toMatchObject({ id: "cs_2" });
     expect(calls).toBe(2);
   });
+
+  it("invoices the prorated difference before applying a Parent to Teacher change", async () => {
+    await insertSubscription({
+      plan: "parent",
+      status: "active",
+      priceId: "price_parent_monthly",
+      currentPeriodEnd: future,
+    });
+    await bindings.DB.prepare(
+      `UPDATE subscriptions
+       SET stripe_customer_id = 'cus_test', stripe_subscription_id = 'sub_test'
+       WHERE user_id = ?`,
+    )
+      .bind(teacherA.id)
+      .run();
+    let sent: Stripe.SubscriptionUpdateParams | null = null;
+
+    await expect(
+      changeSubscriptionPlan(
+        testEnv(),
+        bindings.DB,
+        teacherA.id,
+        "teacher",
+        "month",
+        "https://example.test",
+        {
+          retrieveSubscription: async () =>
+            ({
+              id: "sub_test",
+              items: {
+                data: [
+                  {
+                    id: "si_test",
+                    price: { id: "price_parent_monthly" },
+                  },
+                ],
+              },
+            }) as unknown as Stripe.Subscription,
+          updateSubscription: async (_id, params) => {
+            sent = params;
+            return {
+              id: "sub_test",
+              pending_update: { expires_at: 1 },
+              latest_invoice: {
+                id: "in_change",
+                status: "open",
+                hosted_invoice_url: "https://invoice.test/pay",
+              },
+            } as unknown as Stripe.Subscription;
+          },
+        },
+      ),
+    ).resolves.toEqual({ url: "https://invoice.test/pay" });
+
+    expect(sent).toMatchObject({
+      items: [{ id: "si_test", price: "price_teacher_monthly" }],
+      proration_behavior: "always_invoice",
+      payment_behavior: "pending_if_incomplete",
+      expand: ["latest_invoice"],
+    });
+    await expect(
+      bindings.DB.prepare(
+        "SELECT plan, status, stripe_price_id FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .first(),
+    ).resolves.toEqual({
+      plan: "parent",
+      status: "active",
+      stripe_price_id: "price_parent_monthly",
+    });
+  });
+
+  it("keeps Teacher active and schedules Parent for the current period end", async () => {
+    await insertSubscription({
+      plan: "teacher",
+      status: "active",
+      priceId: "price_teacher_monthly",
+      currentPeriodEnd: future,
+    });
+    await bindings.DB.prepare(
+      `UPDATE subscriptions
+       SET stripe_customer_id = 'cus_test', stripe_subscription_id = 'sub_test'
+       WHERE user_id = ?`,
+    )
+      .bind(teacherA.id)
+      .run();
+    const periodEnd = Math.floor(new Date(future).getTime() / 1000);
+    let scheduleParams: Stripe.SubscriptionScheduleUpdateParams | null = null;
+    let immediateUpdates = 0;
+
+    await expect(
+      changeSubscriptionPlan(
+        testEnv(),
+        bindings.DB,
+        teacherA.id,
+        "parent",
+        "year",
+        "https://example.test",
+        {
+          retrieveSubscription: async () =>
+            ({
+              id: "sub_test",
+              schedule: null,
+              items: {
+                data: [
+                  {
+                    id: "si_test",
+                    current_period_end: periodEnd,
+                    quantity: 1,
+                    price: { id: "price_teacher_monthly" },
+                  },
+                ],
+              },
+            }) as unknown as Stripe.Subscription,
+          createSchedule: async (params) => {
+            expect(params).toEqual({ from_subscription: "sub_test" });
+            return {
+              id: "sub_sched",
+              current_phase: {
+                start_date: periodEnd - 2_592_000,
+                end_date: periodEnd,
+              },
+              phases: [
+                {
+                  start_date: periodEnd - 2_592_000,
+                  end_date: periodEnd,
+                  discounts: [],
+                  items: [],
+                },
+              ],
+            } as unknown as Stripe.SubscriptionSchedule;
+          },
+          updateSchedule: async (_id, params) => {
+            scheduleParams = params;
+            return { id: "sub_sched" } as Stripe.SubscriptionSchedule;
+          },
+          updateSubscription: async () => {
+            immediateUpdates += 1;
+            throw new Error("unexpected immediate update");
+          },
+        },
+      ),
+    ).resolves.toEqual({
+      scheduled: true,
+      effectiveAt: new Date(periodEnd * 1000).toISOString(),
+    });
+
+    expect(immediateUpdates).toBe(0);
+    expect(scheduleParams).toMatchObject({
+      end_behavior: "release",
+      proration_behavior: "none",
+      phases: [
+        {
+          end_date: periodEnd,
+          items: [{ price: "price_teacher_monthly", quantity: 1 }],
+          proration_behavior: "none",
+        },
+        {
+          start_date: periodEnd,
+          duration: { interval: "year", interval_count: 1 },
+          items: [{ price: "price_parent_yearly", quantity: 1 }],
+          proration_behavior: "none",
+        },
+      ],
+    });
+    await expect(
+      bindings.DB.prepare(
+        "SELECT plan, status, stripe_price_id FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .first(),
+    ).resolves.toEqual({
+      plan: "teacher",
+      status: "active",
+      stripe_price_id: "price_teacher_monthly",
+    });
+  });
 });
 
 describe("Stripe event processing", () => {
@@ -3768,6 +3947,51 @@ describe("Stripe event processing", () => {
         .bind(teacherA.id)
         .first(),
     ).toEqual({ plan: "teacher", status: "active" });
+  });
+
+  it("keeps the current plan active when a prorated plan-change payment fails", async () => {
+    await insertSubscription({
+      plan: "parent",
+      status: "active",
+      priceId: "price_parent_monthly",
+      currentPeriodEnd: new Date(Date.now() + 86_400_000).toISOString(),
+    });
+    await bindings.DB.prepare(
+      `UPDATE subscriptions
+       SET stripe_customer_id = 'cus_test', stripe_subscription_id = 'sub_test'
+       WHERE user_id = ?`,
+    )
+      .bind(teacherA.id)
+      .run();
+
+    await processStripeEvent(
+      bindings.DB,
+      {
+        id: "evt_plan_change_failed",
+        type: "invoice.payment_failed",
+        data: {
+          object: {
+            id: "in_plan_change_failed",
+            customer: "cus_test",
+            subscription: "sub_test",
+            billing_reason: "subscription_update",
+          },
+        },
+      } as unknown as Stripe.Event,
+      testEnv(),
+    );
+
+    await expect(
+      bindings.DB.prepare(
+        "SELECT plan, status, stripe_price_id FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .first(),
+    ).resolves.toEqual({
+      plan: "parent",
+      status: "active",
+      stripe_price_id: "price_parent_monthly",
+    });
   });
 
   it.each(["checkout.session.expired", "checkout.session.completed"] as const)(

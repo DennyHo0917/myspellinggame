@@ -14,6 +14,12 @@ const planChoices = document.querySelectorAll("[data-plan-choice]");
 const pricingGrid = document.querySelector(".pricing-grid");
 const freeChoice = document.querySelector('[data-plan-cta="free"]');
 const subscriptionStatus = document.querySelector("[data-subscription-status]");
+const subscriptionMessage = subscriptionStatus?.querySelector(
+  "[data-subscription-message]",
+);
+const renewButton = subscriptionStatus?.querySelector(
+  "[data-renew-subscription]",
+);
 const accountPromise = fetch("/api/me", { credentials: "same-origin" })
   .then((response) => (response.ok ? response.json() : null))
   .catch(() => null);
@@ -123,10 +129,7 @@ for (const choice of planChoices)
     if (!["parent", "teacher"].includes(plan) || choice.disabled) return;
     const me = await accountPromise;
     if (me?.plan === plan) return;
-    if (["parent", "teacher"].includes(me?.plan)) {
-      await openBillingPortal(choice);
-      return;
-    }
+    const changingPlan = ["parent", "teacher"].includes(me?.plan);
     const interval = document.querySelector(
       '[data-plan-option][aria-pressed="true"]',
     )?.dataset.planOption;
@@ -134,21 +137,46 @@ for (const choice of planChoices)
     choice.disabled = true;
     choice.textContent = productMessage("loading", {}, locale);
     try {
-      sessionStorage.setItem("pendingCheckoutInterval", interval);
-      sessionStorage.setItem("pendingCheckoutPlan", plan);
-      sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
+      if (!changingPlan) {
+        sessionStorage.setItem("pendingCheckoutInterval", interval);
+        sessionStorage.setItem("pendingCheckoutPlan", plan);
+        sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
+      }
     } catch {}
     trackEvent("upgrade_clicked", { plan, billing_interval: interval });
     try {
-      const response = await fetch("/api/billing/checkout", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ plan, interval, locale }),
-      });
+      const response = await fetch(
+        changingPlan ? "/api/billing/change-plan" : "/api/billing/checkout",
+        {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ plan, interval, locale }),
+        },
+      );
       const data = await response.json().catch(() => ({}));
       if (response.status === 401) {
         location.href = `/teacher?lang=${encodeURIComponent(locale)}`;
+        return;
+      }
+      if (response.ok && data.scheduled && data.effectiveAt) {
+        const effectiveDate = formatSubscriptionDate(data.effectiveAt);
+        if (!effectiveDate)
+          throw new Error(productMessage("error", {}, locale));
+        alert(
+          productMessage(
+            "downgradeScheduled",
+            {
+              currentPlan: copy.teacherPlan,
+              targetPlan: copy.parentPlan,
+              date: effectiveDate,
+            },
+            locale,
+          ),
+        );
+        selectPlan(me.plan);
+        choice.textContent = label;
+        choice.disabled = false;
         return;
       }
       if (!response.ok || !data.url) {
@@ -185,17 +213,26 @@ for (const choice of planChoices)
 accountPromise
   .then((me) => {
     const endDate = formatSubscriptionDate(me?.currentPeriodEnd);
-    if (
-      subscriptionStatus &&
-      endDate &&
-      ["parent", "teacher"].includes(me?.plan)
-    ) {
+    if (subscriptionStatus && ["parent", "teacher"].includes(me?.plan)) {
       const planLabel = copy[`${me.plan}Plan`] || me.plan;
-      subscriptionStatus.textContent = productMessage(
-        "subscriptionExpires",
-        { plan: planLabel, date: endDate },
-        locale,
-      );
+      if (endDate && subscriptionMessage)
+        subscriptionMessage.textContent = productMessage(
+          "subscriptionExpires",
+          { plan: planLabel, date: endDate },
+          locale,
+        );
+      if (renewButton) {
+        renewButton.hidden = false;
+        renewButton.textContent = productMessage(
+          "renewSubscription",
+          {},
+          locale,
+        );
+        renewButton.addEventListener(
+          "click",
+          () => void openBillingPortal(renewButton),
+        );
+      }
       subscriptionStatus.hidden = false;
     }
     const current = document.querySelector(`[data-plan-cta="${me?.plan}"]`);

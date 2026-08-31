@@ -32,6 +32,7 @@ import {
 } from "./domain";
 import {
   cancelCheckout,
+  changeSubscriptionPlan,
   createCheckout,
   createPortal,
   hasActiveSubscription,
@@ -2661,6 +2662,37 @@ export async function handleRequest(
     requireSameOrigin(request);
     const user = await requireTeacher(env, request, getSession);
     return json({ canceled: await cancelCheckout(env, env.DB, user.id) });
+  }
+
+  if (url.pathname === "/api/billing/change-plan" && method === "POST") {
+    requireSameOrigin(request);
+    const user = await requireTeacher(env, request, getSession);
+    const body = await readJson(request);
+    if (body.interval !== "month" && body.interval !== "year") {
+      throw new HttpError(
+        400,
+        "invalid_interval",
+        "Choose monthly or yearly billing.",
+      );
+    }
+    if (body.plan !== "parent" && body.plan !== "teacher") {
+      throw new HttpError(
+        400,
+        "invalid_plan",
+        "Choose a supported subscription plan.",
+      );
+    }
+    return json(
+      await changeSubscriptionPlan(
+        env,
+        env.DB,
+        user.id,
+        body.plan,
+        body.interval,
+        url.origin,
+        { locale: typeof body.locale === "string" ? body.locale : undefined },
+      ),
+    );
   }
 
   if (url.pathname === "/api/billing/portal" && method === "POST") {

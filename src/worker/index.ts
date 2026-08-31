@@ -564,6 +564,60 @@ async function adminSetPlan(env: Env, request: Request, userId: string) {
   return { adminPlan: body.plan, adminPlanUpdatedAt: body.plan ? now : null };
 }
 
+async function adminDeleteUser(
+  env: Env,
+  request: Request,
+  userId: string,
+  adminUserId: string,
+) {
+  requireSameOrigin(request);
+  if (userId === adminUserId)
+    throw new HttpError(
+      400,
+      "cannot_delete_self",
+      "不能删除当前登录的管理员账号。",
+    );
+  const body = await readJson(request);
+  const user = await env.DB.prepare(
+    `SELECT u.id, u.email,
+       EXISTS (
+         SELECT 1 FROM subscriptions s
+         WHERE s.user_id = u.id AND s.stripe_subscription_id IS NOT NULL
+           AND s.status NOT IN ('canceled', 'inactive')
+       ) AS hasActiveSubscription,
+       EXISTS (
+         SELECT 1 FROM payment_orders p
+         WHERE p.user_id = u.id AND p.status IN ('pending', 'completed')
+       ) AS hasOpenOrder
+     FROM user u WHERE u.id = ?`,
+  )
+    .bind(userId)
+    .first<{
+      id: string;
+      email: string;
+      hasActiveSubscription: number;
+      hasOpenOrder: number;
+    }>();
+  if (!user) throw new HttpError(404, "user_not_found", "未找到该用户。");
+  if (
+    typeof body.confirmEmail !== "string" ||
+    body.confirmEmail.trim().toLowerCase() !== user.email.toLowerCase()
+  )
+    throw new HttpError(
+      400,
+      "delete_confirmation_mismatch",
+      "确认邮箱与目标用户不匹配。",
+    );
+  if (user.hasActiveSubscription || user.hasOpenOrder)
+    throw new HttpError(
+      409,
+      "user_has_active_billing",
+      "该用户仍有有效订阅或未完成订单，请先在 Stripe 中处理后再删除。",
+    );
+  await env.DB.prepare("DELETE FROM user WHERE id = ?").bind(userId).run();
+  return { deleted: true };
+}
+
 async function getPlan(
   env: Env,
   userId: string,
@@ -2059,7 +2113,7 @@ export async function handleRequest(
   }
 
   if (url.pathname.startsWith("/api/admin/")) {
-    await requireAdmin(env, request, getSession);
+    const admin = await requireAdmin(env, request, getSession);
     if (url.pathname === "/api/admin/stats" && method === "GET")
       return json(await adminStats(env));
     if (url.pathname === "/api/admin/users" && method === "GET")
@@ -2073,8 +2127,19 @@ export async function handleRequest(
       return json(
         await adminSetPlan(env, request, decodeURIComponent(planMatch[1])),
       );
+    const userMatch = url.pathname.match(/^\/api\/admin\/users\/([^/]+)$/);
+    if (userMatch && method === "DELETE")
+      return json(
+        await adminDeleteUser(
+          env,
+          request,
+          decodeURIComponent(userMatch[1]),
+          admin.id,
+        ),
+      );
     if (
       planMatch ||
+      userMatch ||
       ["/api/admin/stats", "/api/admin/users", "/api/admin/orders"].includes(
         url.pathname,
       )

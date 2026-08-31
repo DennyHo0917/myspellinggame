@@ -56,6 +56,10 @@ async function api(path, options = {}) {
         invalid_plan_filter: "请选择有效的方案筛选条件。",
         invalid_provider_filter: "请选择有效的登录方式筛选条件。",
         invalid_order_status_filter: "请选择有效的订单状态筛选条件。",
+        cannot_delete_self: "不能删除当前登录的管理员账号。",
+        user_has_active_billing:
+          "该用户仍有有效订阅或未完成订单，请先在 Stripe 中处理后再删除。",
+        delete_confirmation_mismatch: "确认邮箱与目标用户不匹配。",
         user_not_found: "未找到该用户。",
         method_not_allowed: "不支持此请求方式。",
         admin_not_found: "未找到该管理接口。",
@@ -443,6 +447,37 @@ $("admin-drawer-plan-save").addEventListener("click", async () => {
   } finally {
     drawerPlan.disabled = false;
     save.disabled = false;
+  }
+});
+
+$("admin-user-delete").addEventListener("click", async () => {
+  if (!selectedUser) return;
+  const user = selectedUser;
+  const confirmation = prompt(
+    `此操作会永久删除 ${user.email} 的账号及全部本地数据，且无法恢复。\n\n请输入该用户邮箱以确认删除：`,
+  );
+  if (confirmation === null) return;
+  if (confirmation.trim().toLowerCase() !== user.email.toLowerCase()) {
+    drawerStatus.textContent = "邮箱不匹配，已取消删除。";
+    return;
+  }
+  const button = $("admin-user-delete");
+  button.disabled = true;
+  drawerStatus.textContent = "正在删除用户……";
+  try {
+    await api(`/api/admin/users/${encodeURIComponent(user.id)}`, {
+      method: "DELETE",
+      body: JSON.stringify({ confirmEmail: confirmation.trim() }),
+    });
+    selectedUser = null;
+    drawer.close();
+    renderStats(await api("/api/admin/stats"));
+    await loadUsers();
+    if (ordersLoaded) await loadOrders();
+  } catch (error) {
+    drawerStatus.textContent = error.message;
+  } finally {
+    button.disabled = false;
   }
 });
 

@@ -367,6 +367,102 @@ describe("admin dashboard", () => {
     ).toBe("free");
   });
 
+  it("deletes a user and their local data with billing safeguards", async () => {
+    expect(
+      (
+        await call(
+          `/api/admin/users/${admin.id}`,
+          admin,
+          testEnv(),
+          "DELETE",
+          {},
+        )
+      ).status,
+    ).toBe(400);
+    expect(
+      (
+        await call(
+          `/api/admin/users/${member.id}`,
+          member,
+          testEnv(),
+          "DELETE",
+          {},
+        )
+      ).status,
+    ).toBe(403);
+
+    const future = new Date(Date.now() + 86_400_000).toISOString();
+    await insertSubscription(
+      member.id,
+      "active",
+      "month",
+      future,
+      "price_parent_monthly",
+    );
+    await bindings.DB.prepare(
+      "UPDATE subscriptions SET stripe_subscription_id = ? WHERE user_id = ?",
+    )
+      .bind("sub_member", member.id)
+      .run();
+    expect(
+      (
+        await call(
+          `/api/admin/users/${member.id}`,
+          admin,
+          testEnv(),
+          "DELETE",
+          { confirmEmail: member.email },
+        )
+      ).status,
+    ).toBe(409);
+
+    await bindings.DB.prepare("DELETE FROM subscriptions WHERE user_id = ?")
+      .bind(member.id)
+      .run();
+    await insertAccount(member.id, "google");
+    expect(
+      (
+        await call(
+          `/api/admin/users/${member.id}`,
+          admin,
+          testEnv(),
+          "DELETE",
+          { confirmEmail: "wrong@example.test" },
+        )
+      ).status,
+    ).toBe(400);
+    const deleted = await call(
+      `/api/admin/users/${member.id}`,
+      admin,
+      testEnv(),
+      "DELETE",
+      { confirmEmail: member.email },
+    );
+    expect(deleted.status).toBe(200);
+    expect(await deleted.json()).toEqual({ deleted: true });
+    expect(
+      await bindings.DB.prepare("SELECT id FROM user WHERE id = ?")
+        .bind(member.id)
+        .first(),
+    ).toBeNull();
+    expect(
+      await bindings.DB.prepare("SELECT id FROM account WHERE userId = ?")
+        .bind(member.id)
+        .first(),
+    ).toBeNull();
+    expect(
+      (
+        await call(
+          `/api/admin/users/${member.id}`,
+          admin,
+          testEnv(),
+          "DELETE",
+          {},
+        )
+      ).status,
+    ).toBe(404);
+  });
+
   it("lists and searches every checkout order status", async () => {
     const now = new Date().toISOString();
     await bindings.DB.batch([

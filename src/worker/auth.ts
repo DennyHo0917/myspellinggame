@@ -120,10 +120,11 @@ export function createAuth(env: AuthEnv, request: Request) {
           }),
           after: async (session) => {
             try {
+              const now = new Date().toISOString();
               await env.DB.prepare(
-                "UPDATE user SET last_login_at = ? WHERE id = ?",
+                "UPDATE user SET last_login_at = ?, last_active_at = ? WHERE id = ?",
               )
-                .bind(new Date().toISOString(), session.userId)
+                .bind(now, now, session.userId)
                 .run();
             } catch (error) {
               console.error("Failed to record last login time", error);

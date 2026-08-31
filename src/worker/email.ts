@@ -153,9 +153,12 @@ export function buildWelcomeEmail(acceptLanguage?: string | null) {
       <tr><td align="center" style="padding:32px 16px">
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#ffffff;border:1px solid #e5e7eb;border-radius:8px">
           <tr><td style="padding:32px">
-            <a href="${SITE_URL}" style="display:inline-flex;align-items:center;text-decoration:none;color:#111827">
-              <img src="${LOGO_URL}" width="56" height="56" alt="MySpellingGame" style="display:block;border:0">
-            </a>
+            <table role="presentation" cellspacing="0" cellpadding="0">
+              <tr>
+                <td><a href="${SITE_URL}"><img src="${LOGO_URL}" width="40" height="40" alt="" style="display:block;border:0"></a></td>
+                <td style="padding-left:12px"><a href="${SITE_URL}" style="color:#2f6f73;text-decoration:none;font-size:20px;font-weight:700;line-height:1.2">My Spelling Game</a></td>
+              </tr>
+            </table>
             <p style="margin:28px 0 18px;font-size:16px;line-height:1.6">${copy.greeting}</p>
             <h1 style="margin:0 0 18px;font-size:26px;line-height:1.3;color:#111827">${copy.welcome}</h1>
             <p style="margin:0 0 18px;font-size:16px;line-height:1.6">${copy.intro}</p>

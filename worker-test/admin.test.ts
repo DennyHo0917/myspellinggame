@@ -218,8 +218,8 @@ describe("admin dashboard", () => {
   it("paginates and searches users without duplicate rows or sensitive tokens", async () => {
     await insertAccount(admin.id, "google");
     await insertAccount(admin.id, "github");
-    await bindings.DB.prepare("UPDATE user SET last_login_at = ? WHERE id = ?")
-      .bind("2026-08-31T12:34:56.000Z", admin.id)
+    await bindings.DB.prepare("UPDATE user SET last_active_at = ? WHERE id = ?")
+      .bind("2000-01-01T00:00:00.000Z", admin.id)
       .run();
     for (let index = 0; index < 52; index += 1) {
       await insertUser({
@@ -248,14 +248,14 @@ describe("admin dashboard", () => {
       users: Array<{
         id: string;
         loginProvider: string;
-        lastLoginAt: string | null;
+        lastActiveAt: string | null;
       }>;
     };
     expect(multipleAccounts.users).toHaveLength(1);
     expect(multipleAccounts.users[0].id).toBe(admin.id);
-    expect(multipleAccounts.users[0].lastLoginAt).toBe(
-      "2026-08-31T12:34:56.000Z",
-    );
+    expect(
+      Date.parse(multipleAccounts.users[0].lastActiveAt || ""),
+    ).toBeGreaterThan(Date.parse("2000-01-01T00:00:00.000Z"));
     expect(multipleAccounts.users[0].loginProvider.split(",").sort()).toEqual([
       "github",
       "google",

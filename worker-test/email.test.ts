@@ -12,6 +12,7 @@ describe("welcome email", () => {
     expect(email.html).toContain(
       'src="https://myspellinggame.com/images/icon-64.png"',
     );
+    expect(email.html).toContain(">My Spelling Game</a>");
     expect(email.html).toContain('href="https://myspellinggame.com/"');
     expect(email.text).toContain("Start here:\nhttps://myspellinggame.com/");
   });

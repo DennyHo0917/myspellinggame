@@ -253,6 +253,13 @@ async function requireTeacher(
       "sign_in_required",
       "Sign in as a teacher to continue.",
     );
+  try {
+    await env.DB.prepare("UPDATE user SET last_active_at = ? WHERE id = ?")
+      .bind(new Date().toISOString(), session.user.id)
+      .run();
+  } catch (error) {
+    console.error("Failed to record last active time", error);
+  }
   return session.user;
 }
 
@@ -372,7 +379,7 @@ async function adminUsers(env: Env, url: URL) {
   const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
   const now = new Date().toISOString();
   const userQuery = `WITH admin_users AS (
-    SELECT u.id, u.name, u.email, u.createdAt, u.last_login_at,
+    SELECT u.id, u.name, u.email, u.createdAt, u.last_active_at,
            (SELECT GROUP_CONCAT(DISTINCT a.providerId)
             FROM account a WHERE a.userId = u.id) AS loginProvider,
            u.workspace_type, u.admin_plan, u.admin_plan_updated_at,
@@ -423,7 +430,7 @@ async function adminUsers(env: Env, url: URL) {
       name: string;
       email: string;
       createdAt: string;
-      last_login_at: string | null;
+      last_active_at: string | null;
       loginProvider: string | null;
       plan: string | null;
       workspace_type: "family" | "teacher" | null;
@@ -448,7 +455,7 @@ async function adminUsers(env: Env, url: URL) {
       billingInterval: row.billing_interval,
       currentPeriodEnd: row.current_period_end,
       createdAt: row.createdAt,
-      lastLoginAt: row.last_login_at,
+      lastActiveAt: row.last_active_at,
     })),
     page,
     pageSize,

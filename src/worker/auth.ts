@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { sendWelcomeEmail } from "./email";
 
 export interface AuthEnv {
   DB: D1Database;
@@ -8,6 +9,7 @@ export interface AuthEnv {
   GOOGLE_CLIENT_SECRET?: string;
   MICROSOFT_CLIENT_ID?: string;
   MICROSOFT_CLIENT_SECRET?: string;
+  RESEND_API_KEY?: string;
 }
 
 export function safeTeacherCallbackURL(value: unknown, origin: string) {
@@ -95,11 +97,38 @@ export function createAuth(env: AuthEnv, request: Request) {
       database: { joins: true },
     },
     databaseHooks: {
+      user: {
+        create: {
+          after: async (user, context) => {
+            if (!env.RESEND_API_KEY) return;
+            try {
+              await sendWelcomeEmail(
+                env.RESEND_API_KEY,
+                user.email,
+                context?.headers?.get("accept-language"),
+              );
+            } catch (error) {
+              console.error("Welcome email failed", error);
+            }
+          },
+        },
+      },
       session: {
         create: {
           before: async (session) => ({
             data: { ...session, ipAddress: null, userAgent: null },
           }),
+          after: async (session) => {
+            try {
+              await env.DB.prepare(
+                "UPDATE user SET last_login_at = ? WHERE id = ?",
+              )
+                .bind(new Date().toISOString(), session.userId)
+                .run();
+            } catch (error) {
+              console.error("Failed to record last login time", error);
+            }
+          },
         },
       },
     },

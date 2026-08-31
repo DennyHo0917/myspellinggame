@@ -218,6 +218,9 @@ describe("admin dashboard", () => {
   it("paginates and searches users without duplicate rows or sensitive tokens", async () => {
     await insertAccount(admin.id, "google");
     await insertAccount(admin.id, "github");
+    await bindings.DB.prepare("UPDATE user SET last_login_at = ? WHERE id = ?")
+      .bind("2026-08-31T12:34:56.000Z", admin.id)
+      .run();
     for (let index = 0; index < 52; index += 1) {
       await insertUser({
         id: `user-${String(index).padStart(2, "0")}`,
@@ -241,9 +244,18 @@ describe("admin dashboard", () => {
 
     const multipleAccounts = (await (
       await call("/api/admin/users?q=admin%40example.test")
-    ).json()) as { users: Array<{ id: string; loginProvider: string }> };
+    ).json()) as {
+      users: Array<{
+        id: string;
+        loginProvider: string;
+        lastLoginAt: string | null;
+      }>;
+    };
     expect(multipleAccounts.users).toHaveLength(1);
     expect(multipleAccounts.users[0].id).toBe(admin.id);
+    expect(multipleAccounts.users[0].lastLoginAt).toBe(
+      "2026-08-31T12:34:56.000Z",
+    );
     expect(multipleAccounts.users[0].loginProvider.split(",").sort()).toEqual([
       "github",
       "google",

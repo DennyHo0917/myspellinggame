@@ -372,7 +372,7 @@ async function adminUsers(env: Env, url: URL) {
   const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
   const now = new Date().toISOString();
   const userQuery = `WITH admin_users AS (
-    SELECT u.id, u.name, u.email, u.createdAt,
+    SELECT u.id, u.name, u.email, u.createdAt, u.last_login_at,
            (SELECT GROUP_CONCAT(DISTINCT a.providerId)
             FROM account a WHERE a.userId = u.id) AS loginProvider,
            u.workspace_type, u.admin_plan, u.admin_plan_updated_at,
@@ -423,6 +423,7 @@ async function adminUsers(env: Env, url: URL) {
       name: string;
       email: string;
       createdAt: string;
+      last_login_at: string | null;
       loginProvider: string | null;
       plan: string | null;
       workspace_type: "family" | "teacher" | null;
@@ -447,6 +448,7 @@ async function adminUsers(env: Env, url: URL) {
       billingInterval: row.billing_interval,
       currentPeriodEnd: row.current_period_end,
       createdAt: row.createdAt,
+      lastLoginAt: row.last_login_at,
     })),
     page,
     pageSize,
@@ -2359,10 +2361,7 @@ export async function handleRequest(
       requireSameOrigin(request);
       const plan = await getPlan(env, user.id);
       return json(
-        ownerLearner(
-          await updateLearner(env.DB, request, learner, plan),
-          plan,
-        ),
+        ownerLearner(await updateLearner(env.DB, request, learner, plan), plan),
       );
     }
   }

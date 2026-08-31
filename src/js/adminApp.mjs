@@ -216,6 +216,7 @@ async function loadUsers() {
         textCell(user.email),
         textCell(formatProvider(user.loginProvider)),
         badgeCell(formatPlan(user.plan), user.plan),
+        textCell(formatDate(user.lastLoginAt)),
         textCell(formatDate(user.createdAt)),
       );
       const action = document.createElement("td");
@@ -305,6 +306,7 @@ function renderUserDetails(user) {
         "管理员指定",
         user.adminPlan ? formatPlan(user.adminPlan) : "按订阅自动判断",
       ],
+      ["最后登录时间", formatDate(user.lastLoginAt)],
       ["注册时间", formatDate(user.createdAt)],
     ].flatMap(([label, value]) => detailPair(label, value)),
   );

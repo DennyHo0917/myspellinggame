@@ -129,6 +129,13 @@ function render(data) {
   const main = shell();
   const card = document.createElement("section");
   card.className = "product-card";
+  if (data.learner.avatar) {
+    const avatar = document.createElement("img");
+    avatar.className = "learner-home-avatar";
+    avatar.src = data.learner.avatar;
+    avatar.alt = "";
+    card.append(avatar);
+  }
   const heading = document.createElement("h1");
   heading.textContent = m("learnerGreeting", { name: data.learner.name });
   const intro = document.createElement("p");

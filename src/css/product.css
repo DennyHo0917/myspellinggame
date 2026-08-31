@@ -657,6 +657,26 @@ th {
 .assignment-title {
   overflow-wrap: anywhere;
 }
+.assignment-page-title {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  text-align: center;
+}
+.assignment-learner {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+.assignment-learner .learner-home-avatar {
+  width: 72px;
+  height: 72px;
+  margin: 0;
+}
+.assignment-learner-name {
+  font-size: 1.2rem;
+}
 .player-progress {
   font-weight: 800;
   color: var(--brand);
@@ -684,8 +704,28 @@ th {
   display: grid;
   gap: 0.75rem;
 }
+.answer-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.answer-actions > :only-child {
+  grid-column: 1 / -1;
+}
 .assignment-return {
-  margin-top: 0.75rem;
+  float: right;
+  margin: 0 0 1rem 1rem;
+}
+.assignment-example {
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+.assignment-example-blank {
+  display: inline-block;
+  width: 7ch;
+  border-bottom: 2px solid currentColor;
+  vertical-align: -0.12em;
 }
 .answer-form input {
   min-height: 52px;
@@ -1639,6 +1679,34 @@ body.workspace-page {
   min-height: 68px;
   padding: 0.8rem 1rem;
 }
+.learner-profile-summary {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.8rem;
+}
+.learner-avatar {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px var(--line);
+}
+.learner-avatar-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8f3ff;
+  color: #35627f;
+  font-weight: 800;
+}
+.learner-avatar-large {
+  width: 64px;
+  height: 64px;
+  flex-basis: 64px;
+}
 .learner-row h2 {
   margin: 0;
   font-size: 1rem;
@@ -1692,7 +1760,9 @@ body.workspace-page {
   min-height: 38px;
 }
 .learner-dialog {
-  width: min(420px, calc(100% - 2rem));
+  width: min(620px, calc(100% - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
   padding: 1.25rem;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -1708,6 +1778,122 @@ body.workspace-page {
 }
 .learner-dialog-actions {
   justify-content: flex-end;
+}
+.avatar-picker {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.avatar-picker legend {
+  padding: 0;
+  font-weight: 700;
+}
+.avatar-picker > small {
+  color: var(--muted);
+}
+.avatar-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  gap: 0.75rem;
+}
+.workspace-layout .teacher-main .avatar-picker .avatar-choice {
+  position: relative;
+  width: 76px;
+  min-height: 76px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+}
+.workspace-layout .teacher-main .avatar-picker .avatar-choice:hover,
+.workspace-layout .teacher-main .avatar-picker .avatar-choice.is-selected {
+  border-color: var(--brand);
+  background: transparent;
+  transform: none;
+}
+.workspace-layout .teacher-main .avatar-picker .avatar-choice.is-selected {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px var(--brand);
+}
+.avatar-choice.is-selected::after {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  content: "✓";
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+.avatar-choice img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.avatar-upload {
+  position: relative;
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.45rem;
+  justify-self: start;
+  padding: 0.65rem 1rem;
+  border: 1px solid #b9cac8;
+  border-radius: 9px;
+  background: #e6efee;
+  color: var(--brand-dark);
+  cursor: pointer;
+  font-weight: 700;
+  line-height: 1;
+}
+.avatar-upload::before {
+  content: "↑";
+  font-size: 1rem;
+  font-weight: 900;
+}
+.avatar-upload:hover {
+  border-color: var(--brand);
+  background: #d8e7e5;
+}
+.avatar-upload:focus-within {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+.avatar-upload input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.avatar-upload.is-loading {
+  cursor: wait;
+  opacity: 0.65;
+}
+.avatar-error {
+  color: var(--red);
+}
+.learner-home-avatar {
+  display: block;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 1rem;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px var(--line);
 }
 .learners-empty {
   display: grid;
@@ -1898,7 +2084,7 @@ body.workspace-page {
   display: grid;
 }
 
-.workspace-user-dropdown :is(a, button) {
+.workspace-user-dropdown :is(a, button, .workspace-user-email) {
   width: 100%;
   min-height: 40px;
   justify-content: flex-start;
@@ -1912,6 +2098,11 @@ body.workspace-page {
   font-weight: 700;
   text-align: left;
   text-decoration: none;
+}
+
+.workspace-user-email {
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--line);
 }
 
 .workspace-user-dropdown :is(a, button):hover,
@@ -2239,10 +2430,28 @@ body.workspace-page {
 .learner-picker-option.is-selected {
   background: #f1f7f5;
 }
+.learner-picker-option.is-selected {
+  box-shadow: inset 0 0 0 1px rgba(47, 111, 115, 0.25);
+}
 .learner-picker-option input {
   width: 16px;
   height: 16px;
   accent-color: var(--brand);
+}
+.learner-picker-avatar {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px var(--line);
+}
+.learner-picker-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .learner-picker-footer {
   display: flex;
@@ -2787,17 +2996,25 @@ body.assignment-page {
 .assignment-player .product-card {
   box-shadow: 0 12px 30px rgba(39, 62, 70, 0.08);
 }
+.assignment-result {
+  text-align: center;
+}
+.assignment-result .assignment-learner {
+  justify-content: center;
+}
 
 body.assignment-page {
   padding: 28px;
 }
 
 .assignment-page .assignment-player {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   width: min(680px, 100%);
   min-height: calc(100vh - 124px);
   margin: 0 auto;
-  align-items: center;
+  justify-content: center;
+  gap: 1rem;
   padding-top: 2rem;
   padding-bottom: 3rem;
 }

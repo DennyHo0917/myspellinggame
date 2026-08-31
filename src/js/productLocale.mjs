@@ -231,6 +231,12 @@ const PACKS = {
       "Create a profile to follow a learner across assignments.",
     freeLearnerUsage: "{used} of {limit} learner profiles",
     freeLearnerName: "Learner nickname or number",
+    chooseAvatar: "Choose an avatar",
+    chooseAvatarHelp: "Pick one below, or upload your own image.",
+    avatarChoice: "Avatar {number}",
+    uploadAvatar: "Upload image",
+    uploadedAvatar: "Uploaded image",
+    invalidAvatar: "Choose a JPG, PNG, or WebP image up to 5 MB.",
     freeLearnerNamePlaceholder: "Learner 01",
     freeAddLearner: "Add learner",
     freeProgress: "Progress",
@@ -572,6 +578,12 @@ const PACKS = {
       "Crea un perfil para seguir el progreso de una persona entre tareas.",
     freeLearnerUsage: "{used} de {limit} perfiles",
     freeLearnerName: "Nombre o número",
+    chooseAvatar: "Elige un avatar",
+    chooseAvatarHelp: "Elige uno de la lista o sube tu propia imagen.",
+    avatarChoice: "Avatar {number}",
+    uploadAvatar: "Subir imagen",
+    uploadedAvatar: "Imagen subida",
+    invalidAvatar: "Elige una imagen JPG, PNG o WebP de hasta 5 MB.",
     freeLearnerNamePlaceholder: "Perfil 01",
     freeAddLearner: "Añadir perfil",
     freeProgress: "Progreso",
@@ -913,6 +925,12 @@ const PACKS = {
       "Crie um perfil para acompanhar o progresso entre tarefas.",
     freeLearnerUsage: "{used} de {limit} perfis",
     freeLearnerName: "Nome ou número",
+    chooseAvatar: "Escolha um avatar",
+    chooseAvatarHelp: "Escolha uma opção abaixo ou envie sua própria imagem.",
+    avatarChoice: "Avatar {number}",
+    uploadAvatar: "Enviar imagem",
+    uploadedAvatar: "Imagem enviada",
+    invalidAvatar: "Escolha uma imagem JPG, PNG ou WebP de até 5 MB.",
     freeLearnerNamePlaceholder: "Perfil 01",
     freeAddLearner: "Adicionar perfil",
     freeProgress: "Progresso",
@@ -1254,6 +1272,12 @@ const PACKS = {
       "Créez un profil pour suivre un apprenant d’un devoir à l’autre.",
     freeLearnerUsage: "{used} profils sur {limit}",
     freeLearnerName: "Nom ou numéro de l’apprenant",
+    chooseAvatar: "Choisissez un avatar",
+    chooseAvatarHelp: "Choisissez-en un ci-dessous ou importez votre image.",
+    avatarChoice: "Avatar {number}",
+    uploadAvatar: "Importer une image",
+    uploadedAvatar: "Image importée",
+    invalidAvatar: "Choisissez une image JPG, PNG ou WebP de 5 Mo maximum.",
     freeLearnerNamePlaceholder: "Apprenant 01",
     freeAddLearner: "Ajouter un apprenant",
     freeProgress: "Progression",
@@ -1593,6 +1617,13 @@ const PACKS = {
       "Buat profil untuk mengikuti perkembangan pelajar di berbagai tugas.",
     freeLearnerUsage: "{used} dari {limit} profil pelajar",
     freeLearnerName: "Nama atau nomor pelajar",
+    chooseAvatar: "Pilih avatar",
+    chooseAvatarHelp: "Pilih salah satu di bawah atau unggah gambar sendiri.",
+    avatarChoice: "Avatar {number}",
+    uploadAvatar: "Unggah gambar",
+    uploadedAvatar: "Gambar yang diunggah",
+    invalidAvatar:
+      "Pilih gambar JPG, PNG, atau WebP dengan ukuran maksimal 5 MB.",
     freeLearnerNamePlaceholder: "Pelajar 01",
     freeAddLearner: "Tambah pelajar",
     freeProgress: "Perkembangan",
@@ -1908,6 +1939,12 @@ const PACKS = {
     freeLearnersCopy: "创建学习者档案，跨作业查看学习进度。",
     freeLearnerUsage: "已创建 {used}/{limit} 个学习者档案",
     freeLearnerName: "学习者昵称或编号",
+    chooseAvatar: "选择头像",
+    chooseAvatarHelp: "从下方选择一个头像，或上传自己的图片。",
+    avatarChoice: "头像 {number}",
+    uploadAvatar: "上传图片",
+    uploadedAvatar: "已上传的图片",
+    invalidAvatar: "请选择不超过 5 MB 的 JPG、PNG 或 WebP 图片。",
     freeLearnerNamePlaceholder: "学习者 01",
     freeAddLearner: "添加学习者",
     freeProgress: "学习进度",
@@ -2037,7 +2074,8 @@ const SENTENCE_LIBRARY_COPY = {
     upgradeBadge: "Upgrade",
     sentenceLibraryRequired:
       "Sentence library is included in Parent and Teacher Plans.",
-    sentenceLibraryError: "We couldn’t load example sentences. Please try again.",
+    sentenceLibraryError:
+      "We couldn’t load example sentences. Please try again.",
     invalidSentenceLevel: "Choose simple or difficult sentences.",
   },
   es: {
@@ -2049,7 +2087,8 @@ const SENTENCE_LIBRARY_COPY = {
     upgradeBadge: "Mejorar",
     sentenceLibraryRequired:
       "La biblioteca de frases está incluida en los planes para familias y docentes.",
-    sentenceLibraryError: "No se pudieron cargar las frases de ejemplo. Inténtalo de nuevo.",
+    sentenceLibraryError:
+      "No se pudieron cargar las frases de ejemplo. Inténtalo de nuevo.",
     invalidSentenceLevel: "Elige frases sencillas o difíciles.",
   },
   "pt-BR": {
@@ -2061,7 +2100,8 @@ const SENTENCE_LIBRARY_COPY = {
     upgradeBadge: "Upgrade",
     sentenceLibraryRequired:
       "A biblioteca de frases está incluída nos planos para Pais e Professores.",
-    sentenceLibraryError: "Não foi possível carregar as frases de exemplo. Tente novamente.",
+    sentenceLibraryError:
+      "Não foi possível carregar as frases de exemplo. Tente novamente.",
     invalidSentenceLevel: "Escolha frases simples ou difíceis.",
   },
   fr: {
@@ -2073,7 +2113,8 @@ const SENTENCE_LIBRARY_COPY = {
     upgradeBadge: "Améliorer",
     sentenceLibraryRequired:
       "La bibliothèque de phrases est incluse dans les offres Parents et Enseignants.",
-    sentenceLibraryError: "Impossible de charger les phrases d’exemple. Réessayez.",
+    sentenceLibraryError:
+      "Impossible de charger les phrases d’exemple. Réessayez.",
     invalidSentenceLevel: "Choisissez des phrases simples ou difficiles.",
   },
   id: {

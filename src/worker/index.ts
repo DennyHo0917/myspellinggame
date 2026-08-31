@@ -101,6 +101,7 @@ type LearnerRow = {
   archived: number;
   created_at: string;
   updated_at: string;
+  avatar?: string | null;
   join_pin_hash?: string | null;
   join_pin?: string | null;
 };
@@ -204,7 +205,10 @@ async function ensureTeacherJoinIdentity(
   return classPublicId;
 }
 
-async function readJson(request: Request): Promise<Record<string, unknown>> {
+async function readJson(
+  request: Request,
+  maxBytes = 32_768,
+): Promise<Record<string, unknown>> {
   if (
     !request.headers
       .get("content-type")
@@ -214,7 +218,7 @@ async function readJson(request: Request): Promise<Record<string, unknown>> {
     throw new HttpError(415, "json_required", "This endpoint requires JSON.");
   }
   const body = await request.text();
-  if (body.length > 32_768)
+  if (body.length > maxBytes)
     throw new HttpError(413, "body_too_large", "The request is too large.");
   try {
     const parsed = JSON.parse(body);
@@ -228,6 +232,37 @@ async function readJson(request: Request): Promise<Record<string, unknown>> {
       "The request body is not valid JSON.",
     );
   }
+}
+
+function validateAvatar(value: unknown) {
+  if (value === undefined || value === null || value === "") return null;
+  if (
+    typeof value === "string" &&
+    /^\/images\/avatars\/avatar-(?:0[1-9]|1\d|2[0-3])\.jpg$/.test(value)
+  )
+    return value;
+  if (
+    typeof value === "string" &&
+    value.length <= 160_000 &&
+    /^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(value)
+  ) {
+    try {
+      const bytes = atob(value.slice(value.indexOf(",") + 1));
+      if (
+        bytes.length >= 4 &&
+        bytes.length <= 119_000 &&
+        bytes.charCodeAt(0) === 0xff &&
+        bytes.charCodeAt(1) === 0xd8 &&
+        bytes.charCodeAt(2) === 0xff &&
+        bytes.charCodeAt(bytes.length - 2) === 0xff &&
+        bytes.charCodeAt(bytes.length - 1) === 0xd9
+      )
+        return value;
+    } catch {
+      // Fall through to the shared validation error.
+    }
+  }
+  throw new HttpError(400, "invalid_avatar", "Choose a valid profile image.");
 }
 
 function requireSameOrigin(request: Request) {
@@ -1031,8 +1066,9 @@ async function createLearner(
   ownerUserId: string,
   generatePin = randomPin,
 ) {
-  const body = await readJson(request);
+  const body = await readJson(request, 180_000);
   const { nickname: name } = validateNickname(body.name);
+  const avatar = validateAvatar(body.avatar);
   const plan = await getPlan(env, ownerUserId);
   const limit = PLAN_LIMITS[plan].learnerProfiles;
   const id = crypto.randomUUID();
@@ -1045,8 +1081,8 @@ async function createLearner(
     generatePin,
   );
   const inserted = await env.DB.prepare(
-    `INSERT INTO learners (id, owner_user_id, name, name_key, public_id, archived, created_at, updated_at, join_pin_hash, join_pin)
-     SELECT ?, ?, ?, ?, ?, 0, ?, ?, ?, ?
+    `INSERT INTO learners (id, owner_user_id, name, name_key, public_id, archived, created_at, updated_at, avatar, join_pin_hash, join_pin)
+     SELECT ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?
      WHERE (SELECT COUNT(*) FROM learners WHERE owner_user_id = ? AND archived = 0) < ?`,
   )
     .bind(
@@ -1057,6 +1093,7 @@ async function createLearner(
       publicId,
       now,
       now,
+      avatar,
       joinPinHash,
       joinPin,
       ownerUserId,
@@ -1078,6 +1115,7 @@ async function createLearner(
     archived: 0,
     created_at: now,
     updated_at: now,
+    avatar,
     join_pin_hash: joinPinHash,
     join_pin: joinPin,
   } satisfies LearnerRow;
@@ -1739,18 +1777,20 @@ async function publicAssignment(
       "learner_required",
       "Use the student link for this assignment.",
     );
-  let learner: Pick<LearnerRow, "id" | "public_id" | "name"> | undefined;
+  let learner:
+    Pick<LearnerRow, "id" | "public_id" | "name" | "avatar"> | undefined;
   if (learnerPublicId !== undefined) {
     if (!/^[A-Za-z0-9_-]{24}$/.test(learnerPublicId))
       throw new HttpError(404, "learner_not_found", "Learner not found.");
     learner =
       (await db
         .prepare(
-          `SELECT id, public_id, name FROM learners
+          `SELECT id, public_id, name, avatar FROM learners
          WHERE public_id = ? AND owner_user_id = ? AND archived = 0`,
         )
         .bind(learnerPublicId, assignment.owner_user_id)
-        .first<Pick<LearnerRow, "id" | "public_id" | "name">>()) ?? undefined;
+        .first<Pick<LearnerRow, "id" | "public_id" | "name" | "avatar">>()) ??
+      undefined;
     if (!learner)
       throw new HttpError(404, "learner_not_found", "Learner not found.");
     if (hasAssignedLearners) {
@@ -2167,7 +2207,12 @@ export async function handleRequest(
       expires_at: assignment.expires_at,
       words: assignment.words,
       ...(assignment.learner
-        ? { learner: { name: assignment.learner.name } }
+        ? {
+            learner: {
+              name: assignment.learner.name,
+              avatar: assignment.learner.avatar,
+            },
+          }
         : {}),
     });
   }
@@ -2191,11 +2236,16 @@ export async function handleRequest(
   );
   if (publicLearnerMatch && method === "GET") {
     const learner = await env.DB.prepare(
-      `SELECT id, name, owner_user_id FROM learners
+      `SELECT id, name, avatar, owner_user_id FROM learners
        WHERE public_id = ? AND archived = 0`,
     )
       .bind(publicLearnerMatch[1])
-      .first<{ id: string; name: string; owner_user_id: string }>();
+      .first<{
+        id: string;
+        name: string;
+        avatar: string | null;
+        owner_user_id: string;
+      }>();
     if (!learner)
       throw new HttpError(404, "learner_not_found", "Learner not found.");
     const assignments = await env.DB.prepare(
@@ -2221,7 +2271,7 @@ export async function handleRequest(
         }
       >();
     return json({
-      learner: { name: learner.name },
+      learner: { name: learner.name, avatar: learner.avatar },
       assignments: assignments.results,
     });
   }

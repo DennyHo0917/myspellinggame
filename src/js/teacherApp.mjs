@@ -24,6 +24,11 @@ const PURCHASE_RECORDED_KEY = "teacherPurchaseRecorded";
 const AUTH_PENDING_KEY = "teacherOAuthPending";
 const AUTH_PROVIDER_KEY = "teacherOAuthProvider";
 const ACTIVATION_POLL_ATTEMPTS = 10;
+const AVATAR_PATHS = Array.from(
+  { length: 23 },
+  (_, index) =>
+    `/images/avatars/avatar-${String(index + 1).padStart(2, "0")}.jpg`,
+);
 let assignmentResultsViewed = false;
 let workspaceState = null;
 const workspaceCache = {
@@ -74,6 +79,7 @@ const ERROR_KEYS = {
   learner_not_found: "learnerNotFound",
   learner_exists: "learnerExists",
   learner_limit: "learnerLimit",
+  invalid_avatar: "invalidAvatar",
   smart_review_required: "smartReviewRequired",
   sentence_library_required: "sentenceLibraryRequired",
   invalid_sentence_level: "invalidSentenceLevel",
@@ -119,6 +125,137 @@ function workspaceLearnerLabel(me) {
     : isParentPlan(me)
       ? copy.familyLearners
       : copy.learners;
+}
+
+function learnerAvatar(learner, className = "learner-avatar") {
+  if (learner.avatar) {
+    const image = document.createElement("img");
+    image.className = className;
+    image.src = learner.avatar;
+    image.alt = "";
+    return image;
+  }
+  const fallback = document.createElement("span");
+  fallback.className = `${className} learner-avatar-fallback`;
+  fallback.textContent = learner.name
+    .trim()
+    .charAt(0)
+    .toLocaleUpperCase(locale);
+  fallback.setAttribute("aria-hidden", "true");
+  return fallback;
+}
+
+async function uploadedAvatar(file) {
+  if (!file.type.startsWith("image/") || file.size > 5_000_000)
+    throw new Error(copy.invalidAvatar);
+  const source = await createImageBitmap(file);
+  if (!source.width || !source.height) {
+    source.close();
+    throw new Error(copy.invalidAvatar);
+  }
+  const canvas = document.createElement("canvas");
+  canvas.width = 192;
+  canvas.height = 192;
+  const context = canvas.getContext("2d");
+  const size = Math.min(source.width, source.height);
+  context.drawImage(
+    source,
+    (source.width - size) / 2,
+    (source.height - size) / 2,
+    size,
+    size,
+    0,
+    0,
+    canvas.width,
+    canvas.height,
+  );
+  source.close();
+  const value = canvas.toDataURL("image/jpeg", 0.8);
+  if (value.length > 160_000) throw new Error(copy.invalidAvatar);
+  return value;
+}
+
+function avatarPicker() {
+  const field = document.createElement("fieldset");
+  field.className = "avatar-picker";
+  const legend = document.createElement("legend");
+  legend.textContent = copy.chooseAvatar;
+  const help = document.createElement("small");
+  help.textContent = copy.chooseAvatarHelp;
+  const grid = document.createElement("div");
+  grid.className = "avatar-picker-grid";
+  let value = AVATAR_PATHS[0];
+  let uploadedButton = null;
+  const select = (button, avatar) => {
+    value = avatar;
+    grid.querySelectorAll("button").forEach((choice) => {
+      const selected = choice === button;
+      choice.classList.toggle("is-selected", selected);
+      choice.setAttribute("aria-pressed", String(selected));
+    });
+  };
+  AVATAR_PATHS.forEach((path, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "avatar-choice";
+    button.setAttribute("aria-label", m("avatarChoice", { number: index + 1 }));
+    const image = document.createElement("img");
+    image.src = path;
+    image.alt = "";
+    image.loading = "lazy";
+    button.append(image);
+    button.addEventListener("click", () => select(button, path));
+    grid.append(button);
+  });
+  const upload = document.createElement("label");
+  upload.className = "button-secondary avatar-upload";
+  upload.textContent = copy.uploadAvatar;
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/jpeg,image/png,image/webp";
+  const error = document.createElement("small");
+  error.className = "avatar-error";
+  error.setAttribute("role", "alert");
+  error.hidden = true;
+  input.addEventListener("change", async () => {
+    const file = input.files?.[0];
+    if (!file) return;
+    upload.classList.add("is-loading");
+    error.hidden = true;
+    try {
+      const avatar = await uploadedAvatar(file);
+      if (!uploadedButton) {
+        uploadedButton = document.createElement("button");
+        uploadedButton.type = "button";
+        uploadedButton.className = "avatar-choice avatar-uploaded-choice";
+        uploadedButton.setAttribute("aria-label", copy.uploadedAvatar);
+        uploadedButton.append(document.createElement("img"));
+        uploadedButton.addEventListener("click", () =>
+          select(uploadedButton, uploadedButton.querySelector("img").src),
+        );
+        grid.append(uploadedButton);
+      }
+      uploadedButton.querySelector("img").src = avatar;
+      select(uploadedButton, avatar);
+    } catch (uploadError) {
+      error.textContent = uploadError.message;
+      error.hidden = false;
+      input.value = "";
+    } finally {
+      upload.classList.remove("is-loading");
+    }
+  });
+  upload.append(input);
+  field.append(legend, help, grid, upload, error);
+  const reset = () => {
+    uploadedButton?.remove();
+    uploadedButton = null;
+    input.value = "";
+    error.hidden = true;
+    select(grid.firstElementChild, AVATAR_PATHS[0]);
+  };
+  reset();
+  return { element: field, value: () => value, reset };
 }
 
 function syncFormSubmit(form) {
@@ -290,18 +427,17 @@ function nav({ workspace = false, me = null } = {}) {
   const menu = document.createElement("div");
   menu.className = "workspace-user-dropdown";
   menu.setAttribute("role", "menu");
-  const billing = document.createElement("a");
-  billing.className = "workspace-user-action";
-  billing.textContent = copy.plansAndBilling;
-  billing.setAttribute("role", "menuitem");
-  billing.href = productPagePath("pricing", locale);
+  const email = document.createElement("div");
+  email.className = "workspace-user-email";
+  email.textContent = me.user.email;
+  email.setAttribute("role", "presentation");
   const logout = document.createElement("button");
   logout.type = "button";
   logout.className = "workspace-user-action";
   logout.textContent = copy.signOut;
   logout.setAttribute("role", "menuitem");
   logout.addEventListener("click", signOut);
-  menu.append(billing, logout);
+  menu.append(email, logout);
   userMenu.append(userToggle, menu);
   userMenu.addEventListener("toggle", () => {
     userToggle.setAttribute("aria-expanded", String(userMenu.open));
@@ -379,6 +515,8 @@ function workspaceIcon(name) {
       '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h8"/></svg>',
     progress:
       '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m4 16 6-6 4 4 7-7"/><path d="M15 7h6v6"/></svg>',
+    billing:
+      '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M7 15h4"/></svg>',
   };
   return icons[name] || "•";
 }
@@ -586,6 +724,13 @@ function shell(me = null, activeSection = "overview") {
     });
     menu.append(link);
   }
+  const billing = document.createElement("a");
+  billing.className = "workspace-sidebar-link workspace-sidebar-billing";
+  billing.href = productPagePath("pricing", locale);
+  billing.innerHTML = `<span class="workspace-sidebar-icon" aria-hidden="true">${workspaceIcon("billing")}</span><span class="workspace-sidebar-label">${copy.plansAndBilling}</span>`;
+  billing.setAttribute("aria-label", copy.plansAndBilling);
+  billing.title = copy.plansAndBilling;
+  billing.addEventListener("click", closeWorkspaceDrawer);
   const websiteHome = document.createElement("a");
   websiteHome.className = "workspace-sidebar-link workspace-sidebar-home";
   websiteHome.href = productPagePath("", locale);
@@ -611,7 +756,7 @@ function shell(me = null, activeSection = "overview") {
       localStorage.setItem("workspaceSidebarCollapsed", collapsed ? "1" : "0");
     } catch {}
   });
-  sidebar.append(menu, websiteHome, collapse);
+  sidebar.append(menu, billing, websiteHome, collapse);
   try {
     if (localStorage.getItem("workspaceSidebarCollapsed") === "1")
       collapse.click();
@@ -1567,6 +1712,8 @@ function renderLearners(me, learners) {
   form.className = "product-form compact-form";
   form.method = "dialog";
   form.innerHTML = `<div class="field"><label for="learner-name">${learnerCopy.name}</label><input id="learner-name" maxlength="32" required placeholder="${learnerCopy.placeholder}"></div><div class="actions learner-dialog-actions"><button type="button" class="button-secondary learner-dialog-cancel">${copy.cancel}</button><button type="submit">${learnerCopy.add}</button></div>`;
+  const picker = avatarPicker();
+  form.querySelector(".learner-dialog-actions").before(picker.element);
   const closeDialog = () => dialog.close();
   form
     .querySelector(".learner-dialog-cancel")
@@ -1580,6 +1727,7 @@ function renderLearners(me, learners) {
         method: "POST",
         body: JSON.stringify({
           name: form.querySelector("#learner-name").value,
+          avatar: picker.value(),
         }),
       });
       trackEvent("learner_created");
@@ -1598,6 +1746,7 @@ function renderLearners(me, learners) {
   section.append(dialog);
   addButton.addEventListener("click", () => {
     form.reset();
+    picker.reset();
     dialog.showModal();
     form.querySelector("#learner-name").focus();
   });
@@ -1740,7 +1889,10 @@ function renderLearners(me, learners) {
     }
     menu.append(menuSummary, menuItems);
     actions.append(open, menu);
-    row.append(body, actions);
+    const profile = document.createElement("div");
+    profile.className = "learner-profile-summary";
+    profile.append(learnerAvatar(learner), body);
+    row.append(profile, actions);
     row.addEventListener("click", (event) => {
       if (event.target.closest("a,button,summary,details")) return;
       location.href = open.href;
@@ -2419,9 +2571,11 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
       input.type = "checkbox";
       input.name = "learnerId";
       input.value = learner.id;
+      const avatar = learnerAvatar(learner, "learner-picker-avatar");
       const name = document.createElement("span");
+      name.className = "learner-picker-name";
       name.textContent = learner.name;
-      label.append(input, name);
+      label.append(input, avatar, name);
       options.append(label);
     });
     const selectedRadio = form.querySelector(
@@ -2444,7 +2598,8 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
         .filter((input) => input.checked)
         .map(
           (input) =>
-            input.closest("label")?.querySelector("span")?.textContent || "",
+            input.closest("label")?.querySelector(".learner-picker-name")
+              ?.textContent || "",
         )
         .filter(Boolean);
       pickerSummary.textContent = selected.length
@@ -3041,7 +3196,10 @@ async function renderLearner(me, id) {
   titleRow.className = "assignment-title-row";
   const heading = document.createElement("h1");
   heading.textContent = data.learner.name;
-  titleRow.append(heading);
+  titleRow.append(
+    learnerAvatar(data.learner, "learner-avatar learner-avatar-large"),
+    heading,
+  );
   if (data.learner.archived) {
     const badge = document.createElement("span");
     badge.className = "badge closed";

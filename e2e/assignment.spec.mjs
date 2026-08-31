@@ -275,12 +275,13 @@ test("magic learner links use the server identity and hide nickname entry", asyn
   page,
 }) => {
   const learnerPublicId = "learnerToken123456789012";
+  const learnerAvatar = "/images/avatars/avatar-08.jpg";
   let submittedBody;
   await page.route(`**/api/public/learners/${learnerPublicId}`, (route) =>
     route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
-        learner: { name: "Emily" },
+        learner: { name: "Emily", avatar: learnerAvatar },
         assignments: [
           {
             public_id: publicId,
@@ -303,7 +304,7 @@ test("magic learner links use the server identity and hide nickname entry", asyn
           mode: "typing",
           max_attempts: 3,
           expires_at: new Date(Date.now() + 86_400_000).toISOString(),
-          learner: { name: "Emily" },
+          learner: { name: "Emily", avatar: learnerAvatar },
           words: [words[0]],
         }),
       }),
@@ -341,14 +342,56 @@ test("magic learner links use the server identity and hide nickname entry", asyn
     `/a/${publicId}?learner=${learnerPublicId}&lang=en`,
   );
   await startLink.click();
-  await expect(page.getByText("Practicing as Emily")).toBeVisible();
+  await expect(
+    page.locator(".assignment-player > .assignment-page-title"),
+  ).toHaveText("Week 3 Spelling");
+  await expect(page.locator(".assignment-page-title")).toHaveCSS(
+    "text-align",
+    "center",
+  );
+  const learnerIdentity = page.locator(".product-card .assignment-learner");
+  await expect(learnerIdentity).toContainText("Emily");
+  expect(
+    await page
+      .locator(".product-card")
+      .evaluate((element) => getComputedStyle(element).textAlign),
+  ).not.toBe("center");
+  await expect(
+    learnerIdentity.locator(`img[src="${learnerAvatar}"]`),
+  ).toBeVisible();
+  await expect(
+    page.locator(".product-card .assignment-title", {
+      hasText: "Week 3 Spelling",
+    }),
+  ).toHaveCount(0);
+  const titleBox = await page.locator(".assignment-page-title").boundingBox();
+  const cardBox = await page.locator(".product-card").boundingBox();
+  const avatarBox = await learnerIdentity.locator("img").boundingBox();
+  const nameBox = await learnerIdentity
+    .locator(".assignment-learner-name")
+    .boundingBox();
+  expect(titleBox.y + titleBox.height).toBeLessThan(cardBox.y);
+  expect(avatarBox.x + avatarBox.width).toBeLessThan(nameBox.x);
   await expect(page.getByLabel("Nickname")).toHaveCount(0);
   await page.getByRole("button", { name: "Start assignment" }).click();
+  await expect(
+    page.locator(`.assignment-player img[src="${learnerAvatar}"]`),
+  ).toBeVisible();
   await page.locator(".answer-form input").fill("apple");
   await page.getByRole("button", { name: "Check answer" }).click();
   await page.getByRole("button", { name: "Next word" }).click();
   await expect(
     page.getByRole("heading", { name: "Your result" }),
+  ).toBeVisible();
+  await expect(page.locator(".assignment-result")).toHaveCSS(
+    "text-align",
+    "center",
+  );
+  await expect(
+    page.locator(".assignment-result .assignment-learner"),
+  ).toHaveCSS("justify-content", "center");
+  await expect(
+    page.locator(`.assignment-player img[src="${learnerAvatar}"]`),
   ).toBeVisible();
   expect(submittedBody).toMatchObject({ learnerPublicId });
   expect(submittedBody).not.toHaveProperty("nickname");
@@ -1314,7 +1357,7 @@ for (const [locale, href, advice] of [
 }
 
 test("practice records a valid list and start separately", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto("/");
   await page.locator("#custom-word-list").fill("because\nfriend");
   await page.locator('input[name="practice-mode"][value="typing"]').check();
@@ -1902,7 +1945,7 @@ test("dictation receives optional example sentence data and speaks the full prom
       value: {
         cancel() {},
         speak(utterance) {
-          calls.push(utterance.text);
+          calls.push({ text: utterance.text, rate: utterance.rate });
         },
       },
     });
@@ -1927,20 +1970,47 @@ test("dictation receives optional example sentence data and speaks the full prom
   await page.goto(`/a/${publicId}?lang=en`);
   await page.getByLabel("Nickname").fill("Student 01");
   await page.getByRole("button", { name: "Start assignment" }).click();
+  const example = page.locator(".assignment-example");
+  await expect(example).toContainText("I ate an");
+  await expect(example).not.toContainText("apple");
+  await expect(example.locator(".assignment-example-blank")).toHaveCSS(
+    "border-bottom-style",
+    "solid",
+  );
+  const cardBox = await page.locator(".product-card").boundingBox();
+  const returnBox = await page
+    .getByRole("button", { name: "Return to assignment start" })
+    .boundingBox();
+  expect(returnBox.x).toBeGreaterThan(cardBox.x + cardBox.width / 2);
+  expect(returnBox.y).toBeLessThan(cardBox.y + cardBox.height / 3);
   await expect
-    .poll(() => page.evaluate(() => window.__speechCalls))
-    .toContain("apple. I ate an apple after school. apple.");
-  await page.getByRole("button", { name: "Play word" }).click();
+    .poll(() => page.evaluate(() => window.__speechCalls.at(-1)?.text))
+    .toBe("apple. I ate an apple after school.");
+  expect(
+    await page.evaluate(() => window.__speechCalls.at(-1).rate),
+  ).toBeCloseTo(0.85, 2);
+  const actions = page.locator(".answer-actions");
+  const play = actions.getByRole("button", { name: "Play word" });
+  const check = actions.getByRole("button", { name: "Check answer" });
+  const playBox = await play.boundingBox();
+  const checkBox = await check.boundingBox();
+  expect(playBox.x).toBeLessThan(checkBox.x);
+  expect(playBox.y).toBe(checkBox.y);
+  await play.click();
   await expect
     .poll(() => page.evaluate(() => window.__speechCalls.length))
     .toBe(2);
   await page.locator(".answer-form input").fill("wrong");
-  await page.getByRole("button", { name: "Check answer" }).click();
+  await page.locator(".answer-form input").press("Enter");
+  await expect(check).toHaveCount(0);
   await page.getByRole("button", { name: "Next word" }).click();
   await expect(page.getByText("Review word")).toBeVisible();
   await expect
-    .poll(() => page.evaluate(() => window.__speechCalls.at(-1)))
-    .toBe("apple. I ate an apple after school. apple.");
+    .poll(() => page.evaluate(() => window.__speechCalls.at(-1).text))
+    .toBe("apple. I ate an apple after school.");
+  expect(
+    await page.evaluate(() => window.__speechCalls.at(-1).rate),
+  ).toBeCloseTo(0.85, 2);
 });
 
 test("teacher creates an assignment with an example sentence and the student player loads it", async ({
@@ -2684,6 +2754,40 @@ test("shared site and product headers stay fixed while scrolling", async ({
     });
     expect((await header.boundingBox()).y).toBe(0);
   }
+});
+
+test("pricing header keeps Home and Workspace buttons at the top right", async ({
+  page,
+}) => {
+  for (const [path, homeLabel, homeHref, workspaceLabel, workspaceHref] of [
+    ["/pricing", "Home", "/", "Workspace", "/teacher?lang=en"],
+    ["/zh/pricing", "首页", "/zh/", "工作台", "/teacher?lang=zh"],
+  ]) {
+    await page.goto(path, { waitUntil: "domcontentloaded" });
+    const nav = page.locator(".pricing-nav");
+    const actions = nav.locator(".product-nav-actions");
+    await expect(nav.locator(".product-nav-center")).toHaveCount(0);
+    await expect(
+      actions.getByRole("link", { name: homeLabel, exact: true }),
+    ).toHaveAttribute("href", homeHref);
+    await expect(
+      actions.getByRole("link", { name: workspaceLabel, exact: true }),
+    ).toHaveAttribute("href", workspaceHref);
+    await expect(
+      actions.getByRole("link", { name: homeLabel, exact: true }),
+    ).toHaveClass(/button-secondary/);
+    await expect(
+      actions.getByRole("link", { name: workspaceLabel, exact: true }),
+    ).toHaveClass(/button-link/);
+    const navBox = await nav.boundingBox();
+    const actionsBox = await actions.boundingBox();
+    expect(actionsBox.x).toBeGreaterThan(navBox.x + navBox.width / 2);
+  }
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.goto("/fr/pricing", { waitUntil: "domcontentloaded" });
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(320);
 });
 
 test("language menus close when clicking outside", async ({ page }) => {
@@ -3804,6 +3908,30 @@ async function mockWorkspaceShell(page, plan, overrides = {}) {
   );
 }
 
+test("assignment learner picker shows profile avatars", async ({ page }) => {
+  await mockWorkspaceShell(page, "teacher", {
+    learners: [
+      {
+        id: "07070707-0707-4707-8707-070707070707",
+        name: "Alice",
+        avatar: "/images/avatars/avatar-07.jpg",
+        archived: 0,
+      },
+    ],
+  });
+  await page.goto("/teacher/assignments/new?lang=en", {
+    waitUntil: "domcontentloaded",
+  });
+  await page.locator('[data-target-option="selected"]').click();
+  await page.locator(".learner-picker-summary").click();
+  const option = page.locator(".learner-picker-option", { hasText: "Alice" });
+  await expect(
+    option.locator('img[src="/images/avatars/avatar-07.jpg"]'),
+  ).toBeVisible();
+  await option.click();
+  await expect(option).toHaveClass(/is-selected/);
+});
+
 for (const [plan, learnerLabel, billingLabel, usageLabel] of [
   ["free", "Learners", "Plans & billing", "0 of 1 learner profiles"],
   ["parent", "Children", "Plans & billing", "0 of 5 child profiles"],
@@ -3819,9 +3947,9 @@ for (const [plan, learnerLabel, billingLabel, usageLabel] of [
     await expect(
       sidebar.getByText(learnerLabel, { exact: true }),
     ).toBeVisible();
-    await expect(sidebar.getByText(billingLabel, { exact: true })).toHaveCount(
-      0,
-    );
+    await expect(
+      sidebar.getByText(billingLabel, { exact: true }),
+    ).toBeVisible();
     await expect(page.getByRole("button", { name: /Owner A/ })).toBeVisible();
     await expect(page.getByText(usageLabel, { exact: true })).toBeVisible();
     await expect(
@@ -3876,13 +4004,22 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   await expect(
     sidebar.locator(".workspace-sidebar-link[data-section]"),
   ).toHaveCount(5);
-  await expect(sidebar.locator(".workspace-sidebar-icon svg")).toHaveCount(7);
+  await expect(sidebar.locator(".workspace-sidebar-icon svg")).toHaveCount(8);
   await expect(
     sidebar.getByRole("link", { name: "Home", exact: true }),
   ).toHaveAttribute("href", "/");
+  const billingLink = sidebar.getByRole("link", {
+    name: "Plans & billing",
+  });
+  await expect(billingLink).toHaveAttribute("href", "/pricing");
   await expect(
-    sidebar.getByText("Plans & billing", { exact: true }),
-  ).toHaveCount(0);
+    billingLink.locator(".workspace-sidebar-icon svg"),
+  ).toBeVisible();
+  const billingBox = await billingLink.boundingBox();
+  const homeBox = await sidebar
+    .getByRole("link", { name: "Home", exact: true })
+    .boundingBox();
+  expect(billingBox.y).toBeLessThan(homeBox.y);
   await expect(sidebar.getByText("Sign out", { exact: true })).toHaveCount(0);
   const layout = await page.evaluate(() => {
     const nav = document.querySelector(".teacher-product-nav");
@@ -3955,7 +4092,7 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   expect(layout.logoRadius).toBe("7px");
   expect(layout.languageIcon).toContain("data:image/svg+xml");
   expect(layout.languageRadius).toBe("999px");
-  expect(layout.userChevron).toBe('"⌄"');
+  expect(layout.userChevron).toBe('""');
   expect(layout.footerBottom).toBeCloseTo(layout.viewportHeight, 0);
   expect(layout.mainPadding).toBe("32px");
 
@@ -3974,15 +4111,33 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   await userMenu.focus();
   await page.keyboard.press("ArrowDown");
   await expect(userMenu).toHaveAttribute("aria-expanded", "true");
-  await expect(
-    page.getByRole("menuitem", { name: "Back to website home" }),
-  ).toBeFocused();
+  await expect(page.getByRole("menuitem", { name: "Sign out" })).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(userMenu).toHaveAttribute("aria-expanded", "false");
   await userMenu.click();
+  await expect(page.locator(".workspace-user-email")).toHaveText(
+    "a@example.test",
+  );
+  const dropdownStyles = await page.evaluate(() => {
+    const values = (selector) => {
+      const style = getComputedStyle(document.querySelector(selector));
+      return [
+        style.fontFamily,
+        style.fontSize,
+        style.fontWeight,
+        style.color,
+        style.padding,
+      ];
+    };
+    return {
+      email: values(".workspace-user-email"),
+      logout: values('.workspace-user-action[role="menuitem"]'),
+    };
+  });
+  expect(dropdownStyles.email).toEqual(dropdownStyles.logout);
   await expect(
     page.getByRole("menuitem", { name: "Plans & billing" }),
-  ).toHaveAttribute("href", "/pricing");
+  ).toHaveCount(0);
   await page.getByRole("menuitem", { name: "Sign out" }).click();
   await expect.poll(() => signOutCalls).toBe(1);
   await expect(page).toHaveURL(/\/$/);
@@ -3994,6 +4149,7 @@ test("learner management keeps progress, rename, archive, and restore actions", 
   const learner = {
     id: "11111111-1111-4111-8111-111111111111",
     name: "Alice",
+    avatar: "/images/avatars/avatar-05.jpg",
     archived: 0,
     completed_attempts: 2,
     accuracy: 75,
@@ -4014,20 +4170,97 @@ test("learner management keeps progress, rename, archive, and restore actions", 
     waitUntil: "domcontentloaded",
   });
   let row = page.locator("article", { hasText: "Alice" });
-  await expect(row.getByText("Active", { exact: true })).toBeVisible();
+  await expect(
+    row.locator('img[src="/images/avatars/avatar-05.jpg"]'),
+  ).toBeVisible();
   await expect(row.getByRole("link", { name: "Progress" })).toHaveAttribute(
     "href",
     `/teacher/learners/${learner.id}?lang=en`,
   );
 
   page.once("dialog", (dialog) => dialog.accept("Alicia"));
+  await row.locator("summary").click();
   await row.getByRole("button", { name: "Rename" }).click();
   row = page.locator("article", { hasText: "Alicia" });
   await expect(row).toBeVisible();
+  await row.locator("summary").click();
   await row.getByRole("button", { name: "Archive" }).click();
   await expect(row.getByText("Archived", { exact: true })).toBeVisible();
+  await row.locator("summary").click();
   await row.getByRole("button", { name: "Restore" }).click();
-  await expect(row.getByText("Active", { exact: true })).toBeVisible();
+  await expect(row.getByText("Archived", { exact: true })).toHaveCount(0);
+});
+
+test("learner creation offers bundled avatars and compresses an uploaded image", async ({
+  page,
+}) => {
+  let createdBody;
+  await mockWorkspaceShell(page, "free", { learners: [] });
+  await page.route("**/api/learners", async (route) => {
+    createdBody = route.request().postDataJSON();
+    await route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({
+        id: "23232323-2323-4232-8232-232323232323",
+        ...createdBody,
+      }),
+    });
+  });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/teacher/learners?lang=en", {
+    waitUntil: "domcontentloaded",
+  });
+  await page.getByRole("button", { name: "Add learner" }).first().click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByRole("button", { name: /^Avatar / })).toHaveCount(
+    23,
+  );
+  const firstAvatar = dialog.getByRole("button", {
+    name: "Avatar 1",
+    exact: true,
+  });
+  const avatarBox = await firstAvatar.boundingBox();
+  const avatarImageBox = await firstAvatar.locator("img").boundingBox();
+  expect(avatarBox.width).toBeGreaterThanOrEqual(76);
+  expect(avatarBox.height).toBeGreaterThanOrEqual(76);
+  expect(avatarImageBox.width).toBeGreaterThanOrEqual(70);
+  expect(avatarImageBox.height).toBeGreaterThanOrEqual(70);
+  const uploadButton = dialog.locator(".avatar-upload");
+  await expect(uploadButton).toBeVisible();
+  expect(
+    await uploadButton.evaluate((element) => ({
+      display: getComputedStyle(element).display,
+      background: getComputedStyle(element).backgroundColor,
+      height: element.getBoundingClientRect().height,
+    })),
+  ).toEqual({
+    display: "flex",
+    background: "rgb(230, 239, 238)",
+    height: 44,
+  });
+  const bundledAvatar = dialog.getByRole("button", { name: "Avatar 5" });
+  await bundledAvatar.click();
+  await expect(bundledAvatar).toHaveAttribute("aria-pressed", "true");
+  await expect(bundledAvatar).toHaveClass(/is-selected/);
+  expect(
+    await bundledAvatar.evaluate(
+      (element) => getComputedStyle(element).borderTopColor,
+    ),
+  ).toBe("rgb(47, 111, 115)");
+  await dialog
+    .locator('input[type="file"]')
+    .setInputFiles("images/avatars/avatar-01.jpg");
+  await expect(
+    dialog.getByRole("button", { name: "Uploaded image" }),
+  ).toBeVisible();
+  await dialog.getByLabel("Learner nickname or number").fill("Taylor");
+  await dialog.getByRole("button", { name: "Add learner" }).click();
+
+  await expect.poll(() => createdBody?.name).toBe("Taylor");
+  expect(createdBody.avatar).toMatch(/^data:image\/jpeg;base64,/);
+  expect(createdBody.avatar.length).toBeLessThan(160_000);
 });
 
 test("learner management shows the plan limit when restoring would exceed active profiles", async ({
@@ -4303,7 +4536,7 @@ test("desktop workspace sidebar collapses and restores", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("paid workspace user menu opens pricing and allows plan changes", async ({
+test("paid workspace billing sidebar opens pricing and allows plan changes", async ({
   page,
 }) => {
   await mockWorkspaceShell(page, "parent");
@@ -4318,10 +4551,16 @@ test("paid workspace user menu opens pricing and allows plan changes", async ({
   await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
 
   await page.getByRole("button", { name: /Owner A/ }).click();
+  await expect(page.locator(".workspace-user-email")).toHaveText(
+    "a@example.test",
+  );
   await expect(
-    page.getByRole("menuitem", { name: "Back to website home" }),
+    page.getByRole("menuitem", { name: "Plans & billing" }),
   ).toHaveCount(0);
-  await page.getByRole("menuitem", { name: "Plans & billing" }).click();
+  await page
+    .locator(".workspace-sidebar")
+    .getByRole("link", { name: "Plans & billing" })
+    .click();
   await expect(page).toHaveURL(/\/pricing$/);
   await expect(page.locator(".pricing-grid .pricing-card")).toHaveCount(3);
   await expect(page.locator('[data-plan-card="parent"]')).toHaveAttribute(

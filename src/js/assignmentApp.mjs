@@ -127,12 +127,36 @@ function shell() {
 
 function card(titleText) {
   const main = shell();
+  if (assignment?.title) {
+    const pageTitle = document.createElement("h1");
+    pageTitle.className = "assignment-page-title";
+    pageTitle.textContent = assignment.title;
+    main.append(pageTitle);
+  }
   const section = document.createElement("section");
   section.className = "product-card";
-  const title = document.createElement("h1");
-  title.className = "assignment-title";
-  title.textContent = titleText;
-  section.append(title);
+  if (assignment?.learner) {
+    const identity = document.createElement("div");
+    identity.className = "assignment-learner";
+    if (assignment.learner.avatar) {
+      const avatar = document.createElement("img");
+      avatar.className = "learner-home-avatar";
+      avatar.src = assignment.learner.avatar;
+      avatar.alt = "";
+      identity.append(avatar);
+    }
+    const name = document.createElement("strong");
+    name.className = "assignment-learner-name";
+    name.textContent = assignment.learner.name;
+    identity.append(name);
+    section.append(identity);
+  }
+  if (titleText !== assignment?.title) {
+    const title = document.createElement(assignment?.title ? "h2" : "h1");
+    title.className = "assignment-title";
+    title.textContent = titleText;
+    section.append(title);
+  }
   main.append(section);
   return section;
 }
@@ -230,18 +254,13 @@ function renderIntro() {
   form.className = "product-form";
   form.noValidate = true;
   if (learnerLink) {
-    const identity = document.createElement("p");
-    identity.className = "muted";
-    identity.textContent = m("practicingAs", {
-      name: assignment.learner?.name || "",
-    });
     const start = document.createElement("button");
     start.type = "submit";
     start.textContent = copy.start;
     const status = document.createElement("p");
     status.className = "status";
     status.setAttribute("role", "status");
-    form.append(identity, start, status);
+    form.append(start, status);
     section.append(meta, form);
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -321,10 +340,39 @@ function speakWord(word) {
   speechSynthesis.cancel();
   const sentence = word.example_sentence?.trim().replace(/[.!?]+$/, "");
   const utterance = new SpeechSynthesisUtterance(
-    sentence ? `${word.word}. ${sentence}. ${word.word}.` : word.word,
+    sentence ? `${word.word}. ${sentence}.` : word.word,
   );
   utterance.lang = "en-US";
+  utterance.rate = 0.85;
   speechSynthesis.speak(utterance);
+}
+
+function exampleHint(word) {
+  const sentence = word.example_sentence?.trim();
+  if (!sentence) return null;
+  const hint = document.createElement("p");
+  hint.className = "assignment-example";
+  const escapedWord = word.word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const matches = sentence.matchAll(
+    new RegExp(
+      `(^|[^\\p{L}\\p{N}])(${escapedWord})(?=$|[^\\p{L}\\p{N}])`,
+      "giu",
+    ),
+  );
+  let offset = 0;
+  for (const match of matches) {
+    const wordStart = match.index + match[1].length;
+    hint.append(sentence.slice(offset, wordStart));
+    const blank = document.createElement("span");
+    blank.className = "assignment-example-blank";
+    blank.setAttribute("aria-hidden", "true");
+    blank.textContent = "\u00a0";
+    hint.append(blank);
+    offset = wordStart + match[2].length;
+  }
+  if (offset === 0) hint.textContent = sentence;
+  else hint.append(sentence.slice(offset));
+  return hint;
 }
 
 function nextPrompt() {
@@ -390,7 +438,8 @@ function renderWord() {
     leave.className = "button-secondary assignment-return";
     leave.textContent = copy.returnMenu;
     leave.addEventListener("click", leaveAssignment);
-    section.append(review, next, leave);
+    section.prepend(leave);
+    section.append(review, next);
     next.focus();
     return;
   }
@@ -416,13 +465,15 @@ function renderWord() {
     section.append(review);
   }
   section.append(instruction);
+  const example = exampleHint(word);
+  if (example) section.append(example);
+  let listen;
   if (assignment.mode === "dictation") {
-    const listen = document.createElement("button");
+    listen = document.createElement("button");
     listen.type = "button";
     listen.className = "button-secondary";
     listen.textContent = copy.listen;
     listen.addEventListener("click", () => speakWord(word));
-    section.append(listen);
     queueMicrotask(() => speakWord(word));
   } else {
     const shown = document.createElement("div");
@@ -442,22 +493,25 @@ function renderWord() {
   const check = document.createElement("button");
   check.type = "submit";
   check.textContent = copy.submitAnswer;
+  const actions = document.createElement("div");
+  actions.className = "answer-actions";
+  if (listen) actions.append(listen);
+  actions.append(check);
   const feedback = document.createElement("p");
   feedback.className = "feedback";
   feedback.setAttribute("role", "status");
-  form.append(input, check, feedback);
+  form.append(input, actions, feedback);
   section.append(form);
   const leave = document.createElement("button");
   leave.type = "button";
   leave.className = "button-secondary assignment-return";
   leave.textContent = copy.returnMenu;
   leave.addEventListener("click", leaveAssignment);
-  section.append(leave);
+  section.prepend(leave);
   input.focus();
   const showAnswer = (answer, correct) => {
     input.value = answer;
     input.disabled = true;
-    check.remove();
     feedback.textContent = correct
       ? copy.correct
       : m("incorrect", { word: word.word });
@@ -469,7 +523,7 @@ function renderWord() {
       currentPrompt = null;
       renderWord();
     });
-    form.append(next);
+    check.replaceWith(next);
     next.focus();
   };
   form.addEventListener("submit", (event) => {
@@ -612,6 +666,7 @@ async function saveResult() {
 
 function renderResult(result) {
   const section = card(copy.yourResult);
+  section.classList.add("assignment-result");
   const saved = document.createElement("p");
   saved.className = "status success";
   saved.textContent = copy.resultSaved;

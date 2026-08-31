@@ -197,10 +197,11 @@ async function createLearner(
   name: string,
   teacher: Teacher = teacherA,
   pinGenerator?: () => string,
+  avatar?: string,
 ) {
   const response = await call(
     "/api/learners",
-    { method: "POST", body: JSON.stringify({ name }) },
+    { method: "POST", body: JSON.stringify({ name, avatar }) },
     teacher,
     testEnv(),
     { pinGenerator },
@@ -906,6 +907,35 @@ describe("saved lists and learner profiles", () => {
     expect(limited.body.error).toBe("learner_limit");
   });
 
+  it("stores built-in and uploaded learner avatars and rejects invalid paths", async () => {
+    await insertSubscription({ plan: "teacher", status: "active" });
+    const builtIn = await createLearner(
+      "Built in",
+      teacherA,
+      undefined,
+      "/images/avatars/avatar-23.jpg",
+    );
+    expect(builtIn.body.avatar).toBe("/images/avatars/avatar-23.jpg");
+
+    const uploadedValue = "data:image/jpeg;base64,/9j/2Q==";
+    const uploaded = await createLearner(
+      "Uploaded",
+      teacherA,
+      undefined,
+      uploadedValue,
+    );
+    expect(uploaded.body.avatar).toBe(uploadedValue);
+
+    const invalid = await createLearner(
+      "Invalid",
+      teacherA,
+      undefined,
+      "/images/avatars/avatar-99.jpg",
+    );
+    expect(invalid.response.status).toBe(400);
+    expect(invalid.body.error).toBe("invalid_avatar");
+  });
+
   it.each([
     ["parent", 5],
     ["teacher", 40],
@@ -1216,8 +1246,9 @@ describe("saved lists and learner profiles", () => {
 
   it("isolates duplicate-name magic learners and rejects cross-owner tokens", async () => {
     await insertSubscription({ plan: "teacher", status: "active" });
-    const learnerA = await createLearner("Emily");
-    const learnerB = await createLearner("Emily");
+    const avatar = "/images/avatars/avatar-08.jpg";
+    const learnerA = await createLearner("Emily", teacherA, undefined, avatar);
+    const learnerB = await createLearner("Emily", teacherA, undefined, avatar);
     const assignment = await createAssignment(teacherA);
     const publicId = String(assignment.body.publicId);
     const tokenA = String(learnerA.body.public_id);
@@ -1232,7 +1263,7 @@ describe("saved lists and learner profiles", () => {
       );
       expect(response.status).toBe(200);
       const body = (await response.json()) as Record<string, unknown>;
-      expect(body).toMatchObject({ learner: { name: "Emily" } });
+      expect(body).toMatchObject({ learner: { name: "Emily", avatar } });
     }
     const generic = await submit(publicId, words.words, { nickname: "Emily" });
     expect(generic.status).toBe(201);

@@ -52,9 +52,27 @@ const footerLinks = {
 };
 const footerSecondaryLinks = {
   en: ["Pricing", "FAQ", "Privacy", "About", "Contact"],
-  es: ["Precios", "Preguntas frecuentes", "Privacidad", "Acerca de", "Contacto"],
-  "pt-BR": ["Preços", "Perguntas frequentes", "Privacidade", "Sobre", "Contato"],
-  fr: ["Tarifs", "Questions fréquentes", "Confidentialité", "À propos", "Contact"],
+  es: [
+    "Precios",
+    "Preguntas frecuentes",
+    "Privacidad",
+    "Acerca de",
+    "Contacto",
+  ],
+  "pt-BR": [
+    "Preços",
+    "Perguntas frequentes",
+    "Privacidade",
+    "Sobre",
+    "Contato",
+  ],
+  fr: [
+    "Tarifs",
+    "Questions fréquentes",
+    "Confidentialité",
+    "À propos",
+    "Contact",
+  ],
   id: ["Harga", "Pertanyaan umum", "Privasi", "Tentang", "Kontak"],
   zh: ["价格", "常见问题", "隐私", "关于", "联系"],
 };
@@ -125,8 +143,8 @@ const copy = {
     billingPeriod: "Billing period",
     selectParent: "Select Parent Plan",
     selectTeacher: "Select Teacher Plan",
-    signIn: "Workspace sign in",
-    practice: "Free practice",
+    signIn: "Workspace",
+    practice: "Home",
     freeTeacher: "Create free account",
     currentPlan: "Current plan",
     secureCheckout: "Secure checkout by Stripe · Cancel anytime",
@@ -190,8 +208,8 @@ const copy = {
     billingPeriod: "Periodo de facturación",
     selectParent: "Elegir plan para familias",
     selectTeacher: "Elegir plan para docentes",
-    signIn: "Acceder al espacio de trabajo",
-    practice: "Práctica gratuita",
+    signIn: "Espacio de trabajo",
+    practice: "Inicio",
     freeTeacher: "Crear una cuenta gratis",
     currentPlan: "Plan actual",
     secureCheckout: "Pago seguro con Stripe · Cancela cuando quieras",
@@ -255,8 +273,8 @@ const copy = {
     billingPeriod: "Periodicidade",
     selectParent: "Escolher Plano para Pais",
     selectTeacher: "Escolher Plano para Professores",
-    signIn: "Acessar espaço de trabalho",
-    practice: "Prática grátis",
+    signIn: "Espaço de trabalho",
+    practice: "Início",
     freeTeacher: "Criar conta grátis",
     currentPlan: "Plano atual",
     secureCheckout: "Checkout seguro pelo Stripe · Cancele quando quiser",
@@ -320,8 +338,8 @@ const copy = {
     billingPeriod: "Période de facturation",
     selectParent: "Choisir l’offre Parents",
     selectTeacher: "Choisir l’offre Enseignants",
-    signIn: "Ouvrir l’espace de travail",
-    practice: "Entraînement gratuit",
+    signIn: "Espace de travail",
+    practice: "Accueil",
     freeTeacher: "Créer un compte gratuit",
     currentPlan: "Offre actuelle",
     secureCheckout: "Paiement sécurisé par Stripe · Résiliable à tout moment",
@@ -385,8 +403,8 @@ const copy = {
     billingPeriod: "Periode tagihan",
     selectParent: "Pilih Paket Orang Tua",
     selectTeacher: "Pilih Paket Guru",
-    signIn: "Masuk ke ruang kerja",
-    practice: "Latihan gratis",
+    signIn: "Ruang kerja",
+    practice: "Beranda",
     freeTeacher: "Buat akun gratis",
     currentPlan: "Paket saat ini",
     secureCheckout: "Checkout aman oleh Stripe · Batalkan kapan saja",
@@ -449,8 +467,8 @@ const copy = {
     billingPeriod: "计费周期",
     selectParent: "选择家长方案",
     selectTeacher: "选择教师方案",
-    signIn: "登录工作台",
-    practice: "免费练习",
+    signIn: "工作台",
+    practice: "首页",
     freeTeacher: "免费创建账号",
     currentPlan: "当前方案",
     secureCheckout: "Stripe 安全结账 · 可随时取消",
@@ -510,7 +528,8 @@ function render(locale) {
   ${alternates}
   <link rel="alternate" hreflang="x-default" href="${baseUrl}/pricing">
   <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="stylesheet" href="/src/css/product.css?v=teacher-shell3">
+  <link rel="stylesheet" href="/src/css/main.css">
+  <link rel="stylesheet" href="/src/css/product.css?v=pricing-header2">
   <script src="/src/js/localeRedirect.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VYF1V40KVS"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-VYF1V40KVS',{page_location: window.location.origin + window.location.pathname,page_path: window.location.pathname});</script>
@@ -518,7 +537,7 @@ function render(locale) {
 </head>
 <body class="product-page" data-product-locale="${locale.code}">
   <div class="product-shell">
-    <nav class="product-nav"><a class="product-brand" href="${locale.dir ? `/${locale.dir}/` : "/"}"><img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span>My Spelling Game</span></a><div class="product-nav-center"><a class="product-nav-link" href="${locale.dir ? `/${locale.dir}/` : "/"}">${escape(c.practice)}</a><a class="product-nav-link" href="/teacher?lang=${encodeURIComponent(locale.code)}">${escape(c.signIn)}</a></div><div class="product-nav-actions"><details class="language-switcher"><summary class="lang-btn" aria-label="${escape(c.language)}">${escape(c.language)}</summary><div class="lang-menu">${languageOptions}</div></details></div></nav>
+    <header class="top-right-nav"><a class="brand-link" href="${locale.dir ? `/${locale.dir}/` : "/"}" aria-label="My Spelling Game home"><img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span class="brand-name">My Spelling Game</span></a><details class="language-switcher"><summary class="lang-btn" aria-label="${escape(c.language)}">${escape(c.language)}</summary><div class="lang-menu">${languageOptions}</div></details><a class="teacher-nav-link" href="/teacher?lang=${encodeURIComponent(locale.code)}">${escape(c.signIn)}</a><a class="header-home-link" href="${locale.dir ? `/${locale.dir}/` : "/"}">${escape(c.practice)}</a></header>
     <main class="product-main">
       <section class="product-card"><h1>${escape(c.heading)}</h1><p>${escape(c.intro)}</p><p class="notice">${escape(c.note)}</p></section>
       <p class="subscription-status" data-subscription-status hidden role="status"></p>

@@ -477,6 +477,13 @@ const FOOTER_PAGES = [
   "spelling-practice-for-parents",
   "spelling-assignments-for-teachers",
 ];
+const FOOTER_SECONDARY_PAGES = [
+  "pricing",
+  "faq",
+  "privacy",
+  "about",
+  "contact",
+];
 
 function footer() {
   const element = document.createElement("footer");
@@ -494,8 +501,19 @@ function footer() {
     if (index) linkGroup.append(" · ");
     linkGroup.append(link);
   });
+  const secondaryLinkGroup = document.createElement("span");
+  secondaryLinkGroup.className = "footer-secondary-links";
+  FOOTER_SECONDARY_PAGES.forEach((page, index) => {
+    const link = document.createElement("a");
+    link.href = productPagePath(page, locale);
+    link.textContent = copy.footerSecondaryLinks[index];
+    if (index) secondaryLinkGroup.append(" · ");
+    secondaryLinkGroup.append(link);
+  });
   paragraph.append(
     linkGroup,
+    document.createElement("br"),
+    secondaryLinkGroup,
     document.createElement("br"),
     `© 2026 My Spelling Game ${copy.footerRights}`,
   );

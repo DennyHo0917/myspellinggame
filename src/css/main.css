@@ -532,6 +532,7 @@ a {
 .word-field-heading,
 .sentence-field-heading {
   display: flex;
+  min-height: 48px;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
@@ -573,8 +574,10 @@ a {
   line-height: 1.4;
 }
 
-.sentence-library-notice a {
+.sentence-library-notice a,
+#spelling-limit-cta {
   color: var(--primary);
+  font-size: 0.75rem;
   font-weight: 800;
 }
 
@@ -1605,6 +1608,11 @@ textarea:focus-visible,
 
   .word-entry-grid {
     grid-template-columns: 1fr;
+  }
+
+  .word-field-heading,
+  .sentence-field-heading {
+    min-height: 0;
   }
 
   #custom-word-list,

@@ -82,6 +82,26 @@ test("every product locale keeps the brand and has a distinct student-limit mess
   );
 });
 
+test("workspace footer has both homepage link rows in every locale", () => {
+  for (const [locale] of PRODUCT_LOCALES) {
+    const copy = productMessages(locale);
+    assert.equal(copy.footerLinks.length, 5, `${locale}: primary footer links`);
+    assert.equal(
+      copy.footerSecondaryLinks.length,
+      5,
+      `${locale}: secondary footer links`,
+    );
+    assert.ok(copy.footerSecondaryLinks.every(Boolean));
+  }
+  assert.deepEqual(productMessages("en").footerSecondaryLinks, [
+    "Pricing",
+    "FAQ",
+    "Privacy",
+    "About",
+    "Contact",
+  ]);
+});
+
 test("workspace titles stay role-neutral in every product locale", () => {
   const expected = {
     en: "Workspace",

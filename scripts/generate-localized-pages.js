@@ -146,7 +146,7 @@ const pages = {
       wordsLabel: "Tus palabras en inglés",
       photoImport: "Importar desde una foto",
       sentencesLabel: "Frases de ejemplo (opcional)",
-      autoSentences: "Autocompletar frases",
+      autoSentences: "Autocompletar",
       sentencesHelp:
         "Una frase por línea, en el mismo orden que las palabras. Deja una línea en blanco si no la necesitas.",
       hear: "Escuchar cada palabra antes de escribir",
@@ -314,7 +314,7 @@ const pages = {
       wordsLabel: "Suas palavras em inglês",
       photoImport: "Importar de uma foto",
       sentencesLabel: "Frases de exemplo (opcional)",
-      autoSentences: "Preencher frases automaticamente",
+      autoSentences: "Preencher",
       sentencesHelp:
         "Uma frase por linha, na mesma ordem das palavras. Deixe uma linha em branco quando não precisar.",
       hear: "Ouvir cada palavra antes de digitar",
@@ -482,7 +482,7 @@ const pages = {
       wordsLabel: "Vos mots anglais",
       photoImport: "Importer depuis une photo",
       sentencesLabel: "Phrases d’exemple (facultatif)",
-      autoSentences: "Remplir automatiquement",
+      autoSentences: "Remplir",
       sentencesHelp:
         "Une phrase par ligne, dans le même ordre que les mots. Laissez une ligne vide si besoin.",
       hear: "Écouter chaque mot avant de taper",
@@ -650,7 +650,7 @@ const pages = {
       wordsLabel: "Daftar kata bahasa Inggris",
       photoImport: "Impor dari foto",
       sentencesLabel: "Kalimat contoh (opsional)",
-      autoSentences: "Isi kalimat otomatis",
+      autoSentences: "Isi otomatis",
       sentencesHelp:
         "Satu kalimat per baris, sesuai urutan kata. Biarkan baris kosong jika tidak perlu.",
       hear: "Dengarkan kata sebelum mengetik",
@@ -810,7 +810,7 @@ const pages = {
       wordsLabel: "你的英语单词",
       photoImport: "拍照导入",
       sentencesLabel: "例句（可选）",
-      autoSentences: "自动填充例句",
+      autoSentences: "自动填充",
       sentencesHelp:
         "每行填写一个例句，顺序与上面的单词对应。不需要的单词留空行即可。",
       hear: "输入前朗读每个单词",

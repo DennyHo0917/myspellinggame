@@ -15,6 +15,12 @@ These instructions apply to the entire repository.
 - New pages must preserve the shared header and footer's structure, visible copy, link set and order, typography, colors, and interaction behavior so every page keeps one consistent visual style.
 - Do not create page-specific copies of header or footer styles. When a change is needed, update the shared template or shared stylesheet so all pages remain consistent.
 
+## Visual Harmony And Copy Fit
+
+- Prioritize a coherent, balanced, and comfortable interface over exhaustive wording. Keep related controls aligned, symmetrical where appropriate, and consistent in height, spacing, and visual weight across languages and responsive layouts.
+- User-facing copy must not wrap, overflow, or push neighboring elements out of alignment. When a translation is too long, shorten it with a natural, unambiguous abbreviation or a concise label (for example, `mo` for "month" when the billing context is clear); use the normal conventions of each language rather than preserving the full wording mechanically.
+- Preserve meaning and accessibility, but allow copy length to yield when needed to keep the page visually polished.
+
 ## Change Workflow
 
 - After completing any modification, report the changes, checks performed, and anything not yet verified, then stop and wait for user confirmation.

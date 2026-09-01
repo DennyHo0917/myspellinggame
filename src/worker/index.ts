@@ -1872,67 +1872,13 @@ async function startAttempt(env: Env, request: Request, publicId: string) {
   const plan = await getPlan(env, assignment.owner_user_id);
   const monthlyLimit = PLAN_LIMITS[plan].monthlyAttempts;
   if (monthlyLimit !== null) {
-    const monthKey = monthStart();
-    if (attemptId) {
-      await env.DB.batch([
-        env.DB.prepare(
-          `INSERT OR IGNORE INTO monthly_submission_reservations
-             (attempt_id, user_id, month_key, created_at)
-           SELECT ?, ?, ?, ?
-           WHERE (
-             (SELECT COUNT(*) FROM monthly_submission_usage
-              WHERE user_id = ? AND month_key = ?) +
-             (SELECT COUNT(*) FROM monthly_submission_reservations
-              WHERE user_id = ? AND month_key = ?)
-           ) < ?
-           OR EXISTS (
-             SELECT 1 FROM monthly_submission_reservations
-             WHERE attempt_id = ? AND user_id = ? AND month_key = ?
-           )`,
-        ).bind(
-          attemptId,
-          assignment.owner_user_id,
-          monthKey,
-          new Date().toISOString(),
-          assignment.owner_user_id,
-          monthKey,
-          assignment.owner_user_id,
-          monthKey,
-          monthlyLimit,
-          attemptId,
-          assignment.owner_user_id,
-          monthKey,
-        ),
-      ]);
-      const reservation = await env.DB.prepare(
-        `SELECT 1 FROM monthly_submission_reservations
-         WHERE attempt_id = ? AND user_id = ? AND month_key = ?`,
-      )
-        .bind(attemptId, assignment.owner_user_id, monthKey)
-        .first();
-      if (!reservation)
-        throw new HttpError(
-          403,
-          "monthly_submission_limit",
-          "The teacher’s monthly submission limit has been reached.",
-        );
-    }
     const monthlyCount = await env.DB.prepare(
-      `SELECT (
-         (SELECT COUNT(*) FROM monthly_submission_usage
-          WHERE user_id = ? AND month_key = ?) +
-         (SELECT COUNT(*) FROM monthly_submission_reservations
-          WHERE user_id = ? AND month_key = ?)
-       ) AS count`,
+      `SELECT COUNT(*) AS count FROM monthly_submission_usage
+       WHERE user_id = ? AND month_key = ?`,
     )
-      .bind(
-        assignment.owner_user_id,
-        monthKey,
-        assignment.owner_user_id,
-        monthKey,
-      )
+      .bind(assignment.owner_user_id, monthStart())
       .first<{ count: number }>();
-    if (!attemptId && Number(monthlyCount?.count ?? 0) >= monthlyLimit)
+    if (Number(monthlyCount?.count ?? 0) >= monthlyLimit)
       throw new HttpError(
         403,
         "monthly_submission_limit",
@@ -2013,16 +1959,8 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
                             AND x.status = 'completed') < a.max_attempts)
            AND (
              ? = 0
-             OR EXISTS (
-               SELECT 1 FROM monthly_submission_reservations r
-               WHERE r.attempt_id = ? AND r.user_id = a.owner_user_id
-                 AND r.month_key = ?
-             )
              OR (SELECT COUNT(*) FROM monthly_submission_usage mu
-                 WHERE mu.user_id = a.owner_user_id AND mu.month_key = ?)
-                 + (SELECT COUNT(*) FROM monthly_submission_reservations r2
-                    WHERE r2.user_id = a.owner_user_id AND r2.month_key = ?
-                      AND r2.attempt_id <> ?) < ?
+                 WHERE mu.user_id = a.owner_user_id AND mu.month_key = ?) < ?
            )`,
     ).bind(
       attemptId,
@@ -2044,11 +1982,7 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       completed ? 1 : 0,
       nicknameKey,
       completed ? 1 : 0,
-      attemptId,
       monthKey,
-      monthKey,
-      monthKey,
-      attemptId,
       monthlyLimit,
     ),
     ...result.items.map((item) =>
@@ -2063,11 +1997,6 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
          JOIN assignments a ON a.id = at.assignment_id
          WHERE at.id = ? AND at.status = 'completed'`,
     ).bind(attemptId, monthKey, completedAt, attemptId),
-    env.DB.prepare(
-      `DELETE FROM monthly_submission_reservations
-       WHERE attempt_id = ?
-         AND EXISTS (SELECT 1 FROM attempts WHERE id = ?)`,
-    ).bind(attemptId, attemptId),
   ];
   await env.DB.batch(statements);
   const saved = await loadAttemptResult(env.DB, attemptId, publicId);

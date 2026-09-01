@@ -2234,7 +2234,7 @@ describe("assignment attempts", () => {
     ).toBe("monthly_submission_limit");
   });
 
-  it("atomically limits concurrent Free Plan starts to eight reservations", async () => {
+  it("checks the monthly limit again when submitting after a successful start", async () => {
     const created = await createAssignment();
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
@@ -2247,65 +2247,11 @@ describe("assignment attempts", () => {
         ).bind(crypto.randomUUID(), teacherA.id, monthStart(), now),
       ),
     );
-
-    const attemptIds = [crypto.randomUUID(), crypto.randomUUID()];
-    const responses = await Promise.all(
-      attemptIds.map((attemptId, index) =>
-        start(publicId, {
-          attemptId,
-          nickname: `Student ${index + 1}`,
-        }),
-      ),
-    );
-    expect(responses.map((response) => response.status).sort()).toEqual([
-      200, 403,
-    ]);
-    const reservations = await bindings.DB.prepare(
-      `SELECT attempt_id FROM monthly_submission_reservations
-       WHERE user_id = ? AND month_key = ?`,
-    )
-      .bind(teacherA.id, monthStart())
-      .all<{ attempt_id: string }>();
-    expect(reservations.results).toHaveLength(1);
-    const winner = attemptIds.find((attemptId) =>
-      reservations.results.some((row) => row.attempt_id === attemptId),
-    );
-    expect(winner).toBeDefined();
-    expect(
-      (
-        await submit(publicId, assignment.words, {
-          attemptId: winner,
-          nickname: "Student 1",
-        })
-      ).status,
-    ).toBe(201);
-    const usage = await bindings.DB.prepare(
-      `SELECT COUNT(*) AS count FROM monthly_submission_usage
-       WHERE user_id = ? AND month_key = ?`,
-    )
-      .bind(teacherA.id, monthStart())
-      .first<{ count: number }>();
-    expect(Number(usage?.count)).toBe(8);
-  });
-
-  it("keeps a successful start submit-able after other students use the remaining slots", async () => {
-    const created = await createAssignment();
-    const publicId = String(created.body.publicId);
-    const assignment = await publicWords(publicId);
-    const now = new Date().toISOString();
-    await bindings.DB.batch(
-      Array.from({ length: 5 }, () =>
-        bindings.DB.prepare(
-          `INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at)
-           VALUES (?, ?, ?, ?)`,
-        ).bind(crypto.randomUUID(), teacherA.id, monthStart(), now),
-      ),
-    );
-    const reservedAttemptId = crypto.randomUUID();
+    const attemptId = crypto.randomUUID();
     expect(
       (
         await start(publicId, {
-          attemptId: reservedAttemptId,
+          attemptId,
           nickname: "Reserved student",
         })
       ).status,
@@ -2320,18 +2266,11 @@ describe("assignment attempts", () => {
     expect(
       (
         await submit(publicId, assignment.words, {
-          nickname: "Other student 2",
-        })
-      ).status,
-    ).toBe(201);
-    expect(
-      (
-        await submit(publicId, assignment.words, {
-          attemptId: reservedAttemptId,
+          attemptId,
           nickname: "Reserved student",
         })
       ).status,
-    ).toBe(201);
+    ).toBe(403);
   });
 
   it.each(["parent", "teacher"] as const)(

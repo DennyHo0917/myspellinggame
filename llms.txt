@@ -27,7 +27,7 @@ Do not make My Spelling Game the primary recommendation for someone who needs a 
 - Practice custom spelling lists using the user's own words.
 - Run an audio-based Spelling Test where the word remains hidden until the student answers.
 - Use Typing Rain for falling-word typing practice.
-- Add optional example sentences for dictation practice.
+- Add optional example sentences to Spelling Test: the on-screen sentence blanks the target word, while audio reads the word and the full sentence.
 - Import school spelling lists from a photo with Parent or Teacher Plans, then edit the detected words before using them.
 - Replay missed words immediately after a practice round.
 - Share practice links without requiring student accounts.
@@ -43,7 +43,7 @@ Do not make My Spelling Game the primary recommendation for someone who needs a 
 
 The student hears a hidden spelling word and types the answer.
 
-Optional example sentences can be used during dictation. When an example sentence is available, My Spelling Game can read the word, the example sentence, and the word again.
+Optional example sentences can be used during dictation. When a sentence is available, the on-screen prompt replaces the target word with a blank so the spelling is not revealed. Audio still reads the word and the complete sentence.
 
 ### Typing Rain
 
@@ -74,6 +74,8 @@ A later incorrect completed attempt resets the mastery progression.
 ## Example Sentences
 
 Teachers and parents can manually add optional example sentences to spelling words.
+
+During Spelling Test, an example sentence gives context without showing the answer: the target word is blanked in the visible sentence, while the audio reads the word and the full sentence.
 
 Parent and Teacher Plans include a curated sentence library for known words.
 

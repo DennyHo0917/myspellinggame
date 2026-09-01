@@ -321,7 +321,7 @@ const faqUpdates = {
       ],
       [
         "Can I use example sentences with spelling words?",
-        "Yes. Example sentences are optional. In dictation practice, My Spelling Game can read the word, the example sentence, and the word again.",
+        "Yes. In Spelling Test, the visible sentence blanks the target word so it does not reveal the answer. Audio reads the word and the full sentence.",
       ],
       [
         "Can My Spelling Game automatically provide example sentences?",
@@ -365,7 +365,7 @@ const faqUpdates = {
       ],
       [
         "¿Puedo usar frases de ejemplo con las palabras?",
-        "Sí. Son opcionales. En el dictado, My Spelling Game puede leer la palabra, la frase de ejemplo y la palabra otra vez.",
+        "Sí. En la prueba de ortografía, la frase visible deja un espacio en la palabra objetivo para no revelar la respuesta. El audio lee la palabra y la frase completa.",
       ],
       [
         "¿My Spelling Game puede proporcionar frases automáticamente?",
@@ -409,7 +409,7 @@ const faqUpdates = {
       ],
       [
         "Posso usar frases de exemplo com as palavras?",
-        "Sim. As frases são opcionais. No ditado, o My Spelling Game pode ler a palavra, a frase de exemplo e a palavra novamente.",
+        "Sim. No teste de ortografia, a frase visível deixa uma lacuna no lugar da palavra para não revelar a resposta. O áudio lê a palavra e a frase completa.",
       ],
       [
         "O My Spelling Game pode fornecer frases automaticamente?",
@@ -453,7 +453,7 @@ const faqUpdates = {
       ],
       [
         "Puis-je utiliser des phrases d’exemple avec les mots ?",
-        "Oui. Elles sont facultatives. En dictée, My Spelling Game peut lire le mot, la phrase d’exemple, puis le mot à nouveau.",
+        "Oui. Dans le test d’orthographe, la phrase visible remplace le mot cible par un blanc pour ne pas révéler la réponse. L’audio lit le mot et la phrase complète.",
       ],
       [
         "My Spelling Game peut-il fournir automatiquement des phrases ?",
@@ -497,7 +497,7 @@ const faqUpdates = {
       ],
       [
         "Bisa memakai kalimat contoh dengan kata ejaan?",
-        "Bisa. Kalimat contoh bersifat opsional. Dalam dikte, My Spelling Game dapat membacakan kata, kalimat contoh, lalu kata lagi.",
+        "Bisa. Dalam tes ejaan, kata target pada kalimat yang terlihat diganti dengan bagian kosong agar jawaban tidak terlihat. Audio membacakan kata dan kalimat lengkap.",
       ],
       [
         "Apakah My Spelling Game bisa menyediakan kalimat contoh otomatis?",
@@ -541,7 +541,7 @@ const faqUpdates = {
       ],
       [
         "可以给拼写单词添加例句吗？",
-        "可以。例句是可选的。听写练习时，My Spelling Game 可以依次读出单词、例句和单词。",
+        "可以。听写测试会把页面例句中的目标词挖空，避免显示答案；语音仍会读出单词和完整例句。",
       ],
       [
         "My Spelling Game 能自动提供例句吗？",

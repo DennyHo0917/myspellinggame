@@ -795,7 +795,7 @@ const aboutUpdates = {
       ],
       [
         "What It Does",
-        "<ul><li>Practice your own spelling words in Spelling Test or Typing Rain.</li><li>Add optional example sentences for dictation practice.</li><li>Replay missed words immediately after a practice round.</li><li>Save and reuse weekly spelling lists in a workspace.</li><li>Import school lists from a photo and edit the detected words before use.</li><li>Fill example sentences from the curated library and use Today’s Review on paid plans.</li><li>Publish assignments without requiring student accounts.</li><li>Track student progress across assignments.</li><li>Identify missed words that need later review.</li><li>Use cross-day practice history to distinguish learning from mastered words.</li></ul>",
+        "<ul><li>Practice your own spelling words in Spelling Test or Typing Rain.</li><li>Add optional example sentences: the visible sentence blanks the target word while audio reads the word and full sentence.</li><li>Replay missed words immediately after a practice round.</li><li>Save and reuse weekly spelling lists in a workspace.</li><li>Import school lists from a photo and edit the detected words before use.</li><li>Fill example sentences from the curated library and use Today’s Review on paid plans.</li><li>Publish assignments without requiring student accounts.</li><li>Track student progress across assignments.</li><li>Identify missed words that need later review.</li><li>Use cross-day practice history to distinguish learning from mastered words.</li></ul>",
       ],
       [
         "About the Developer",
@@ -819,7 +819,7 @@ const aboutUpdates = {
       ],
       [
         "Qué hace",
-        "<ul><li>Practica tus palabras en la prueba de spelling o Typing Rain.</li><li>Añade frases de ejemplo opcionales para dictado.</li><li>Repite las palabras falladas al terminar.</li><li>Guarda y reutiliza listas semanales en un espacio de trabajo.</li><li>Importa listas escolares desde una foto y edita las palabras detectadas.</li><li>Completa frases de ejemplo y usa el Repaso de hoy en los planes de pago.</li><li>Publica tareas sin cuentas de estudiantes.</li><li>Sigue el progreso entre tareas.</li><li>Identifica palabras que necesitan repaso.</li><li>Usa el historial de distintos días para distinguir aprendizaje y dominio.</li></ul>",
+        "<ul><li>Practica tus palabras en la prueba de spelling o Typing Rain.</li><li>Añade frases de ejemplo opcionales: la frase visible deja en blanco la palabra objetivo y el audio lee la palabra y la frase completa.</li><li>Repite las palabras falladas al terminar.</li><li>Guarda y reutiliza listas semanales en un espacio de trabajo.</li><li>Importa listas escolares desde una foto y edita las palabras detectadas.</li><li>Completa frases de ejemplo y usa el Repaso de hoy en los planes de pago.</li><li>Publica tareas sin cuentas de estudiantes.</li><li>Sigue el progreso entre tareas.</li><li>Identifica palabras que necesitan repaso.</li><li>Usa el historial de distintos días para distinguir aprendizaje y dominio.</li></ul>",
       ],
       [
         "Desarrollo",
@@ -843,7 +843,7 @@ const aboutUpdates = {
       ],
       [
         "O que faz",
-        "<ul><li>Pratica suas palavras no teste de ortografia ou no Typing Rain.</li><li>Adiciona frases de exemplo opcionais para o ditado.</li><li>Repete as palavras erradas ao terminar.</li><li>Salva e reutiliza listas semanais no espaço de trabalho.</li><li>Importa listas escolares por foto e edita as palavras reconhecidas.</li><li>Preenche frases de exemplo e usa a Revisão de hoje nos planos pagos.</li><li>Publica tarefas sem exigir contas dos alunos.</li><li>Acompanha o progresso entre tarefas.</li><li>Identifica palavras que precisam de revisão.</li><li>Usa o histórico de dias diferentes para distinguir aprendizagem e domínio.</li></ul>",
+        "<ul><li>Pratica suas palavras no teste de ortografia ou no Typing Rain.</li><li>Adiciona frases de exemplo opcionais: a frase visível deixa a palavra-alvo em branco e o áudio lê a palavra e a frase completa.</li><li>Repete as palavras erradas ao terminar.</li><li>Salva e reutiliza listas semanais no espaço de trabalho.</li><li>Importa listas escolares por foto e edita as palavras reconhecidas.</li><li>Preenche frases de exemplo e usa a Revisão de hoje nos planos pagos.</li><li>Publica tarefas sem exigir contas dos alunos.</li><li>Acompanha o progresso entre tarefas.</li><li>Identifica palavras que precisam de revisão.</li><li>Usa o histórico de dias diferentes para distinguir aprendizagem e domínio.</li></ul>",
       ],
       [
         "Desenvolvimento",
@@ -867,7 +867,7 @@ const aboutUpdates = {
       ],
       [
         "Ce que fait l’outil",
-        "<ul><li>Pratique vos mots dans le test d’orthographe ou Typing Rain.</li><li>Ajoute des phrases d’exemple facultatives pour la dictée.</li><li>Rejoue les mots manqués à la fin.</li><li>Enregistre et réutilise les listes de la semaine.</li><li>Importe une liste scolaire depuis une photo et modifie les mots détectés.</li><li>Complète les phrases d’exemple et utilise la Révision du jour dans les offres payantes.</li><li>Publie des devoirs sans compte élève.</li><li>Suit les progrès entre les devoirs.</li><li>Repère les mots à revoir.</li><li>Utilise l’historique de plusieurs jours pour distinguer apprentissage et maîtrise.</li></ul>",
+        "<ul><li>Pratique vos mots dans le test d’orthographe ou Typing Rain.</li><li>Ajoute des phrases d’exemple facultatives : la phrase visible laisse le mot cible en blanc et l’audio lit le mot et la phrase complète.</li><li>Rejoue les mots manqués à la fin.</li><li>Enregistre et réutilise les listes de la semaine.</li><li>Importe une liste scolaire depuis une photo et modifie les mots détectés.</li><li>Complète les phrases d’exemple et utilise la Révision du jour dans les offres payantes.</li><li>Publie des devoirs sans compte élève.</li><li>Suit les progrès entre les devoirs.</li><li>Repère les mots à revoir.</li><li>Utilise l’historique de plusieurs jours pour distinguer apprentissage et maîtrise.</li></ul>",
       ],
       [
         "Développement",
@@ -891,7 +891,7 @@ const aboutUpdates = {
       ],
       [
         "Fungsi utama",
-        "<ul><li>Berlatih dengan kata sendiri dalam Spelling Test atau Typing Rain.</li><li>Menambahkan kalimat contoh opsional untuk dikte.</li><li>Mengulang kata yang salah setelah latihan.</li><li>Menyimpan dan memakai ulang daftar mingguan di ruang kerja.</li><li>Mengimpor daftar ejaan sekolah dari foto dan mengedit kata yang terdeteksi.</li><li>Mengisi kalimat contoh dan memakai Ulasan hari ini pada paket berbayar.</li><li>Menerbitkan tugas tanpa akun siswa.</li><li>Memantau kemajuan di berbagai tugas.</li><li>Menemukan kata yang perlu diulas.</li><li>Menggunakan riwayat lintas hari untuk membedakan belajar dan penguasaan.</li></ul>",
+        "<ul><li>Berlatih dengan kata sendiri dalam Spelling Test atau Typing Rain.</li><li>Menambahkan kalimat contoh opsional: kata target pada kalimat yang terlihat dikosongkan, sedangkan audio membacakan kata dan kalimat lengkap.</li><li>Mengulang kata yang salah setelah latihan.</li><li>Menyimpan dan memakai ulang daftar mingguan di ruang kerja.</li><li>Mengimpor daftar ejaan sekolah dari foto dan mengedit kata yang terdeteksi.</li><li>Mengisi kalimat contoh dan memakai Ulasan hari ini pada paket berbayar.</li><li>Menerbitkan tugas tanpa akun siswa.</li><li>Memantau kemajuan di berbagai tugas.</li><li>Menemukan kata yang perlu diulas.</li><li>Menggunakan riwayat lintas hari untuk membedakan belajar dan penguasaan.</li></ul>",
       ],
       [
         "Pengembang",
@@ -915,7 +915,7 @@ const aboutUpdates = {
       ],
       [
         "它能做什么",
-        "<ul><li>在拼写测试或单词雨中练习自己的单词。</li><li>为听写练习添加可选例句。</li><li>练习结束后立即重练错词。</li><li>在工作台保存并重复使用每周词表。</li><li>从学校词表照片中识别单词，并在写入前编辑结果。</li><li>从精选例句库自动填充例句，并使用今日复习回顾到期错词。</li><li>无需学生账号即可发布作业。</li><li>跨作业追踪学生进度。</li><li>找出之后需要复习的错词。</li><li>利用跨日期练习历史区分学习中和已掌握的单词。</li></ul>",
+        "<ul><li>在拼写测试或单词雨中练习自己的单词。</li><li>为听写练习添加可选例句：页面会把例句中的目标词挖空，语音仍会读出单词和完整例句。</li><li>练习结束后立即重练错词。</li><li>在工作台保存并重复使用每周词表。</li><li>从学校词表照片中识别单词，并在写入前编辑结果。</li><li>从精选例句库自动填充例句，并使用今日复习回顾到期错词。</li><li>无需学生账号即可发布作业。</li><li>跨作业追踪学生进度。</li><li>找出之后需要复习的错词。</li><li>利用跨日期练习历史区分学习中和已掌握的单词。</li></ul>",
       ],
       [
         "关于开发者",

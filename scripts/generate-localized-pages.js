@@ -236,6 +236,7 @@ const pages = {
         "<strong>Repite lo fallado:</strong> Las respuestas incorrectas y las palabras perdidas vuelven en otra ronda.",
         "<strong>Comparte la práctica:</strong> Copia un enlace con la misma lista, sin cuenta ni aula virtual.",
         "<strong>Haz una prueba de audio:</strong> La palabra permanece oculta hasta enviar la respuesta.",
+        "<strong>Usa contexto sin revelar la respuesta:</strong> En las frases de ejemplo, la palabra objetivo aparece como un espacio en blanco, mientras el audio lee la palabra y la frase completa.",
       ],
       repeatTitle: "Bueno para práctica semanal",
       repeatText:
@@ -251,7 +252,7 @@ const pages = {
     legalLinks: ["Privacidad", "Acerca de", "Contacto"],
     schema: {
       description:
-        "Pega tus palabras para una prueba de ortografía por audio o una lluvia de palabras, con corrección, repaso de fallos y herramientas de pago para importar fotos y completar frases.",
+        "Pega tus palabras para una prueba de ortografía por audio o una lluvia de palabras. Las frases de ejemplo muestran la palabra objetivo como un espacio en blanco mientras el audio lee la palabra y la frase completa.",
       faq: [
         [
           "¿Puedo usar mis propias palabras?",
@@ -404,6 +405,7 @@ const pages = {
         "<strong>Revise os erros:</strong> Respostas erradas e palavras perdidas entram em outra rodada.",
         "<strong>Compartilhe a prática:</strong> Copie um link com a mesma lista, sem conta nem turma online.",
         "<strong>Faça um teste por áudio:</strong> A palavra fica escondida até a resposta ser enviada.",
+        "<strong>Use contexto sem revelar a resposta:</strong> Nas frases de exemplo, a palavra-alvo aparece como lacuna, enquanto o áudio lê a palavra e a frase completa.",
       ],
       repeatTitle: "Feito para prática semanal",
       repeatText:
@@ -419,7 +421,7 @@ const pages = {
     legalLinks: ["Privacidade", "Sobre", "Contato"],
     schema: {
       description:
-        "Cole suas palavras para um teste de ortografia por áudio ou uma chuva de palavras, com correção, revisão de erros e recursos pagos para importar fotos e preencher frases.",
+        "Cole suas palavras para um teste de ortografia por áudio ou uma chuva de palavras. Frases de exemplo deixam a palavra-alvo em branco enquanto o áudio lê a palavra e a frase completa.",
       faq: [
         [
           "Posso usar minhas próprias palavras?",
@@ -572,6 +574,7 @@ const pages = {
         "<strong>Révision ciblée :</strong> Les mots manqués reviennent dans une autre partie.",
         "<strong>Lien partageable :</strong> Envoyez la même liste sans compte ni espace classe.",
         "<strong>Test audio :</strong> Le mot reste caché jusqu’à l’envoi de la réponse.",
+        "<strong>Donnez du contexte sans révéler la réponse :</strong> Dans une phrase d’exemple, le mot cible devient un blanc tandis que l’audio lit le mot et la phrase complète.",
       ],
       repeatTitle: "Adapté à la pratique hebdomadaire",
       repeatText:
@@ -587,7 +590,7 @@ const pages = {
     legalLinks: ["Confidentialité", "À propos", "Contact"],
     schema: {
       description:
-        "Collez vos mots pour un test audio ou une pluie de mots, avec correction, reprise des erreurs et outils payants d’import photo et de phrases automatiques.",
+        "Collez vos mots pour un test audio ou une pluie de mots. Les phrases d’exemple laissent le mot cible en blanc tandis que l’audio lit le mot et la phrase complète.",
       faq: [
         [
           "Puis-je utiliser mes propres mots ?",
@@ -740,6 +743,7 @@ const pages = {
         "<strong>Latihan ulang:</strong> Jawaban salah dan kata yang terlewat masuk ronde berikutnya.",
         "<strong>Bagikan link:</strong> Kirim latihan yang sama tanpa akun atau kelas online.",
         "<strong>Tes audio:</strong> Kata tetap tersembunyi sampai jawaban dikirim.",
+        "<strong>Gunakan konteks tanpa membocorkan jawaban:</strong> Dalam kalimat contoh, kata target diganti bagian kosong, sementara audio membacakan kata dan kalimat lengkap.",
       ],
       repeatTitle: "Cocok untuk latihan mingguan",
       repeatText:
@@ -755,7 +759,7 @@ const pages = {
     legalLinks: ["Privasi", "Tentang", "Kontak"],
     schema: {
       description:
-        "Tempel kata sendiri untuk tes ejaan dengan audio atau hujan kata, lengkap dengan hasil, latihan ulang, dan fitur berbayar untuk impor foto serta kalimat otomatis.",
+        "Tempel kata sendiri untuk tes ejaan dengan audio atau hujan kata. Kalimat contoh mengosongkan kata target sementara audio membacakan kata dan kalimat lengkap.",
       faq: [
         [
           "Bisa memakai daftar kata sendiri?",
@@ -898,6 +902,7 @@ const pages = {
         "<strong>自动记录错词：</strong> 答错或漏掉的单词会进入下一轮。",
         "<strong>分享同一份练习：</strong> 复制链接即可，不需要注册账号。",
         "<strong>真正的听写流程：</strong> 提交答案前不会显示单词拼写。",
+        "<strong>有语境但不泄题：</strong> 例句中的目标词会显示为空白，语音仍会读出单词和完整例句。",
       ],
       repeatTitle: "适合每周反复使用",
       repeatText:
@@ -907,7 +912,7 @@ const pages = {
     legalLinks: ["隐私", "关于", "联系"],
     schema: {
       description:
-        "粘贴自己的英语单词，选择隐藏单词听写测试或单词雨，并在结束后重练错词；家长和教师方案还支持拍照导入与自动例句。",
+        "粘贴自己的英语单词，选择隐藏单词听写测试或单词雨，并在结束后重练错词。例句会把目标词显示为空白，语音仍会读出单词和完整例句。",
       faq: [
         [
           "可以用自己的英语单词吗？",
@@ -1455,7 +1460,7 @@ function schemaScripts(page) {
     applicationCategory: "EducationalApplication",
     inLanguage: page.htmlLang,
     isAccessibleForFree: true,
-    dateModified: "2026-08-30",
+    dateModified: "2026-09-01",
     offers: {
       "@type": "Offer",
       price: "0",

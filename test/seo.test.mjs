@@ -753,6 +753,25 @@ test("FAQ, About, and Parent pages describe current product capabilities", () =>
     assert.ok(parent.includes(term), term);
 });
 
+test("localized SEO pages describe blanked example-sentence prompts", () => {
+  const markers = {
+    "": /target word/,
+    es: /palabra objetivo/,
+    "pt-br": /palavra-alvo|lacuna no lugar da palavra/,
+    fr: /mot cible/,
+    id: /kata target/,
+    zh: /目标词/,
+  };
+  for (const locale of locales) {
+    const prefix = locale ? `${locale}/` : "";
+    for (const file of ["index.html", "faq.html", "about.html"]) {
+      const html = fs.readFileSync(path.join(root, prefix + file), "utf8");
+      assert.match(html, markers[locale], `${prefix}${file}`);
+    }
+  }
+  assert.ok(fs.readFileSync(path.join(root, "llms.txt"), "utf8").includes("blanks the target word"));
+});
+
 test("FAQ visible questions and JSON-LD entities stay synchronized", () => {
   for (const locale of locales) {
     const html = fs.readFileSync(path.join(root, locale, "faq.html"), "utf8");

@@ -390,7 +390,7 @@ export function initSpellingMode() {
   const sentenceInput = sentenceTextarea();
   if (sentenceInput) {
     sentenceInput.value = shareState.sharedLink
-      ? ''
+      ? shareState.exampleSentences
       : localStorage.getItem(SENTENCES_STORAGE_KEY) ||
         (usingSample ? SAMPLE_EXAMPLE_SENTENCES.join('\n') : '');
   }
@@ -591,8 +591,9 @@ function dismissPracticeShareOptions(event) {
 async function copyAnonymousPracticeLink() {
   if (!(await canStartPractice({ anonymousOnly: true }))) return;
   const words = currentWords();
+  const exampleSentences = sentenceTextarea()?.value || '';
   const url = new URL(window.location.origin + window.location.pathname);
-  url.hash = buildShareHash(words, selectedMode()).slice(1);
+  url.hash = buildShareHash(words, selectedMode(), { exampleSentences }).slice(1);
   try {
     await navigator.clipboard.writeText(url.toString());
     status(t('linkCopied'));

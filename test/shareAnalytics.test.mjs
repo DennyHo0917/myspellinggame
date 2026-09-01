@@ -22,11 +22,23 @@ test("new share links use a hash and restore their mode", () => {
   assert.deepEqual(readShareState({ hash, search: "" }), {
     words: "because,friend",
     mode: "dictation",
+    exampleSentences: "",
     autoStart: false,
     entryPage: "",
     sharedLink: true,
     source: "hash",
   });
+});
+
+test("share links preserve example sentences and blank lines by word order", () => {
+  const hash = buildShareHash(["because", "friend", "school"], "dictation", {
+    exampleSentences: "I stayed inside because it rained.\n\nAt school today.",
+  });
+  const state = readShareState({ hash, search: "" });
+  assert.equal(
+    state.exampleSentences,
+    "I stayed inside because it rained.\n\nAt school today.",
+  );
 });
 
 test("legacy query shares still load and default to Typing Rain", () => {

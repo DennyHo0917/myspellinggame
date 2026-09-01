@@ -285,7 +285,7 @@ test("custom spelling pages emphasize own words and launch without login", () =>
       path.join(root, locale, "custom-spelling-words-game.html"),
       "utf8",
     );
-    assert.match(html, /<form class="landing-launcher"[^>]*data-mode="typing"/);
+    assert.match(html, /<form[^>]*class="[^"]*\blanding-launcher\b[^"]*"[^>]*data-mode="typing"/);
     assert.match(html, /placeholder="because&#10;friend&#10;beautiful"/);
     for (const term of terms) assert.ok(html.includes(term), term);
   }
@@ -318,7 +318,7 @@ test("sight-word pages launch a localized no-login typing game", () => {
       "utf8",
     );
     assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
-    assert.match(html, /<form class="landing-launcher"[^>]*data-mode="typing"/);
+    assert.match(html, /<form[^>]*class="[^"]*\blanding-launcher\b[^"]*"[^>]*data-mode="typing"/);
     assert.match(html, /placeholder="the&#10;and&#10;you&#10;said"/);
     for (const term of terms) assert.ok(html.includes(term), term);
     for (const hreflang of [
@@ -395,7 +395,7 @@ test("weekly spelling pages launch exact-list dictation practice", () => {
     assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
     assert.match(
       html,
-      /<form class="landing-launcher"[^>]*data-mode="dictation"/,
+      /<form[^>]*class="[^"]*\blanding-launcher\b[^"]*"[^>]*data-mode="dictation"/,
     );
     assert.match(html, /placeholder="because&#10;friend&#10;beautiful"/);
     for (const term of terms)
@@ -411,52 +411,52 @@ test("weekly spelling pages launch exact-list dictation practice", () => {
 test("parent landing pages launch practice and expose localized workspace value", () => {
   const expected = {
     "": [
-      "Learner",
-      "Progress",
+      "Learner Profiles",
+      "Learning Progress",
       "Mastery",
-      "Today's Review",
-      "Smart Review",
       "Parent Plan",
+      "Smart Review",
+      "Automatic Example Sentences",
     ],
     es: [
-      "Perfil del estudiante",
-      "Progreso",
+      "Perfiles de estudiantes",
+      "Progreso de aprendizaje",
       "Dominio",
-      "Repaso de hoy",
       "Repaso inteligente",
       "Plan para familias",
+      "Frases de ejemplo automáticas",
     ],
     "pt-br": [
-      "Perfil do aluno",
-      "Progresso",
+      "Perfis de alunos",
+      "Progresso de aprendizagem",
       "Domínio",
-      "Revisão de hoje",
       "Revisão inteligente",
       "Plano para Pais",
+      "Frases de exemplo automáticas",
     ],
     fr: [
-      "Profil élève",
-      "Progression",
+      "Profils des élèves",
+      "Progression d’apprentissage",
       "Maîtrise",
-      "Révision du jour",
       "Révision intelligente",
       "Offre Parents",
+      "Phrases d’exemple automatiques",
     ],
     id: [
       "Profil pelajar",
-      "Perkembangan",
+      "Perkembangan belajar",
       "Penguasaan",
-      "Ulasan hari ini",
       "Ulasan pintar",
       "Paket Orang Tua",
+      "Kalimat contoh otomatis",
     ],
     zh: [
       "学习者档案",
-      "学习进度",
+      "学习进度和掌握度",
       "掌握度",
-      "今日复习",
       "智能复习",
       "家长方案",
+      "自动生成例句",
     ],
   };
   for (const [locale, terms] of Object.entries(expected)) {
@@ -465,8 +465,8 @@ test("parent landing pages launch practice and expose localized workspace value"
       "utf8",
     );
     assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
-    assert.match(html, /class="landing-launcher"[^>]+data-mode="dictation"/);
-    assert.match(html, /href="\/teacher\?lang=/);
+    assert.match(html, /class="[^"]*\blanding-launcher\b[^"]*"[^>]+data-mode="dictation"/);
+    assert.match(html, /href="\/workspace\?lang=/);
     assert.match(html, /href="[^"]*\/pricing"/);
     for (const term of terms)
       assert.ok(html.includes(term), `${locale || "en"}: ${term}`);
@@ -481,8 +481,7 @@ test("parent landing pages launch practice and expose localized workspace value"
 test("teacher landing pages launch practice and expose localized assignment value", () => {
   const expected = {
     "": [
-      "Paste your spelling list → Share one link → Track results",
-      "Try it now",
+      "Open Teacher Workspace",
       "No student accounts",
       "Assignments",
       "Progress",
@@ -492,16 +491,41 @@ test("teacher landing pages launch practice and expose localized assignment valu
       "CSV",
       "Teacher Plan",
     ],
-    es: ["Probar ahora", "Sin cuentas para alumnos", "Tareas", "Progreso"],
+    es: [
+      "Abrir espacio para docentes",
+      "Práctica sin cuentas para alumnos",
+      "Tareas",
+      "Progreso",
+      "Dominio",
+    ],
     "pt-br": [
-      "Testar agora",
-      "Sem contas de alunos",
+      "Abrir espaço do professor",
+      "Prática sem contas para os alunos",
       "Atividades",
       "Progresso",
+      "Domínio",
     ],
-    fr: ["Tester maintenant", "Sans compte élève", "Devoirs", "Progression"],
-    id: ["Coba sekarang", "Tanpa akun siswa", "Tugas", "Perkembangan"],
-    zh: ["立即试用", "无需学生账号", "作业", "学习进度"],
+    fr: [
+      "Ouvrir l’espace enseignant",
+      "Exercices sans compte élève",
+      "Devoirs",
+      "Progression",
+      "Maîtrise",
+    ],
+    id: [
+      "Buka ruang kerja guru",
+      "Latihan tanpa akun siswa",
+      "Tugas",
+      "Perkembangan",
+      "Penguasaan",
+    ],
+    zh: [
+      "进入教师工作台",
+      "学生练习无需账号",
+      "作业",
+      "学习进度",
+      "掌握度",
+    ],
   };
   for (const [locale, terms] of Object.entries(expected)) {
     const html = fs.readFileSync(
@@ -509,9 +533,20 @@ test("teacher landing pages launch practice and expose localized assignment valu
       "utf8",
     );
     assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
-    assert.match(html, /class="landing-launcher"[^>]+data-mode="dictation"/);
-    assert.match(html, /href="\/teacher\?lang=/);
+    assert.match(html, /href="\/workspace\?lang=/);
     assert.match(html, /href="[^"]*\/pricing"/);
+    for (const step of locale === ""
+      ? ["Paste your spelling list", "Share one link", "Track results"]
+      : locale === "es"
+        ? ["Pega tu lista", "Comparte un enlace", "Sigue los resultados"]
+        : locale === "pt-br"
+          ? ["Cole sua lista", "Compartilhe um link", "Acompanhe os resultados"]
+          : locale === "fr"
+            ? ["Collez votre liste", "Partagez un lien", "Suivez les résultats"]
+            : locale === "id"
+              ? ["Tempel daftar ejaan", "Bagikan satu link", "Pantau hasil"]
+              : ["粘贴英语词表", "分享一个链接", "追踪练习结果"])
+      assert.ok(html.includes(step), `${locale || "en"}: ${step}`);
     for (const term of terms)
       assert.ok(html.includes(term), `${locale || "en"}: ${term}`);
     for (const hreflang of hreflangs)

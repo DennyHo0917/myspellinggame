@@ -2281,12 +2281,14 @@ function productUrlLocale(value) {
   return Object.hasOwn(URL_LOCALES, key) ? URL_LOCALES[key] : "";
 }
 
-const PREFERRED_LOCALE_KEY = "mySpellingGamePreferredLocale";
+const PREFERRED_LOCALE_KEY = "mySpellingGameManualLocale";
+const LEGACY_PREFERRED_LOCALE_KEY = "mySpellingGamePreferredLocale";
 
 export function rememberProductLocale(locale) {
   const normalized = normalizeProductLocale(locale);
   try {
     localStorage.setItem(PREFERRED_LOCALE_KEY, normalized);
+    localStorage.removeItem(LEGACY_PREFERRED_LOCALE_KEY);
   } catch {}
   return normalized;
 }
@@ -2316,7 +2318,6 @@ export function productPagePath(page = "", locale = productLocale()) {
 export function productLocale() {
   const params = new URLSearchParams(location.search);
   const query = params.get("lang");
-  const path = location.pathname.split("/")[1];
   let pending = "";
   let stored = "";
   if (params.get("checkout") === "success") {
@@ -2330,13 +2331,10 @@ export function productLocale() {
   const pendingLocale = productUrlLocale(pending);
   const queryLocale = productUrlLocale(query);
   const storedLocale = productUrlLocale(stored);
-  const pathLocale = path === "en" ? "" : productUrlLocale(path);
-  if (queryLocale) rememberProductLocale(queryLocale);
   return normalizeProductLocale(
     pendingLocale ||
       queryLocale ||
       storedLocale ||
-      pathLocale ||
       navigator.languages?.[0] ||
       navigator.language,
   );

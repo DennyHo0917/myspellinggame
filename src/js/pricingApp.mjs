@@ -104,7 +104,7 @@ async function openBillingPortal(control) {
     });
     const data = await response.json().catch(() => ({}));
     if (response.status === 401) {
-      location.href = `/teacher?lang=${encodeURIComponent(locale)}`;
+      location.href = `/workspace?lang=${encodeURIComponent(locale)}`;
       return;
     }
     if (!response.ok || !data.url)
@@ -156,7 +156,7 @@ for (const choice of planChoices)
       );
       const data = await response.json().catch(() => ({}));
       if (response.status === 401) {
-        location.href = `/teacher?lang=${encodeURIComponent(locale)}`;
+        location.href = `/workspace?lang=${encodeURIComponent(locale)}`;
         return;
       }
       if (response.ok && data.scheduled && data.effectiveAt) {

@@ -1045,7 +1045,7 @@ ${alternateLinks(slug)}
             <span class="brand-name">My Spelling Game</span>
         </a>
 ${languageMenu(code, slug, loc.nav)}
-        <a class="teacher-nav-link" href="/teacher?lang=${encodeURIComponent(code)}">${loc.nav.home === "Home" ? "Workspace" : code === "zh" ? "工作台" : code === "es" ? "Espacio de trabajo" : code === "pt-BR" ? "Espaço de trabalho" : code === "fr" ? "Espace de travail" : "Ruang kerja"}</a>
+        <a class="teacher-nav-link" href="/workspace?lang=${encodeURIComponent(code)}">${loc.nav.home === "Home" ? "Workspace" : code === "zh" ? "工作台" : code === "es" ? "Espacio de trabajo" : code === "pt-BR" ? "Espaço de trabalho" : code === "fr" ? "Espace de travail" : "Ruang kerja"}</a>
         <button class="header-home-link" onclick="window.location.href='${homeHref}'" id="back-home" title="${escapeAttr(loc.nav.home)}">${loc.nav.home}</button>
     </header>
 

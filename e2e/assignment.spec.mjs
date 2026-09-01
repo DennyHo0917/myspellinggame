@@ -505,7 +505,7 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
     }),
   );
 
-  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Recent assignments" }),
@@ -560,7 +560,7 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
   await page.getByLabel("Spelling words").fill("apple\nbanana");
   await page.getByLabel("Typing").check();
   await page.getByRole("button", { name: "Create and publish" }).click();
-  await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
+  await expect(page).toHaveURL(`/workspace/assignments/${assignmentId}?lang=en`);
   expect(createdBody.learnerIds).toEqual([learnerId]);
   await expect(page.getByRole("link", { name: "Export CSV" })).toBeVisible();
   const learnerAssignmentUrl = `${new URL(page.url()).origin}/a/${publicId}?learner=${learnerPublicId}&lang=en`;
@@ -663,19 +663,19 @@ test("new assignment keeps learner assignment area visible when no learners exis
     }),
   );
 
-  await page.goto("/teacher/assignments/new?lang=en");
+  await page.goto("/workspace/assignments/new?lang=en");
   await expect(page.locator("#assignment-learners-field")).toBeVisible();
   await expect(
     page.getByText("Add a learner profile to assign this practice."),
   ).toBeVisible();
   await expect(page.getByRole("link", { name: "Add student" })).toHaveAttribute(
     "href",
-    "/teacher/learners?lang=en",
+    "/workspace/learners?lang=en",
   );
   await page.getByRole("link", { name: "Add student" }).click();
-  await expect(page).toHaveURL(/\/teacher\/learners\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\/learners\?lang=en$/);
   await expect(page.getByLabel("Student nickname or number")).toBeVisible();
-  await page.goto(`/teacher/assignments/${assignmentId}?lang=en`);
+  await page.goto(`/workspace/assignments/${assignmentId}?lang=en`);
   await expect(
     page.getByText("Link sharing only", { exact: true }),
   ).toBeVisible();
@@ -744,7 +744,7 @@ test("assignments page owns assignment management and overview adapts to work", 
     }),
   );
 
-  await page.goto("/teacher/assignments?lang=en");
+  await page.goto("/workspace/assignments?lang=en");
   await expect(
     page.getByRole("heading", { name: "Assignments" }),
   ).toBeVisible();
@@ -757,7 +757,7 @@ test("assignments page owns assignment management and overview adapts to work", 
     page.getByRole("link", { name: "Create assignment" }),
   ).toBeVisible();
 
-  await page.goto("/teacher?lang=en");
+  await page.goto("/workspace?lang=en");
   await expect(
     page.getByRole("heading", { name: "Recent assignments" }),
   ).toBeVisible();
@@ -857,7 +857,7 @@ test("assignment edit form prefills fields and submits a combined patch", async 
     });
   });
 
-  await page.goto(`/teacher/assignments/${assignmentId}/edit?lang=en`);
+  await page.goto(`/workspace/assignments/${assignmentId}/edit?lang=en`);
   await expect(
     page.getByRole("heading", { name: "Edit assignment" }),
   ).toBeVisible();
@@ -875,7 +875,7 @@ test("assignment edit form prefills fields and submits a combined patch", async 
   await page.getByLabel("Typing").check();
   await page.getByLabel("Maximum attempts per nickname").selectOption("5");
   await page.getByRole("button", { name: "Save changes" }).click();
-  await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
+  await expect(page).toHaveURL(`/workspace/assignments/${assignmentId}?lang=en`);
   expect(patches[0]).toMatchObject({
     title: "Updated assignment",
     mode: "typing",
@@ -885,7 +885,7 @@ test("assignment edit form prefills fields and submits a combined patch", async 
   expect(patches[0].words).toBe("apple\nbanana");
 
   detail.hasAttempts = true;
-  await page.goto(`/teacher/assignments/${assignmentId}/edit?lang=en`);
+  await page.goto(`/workspace/assignments/${assignmentId}/edit?lang=en`);
   await expect(page.getByLabel("Spelling words")).toBeDisabled();
   await expect(page.getByLabel("Typing")).toBeDisabled();
   await expect(page.locator(".field-lock").first()).toContainText(
@@ -894,7 +894,7 @@ test("assignment edit form prefills fields and submits a combined patch", async 
   await page.getByLabel("Assignment title").fill("Metadata only");
   await page.getByLabel("Link sharing only").check();
   await page.getByRole("button", { name: "Save changes" }).click();
-  await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
+  await expect(page).toHaveURL(`/workspace/assignments/${assignmentId}?lang=en`);
   expect(patches[1]).toMatchObject({
     title: "Metadata only",
     maxAttempts: 5,
@@ -957,7 +957,7 @@ test("editing a link-only assignment keeps link sharing selected", async ({
     });
   });
 
-  await page.goto(`/teacher/assignments/${assignmentId}/edit?lang=en`);
+  await page.goto(`/workspace/assignments/${assignmentId}/edit?lang=en`);
   await expect(page.getByLabel("Link sharing only")).toBeChecked();
   await expect(page.getByLabel("All students")).not.toBeChecked();
   await expect(page.getByLabel("Selected students")).not.toBeChecked();
@@ -965,7 +965,7 @@ test("editing a link-only assignment keeps link sharing selected", async ({
     .getByLabel("Assignment title")
     .fill("Renamed link-only assignment");
   await page.getByRole("button", { name: "Save changes" }).click();
-  await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
+  await expect(page).toHaveURL(`/workspace/assignments/${assignmentId}?lang=en`);
   expect(patches[0]).not.toHaveProperty("learnerIds");
 });
 
@@ -1003,7 +1003,7 @@ test("new assignment validates learner selection before submitting", async ({
     });
   });
 
-  await page.goto("/teacher/assignments/new?lang=en");
+  await page.goto("/workspace/assignments/new?lang=en");
   await expect(page.getByLabel("Link sharing only")).toBeChecked();
   await page.getByLabel("Selected students").check();
   await expect(page.locator(".assignment-learners-error")).toHaveText(
@@ -1077,7 +1077,7 @@ test("assignment learner names render as text", async ({ page }) => {
     }),
   );
 
-  await page.goto(`/teacher/assignments/${assignmentId}/edit?lang=en`);
+  await page.goto(`/workspace/assignments/${assignmentId}/edit?lang=en`);
   const learnerList = page.locator("#assignment-learner-list");
   await expect(learnerList).toContainText(unsafeName);
   await expect(learnerList.locator("img")).toHaveCount(0);
@@ -1139,7 +1139,7 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
   );
 
   const expectNeutralWorkspace = async () => {
-    await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+    await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
     await expect(
       page.getByRole("heading", { name: "Recent assignments" }),
     ).toBeVisible();
@@ -1183,7 +1183,7 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
   workspaceType = "teacher";
   await expectNeutralWorkspace();
 
-  await page.goto("/teacher/assignments/new?lang=en", {
+  await page.goto("/workspace/assignments/new?lang=en", {
     waitUntil: "domcontentloaded",
   });
   await expect(page.getByLabel("Selected learners")).toBeVisible();
@@ -1195,7 +1195,7 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
   await expect(sentenceLibraryButton).toBeVisible();
   await expect(page.locator(".locked-feature-plan")).toHaveCount(0);
   await sentenceLibraryButton.click();
-  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\/assignments\/new\?lang=en$/);
   await expect(page.locator(".locked-feature-plan")).toHaveCount(1);
   await expect(
     page
@@ -1585,7 +1585,7 @@ test("Track results skips anonymous copying and opens the existing assignment fl
   await page
     .locator(".practice-share-option", { hasText: "Track results" })
     .click();
-  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\/assignments\/new\?lang=en$/);
   await expect(
     page.getByRole("button", { name: "Continue with Google" }),
   ).toBeVisible();
@@ -1643,7 +1643,7 @@ test("Track results skips anonymous copying and opens the existing assignment fl
     });
   });
   await page.getByRole("button", { name: "Create and publish" }).click();
-  await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
+  await expect(page).toHaveURL(`/workspace/assignments/${assignmentId}?lang=en`);
   expect(
     await page.evaluate(() =>
       JSON.parse(sessionStorage.getItem("trackCreateEvents") || "[]")
@@ -1676,7 +1676,7 @@ test("signed-in Track results opens the existing assignment form directly", asyn
   await page
     .locator(".practice-share-option", { hasText: "Track results" })
     .click();
-  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\/assignments\/new\?lang=en$/);
   await expect(page.getByLabel("Assignment title")).toBeVisible();
   await expect(page.getByLabel("Spelling words")).toHaveValue(
     "because\nfriend\nbeautiful\nanswer\nenough\nfavorite\nlibrary\nthrough",
@@ -1728,7 +1728,7 @@ test("typing result offers Workspace CTA and keeps the practice draft", async ({
     });
   });
   await page.getByRole("button", { name: "Continue in Workspace" }).click();
-  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\/assignments\/new\?lang=en$/);
   expect(
     await page.evaluate(() => ({
       words: sessionStorage.getItem("mySpellingTeacherDraftWords"),
@@ -1795,7 +1795,7 @@ test("signed-in result keeps the CTA without signup copy or signup analytics", a
     });
   });
   await page.getByRole("button", { name: "Continue in Workspace" }).click();
-  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\/assignments\/new\?lang=en$/);
   expect(
     await page.evaluate(() => ({
       words: sessionStorage.getItem("mySpellingTeacherDraftWords"),
@@ -2099,7 +2099,7 @@ test("teacher creates an assignment with an example sentence and the student pla
     }),
   );
 
-  await page.goto("/teacher?lang=en");
+  await page.goto("/workspace?lang=en");
   await page.evaluate(() =>
     sessionStorage.setItem("mySpellingAssignmentEntryPoint", "copy_track"),
   );
@@ -2130,7 +2130,7 @@ test("teacher creates an assignment with an example sentence and the student pla
     });
   });
   await page.getByRole("button", { name: "Create and publish" }).click();
-  await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
+  await expect(page).toHaveURL(`/workspace/assignments/${assignmentId}?lang=en`);
   expect(createdBody).toMatchObject({
     title: "Sentence practice",
     words: "because",
@@ -2508,7 +2508,7 @@ test("Google sign-in returns to a prefilled new teacher assignment", async ({
     ),
   ).toBeLessThanOrEqual(12);
   await assign.click();
-  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\/assignments\/new\?lang=en$/);
   expect(
     await page.evaluate(() =>
       JSON.parse(
@@ -2537,8 +2537,8 @@ test("Google sign-in returns to a prefilled new teacher assignment", async ({
   });
   await page.getByRole("button", { name: "Continue with Google" }).click();
 
-  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?lang=en$/);
-  expect(callbackURL).toBe("/teacher/assignments/new?lang=en");
+  await expect(page).toHaveURL(/\/workspace\/assignments\/new\?lang=en$/);
+  expect(callbackURL).toBe("/workspace/assignments/new?lang=en");
   await expect(page.getByLabel("Spelling words")).toHaveValue(
     "because\nfriend",
   );
@@ -2674,7 +2674,7 @@ test("failed automatic Checkout stays retryable on the teacher page", async ({
       body: JSON.stringify(
         checkoutCalls === 1
           ? { error: "internal_error" }
-          : { url: "/teacher?lang=en#stripe-checkout" },
+          : { url: "/workspace?lang=en#stripe-checkout" },
       ),
     });
   });
@@ -2686,7 +2686,7 @@ test("failed automatic Checkout stays retryable on the teacher page", async ({
   await page.evaluate(() =>
     sessionStorage.setItem("pendingCheckoutPlan", "parent"),
   );
-  await page.goto("/teacher?lang=en");
+  await page.goto("/workspace?lang=en");
   await expect(
     page.getByText(
       "We couldn’t open Stripe Checkout. Your selected plan is still saved.",
@@ -2819,8 +2819,8 @@ test("pricing header keeps Home and Workspace buttons at the top right", async (
   page,
 }) => {
   for (const [path, homeLabel, homeHref, workspaceLabel, workspaceHref] of [
-    ["/pricing", "Home", "/", "Workspace", "/teacher?lang=en"],
-    ["/zh/pricing", "首页", "/zh/", "工作台", "/teacher?lang=zh"],
+    ["/pricing", "Home", "/", "Workspace", "/workspace?lang=en"],
+    ["/zh/pricing", "首页", "/zh/", "工作台", "/workspace?lang=zh"],
   ]) {
     await page.goto(path, { waitUntil: "domcontentloaded" });
     const nav = page.locator(".pricing-nav");
@@ -2850,7 +2850,7 @@ test("pricing header keeps Home and Workspace buttons at the top right", async (
 });
 
 test("language menus close when clicking outside", async ({ page }) => {
-  for (const path of ["/", "/teacher?lang=en"]) {
+  for (const path of ["/", "/workspace?lang=en"]) {
     await page.goto(path, { waitUntil: "domcontentloaded" });
     const menu = page.locator("details.language-switcher");
     await menu.locator("summary").click();
@@ -2958,7 +2958,7 @@ test("mobile conversion pages keep their key actions usable", async ({
   await page.goto("/pricing");
   await expect(
     page.getByRole("link", { name: "Create free account" }),
-  ).toHaveAttribute("href", "/teacher?lang=en#teacher-sign-in");
+  ).toHaveAttribute("href", "/workspace?lang=en#teacher-sign-in");
   await expect(
     page.getByText("Unlimited tracked submissions").first(),
   ).toBeVisible();
@@ -2970,14 +2970,14 @@ test("mobile conversion pages keep their key actions usable", async ({
   await expect(page.getByText("$99.99 / year")).toBeVisible();
   await expectNoHorizontalOverflow();
 
-  await page.goto("/teacher?lang=en");
+  await page.goto("/workspace?lang=en");
   await expect(
     page.getByRole("button", { name: "Continue with Google" }),
   ).toBeVisible();
   await expectNoHorizontalOverflow();
 
   signedIn = true;
-  await page.goto("/teacher/assignments/new?lang=en");
+  await page.goto("/workspace/assignments/new?lang=en");
   await expect(page.getByLabel("Spelling words")).toBeVisible();
   await expectNoHorizontalOverflow();
 });
@@ -3015,7 +3015,7 @@ test("Free workspace warns before the submission limit and paid plans do not", a
     }),
   );
 
-  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
   await expect(
     page.getByRole("heading", { name: "How will you use My Spelling Game?" }),
   ).toHaveCount(0);
@@ -3046,7 +3046,7 @@ test("Free workspace warns before the submission limit and paid plans do not", a
     .click();
   await expect(page).toHaveURL(/\/pricing$/);
   await expect(page.locator(".pricing-grid .pricing-card")).toHaveCount(3);
-  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
 
   monthlyAttempts = 8;
   await page.reload({ waitUntil: "domcontentloaded" });
@@ -3089,7 +3089,7 @@ test("new assignment validates Free word-count boundaries before submit", async 
         }),
   );
 
-  await page.goto("/teacher/assignments/new?lang=en");
+  await page.goto("/workspace/assignments/new?lang=en");
   const wordsInput = page.getByLabel("Spelling words");
   const submit = page.getByRole("button", { name: "Create and publish" });
   await wordsInput.fill(limitWords(20));
@@ -3171,7 +3171,7 @@ test("saved lists enforce the paid 40-word boundary", async ({ page }) => {
     }),
   );
 
-  await page.goto("/teacher/saved-lists?lang=en");
+  await page.goto("/workspace/saved-lists?lang=en");
   const wordsInput = page.getByLabel("Spelling words");
   const submit = page.getByRole("button", { name: "Save list" });
   await wordsInput.fill(limitWords(40));
@@ -3305,7 +3305,7 @@ test("workspace P0 flow keeps empty smart review actions retryable", async ({
     json(route, { words: [] }),
   );
 
-  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
   await page
     .locator('.workspace-sidebar-link[data-section="savedLists"]')
     .click();
@@ -3347,7 +3347,7 @@ test("workspace P0 flow keeps empty smart review actions retryable", async ({
   ).toBeVisible();
   await expect(learnerReview).toBeEnabled();
 
-  await page.goto(`/teacher/assignments/${assignmentId}?lang=en`, {
+  await page.goto(`/workspace/assignments/${assignmentId}?lang=en`, {
     waitUntil: "domcontentloaded",
   });
   await expect(
@@ -3415,7 +3415,7 @@ test("Teacher creates today's review assignment from learner detail", async ({
     }),
   );
 
-  await page.goto(`/teacher/learners/${learnerId}?lang=en`, {
+  await page.goto(`/workspace/learners/${learnerId}?lang=en`, {
     waitUntil: "domcontentloaded",
   });
   await page.evaluate(() =>
@@ -3428,7 +3428,7 @@ test("Teacher creates today's review assignment from learner detail", async ({
   await review
     .getByRole("button", { name: "Create Review Assignment" })
     .click();
-  await expect(page).toHaveURL(/\/teacher\/assignments\/new/);
+  await expect(page).toHaveURL(/\/workspace\/assignments\/new/);
   expect(
     await page.evaluate(() =>
       sessionStorage.getItem("mySpellingAssignmentEntryPoint"),
@@ -3549,7 +3549,7 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
     json(route, { words: [] }),
   );
 
-  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Parent Plan", { exact: true })).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Recent assignments" }),
@@ -3594,7 +3594,7 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
   await page.getByLabel("Typing").check();
   await page.getByRole("button", { name: "Create and publish" }).click();
 
-  await expect(page).toHaveURL(`/teacher/assignments/${assignmentId}?lang=en`);
+  await expect(page).toHaveURL(`/workspace/assignments/${assignmentId}?lang=en`);
   expect(createdBody.learnerIds).toEqual(childIds);
   expect(String(createdBody.words).split("\n")).toHaveLength(40);
   await expect(
@@ -3726,7 +3726,7 @@ test("Free assignment progress hides class-wide missed-word statistics", async (
   );
 
   const navigation = await page.goto(
-    `/teacher/assignments/${assignmentId}?lang=en`,
+    `/workspace/assignments/${assignmentId}?lang=en`,
     { waitUntil: "domcontentloaded" },
   );
   expect(navigation.headers()["x-robots-tag"]).toContain("noindex");
@@ -3793,14 +3793,14 @@ test("free assignment and learner previews avoid zero-value urgency", async ({
     }),
   );
 
-  await page.goto(`/teacher/assignments/${assignmentId}?lang=en`, {
+  await page.goto(`/workspace/assignments/${assignmentId}?lang=en`, {
     waitUntil: "domcontentloaded",
   });
   await expect(
     page.getByRole("heading", { name: "Most commonly missed words" }),
   ).toHaveCount(0);
 
-  await page.goto(`/teacher/learners/${learnerId}?lang=en`, {
+  await page.goto(`/workspace/learners/${learnerId}?lang=en`, {
     waitUntil: "domcontentloaded",
   });
   await expect(
@@ -3895,7 +3895,7 @@ test("deleting a result refreshes teacher summaries and reports failures", async
     },
   );
 
-  await page.goto(`/teacher/assignments/${assignmentId}?lang=en`);
+  await page.goto(`/workspace/assignments/${assignmentId}?lang=en`);
   const misses = page.locator("section").filter({
     has: page.getByRole("heading", { name: "Most commonly missed words" }),
   });
@@ -3978,7 +3978,7 @@ test("assignment learner picker shows profile avatars", async ({ page }) => {
       },
     ],
   });
-  await page.goto("/teacher/assignments/new?lang=en", {
+  await page.goto("/workspace/assignments/new?lang=en", {
     waitUntil: "domcontentloaded",
   });
   await page.locator('[data-target-option="selected"]').click();
@@ -4000,7 +4000,7 @@ for (const [plan, learnerLabel, billingLabel, usageLabel] of [
     page,
   }) => {
     await mockWorkspaceShell(page, plan);
-    await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+    await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
 
     const sidebar = page.locator(".workspace-sidebar");
     await expect(
@@ -4033,7 +4033,7 @@ for (const [plan, learnerLabel, billingLabel, usageLabel] of [
       sidebar.getByText("Smart missed-word review", { exact: true }),
     ).toHaveCount(0);
 
-    await page.goto("/teacher/learners?lang=en", {
+    await page.goto("/workspace/learners?lang=en", {
       waitUntil: "domcontentloaded",
     });
     await expect(
@@ -4055,7 +4055,7 @@ test("workspace header owns account actions and keeps the desktop layout full wi
     signOutCalls += 1;
     return route.fulfill({ contentType: "application/json", body: "{}" });
   });
-  await page.goto("/teacher/assignments?lang=en", {
+  await page.goto("/workspace/assignments?lang=en", {
     waitUntil: "domcontentloaded",
   });
 
@@ -4160,7 +4160,7 @@ test("workspace header owns account actions and keeps the desktop layout full wi
   await brand.click();
   await expect(page).toHaveURL(/\/$/);
   await page.goBack({ waitUntil: "domcontentloaded" });
-  await expect(page).toHaveURL(/\/teacher\/assignments\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\/assignments\?lang=en$/);
   await expect(
     page.locator(".teacher-product-nav > .product-nav-actions > a"),
   ).toHaveCount(0);
@@ -4225,7 +4225,7 @@ test("learner management keeps progress, rename, archive, and restore actions", 
     });
   });
 
-  await page.goto("/teacher/learners?lang=en", {
+  await page.goto("/workspace/learners?lang=en", {
     waitUntil: "domcontentloaded",
   });
   let row = page.locator("article", { hasText: "Alice" });
@@ -4234,7 +4234,7 @@ test("learner management keeps progress, rename, archive, and restore actions", 
   ).toBeVisible();
   await expect(row.getByRole("link", { name: "Progress" })).toHaveAttribute(
     "href",
-    `/teacher/learners/${learner.id}?lang=en`,
+    `/workspace/learners/${learner.id}?lang=en`,
   );
 
   page.once("dialog", (dialog) => dialog.accept("Alicia"));
@@ -4268,7 +4268,7 @@ test("learner creation offers bundled avatars and compresses an uploaded image",
   });
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/teacher/learners?lang=en", {
+  await page.goto("/workspace/learners?lang=en", {
     waitUntil: "domcontentloaded",
   });
   await page.getByRole("button", { name: "Add learner" }).first().click();
@@ -4341,7 +4341,7 @@ test("learner management shows the plan limit when restoring would exceed active
     }),
   );
 
-  await page.goto("/teacher/learners?lang=en", {
+  await page.goto("/workspace/learners?lang=en", {
     waitUntil: "domcontentloaded",
   });
   const row = page.locator("article", { hasText: learner.name });
@@ -4396,7 +4396,7 @@ test("workspace overview stays lightweight and links to full management views", 
       { word: "friend", misses: 3 },
     ],
   });
-  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
 
   await expect(
     page.getByText("5 words need review", { exact: true }),
@@ -4411,18 +4411,18 @@ test("workspace overview stays lightweight and links to full management views", 
   await expect(page.getByRole("heading", { name: "Bob" })).toHaveCount(0);
 
   await page.locator('[data-section="assignments"]').click();
-  await expect(page).toHaveURL(/\/teacher\/assignments\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\/assignments\?lang=en$/);
   await expect(
     page.getByRole("heading", { name: "Assignment 6" }),
   ).toBeVisible();
   await page.locator('[data-section="learners"]').click();
-  await expect(page).toHaveURL(/\/teacher\/learners\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\/learners\?lang=en$/);
   await expect(page.locator("#learner-name")).toBeVisible();
   await page.locator('[data-section="savedLists"]').click();
-  await expect(page).toHaveURL(/\/teacher\/saved-lists\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\/saved-lists\?lang=en$/);
   await expect(page.locator("#saved-list-title")).toBeVisible();
   await page.locator('[data-section="progress"]').click();
-  await expect(page).toHaveURL(/\/teacher\/progress\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\/progress\?lang=en$/);
   await expect(page.getByText("because · 5", { exact: true })).toBeVisible();
   await expect(page.getByText("friend · 3", { exact: true })).toBeVisible();
   await page.getByRole("tab", { name: "Mastery" }).click();
@@ -4432,11 +4432,11 @@ test("workspace overview stays lightweight and links to full management views", 
   await expect(page.getByRole("heading", { name: "Bob" })).toBeVisible();
 
   for (const [path, section] of [
-    ["/teacher", "overview"],
-    ["/teacher/assignments", "assignments"],
-    ["/teacher/learners", "learners"],
-    ["/teacher/saved-lists", "savedLists"],
-    ["/teacher/progress", "progress"],
+    ["/workspace", "overview"],
+    ["/workspace/assignments", "assignments"],
+    ["/workspace/learners", "learners"],
+    ["/workspace/saved-lists", "savedLists"],
+    ["/workspace/progress", "progress"],
   ]) {
     await page.goto(`${path}?lang=en`, { waitUntil: "domcontentloaded" });
     await expect(page.locator(".workspace-sidebar")).toBeVisible();
@@ -4486,7 +4486,7 @@ test("workspace sidebar uses cached client navigation without reloading the shel
     });
   });
 
-  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".workspace-shell")).toBeVisible();
   const navigationEntries = await page.evaluate(
     () => performance.getEntriesByType("navigation").length,
@@ -4496,11 +4496,11 @@ test("workspace sidebar uses cached client navigation without reloading the shel
   });
   const shell = page.locator(".workspace-shell");
   const sections = [
-    ["assignments", "/teacher/assignments", "#assignments"],
-    ["learners", "/teacher/learners", "#learners"],
-    ["savedLists", "/teacher/saved-lists", "#saved-lists"],
-    ["progress", "/teacher/progress", "#progress-panel-overview"],
-    ["overview", "/teacher", "#overview"],
+    ["assignments", "/workspace/assignments", "#assignments"],
+    ["learners", "/workspace/learners", "#learners"],
+    ["savedLists", "/workspace/saved-lists", "#saved-lists"],
+    ["progress", "/workspace/progress", "#progress-panel-overview"],
+    ["overview", "/workspace", "#overview"],
   ];
   for (const [section, path, selector] of sections) {
     await shell.locator(`[data-section="${section}"]`).click();
@@ -4530,13 +4530,13 @@ test("workspace sidebar uses cached client navigation without reloading the shel
   expect(assignmentCalls).toBe(1);
 
   await page.goBack();
-  await expect(page).toHaveURL(/\/teacher\/progress\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\/progress\?lang=en$/);
   await expect(shell.locator('[data-section="progress"]')).toHaveAttribute(
     "aria-current",
     "page",
   );
   await page.goForward();
-  await expect(page).toHaveURL(/\/teacher\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\?lang=en$/);
   await expect(shell.locator('[data-section="overview"]')).toHaveAttribute(
     "aria-current",
     "page",
@@ -4548,7 +4548,7 @@ test("workspace sidebar uses cached client navigation without reloading the shel
 test("desktop workspace sidebar collapses and restores", async ({ page }) => {
   await page.setViewportSize({ width: 1600, height: 800 });
   await mockWorkspaceShell(page, "free");
-  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
 
   const sidebar = page.locator(".workspace-sidebar");
   const main = page.locator(".workspace-layout .teacher-main");
@@ -4607,7 +4607,7 @@ test("paid workspace billing sidebar opens pricing and allows plan changes", asy
       body: JSON.stringify({ url: "/pricing?from=portal" }),
     });
   });
-  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
 
   await page.getByRole("button", { name: /Owner A/ }).click();
   await expect(page.locator(".workspace-user-email")).toHaveText(
@@ -4670,7 +4670,7 @@ test("mobile workspace drawer opens, closes, navigates, and does not overflow", 
       },
     ],
   });
-  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
 
   const shell = page.locator(".workspace-shell");
   const menu = page.getByRole("button", { name: "Open workspace menu" });
@@ -4697,7 +4697,7 @@ test("mobile workspace drawer opens, closes, navigates, and does not overflow", 
     .locator('.workspace-sidebar-link[data-section="assignments"]')
     .click();
   await expect(shell).not.toHaveClass(/is-drawer-open/);
-  await expect(page).toHaveURL(/\/teacher\/assignments\?lang=en$/);
+  await expect(page).toHaveURL(/\/workspace\/assignments\?lang=en$/);
   await expect(
     page.locator('.workspace-sidebar-link[data-section="assignments"]'),
   ).toHaveAttribute("aria-current", "page");
@@ -4714,11 +4714,11 @@ test("mobile workspace drawer opens, closes, navigates, and does not overflow", 
   ).toBeGreaterThanOrEqual(44);
 
   for (const path of [
-    "/teacher",
-    "/teacher/assignments",
-    "/teacher/learners",
-    "/teacher/saved-lists",
-    "/teacher/progress",
+    "/workspace",
+    "/workspace/assignments",
+    "/workspace/learners",
+    "/workspace/saved-lists",
+    "/workspace/progress",
   ]) {
     await page.goto(`${path}?lang=en`, { waitUntil: "domcontentloaded" });
     expect(
@@ -4727,7 +4727,7 @@ test("mobile workspace drawer opens, closes, navigates, and does not overflow", 
   }
 
   await page.setViewportSize({ width: 768, height: 1024 });
-  await page.goto("/teacher/progress?lang=en", {
+  await page.goto("/workspace/progress?lang=en", {
     waitUntil: "domcontentloaded",
   });
   await expect(menu).toBeVisible();

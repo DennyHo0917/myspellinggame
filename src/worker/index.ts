@@ -2716,6 +2716,11 @@ export async function handleRequest(
   }
 
   if (url.pathname === "/teacher" || url.pathname.startsWith("/teacher/")) {
+    const workspaceUrl = new URL(url);
+    workspaceUrl.pathname = `/workspace${url.pathname.slice("/teacher".length)}`;
+    return Response.redirect(workspaceUrl, 308);
+  }
+  if (url.pathname === "/workspace" || url.pathname.startsWith("/workspace/")) {
     return serveShell(env, request, "/src/pages/teacher.html", true);
   }
   if (url.pathname === "/admin") {

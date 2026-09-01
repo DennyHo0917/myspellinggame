@@ -80,10 +80,10 @@ test("ordinary teacher routes do not override the stored locale", async ({
     localStorage.setItem("mySpellingGamePreferredLocale", "es"),
   );
 
-  await page.goto("/teacher", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace", { waitUntil: "domcontentloaded" });
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
 
-  await page.goto("/teacher?lang=__proto__", {
+  await page.goto("/workspace?lang=__proto__", {
     waitUntil: "domcontentloaded",
   });
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
@@ -91,7 +91,7 @@ test("ordinary teacher routes do not override the stored locale", async ({
   await page.evaluate(() =>
     sessionStorage.setItem("pendingCheckoutLocale", "zh"),
   );
-  await page.goto("/teacher?lang=es", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace?lang=es", { waitUntil: "domcontentloaded" });
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
 });
 
@@ -114,7 +114,7 @@ test("Checkout success waits for Free to become Teacher and records once", async
   });
   await mockAssignments(page);
 
-  await page.goto("/teacher?lang=en&checkout=success");
+  await page.goto("/workspace?lang=en&checkout=success");
   await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   await expect(page).not.toHaveURL(/checkout=success/);
   expect(await conversionEvents(page)).toEqual([
@@ -123,7 +123,7 @@ test("Checkout success waits for Free to become Teacher and records once", async
   ]);
   expect(calls).toBe(2);
 
-  await page.goto("/teacher?lang=en&checkout=success");
+  await page.goto("/workspace?lang=en&checkout=success");
   await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   expect(await conversionEvents(page)).toEqual([]);
 });
@@ -147,7 +147,7 @@ test("Parent Checkout success waits for Parent activation and records the Parent
   });
   await mockAssignments(page, "parent");
 
-  await page.goto("/teacher?lang=en&checkout=success&plan=parent");
+  await page.goto("/workspace?lang=en&checkout=success&plan=parent");
   await expect(page.getByText("Parent Plan", { exact: true })).toBeVisible();
   await expect(page.getByText("Parent Plan is active.")).toBeVisible();
   await expect(page).not.toHaveURL(/checkout=success|plan=parent/);
@@ -187,7 +187,7 @@ test("Teacher Checkout success waits for Teacher activation and records the Teac
   });
   await mockAssignments(page, "teacher");
 
-  await page.goto("/teacher?lang=en&checkout=success&plan=teacher");
+  await page.goto("/workspace?lang=en&checkout=success&plan=teacher");
   await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   await expect(page.getByText("Teacher Plan is active.")).toBeVisible();
   expect(
@@ -223,7 +223,7 @@ test("Checkout success handles an account that is already Teacher", async ({
   });
   await mockAssignments(page);
 
-  await page.goto("/teacher?lang=en&checkout=success");
+  await page.goto("/workspace?lang=en&checkout=success");
   await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   expect(calls).toBe(1);
   expect(await conversionEvents(page)).toEqual([
@@ -249,7 +249,7 @@ test("a historical trialing subscription stays usable without trial UI", async (
   );
   await mockAssignments(page);
 
-  await page.goto("/teacher?lang=en&checkout=success");
+  await page.goto("/workspace?lang=en&checkout=success");
 
   await expect(page.getByText("Teacher Plan is active.")).toBeVisible();
   await expect(page.locator("body")).not.toContainText(/trial/i);
@@ -270,7 +270,7 @@ test("an arbitrary Checkout success URL does not record a purchase", async ({
   );
   await mockAssignments(page);
 
-  await page.goto("/teacher?lang=en&checkout=success");
+  await page.goto("/workspace?lang=en&checkout=success");
   await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   expect(await conversionEvents(page)).toEqual([]);
 });
@@ -288,11 +288,11 @@ test("Checkout success restores supported locales and cleans its URL", async ({
 
   for (const locale of ["en", "es", "pt-BR", "fr", "id", "zh"]) {
     await page.goto(
-      `/teacher?lang=${encodeURIComponent(locale)}&checkout=success&interval=year&keep=value#workspace`,
+      `/workspace?lang=${encodeURIComponent(locale)}&checkout=success&interval=year&keep=value#workspace`,
     );
     await expect(page.locator("html")).toHaveAttribute("lang", locale);
     await expect(page).toHaveURL(
-      `/teacher?lang=${encodeURIComponent(locale)}&keep=value#workspace`,
+      `/workspace?lang=${encodeURIComponent(locale)}&keep=value#workspace`,
     );
   }
 });
@@ -312,11 +312,11 @@ test("Checkout success prefers its pending locale and preserves unrelated URL st
   await mockAssignments(page);
 
   await page.goto(
-    "/teacher?lang=es&checkout=success&interval=year&keep=value#workspace",
+    "/workspace?lang=es&checkout=success&interval=year&keep=value#workspace",
   );
 
   await expect(page.locator("html")).toHaveAttribute("lang", "zh");
-  await expect(page).toHaveURL("/teacher?lang=zh&keep=value#workspace");
+  await expect(page).toHaveURL("/workspace?lang=zh&keep=value#workspace");
   expect(
     await page.evaluate(() => sessionStorage.getItem("pendingCheckoutLocale")),
   ).toBeNull();
@@ -336,10 +336,10 @@ test("an invalid pending Checkout locale cannot override the URL locale", async 
   );
   await mockAssignments(page);
 
-  await page.goto("/teacher?lang=es&checkout=success");
+  await page.goto("/workspace?lang=es&checkout=success");
 
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
-  await expect(page).toHaveURL("/teacher?lang=es");
+  await expect(page).toHaveURL("/workspace?lang=es");
   expect(
     await page.evaluate(() => sessionStorage.getItem("pendingCheckoutLocale")),
   ).toBeNull();
@@ -364,7 +364,7 @@ test("Checkout success times out safely and can be checked again", async ({
     sessionStorage.setItem("pendingCheckoutLocale", "en"),
   );
 
-  await page.goto("/teacher?lang=en&checkout=success");
+  await page.goto("/workspace?lang=en&checkout=success");
   await expect(
     page.getByText("Checkout completed. Plan activation is still processing."),
   ).toBeVisible({ timeout: 15_000 });
@@ -406,7 +406,7 @@ test("the teacher sends its locale when opening Billing Portal", async ({
     });
   });
 
-  await page.goto("/teacher?lang=zh");
+  await page.goto("/workspace?lang=zh");
   await page.locator(".teacher-dashboard-card .actions button").click();
 
   await expect.poll(() => portalBody).toEqual({ locale: "zh" });
@@ -455,7 +455,7 @@ test("Checkout activation recovers from a temporary network error", async ({
   });
   await mockAssignments(page);
 
-  await page.goto("/teacher?lang=en&checkout=success");
+  await page.goto("/workspace?lang=en&checkout=success");
   await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   expect(calls).toBe(3);
   expect(await conversionEvents(page)).toEqual([
@@ -473,7 +473,7 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await mockSignedOut(page);
-    await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+    await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
     await expect(page.locator("#teacher-sign-in")).toBeVisible();
     await expect(page.locator(".product-brand")).toHaveCSS(
       "color",
@@ -532,17 +532,17 @@ test("Microsoft sign-in submits the Microsoft provider", async ({ page }) => {
   await page.route("**/api/auth/sign-in/social", (route) =>
     route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify({ url: "/teacher?lang=en" }),
+      body: JSON.stringify({ url: "/workspace?lang=en" }),
     }),
   );
-  await page.goto("/teacher?lang=en", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
   const requestPromise = page.waitForRequest("**/api/auth/sign-in/social");
   await page
     .getByRole("button", { name: "Continue with Microsoft" })
     .click({ noWaitAfter: true });
   expect((await requestPromise).postDataJSON()).toMatchObject({
     provider: "microsoft",
-    callbackURL: "/teacher?lang=en",
+    callbackURL: "/workspace?lang=en",
   });
 });
 
@@ -579,16 +579,16 @@ test("successful social auth records signup dimensions once", async ({
       body: JSON.stringify({ url: body.newUserCallbackURL }),
     });
   });
-  await page.goto("/teacher?lang=en");
+  await page.goto("/workspace?lang=en");
   await Promise.all([
-    page.waitForURL(/\/teacher\?lang=en$/, { waitUntil: "domcontentloaded" }),
+    page.waitForURL(/\/workspace\?lang=en$/, { waitUntil: "domcontentloaded" }),
     page.getByRole("button", { name: "Continue with Google" }).click(),
   ]);
   await page.waitForTimeout(500);
   expect(await analyticsEvents(page, "sign_up")).toEqual([
     { provider: "google", workspace_type: "teacher" },
   ]);
-  await expect(page).toHaveURL("/teacher?lang=en");
+  await expect(page).toHaveURL("/workspace?lang=en");
   await page.reload({ waitUntil: "domcontentloaded" });
   expect(await analyticsEvents(page, "sign_up")).toEqual([]);
 });
@@ -601,10 +601,10 @@ test("standalone Free CTA opens the matching teacher sign-in area", async ({
   const freeCta = page.locator("[data-free-teacher-cta]");
   await expect(freeCta).toHaveAttribute(
     "href",
-    "/teacher?lang=en#teacher-sign-in",
+    "/workspace?lang=en#teacher-sign-in",
   );
   await freeCta.click();
-  await expect(page).toHaveURL(/\/teacher\?lang=en#teacher-sign-in$/);
+  await expect(page).toHaveURL(/\/workspace\?lang=en#teacher-sign-in$/);
   await expect(
     page.getByRole("button", { name: "Continue with Google" }),
   ).toBeFocused();

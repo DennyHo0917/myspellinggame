@@ -3,9 +3,61 @@ import assert from "node:assert/strict";
 
 import {
   PRODUCT_LOCALES,
+  productLocale,
   productMessages,
   productPagePath,
 } from "../src/js/productLocale.mjs";
+
+function withLocaleEnvironment(
+  {
+    search = "",
+    browserLocale = "en-US",
+    storedLocale = "",
+    legacyStoredLocale = "",
+  },
+  callback,
+) {
+  const previous = {
+    location: globalThis.location,
+    navigator: globalThis.navigator,
+    localStorage: globalThis.localStorage,
+  };
+  const stored = new Map();
+  if (storedLocale) stored.set("mySpellingGameManualLocale", storedLocale);
+  if (legacyStoredLocale)
+    stored.set("mySpellingGamePreferredLocale", legacyStoredLocale);
+  Object.defineProperty(globalThis, "location", {
+    configurable: true,
+    value: { pathname: "/zh/pricing", search },
+  });
+  Object.defineProperty(globalThis, "navigator", {
+    configurable: true,
+    value: { language: browserLocale, languages: [browserLocale] },
+  });
+  globalThis.localStorage = {
+    getItem: (key) => stored.get(key) || null,
+    setItem: (key, value) => stored.set(key, value),
+    removeItem: (key) => stored.delete(key),
+  };
+  try {
+    return callback(stored);
+  } finally {
+    if (previous.location === undefined) delete globalThis.location;
+    else
+      Object.defineProperty(globalThis, "location", {
+        configurable: true,
+        value: previous.location,
+      });
+    if (previous.navigator === undefined) delete globalThis.navigator;
+    else
+      Object.defineProperty(globalThis, "navigator", {
+        configurable: true,
+        value: previous.navigator,
+      });
+    if (previous.localStorage === undefined) delete globalThis.localStorage;
+    else globalThis.localStorage = previous.localStorage;
+  }
+}
 
 test("pricing paths stay inside the active product locale", () => {
   assert.equal(productPagePath("pricing", "en"), "/pricing");
@@ -14,6 +66,26 @@ test("pricing paths stay inside the active product locale", () => {
   assert.equal(productPagePath("pricing", "fr"), "/fr/pricing");
   assert.equal(productPagePath("pricing", "id"), "/id/pricing");
   assert.equal(productPagePath("pricing", "zh"), "/zh/pricing");
+});
+
+test("product locale uses browser language until a manual choice exists", () => {
+  withLocaleEnvironment(
+    { browserLocale: "zh-CN", legacyStoredLocale: "en" },
+    (stored) => {
+      assert.equal(productLocale(), "zh");
+      assert.equal(stored.has("mySpellingGameManualLocale"), false);
+    },
+  );
+  withLocaleEnvironment({ browserLocale: "en-US", storedLocale: "zh" }, () => {
+    assert.equal(productLocale(), "zh");
+  });
+  withLocaleEnvironment(
+    { search: "?lang=fr", browserLocale: "zh-CN" },
+    (stored) => {
+      assert.equal(productLocale(), "fr");
+      assert.equal(stored.has("mySpellingGameManualLocale"), false);
+    },
+  );
 });
 
 test("word-limit copy states Free and paid list limits in every locale", () => {

@@ -14,11 +14,14 @@ function run({
   hash = "#words=red%2Cblue",
   browserLocale = "en-US",
   storedLocale = "",
+  legacyStoredLocale = "",
   links = [],
 } = {}) {
   const listeners = {};
   const stored = new Map();
-  if (storedLocale) stored.set("mySpellingGamePreferredLocale", storedLocale);
+  if (storedLocale) stored.set("mySpellingGameManualLocale", storedLocale);
+  if (legacyStoredLocale)
+    stored.set("mySpellingGamePreferredLocale", legacyStoredLocale);
   const calls = { replace: [] };
   const context = {
     URL,
@@ -67,6 +70,23 @@ test("browser language selects localized pages when no preference exists", () =>
   assert.deepEqual(calls.replace, ["/zh/about#words=red%2Cblue"]);
 });
 
+test("browser language wins over a legacy auto-detected preference", () => {
+  const { calls } = run({
+    browserLocale: "zh-CN",
+    legacyStoredLocale: "en",
+    pathname: "/",
+  });
+  assert.deepEqual(calls.replace, ["/zh/#words=red%2Cblue"]);
+});
+
+test("browser language stays in control when no manual choice exists", () => {
+  const { calls } = run({
+    browserLocale: "zh-CN",
+    pathname: "/fr/privacy",
+  });
+  assert.deepEqual(calls.replace, ["/zh/privacy#words=red%2Cblue"]);
+});
+
 test("a saved manual choice overrides browser and current path languages", () => {
   const { calls } = run({
     browserLocale: "en-US",
@@ -84,13 +104,14 @@ test("language choices are remembered before navigation", () => {
     href: "/pt-br/",
   });
   listeners.click({ target: { closest: () => choice } });
-  assert.equal(stored.get("mySpellingGamePreferredLocale"), "pt-BR");
+  assert.equal(stored.get("mySpellingGameManualLocale"), "pt-BR");
+  assert.equal(stored.has("mySpellingGamePreferredLocale"), false);
   assert.equal(choice.values.get("href"), "/pt-br/#words=red%2Cblue");
 });
 
-test("lang query becomes the manual preference and redirects cleanly", () => {
+test("lang query is temporary and redirects cleanly", () => {
   const { stored, calls } = run({ search: "?lang=fr&words=legacy" });
-  assert.equal(stored.get("mySpellingGamePreferredLocale"), "fr");
+  assert.equal(stored.has("mySpellingGameManualLocale"), false);
   assert.deepEqual(calls.replace, ["/fr/?words=legacy#words=red%2Cblue"]);
 });
 

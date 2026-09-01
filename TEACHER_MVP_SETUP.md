@@ -7,7 +7,7 @@ Use Node.js 22 or newer.
 1. Run `npm install`.
 2. Copy `.dev.vars.example` to `.dev.vars` and replace the placeholders with test credentials. Do not commit `.dev.vars`.
 3. Run `npm run db:migrate:local`.
-4. Run `npm run dev` and open `http://localhost:5173/teacher`.
+4. Run `npm run dev` and open `http://localhost:5173/workspace`.
 
 The local D1 state is kept in `../.myspellinggame-wrangler-state` so Wrangler's generated SQLite files do not trigger the static-asset watcher.
 

@@ -387,7 +387,7 @@ export async function createCheckout(
       {
         mode: "subscription",
         line_items: [{ price, quantity: 1 }],
-        success_url: `${origin}/teacher?lang=${locale}&checkout=success&interval=${interval}&plan=${plan}`,
+        success_url: `${origin}/workspace?lang=${locale}&checkout=success&interval=${interval}&plan=${plan}`,
         cancel_url: `${origin}${STRIPE_LOCALE_PATHS[locale]}/pricing?checkout=cancelled`,
         client_reference_id: user.id,
         customer: subscription?.stripe_customer_id || undefined,
@@ -531,7 +531,7 @@ export async function createPortal(
     ((params) => stripe(env).billingPortal.sessions.create(params));
   return createSession({
     customer: subscription.stripe_customer_id,
-    return_url: `${origin}/teacher?lang=${locale}`,
+    return_url: `${origin}/workspace?lang=${locale}`,
   });
 }
 
@@ -576,7 +576,7 @@ export async function changeSubscriptionPlan(
     );
   }
   const locale = stripeLocale(options.locale);
-  const successUrl = `${origin}/teacher?lang=${locale}&checkout=success&interval=${interval}&plan=${plan}`;
+  const successUrl = `${origin}/workspace?lang=${locale}&checkout=success&interval=${interval}&plan=${plan}`;
   if (stored.stripe_price_id === price) return { url: successUrl };
 
   const stripeClient = stripe(env);

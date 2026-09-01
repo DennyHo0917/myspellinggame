@@ -7,5 +7,11 @@
 /teacher/*
   X-Robots-Tag: noindex, nofollow, noarchive
 
+/workspace
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/workspace/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
 /a/*
   X-Robots-Tag: noindex, nofollow, noarchive

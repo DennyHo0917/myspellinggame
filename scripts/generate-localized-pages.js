@@ -1190,7 +1190,7 @@ function body(page, code) {
             <span class="brand-name">My Spelling Game</span>
         </a>
 ${languageMenu(code, nav)}
-        <a class="teacher-nav-link" href="/teacher?lang=${encodeURIComponent(code)}">${nav.teacher}</a>
+        <a class="teacher-nav-link" href="/workspace?lang=${encodeURIComponent(code)}">${nav.teacher}</a>
     </header>
 
     <div class="main-content-wrapper">
@@ -1409,7 +1409,7 @@ ${listItems(info.bullets)}
         <section class="spelling-seo-copy workspace-seo-section">
             <h2>${workspaceCopy[page.pageLocale].heading}</h2>
             <p>${workspaceCopy[page.pageLocale].text}</p>
-            <a class="seo-cta" href="/teacher?lang=${encodeURIComponent(page.pageLocale)}">${workspaceCopy[page.pageLocale].cta}</a>
+            <a class="seo-cta" href="/workspace?lang=${encodeURIComponent(page.pageLocale)}">${workspaceCopy[page.pageLocale].cta}</a>
         </section>
     </div>
 

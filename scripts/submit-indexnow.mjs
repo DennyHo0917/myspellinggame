@@ -63,7 +63,7 @@ function canonicalFromFile(file) {
 function allowedCanonical(value, sitemapUrls) {
   try {
     const url = new URL(value);
-    const blocked = ["/teacher", "/admin", "/api", "/a", "/l"];
+    const blocked = ["/workspace", "/teacher", "/admin", "/api", "/a", "/l"];
     return (
       url.protocol === "https:" &&
       url.hostname === host &&

@@ -47,7 +47,7 @@ function photoImportNotice(account) {
   const primary = document.createElement('a');
   primary.href = account
     ? `${productPagePath('pricing', getPageLocale())}#pricing`
-    : `/teacher?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
+    : `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
   primary.textContent = account ? t('photoImportPlans') : t('photoImportSignIn');
   notice.append(' ', primary);
   if (!account) {
@@ -316,7 +316,7 @@ export async function canStartPractice({ anonymousOnly = false } = {}) {
   }
   if (anonymous || !account) {
     const lang = encodeURIComponent(pageLocale());
-    showLimitCta('anonymousWordLimit', `/teacher?lang=${lang}#teacher-sign-in`, 'signInFree');
+    showLimitCta('anonymousWordLimit', `/workspace?lang=${lang}#teacher-sign-in`, 'signInFree');
   } else {
     showLimitCta('freeWordLimit', `${productPagePath('pricing', pageLocale())}#pricing`, 'upgradePlus');
   }
@@ -730,7 +730,7 @@ export function openTeacherAssignment(entryPoint = 'practice_result') {
   } catch (_) {
     // The teacher form still works when browser storage is unavailable.
   }
-  window.location.href = `/teacher/assignments/new?lang=${encodeURIComponent(pageLocale())}`;
+  window.location.href = `/workspace/assignments/new?lang=${encodeURIComponent(pageLocale())}`;
 }
 
 if (typeof window !== 'undefined') {

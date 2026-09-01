@@ -1,5 +1,6 @@
 (function () {
-  const PREF_KEY = "mySpellingGamePreferredLocale";
+  const PREF_KEY = "mySpellingGameManualLocale";
+  const LEGACY_PREF_KEY = "mySpellingGamePreferredLocale";
   const LOCALE_DIRS = {
     en: "",
     es: "es",
@@ -9,7 +10,7 @@
     zh: "zh",
   };
   const LOCALIZED_DIRS = new Set(Object.values(LOCALE_DIRS).filter(Boolean));
-  const APP_PATH = /^\/(?:teacher|admin|a|l|join)(?:\/|$)/;
+  const APP_PATH = /^\/(?:workspace|teacher|admin|a|l|join)(?:\/|$)/;
 
   function normalizeLocale(locale) {
     const value = String(locale || "").toLowerCase();
@@ -41,18 +42,11 @@
     const normalized = normalizeLocale(locale);
     try {
       localStorage.setItem(PREF_KEY, normalized);
+      localStorage.removeItem(LEGACY_PREF_KEY);
     } catch (_) {
       // Storage can be blocked in private or hardened browsers.
     }
     return normalized;
-  }
-
-  function pathLocale(pathname) {
-    const directory = String(pathname || "/")
-      .split("/")[1]
-      .toLowerCase();
-    if (!LOCALIZED_DIRS.has(directory)) return "";
-    return directory === "pt-br" ? "pt-BR" : directory;
   }
 
   function stripLocale(pathname) {
@@ -89,9 +83,8 @@
   const params = new URLSearchParams(window.location.search);
   const queryLocale = supportedLocale(params.get("lang"));
   const selectedLocale = queryLocale
-    ? writeStoredLocale(queryLocale)
+    ? queryLocale
     : readStoredLocale() ||
-      pathLocale(window.location.pathname) ||
       normalizeLocale(
         (typeof navigator !== "undefined" &&
           (navigator.languages?.[0] || navigator.language)) ||

@@ -10,7 +10,7 @@ Before release:
 4. Confirm both hostnames have valid certificates and the redirects work without a loop.
 5. Enable HSTS only after the HTTPS and hostname checks pass. Start with a short max-age before increasing it or including subdomains.
 6. Apply D1 migrations before sending teacher or student traffic to the new Worker.
-7. Verify `/teacher` and `/a/*` return `X-Robots-Tag: noindex, nofollow, noarchive`, while `/pricing` remains indexable.
+7. Verify `/workspace`, legacy `/teacher`, and `/a/*` return `X-Robots-Tag: noindex, nofollow, noarchive`, while `/pricing` remains indexable.
 
 The existing `_redirects` file continues to redirect old `.html` paths to extensionless URLs. These dashboard settings are manual deployment tasks and are not claimed as active by this repository.
 

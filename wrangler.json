@@ -8,6 +8,8 @@
     "binding": "ASSETS",
     "run_worker_first": [
       "/api/*",
+      "/workspace",
+      "/workspace/*",
       "/teacher",
       "/teacher/*",
       "/admin",

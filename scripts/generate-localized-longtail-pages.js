@@ -4062,7 +4062,7 @@ function languageMenu(currentCode, slug) {
 ${links}
             </div>
         </details>
-        <a class="teacher-nav-link" href="/teacher?lang=${encodeURIComponent(currentCode)}">${langCodeLabel(currentCode)}</a>
+        <a class="teacher-nav-link" href="/workspace?lang=${encodeURIComponent(currentCode)}">${langCodeLabel(currentCode)}</a>
         <button class="header-home-link" onclick="window.location.href='${dirPath(lang)}'" id="back-home" title="${escapeAttr(lang.home)}">${lang.home}</button>
     </header>`;
 }
@@ -4206,7 +4206,7 @@ function schemaScripts(lang, slug, page) {
 }
 
 function parentLandingMain(langCode, lang, copy) {
-  const workspaceUrl = `/teacher?lang=${encodeURIComponent(langCode)}`;
+  const workspaceUrl = `/workspace?lang=${encodeURIComponent(langCode)}`;
   const pricingUrl = pagePath(lang, "pricing");
   const featureCards = copy.features
     .map(
@@ -4289,7 +4289,7 @@ ${faqHtml(langCode, copy.faq)}
 }
 
 function teacherLandingMain(langCode, lang, copy) {
-  const workspaceUrl = `/teacher?lang=${encodeURIComponent(langCode)}`;
+  const workspaceUrl = `/workspace?lang=${encodeURIComponent(langCode)}`;
   const pricingUrl = pagePath(lang, "pricing");
   const heroPreviewItems = [
     copy.features[1][0],
@@ -4385,7 +4385,7 @@ ${faqHtml(langCode, copy.faq)}
 function audienceLandingMain(langCode, lang, copy, audience) {
   if (audience === "parent") return parentLandingMain(langCode, lang, copy);
   if (audience === "teacher") return teacherLandingMain(langCode, lang, copy);
-  const workspaceUrl = `/teacher?lang=${encodeURIComponent(langCode)}`;
+  const workspaceUrl = `/workspace?lang=${encodeURIComponent(langCode)}`;
   const pricingUrl = pagePath(lang, "pricing");
   const featureCards = (features) =>
     features
@@ -4480,7 +4480,7 @@ function toolLandingMain(langCode, lang, page, slug, launcher) {
                 <h2 id="tool-workspace-${langCode}">${localizeLegacyTerms(page.panels[2][0], langCode)}</h2>
                 <p>${localizeLegacyTerms(page.panels[2][1], langCode)}</p>
             </div>
-            <a class="tool-workspace-link" href="/teacher?lang=${encodeURIComponent(langCode)}">${toolSupportingCopy[langCode].workspaceCta}</a>
+            <a class="tool-workspace-link" href="/workspace?lang=${encodeURIComponent(langCode)}">${toolSupportingCopy[langCode].workspaceCta}</a>
         </section>`
     : sight
       ? `        <section class="tool-advice" aria-labelledby="tool-advice-${langCode}">

@@ -15,18 +15,19 @@ export interface AuthEnv {
 export function safeTeacherCallbackURL(value: unknown, origin: string) {
   try {
     const callback = new URL(
-      typeof value === "string" ? value : "/teacher",
+      typeof value === "string" ? value : "/workspace",
       origin,
     );
     if (
       callback.origin === origin &&
-      (/^\/teacher(?:\/|$)/.test(callback.pathname) ||
+      (/^\/(?:workspace|teacher)(?:\/|$)/.test(callback.pathname) ||
         callback.pathname === "/admin")
     ) {
-      return `${callback.pathname}${callback.search}`;
+      const pathname = callback.pathname.replace(/^\/teacher(?=\/|$)/, "/workspace");
+      return `${pathname}${callback.search}`;
     }
   } catch {}
-  return "/teacher";
+  return "/workspace";
 }
 
 export async function restrictTeacherAuthCallback(request: Request) {

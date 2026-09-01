@@ -315,7 +315,7 @@ describe("teacher auth callback", () => {
         method: "POST",
         body: JSON.stringify({
           provider: "microsoft",
-          callbackURL: "/teacher?lang=en",
+          callbackURL: "/workspace?lang=en",
         }),
       },
       null,
@@ -333,13 +333,17 @@ describe("teacher auth callback", () => {
   it("allows only same-origin teacher paths", () => {
     const origin = "https://example.test";
     expect(
+      safeTeacherCallbackURL("/workspace/assignments/new?lang=en", origin),
+    ).toBe("/workspace/assignments/new?lang=en");
+    expect(
       safeTeacherCallbackURL("/teacher/assignments/new?lang=en", origin),
-    ).toBe("/teacher/assignments/new?lang=en");
-    expect(safeTeacherCallbackURL("https://evil.test/teacher", origin)).toBe(
-      "/teacher",
+    ).toBe("/workspace/assignments/new?lang=en");
+    expect(safeTeacherCallbackURL("/teacher", origin)).toBe("/workspace");
+    expect(safeTeacherCallbackURL("https://evil.test/workspace", origin)).toBe(
+      "/workspace",
     );
-    expect(safeTeacherCallbackURL("/teacher-redirect", origin)).toBe(
-      "/teacher",
+    expect(safeTeacherCallbackURL("/workspace-redirect", origin)).toBe(
+      "/workspace",
     );
   });
 
@@ -351,19 +355,41 @@ describe("teacher auth callback", () => {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           provider: "google",
-          callbackURL: "https://evil.test/teacher",
+          callbackURL: "https://evil.test/workspace",
         }),
       },
     );
     const sanitized = await restrictTeacherAuthCallback(request);
     await expect(sanitized.json()).resolves.toMatchObject({
       provider: "google",
-      callbackURL: "/teacher",
+      callbackURL: "/workspace",
     });
   });
 });
 
 describe("teacher authorization and quotas", () => {
+  it("serves the workspace route and redirects the legacy teacher route", async () => {
+    const fetched: string[] = [];
+    const env = testEnv({
+      ASSETS: {
+        fetch: async (assetRequest: Request) => {
+          fetched.push(new URL(assetRequest.url).pathname);
+          return new Response("workspace shell");
+        },
+      } as Fetcher,
+    });
+    const workspace = await call("/workspace?lang=zh", {}, null, env);
+    expect(workspace.status).toBe(200);
+    await expect(workspace.text()).resolves.toBe("workspace shell");
+    expect(fetched).toEqual(["/src/pages/teacher.html"]);
+
+    const legacy = await call("/teacher/assignments?lang=zh", {}, null, env);
+    expect(legacy.status).toBe(308);
+    expect(legacy.headers.get("location")).toBe(
+      "https://example.test/workspace/assignments?lang=zh",
+    );
+  });
+
   it("keeps the Free, Parent, and Teacher limits centralized", () => {
     expect(PLAN_LIMITS.free).toEqual({
       activeAssignments: 1,
@@ -2772,7 +2798,7 @@ describe("Stripe checkout", () => {
 
       expect(sent).toMatchObject({
         line_items: [{ price: priceId, quantity: 1 }],
-        success_url: `https://example.test/teacher?lang=en&checkout=success&interval=${interval}&plan=parent`,
+        success_url: `https://example.test/workspace?lang=en&checkout=success&interval=${interval}&plan=parent`,
         metadata: { plan: "parent", billing_interval: interval },
         subscription_data: {
           metadata: { plan: "parent", billing_interval: interval },
@@ -2852,7 +2878,7 @@ describe("Stripe checkout", () => {
         prices.push(String(params.line_items?.[0]?.price));
         return {
           id: `cs_teacher_${calls}`,
-          url: `https://checkout.test/teacher/${calls}`,
+          url: `https://checkout.test/workspace/${calls}`,
           expires_at: params.expires_at!,
         };
       },
@@ -2880,7 +2906,7 @@ describe("Stripe checkout", () => {
         "https://example.test",
         options,
       ),
-    ).resolves.toEqual({ url: "https://checkout.test/teacher/1" });
+    ).resolves.toEqual({ url: "https://checkout.test/workspace/1" });
     await expect(
       createCheckout(
         testEnv(),
@@ -3092,7 +3118,7 @@ describe("Stripe checkout", () => {
       );
 
       expect(successUrl).toBe(
-        `https://example.test/teacher?lang=${expected}&checkout=success&interval=month&plan=teacher`,
+        `https://example.test/workspace?lang=${expected}&checkout=success&interval=month&plan=teacher`,
       );
       expect(cancelUrl).toBe(
         `https://example.test${pricingPath}?checkout=cancelled`,
@@ -3132,7 +3158,7 @@ describe("Stripe checkout", () => {
       },
     );
 
-    expect(returnUrl).toBe(`https://example.test/teacher?lang=${expected}`);
+    expect(returnUrl).toBe(`https://example.test/workspace?lang=${expected}`);
   });
 
   it.each([

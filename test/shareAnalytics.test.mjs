@@ -17,7 +17,8 @@ import { buildShareHash, readShareState } from "../src/js/shareState.mjs";
 
 test("new share links use a hash and restore their mode", () => {
   const hash = buildShareHash(["because", "friend"], "dictation");
-  assert.match(hash, /^#words=/);
+  assert.match(hash, /^#data=/);
+  assert.equal(hash.includes("because"), false);
   assert.equal(hash.includes("?"), false);
   assert.deepEqual(readShareState({ hash, search: "" }), {
     words: "because,friend",
@@ -35,10 +36,40 @@ test("share links preserve example sentences and blank lines by word order", () 
     exampleSentences: "I stayed inside because it rained.\n\nAt school today.",
   });
   const state = readShareState({ hash, search: "" });
+  assert.equal(hash.includes("because"), false);
+  assert.equal(hash.includes("I+stayed"), false);
   assert.equal(
     state.exampleSentences,
     "I stayed inside because it rained.\n\nAt school today.",
   );
+});
+
+test("large share links compress repeated words and sentences", () => {
+  const words = Array.from({ length: 20 }, (_, index) => `word${index % 5}`);
+  const exampleSentences = words
+    .map((word) => `I practiced ${word} at school yesterday.`)
+    .join("\n");
+  const hash = buildShareHash(words, "dictation", { exampleSentences });
+  const rawJson = JSON.stringify({
+    words: words.join(","),
+    mode: "dictation",
+    exampleSentences,
+    autoStart: false,
+    entryPage: "",
+  });
+  assert.match(hash, /^#data=z\./);
+  assert.ok(hash.length < Math.ceil(new TextEncoder().encode(rawJson).length * 4 / 3));
+  assert.deepEqual(readShareState({ hash, search: "" }).words, words.join(","));
+  assert.deepEqual(readShareState({ hash, search: "" }).exampleSentences, exampleSentences);
+});
+
+test("legacy hash shares with plain words and sentences remain readable", () => {
+  const state = readShareState({
+    hash: "#words=red,blue&mode=dictation&sentences=Red%20one.%0ABlue%20two.",
+    search: "",
+  });
+  assert.equal(state.words, "red,blue");
+  assert.equal(state.exampleSentences, "Red one.\nBlue two.");
 });
 
 test("legacy query shares still load and default to Typing Rain", () => {

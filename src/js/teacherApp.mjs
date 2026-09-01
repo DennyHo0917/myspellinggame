@@ -559,11 +559,11 @@ function workspaceSection(value, fallback = "overview") {
 function workspaceRoute(pathname = location.pathname) {
   return (
     {
-      "/teacher": "overview",
-      "/teacher/assignments": "assignments",
-      "/teacher/learners": "learners",
-      "/teacher/saved-lists": "savedLists",
-      "/teacher/progress": "progress",
+      "/workspace": "overview",
+      "/workspace/assignments": "assignments",
+      "/workspace/learners": "learners",
+      "/workspace/saved-lists": "savedLists",
+      "/workspace/progress": "progress",
     }[pathname] || null
   );
 }
@@ -571,12 +571,12 @@ function workspaceRoute(pathname = location.pathname) {
 function workspacePath(section) {
   return (
     {
-      overview: "/teacher",
-      assignments: "/teacher/assignments",
-      learners: "/teacher/learners",
-      savedLists: "/teacher/saved-lists",
-      progress: "/teacher/progress",
-    }[section] || "/teacher"
+      overview: "/workspace",
+      assignments: "/workspace/assignments",
+      learners: "/workspace/learners",
+      savedLists: "/workspace/saved-lists",
+      progress: "/workspace/progress",
+    }[section] || "/workspace"
   );
 }
 
@@ -698,28 +698,28 @@ function shell(me = null, activeSection = "overview") {
   const current =
     workspaceRoute() ||
     workspaceSection(requestedSection || currentHash, activeSection);
-  const dashboardHref = `/teacher?lang=${encodeURIComponent(locale)}`;
+  const dashboardHref = `/workspace?lang=${encodeURIComponent(locale)}`;
   const items = [
     ["overview", copy.overview, dashboardHref],
     [
       "assignments",
       copy.assignments,
-      `/teacher/assignments?lang=${encodeURIComponent(locale)}`,
+      `/workspace/assignments?lang=${encodeURIComponent(locale)}`,
     ],
     [
       "learners",
       planLearners,
-      `/teacher/learners?lang=${encodeURIComponent(locale)}`,
+      `/workspace/learners?lang=${encodeURIComponent(locale)}`,
     ],
     [
       "savedLists",
       copy.savedLists,
-      `/teacher/saved-lists?lang=${encodeURIComponent(locale)}`,
+      `/workspace/saved-lists?lang=${encodeURIComponent(locale)}`,
     ],
     [
       "progress",
       copy.freeProgress,
-      `/teacher/progress?lang=${encodeURIComponent(locale)}`,
+      `/workspace/progress?lang=${encodeURIComponent(locale)}`,
     ],
   ];
   const menu = document.createElement("div");
@@ -879,13 +879,13 @@ function saveAssignmentDraft(words, title = "", exampleSentences = "") {
     sessionStorage.setItem("mySpellingTeacherDraftMode", "dictation");
   } catch {}
   setAssignmentEntryPoint("workspace");
-  location.href = `/teacher/assignments/new?lang=${encodeURIComponent(locale)}`;
+  location.href = `/workspace/assignments/new?lang=${encodeURIComponent(locale)}`;
 }
 
 function teacherCallbackURL() {
-  const pathname = /^\/teacher(?:\/|$)/.test(location.pathname)
+  const pathname = /^\/workspace(?:\/|$)/.test(location.pathname)
     ? location.pathname
-    : "/teacher";
+    : "/workspace";
   return `${pathname}?lang=${encodeURIComponent(locale)}`;
 }
 
@@ -1607,7 +1607,7 @@ function renderLearnersLegacy(me, learners) {
     actions.className = "actions compact-actions";
     const open = document.createElement("a");
     open.className = "button-link button-secondary";
-    open.href = `/teacher/learners/${learner.id}?lang=${encodeURIComponent(locale)}`;
+    open.href = `/workspace/learners/${learner.id}?lang=${encodeURIComponent(locale)}`;
     open.textContent = learnerCopy.progress;
     const copyPin = document.createElement("button");
     copyPin.type = "button";
@@ -1842,7 +1842,7 @@ function renderLearners(me, learners) {
     actions.className = "actions compact-actions learner-actions";
     const open = document.createElement("a");
     open.className = "button-link learner-progress-link";
-    open.href = `/teacher/learners/${learner.id}?lang=${encodeURIComponent(locale)}`;
+    open.href = `/workspace/learners/${learner.id}?lang=${encodeURIComponent(locale)}`;
     open.textContent = m("viewLearner") + " >";
     const menu = document.createElement("details");
     menu.className = "learner-menu";
@@ -1945,7 +1945,7 @@ function renderAssignmentsCard(
     intro.textContent = copy.assignmentsPageCopy;
     const create = document.createElement("a");
     create.className = "button-link";
-    create.href = `/teacher/assignments/new?lang=${encodeURIComponent(locale)}`;
+    create.href = `/workspace/assignments/new?lang=${encodeURIComponent(locale)}`;
     create.textContent = copy.newAssignment;
     create.addEventListener("click", () =>
       setAssignmentEntryPoint("workspace"),
@@ -2007,7 +2007,7 @@ function renderAssignmentsCard(
       body.append(titleRow, badges);
       const link = document.createElement("a");
       link.className = "button-link button-secondary";
-      link.href = `/teacher/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`;
+      link.href = `/workspace/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`;
       link.textContent = copy.open;
       row.append(body, link);
       list.append(row);
@@ -2017,7 +2017,7 @@ function renderAssignmentsCard(
   if (showViewAll && assignments.length) {
     const viewAll = document.createElement("a");
     viewAll.className = "button-link button-secondary";
-    viewAll.href = `/teacher/assignments?lang=${encodeURIComponent(locale)}`;
+    viewAll.href = `/workspace/assignments?lang=${encodeURIComponent(locale)}`;
     viewAll.textContent = copy.viewAllAssignments;
     listCard.append(viewAll);
   }
@@ -2098,7 +2098,7 @@ function renderProgressCard(
     }
     const open = document.createElement("a");
     open.className = "button-link button-secondary";
-    open.href = `/teacher/learners/${learner.id}?lang=${encodeURIComponent(locale)}`;
+    open.href = `/workspace/learners/${learner.id}?lang=${encodeURIComponent(locale)}`;
     open.textContent = copy.viewLearner;
     row.append(body, open);
     list.append(row);
@@ -2129,7 +2129,7 @@ function progressLearnerRows(learners, { reviewActions = false } = {}) {
     actions.className = "actions compact-actions";
     const open = document.createElement("a");
     open.className = "button-link button-secondary";
-    open.href = `/teacher/learners/${learner.id}?lang=${encodeURIComponent(locale)}`;
+    open.href = `/workspace/learners/${learner.id}?lang=${encodeURIComponent(locale)}`;
     open.textContent = copy.viewLearner;
     actions.append(open);
     if (reviewActions) {
@@ -2483,8 +2483,8 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
   const backLink = document.createElement("a");
   backLink.className = "button-link button-secondary";
   backLink.href = editing
-    ? `/teacher/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`
-    : `/teacher/assignments?lang=${encodeURIComponent(locale)}`;
+    ? `/workspace/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`
+    : `/workspace/assignments?lang=${encodeURIComponent(locale)}`;
   backLink.textContent = editing ? copy.cancel : copy.backToDashboard;
   const backWrap = document.createElement("div");
   backWrap.className = "assignment-form-back";
@@ -2547,7 +2547,7 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
     empty.textContent = m("noLearnersForAssignment");
     const add = document.createElement("a");
     add.className = "button-link button-secondary";
-    add.href = `/teacher/learners?lang=${encodeURIComponent(locale)}`;
+    add.href = `/workspace/learners?lang=${encodeURIComponent(locale)}`;
     add.textContent = m(
       me.plan === "free"
         ? "freeAddLearner"
@@ -2786,7 +2786,7 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
         },
       );
       if (editing) {
-        location.href = `/teacher/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`;
+        location.href = `/workspace/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`;
         return;
       }
       try {
@@ -2804,7 +2804,7 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
         ...(entryPoint ? { entry_point: entryPoint } : {}),
       });
       clearAssignmentEntryPoint();
-      location.href = `/teacher/assignments/${result.id}?lang=${encodeURIComponent(locale)}`;
+      location.href = `/workspace/assignments/${result.id}?lang=${encodeURIComponent(locale)}`;
     } catch (error) {
       if (error.code === "active_assignment_limit") {
         status.textContent = "";
@@ -2860,7 +2860,7 @@ async function renderDetail(me, id) {
   headingRow.className = "assignment-detail-heading";
   const backLink = document.createElement("a");
   backLink.className = "button-link button-secondary";
-  backLink.href = `/teacher/assignments?lang=${encodeURIComponent(locale)}`;
+  backLink.href = `/workspace/assignments?lang=${encodeURIComponent(locale)}`;
   backLink.textContent = copy.backToDashboard;
   headingRow.append(titleRow, backLink);
   const linkLabel = document.createElement("h2");
@@ -2961,7 +2961,7 @@ async function renderDetail(me, id) {
   edit.className = "button-secondary";
   edit.textContent = copy.editAssignment;
   edit.addEventListener("click", () => {
-    location.href = `/teacher/assignments/${id}/edit?lang=${encodeURIComponent(locale)}`;
+    location.href = `/workspace/assignments/${id}/edit?lang=${encodeURIComponent(locale)}`;
   });
   bindCopy(
     copyButton,
@@ -2980,7 +2980,7 @@ async function renderDetail(me, id) {
   remove.addEventListener("click", async () => {
     if (!confirm(copy.deleteConfirm)) return;
     await api(`/api/assignments/${id}`, { method: "DELETE" });
-    location.href = `/teacher/assignments?lang=${encodeURIComponent(locale)}`;
+    location.href = `/workspace/assignments?lang=${encodeURIComponent(locale)}`;
   });
   saveList.addEventListener("click", async () => {
     try {
@@ -3226,7 +3226,7 @@ async function renderLearner(me, id) {
   }
   const back = document.createElement("a");
   back.className = "button-link button-secondary";
-  back.href = `/teacher/progress?lang=${encodeURIComponent(locale)}`;
+  back.href = `/workspace/progress?lang=${encodeURIComponent(locale)}`;
   back.textContent = copy.backToDashboard;
   const headingActions = document.createElement("div");
   headingActions.className = "actions compact-actions";
@@ -3525,16 +3525,16 @@ async function renderTeacherRoute(me) {
   workspaceState = { me };
   bindWorkspaceNavigation();
   const detail = location.pathname.match(
-    /^\/teacher\/assignments\/([0-9a-f-]{36})$/i,
+    /^\/workspace\/assignments\/([0-9a-f-]{36})$/i,
   );
   const editAssignment = location.pathname.match(
-    /^\/teacher\/assignments\/([0-9a-f-]{36})\/edit$/i,
+    /^\/workspace\/assignments\/([0-9a-f-]{36})\/edit$/i,
   );
   const learner = location.pathname.match(
-    /^\/teacher\/learners\/([0-9a-f-]{36})$/i,
+    /^\/workspace\/learners\/([0-9a-f-]{36})$/i,
   );
   try {
-    if (location.pathname === "/teacher/assignments/new") await renderNew(me);
+    if (location.pathname === "/workspace/assignments/new") await renderNew(me);
     else if (editAssignment) await renderEdit(me, editAssignment[1]);
     else if (detail) await renderDetail(me, detail[1]);
     else if (learner) await renderLearner(me, learner[1]);

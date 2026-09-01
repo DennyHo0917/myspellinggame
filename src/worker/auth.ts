@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { sendWelcomeEmail } from "./email";
+import { recordLifecycleEvent } from "./lifecycle";
 
 export interface AuthEnv {
   DB: D1Database;
@@ -23,7 +24,10 @@ export function safeTeacherCallbackURL(value: unknown, origin: string) {
       (/^\/(?:workspace|teacher)(?:\/|$)/.test(callback.pathname) ||
         callback.pathname === "/admin")
     ) {
-      const pathname = callback.pathname.replace(/^\/teacher(?=\/|$)/, "/workspace");
+      const pathname = callback.pathname.replace(
+        /^\/teacher(?=\/|$)/,
+        "/workspace",
+      );
       return `${pathname}${callback.search}`;
     }
   } catch {}
@@ -101,15 +105,19 @@ export function createAuth(env: AuthEnv, request: Request) {
       user: {
         create: {
           after: async (user, context) => {
-            if (!env.RESEND_API_KEY) return;
-            try {
-              await sendWelcomeEmail(
-                env.RESEND_API_KEY,
-                user.email,
-                context?.headers?.get("accept-language"),
-              );
-            } catch (error) {
-              console.error("Welcome email failed", error);
+            await recordLifecycleEvent(env.DB, user.id, "signup_created", {
+              email_verified: Boolean(user.emailVerified),
+            });
+            if (env.RESEND_API_KEY) {
+              try {
+                await sendWelcomeEmail(
+                  env.RESEND_API_KEY,
+                  user.email,
+                  context?.headers?.get("accept-language"),
+                );
+              } catch (error) {
+                console.error("Welcome email failed", error);
+              }
             }
           },
         },
@@ -127,6 +135,15 @@ export function createAuth(env: AuthEnv, request: Request) {
               )
                 .bind(now, now, session.userId)
                 .run();
+              await recordLifecycleEvent(
+                env.DB,
+                session.userId,
+                "login",
+                {
+                  session_id: session.id,
+                },
+                `session:${session.id}`,
+              );
             } catch (error) {
               console.error("Failed to record last login time", error);
             }

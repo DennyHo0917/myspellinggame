@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { HttpError, resolvePlan } from "./domain";
+import { recordLifecycleEvent } from "./lifecycle";
 
 export interface StripeEnv {
   STRIPE_SECRET_KEY: string;
@@ -711,11 +712,17 @@ async function applySubscription(
     (subscription.status === "active" || subscription.status === "trialing");
   const existing = await db
     .prepare(
-      `SELECT s.plan, u.workspace_type FROM user u
+      `SELECT s.plan, s.status, u.workspace_type FROM user u
        LEFT JOIN subscriptions s ON s.user_id = u.id WHERE u.id = ?`,
     )
     .bind(ownerUserId)
-    .first<{ plan: string | null; workspace_type: string | null }>();
+    .first<{
+      plan: string | null;
+      status: string | null;
+      workspace_type: string | null;
+    }>();
+  const wasActive =
+    existing?.status === "active" || existing?.status === "trialing";
   const plan =
     active && configuredPlan === "parent"
       ? "parent"
@@ -758,6 +765,19 @@ async function applySubscription(
       now,
     )
     .run();
+  if (active && !wasActive) {
+    await recordLifecycleEvent(
+      db,
+      ownerUserId,
+      "subscription_started",
+      {
+        plan,
+        billing_interval: interval === "year" ? "year" : "month",
+        stripe_subscription_id: subscription.id,
+      },
+      `subscription:${subscription.id}`,
+    );
+  }
 }
 
 async function applyCheckout(

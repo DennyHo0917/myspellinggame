@@ -39,6 +39,11 @@ import {
   verifyAndProcessWebhook,
   type StripeEnv,
 } from "./stripe";
+import {
+  isSignupSource,
+  recordLifecycleEvent,
+  signupIntentForSource,
+} from "./lifecycle";
 
 interface RateLimiter {
   limit(input: { key: string }): Promise<{ success: boolean }>;
@@ -83,6 +88,10 @@ type AttemptDetailRow = {
   completed_at: string;
   missed_words: string | null;
   status: "completed" | "incomplete";
+};
+
+type LoadedAttemptResult = Omit<AttemptDetailRow, "missed_words"> & {
+  missedWords: string[];
 };
 
 type SavedListRow = {
@@ -297,6 +306,35 @@ async function requireTeacher(
     console.error("Failed to record last active time", error);
   }
   return session.user;
+}
+
+async function captureSignupContext(
+  env: Env,
+  request: Request,
+  userId: string,
+) {
+  const body = await readJson(request, 4_096);
+  const source = isSignupSource(body.source) ? body.source : "workspace";
+  const intent = signupIntentForSource(source);
+  const provider =
+    body.provider === "google" || body.provider === "microsoft"
+      ? body.provider
+      : null;
+  await env.DB.prepare(
+    `UPDATE user SET signup_source = COALESCE(signup_source, ?),
+                     signup_intent = COALESCE(signup_intent, ?)
+     WHERE id = ?`,
+  )
+    .bind(source, intent, userId)
+    .run();
+  await recordLifecycleEvent(
+    env.DB,
+    userId,
+    "signup_context_captured",
+    { source, intent, provider },
+    "signup",
+  );
+  return { source, intent };
 }
 
 async function requireAdmin(
@@ -987,7 +1025,15 @@ async function createSavedList(
       "saved_list_limit",
       "Your saved-list limit has been reached.",
     );
-  return savedListDetail(env.DB, savedList);
+  const detail = await savedListDetail(env.DB, savedList);
+  await recordLifecycleEvent(
+    env.DB,
+    ownerUserId,
+    "saved_list_created",
+    { saved_list_id: id, word_count: words.length },
+    `saved-list:${id}`,
+  );
+  return detail;
 }
 
 async function updateSavedList(
@@ -1122,6 +1168,13 @@ async function createLearner(
     join_pin_hash: joinPinHash,
     join_pin: joinPin,
   } satisfies LearnerRow;
+  await recordLifecycleEvent(
+    env.DB,
+    ownerUserId,
+    "learner_created",
+    { learner_id: id },
+    `learner:${id}`,
+  );
   return ownerLearner(learner, plan);
 }
 
@@ -1545,6 +1598,18 @@ async function createAssignment(env: Env, request: Request, userId: string) {
       "active_assignment_limit",
       "Your active assignment limit has been reached.",
     );
+  await recordLifecycleEvent(
+    env.DB,
+    userId,
+    "assignment_created",
+    {
+      assignment_id: id,
+      mode,
+      word_count: words.length,
+      learner_count: uniqueLearnerIds.length,
+    },
+    `assignment:${id}`,
+  );
   return { id, publicId, title, mode, maxAttempts, createdAt, expiresAt };
 }
 
@@ -1820,7 +1885,7 @@ async function loadAttemptResult(
   db: D1Database,
   attemptId: string,
   publicId: string,
-) {
+): Promise<LoadedAttemptResult | null> {
   const attempt = await db
     .prepare(
       `SELECT at.id, at.nickname, at.attempt_number, at.score, at.correct_count, at.incorrect_count,
@@ -1829,7 +1894,7 @@ async function loadAttemptResult(
        WHERE at.id = ? AND a.public_id = ?`,
     )
     .bind(attemptId, publicId)
-    .first<Record<string, unknown>>();
+    .first<Omit<AttemptDetailRow, "missed_words">>();
   if (!attempt) return null;
   const missed = await db
     .prepare(
@@ -1884,6 +1949,19 @@ async function startAttempt(env: Env, request: Request, publicId: string) {
         "monthly_submission_limit",
         "The teacher’s monthly submission limit has been reached.",
       );
+  }
+  if (attemptId) {
+    await recordLifecycleEvent(
+      env.DB,
+      assignment.owner_user_id,
+      "assignment_started",
+      {
+        assignment_id: assignment.id,
+        attempt_id: attemptId,
+        learner_id: assignment.learner?.id ?? null,
+      },
+      `attempt:${attemptId}`,
+    );
   }
   return { ok: true, ...(attemptId ? { attemptId } : {}) };
 }
@@ -2000,7 +2078,23 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
   ];
   await env.DB.batch(statements);
   const saved = await loadAttemptResult(env.DB, attemptId, publicId);
-  if (saved) return saved;
+  if (saved) {
+    await recordLifecycleEvent(
+      env.DB,
+      assignment.owner_user_id,
+      saved.status === "completed"
+        ? "assignment_result_received"
+        : "assignment_attempt_abandoned",
+      {
+        assignment_id: assignment.id,
+        attempt_id: attemptId,
+        learner_id: learner?.id ?? null,
+        accuracy: saved.status === "completed" ? saved.accuracy : null,
+      },
+      `attempt:${attemptId}`,
+    );
+    return saved;
+  }
   const attemptCount = await env.DB.prepare(
     `SELECT COUNT(*) AS count FROM attempts
      WHERE assignment_id = ? AND nickname_key = ? AND status = 'completed'`,
@@ -2298,6 +2392,13 @@ export async function handleRequest(
     await env.DB.prepare("UPDATE user SET workspace_type = ? WHERE id = ?")
       .bind(body.workspaceType, user.id)
       .run();
+    await recordLifecycleEvent(
+      env.DB,
+      user.id,
+      "workspace_type_selected",
+      { workspace_type: body.workspaceType },
+      String(body.workspaceType),
+    );
     return json({ workspaceType: body.workspaceType });
   }
 
@@ -2383,6 +2484,12 @@ export async function handleRequest(
       classPublicId,
       ...(await usage(env.DB, user.id, plan)),
     });
+  }
+
+  if (url.pathname === "/api/lifecycle/signup" && method === "POST") {
+    requireSameOrigin(request);
+    const user = await requireTeacher(env, request, getSession);
+    return json(await captureSignupContext(env, request, user.id));
   }
 
   if (url.pathname === "/api/saved-lists") {

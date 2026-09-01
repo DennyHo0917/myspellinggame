@@ -24,6 +24,12 @@ const PURCHASE_RECORDED_KEY = "teacherPurchaseRecorded";
 const AUTH_PENDING_KEY = "teacherOAuthPending";
 const AUTH_PROVIDER_KEY = "teacherOAuthProvider";
 const ACTIVATION_POLL_ATTEMPTS = 10;
+const SIGNUP_INTENTS = {
+  copy_track: "track_shared_practice",
+  assign_homework: "create_assignment",
+  practice_result: "continue_from_practice",
+  workspace: "set_up_workspace",
+};
 const AVATAR_PATHS = Array.from(
   { length: 23 },
   (_, index) =>
@@ -890,7 +896,9 @@ function teacherCallbackURL() {
 }
 
 function teacherNewUserCallbackURL() {
-  return `${teacherCallbackURL()}&signup=1`;
+  const source = getAssignmentEntryPoint() || "workspace";
+  const intent = SIGNUP_INTENTS[source] || SIGNUP_INTENTS.workspace;
+  return `${teacherCallbackURL()}&signup=1&signup_source=${encodeURIComponent(source)}&signup_intent=${encodeURIComponent(intent)}`;
 }
 
 function focusTeacherSignIn() {
@@ -3607,6 +3615,21 @@ async function init() {
     loading.textContent = error.message;
     return;
   }
+  const signupParams = new URLSearchParams(location.search);
+  if (signupParams.get("signup") === "1") {
+    let provider = null;
+    try {
+      provider = sessionStorage.getItem(AUTH_PROVIDER_KEY);
+    } catch {}
+    await api("/api/lifecycle/signup", {
+      method: "POST",
+      body: JSON.stringify({
+        source: signupParams.get("signup_source"),
+        intent: signupParams.get("signup_intent"),
+        provider,
+      }),
+    }).catch(() => null);
+  }
   try {
     if (sessionStorage.getItem(AUTH_PENDING_KEY) === "1") {
       const entryPoint = getAssignmentEntryPoint();
@@ -3633,6 +3656,8 @@ async function init() {
       sessionStorage.removeItem(AUTH_PROVIDER_KEY);
       const url = new URL(location.href);
       url.searchParams.delete("signup");
+      url.searchParams.delete("signup_source");
+      url.searchParams.delete("signup_intent");
       history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
     }
   } catch {}

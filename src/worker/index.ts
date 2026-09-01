@@ -850,7 +850,9 @@ async function assignmentDetail(
         .bind(assignment.id)
         .all<{ id: string; public_id: string; name: string }>(),
       db
-        .prepare("SELECT 1 FROM attempts WHERE assignment_id = ? LIMIT 1")
+        .prepare(
+          "SELECT 1 FROM attempts WHERE assignment_id = ? AND status = 'completed' LIMIT 1",
+        )
         .bind(assignment.id)
         .first(),
     ]);
@@ -1607,7 +1609,7 @@ async function updateAssignment(
 
   if (hasWords || (hasMode && mode !== assignment.mode)) {
     const attempt = await env.DB.prepare(
-      "SELECT 1 FROM attempts WHERE assignment_id = ? LIMIT 1",
+      "SELECT 1 FROM attempts WHERE assignment_id = ? AND status = 'completed' LIMIT 1",
     )
       .bind(assignment.id)
       .first();
@@ -1842,6 +1844,8 @@ async function loadAttemptResult(
 
 async function startAttempt(env: Env, request: Request, publicId: string) {
   const body = await readJson(request);
+  const attemptId =
+    body.attemptId === undefined ? null : validateAttemptId(body.attemptId);
   const hasLearnerToken = Object.hasOwn(body, "learnerPublicId");
   if (hasLearnerToken && typeof body.learnerPublicId !== "string")
     throw new HttpError(404, "learner_not_found", "Learner not found.");
@@ -1868,20 +1872,74 @@ async function startAttempt(env: Env, request: Request, publicId: string) {
   const plan = await getPlan(env, assignment.owner_user_id);
   const monthlyLimit = PLAN_LIMITS[plan].monthlyAttempts;
   if (monthlyLimit !== null) {
+    const monthKey = monthStart();
+    if (attemptId) {
+      await env.DB.batch([
+        env.DB.prepare(
+          `INSERT OR IGNORE INTO monthly_submission_reservations
+             (attempt_id, user_id, month_key, created_at)
+           SELECT ?, ?, ?, ?
+           WHERE (
+             (SELECT COUNT(*) FROM monthly_submission_usage
+              WHERE user_id = ? AND month_key = ?) +
+             (SELECT COUNT(*) FROM monthly_submission_reservations
+              WHERE user_id = ? AND month_key = ?)
+           ) < ?
+           OR EXISTS (
+             SELECT 1 FROM monthly_submission_reservations
+             WHERE attempt_id = ? AND user_id = ? AND month_key = ?
+           )`,
+        ).bind(
+          attemptId,
+          assignment.owner_user_id,
+          monthKey,
+          new Date().toISOString(),
+          assignment.owner_user_id,
+          monthKey,
+          assignment.owner_user_id,
+          monthKey,
+          monthlyLimit,
+          attemptId,
+          assignment.owner_user_id,
+          monthKey,
+        ),
+      ]);
+      const reservation = await env.DB.prepare(
+        `SELECT 1 FROM monthly_submission_reservations
+         WHERE attempt_id = ? AND user_id = ? AND month_key = ?`,
+      )
+        .bind(attemptId, assignment.owner_user_id, monthKey)
+        .first();
+      if (!reservation)
+        throw new HttpError(
+          403,
+          "monthly_submission_limit",
+          "The teacher’s monthly submission limit has been reached.",
+        );
+    }
     const monthlyCount = await env.DB.prepare(
-      `SELECT COUNT(*) AS count FROM monthly_submission_usage
-       WHERE user_id = ? AND month_key = ?`,
+      `SELECT (
+         (SELECT COUNT(*) FROM monthly_submission_usage
+          WHERE user_id = ? AND month_key = ?) +
+         (SELECT COUNT(*) FROM monthly_submission_reservations
+          WHERE user_id = ? AND month_key = ?)
+       ) AS count`,
     )
-      .bind(assignment.owner_user_id, monthStart())
+      .bind(
+        assignment.owner_user_id,
+        monthKey,
+        assignment.owner_user_id,
+        monthKey,
+      )
       .first<{ count: number }>();
-    if (Number(monthlyCount?.count ?? 0) >= monthlyLimit)
+    if (!attemptId && Number(monthlyCount?.count ?? 0) >= monthlyLimit)
       throw new HttpError(
         403,
         "monthly_submission_limit",
         "The teacher’s monthly submission limit has been reached.",
       );
   }
-  return { ok: true };
+  return { ok: true, ...(attemptId ? { attemptId } : {}) };
 }
 
 async function submitAttempt(env: Env, request: Request, publicId: string) {
@@ -1953,8 +2011,19 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
            AND (? = 0 OR (SELECT COUNT(*) FROM attempts x
                           WHERE x.assignment_id = a.id AND x.nickname_key = ?
                             AND x.status = 'completed') < a.max_attempts)
-            AND (SELECT COUNT(*) FROM monthly_submission_usage mu
-                 WHERE mu.user_id = a.owner_user_id AND mu.month_key = ?) < ?`,
+           AND (
+             ? = 0
+             OR EXISTS (
+               SELECT 1 FROM monthly_submission_reservations r
+               WHERE r.attempt_id = ? AND r.user_id = a.owner_user_id
+                 AND r.month_key = ?
+             )
+             OR (SELECT COUNT(*) FROM monthly_submission_usage mu
+                 WHERE mu.user_id = a.owner_user_id AND mu.month_key = ?)
+                 + (SELECT COUNT(*) FROM monthly_submission_reservations r2
+                    WHERE r2.user_id = a.owner_user_id AND r2.month_key = ?
+                      AND r2.attempt_id <> ?) < ?
+           )`,
     ).bind(
       attemptId,
       nickname,
@@ -1974,7 +2043,12 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       completedAt,
       completed ? 1 : 0,
       nicknameKey,
+      completed ? 1 : 0,
+      attemptId,
       monthKey,
+      monthKey,
+      monthKey,
+      attemptId,
       monthlyLimit,
     ),
     ...result.items.map((item) =>
@@ -1989,6 +2063,11 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
          JOIN assignments a ON a.id = at.assignment_id
          WHERE at.id = ? AND at.status = 'completed'`,
     ).bind(attemptId, monthKey, completedAt, attemptId),
+    env.DB.prepare(
+      `DELETE FROM monthly_submission_reservations
+       WHERE attempt_id = ?
+         AND EXISTS (SELECT 1 FROM attempts WHERE id = ?)`,
+    ).bind(attemptId, attemptId),
   ];
   await env.DB.batch(statements);
   const saved = await loadAttemptResult(env.DB, attemptId, publicId);
@@ -2328,7 +2407,7 @@ export async function handleRequest(
     const user = await requireTeacher(env, request, getSession);
     const subscription = await env.DB.prepare(
       `SELECT plan, status, billing_interval, current_period_end, stripe_price_id,
-              stripe_customer_id, stripe_subscription_id
+              stripe_customer_id, stripe_subscription_id, cancel_at_period_end
        FROM subscriptions WHERE user_id = ?`,
     )
       .bind(user.id)
@@ -2340,6 +2419,7 @@ export async function handleRequest(
         stripe_price_id: string | null;
         stripe_customer_id: string | null;
         stripe_subscription_id: string | null;
+        cancel_at_period_end: number | null;
       }>();
     const workspace = await env.DB.prepare(
       "SELECT workspace_type, class_public_id, admin_plan FROM user WHERE id = ?",
@@ -2369,6 +2449,7 @@ export async function handleRequest(
       billingInterval: subscription?.billing_interval || null,
       subscriptionStatus: subscription?.status || null,
       currentPeriodEnd: subscription?.current_period_end || null,
+      cancelAtPeriodEnd: Boolean(subscription?.cancel_at_period_end),
       workspaceType: workspace?.workspace_type ?? null,
       classPublicId,
       ...(await usage(env.DB, user.id, plan)),

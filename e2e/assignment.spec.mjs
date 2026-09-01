@@ -2288,6 +2288,50 @@ test("unfinished public assignments resume after a refresh and clear after compl
   ).toBeNull();
 });
 
+test("assignment recovery after a long suspension submits active duration only", async ({
+  page,
+}) => {
+  let submittedBody;
+  await mockAssignment(page, "typing", async (route) => {
+    submittedBody = route.request().postDataJSON();
+    await route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({
+        id: submittedBody.attemptId,
+        nickname: submittedBody.nickname,
+        correct_count: 2,
+        incorrect_count: 0,
+        accuracy: 100,
+        missedWords: [],
+      }),
+    });
+  });
+
+  await page.goto(`/a/${publicId}?lang=en`);
+  await page.getByLabel("Nickname").fill("Student 01");
+  await page.getByRole("button", { name: "Start assignment" }).click();
+  await page.evaluate(() => {
+    const key = "mySpellingAssignment:abcdefghijklmnopqrstuvwx";
+    const saved = JSON.parse(sessionStorage.getItem(key));
+    saved.startedAt -= 3 * 60 * 60 * 1000;
+    saved.activeDurationMs = 1000;
+    sessionStorage.setItem(key, JSON.stringify(saved));
+  });
+  await page.reload({ waitUntil: "domcontentloaded" });
+
+  for (const answer of ["apple", "banana"]) {
+    await page.locator(".answer-form input").fill(answer);
+    await page.getByRole("button", { name: "Check answer" }).click();
+    await page.getByRole("button", { name: "Next word" }).click();
+  }
+  await expect(
+    page.getByRole("heading", { name: "Your result" }),
+  ).toBeVisible();
+  expect(submittedBody.durationSeconds).toBeGreaterThanOrEqual(1);
+  expect(submittedBody.durationSeconds).toBeLessThan(10);
+});
+
 test("mobile student UI fits the viewport and reports a failed save before retrying", async ({
   page,
 }) => {
@@ -2351,9 +2395,11 @@ test("a student can return to the start during consecutive assignments", async (
   page,
 }) => {
   let calls = 0;
+  const durations = [];
   await mockAssignment(page, "typing", async (route) => {
     calls += 1;
     const body = route.request().postDataJSON();
+    durations.push(body.durationSeconds);
     await route.fulfill({
       status: 201,
       contentType: "application/json",
@@ -2369,6 +2415,16 @@ test("a student can return to the start during consecutive assignments", async (
   await page.getByLabel("Nickname").fill("Student 01");
   for (let round = 0; round < 2; round += 1) {
     await page.getByRole("button", { name: "Start assignment" }).click();
+    if (round === 0) {
+      await page.evaluate(() => {
+        const key = "mySpellingAssignment:abcdefghijklmnopqrstuvwx";
+        const saved = JSON.parse(sessionStorage.getItem(key));
+        saved.startedAt -= 3 * 60 * 60 * 1000;
+        saved.activeDurationMs = 0;
+        sessionStorage.setItem(key, JSON.stringify(saved));
+      });
+      await page.reload({ waitUntil: "domcontentloaded" });
+    }
     await page
       .getByRole("button", { name: "Return to assignment start" })
       .click();
@@ -2382,6 +2438,9 @@ test("a student can return to the start during consecutive assignments", async (
     ).toBeNull();
   }
   expect(calls).toBe(2);
+  expect(durations.every((duration) => duration >= 1 && duration <= 7200)).toBe(
+    true,
+  );
 });
 
 test("Google sign-in returns to a prefilled new teacher assignment", async ({

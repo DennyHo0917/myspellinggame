@@ -716,17 +716,6 @@ th {
   float: right;
   margin: 0 0 1rem 1rem;
 }
-.assignment-example {
-  color: var(--muted);
-  font-size: 1.1rem;
-  line-height: 1.8;
-}
-.assignment-example-blank {
-  display: inline-block;
-  width: 7ch;
-  border-bottom: 2px solid currentColor;
-  vertical-align: -0.12em;
-}
 .answer-form input {
   min-height: 52px;
   border: 2px solid #b9cac8;

@@ -4,6 +4,7 @@ import {
   ANONYMOUS_WORD_LIMIT,
   customTypingRoundComplete,
   parseWords,
+  SAMPLE_EXAMPLE_SENTENCES,
   SAMPLE_WORDS,
   takeCustomWord,
   typingCompletionStats,
@@ -380,12 +381,18 @@ export function initSpellingMode() {
   const shareState = readShareState(window.location);
   const fromUrl = loadWordsFromUrl();
   const saved = parseWords(localStorage.getItem(STORAGE_KEY) || '');
+  const usingSample =
+    !fromUrl.length &&
+    (!saved.length ||
+      (saved.length === SAMPLE_WORDS.length &&
+        saved.every((word, index) => word === SAMPLE_WORDS[index])));
   input.value = (fromUrl.length ? fromUrl : saved.length ? saved : SAMPLE_WORDS).join('\n');
   const sentenceInput = sentenceTextarea();
   if (sentenceInput) {
     sentenceInput.value = shareState.sharedLink
       ? ''
-      : localStorage.getItem(SENTENCES_STORAGE_KEY) || '';
+      : localStorage.getItem(SENTENCES_STORAGE_KEY) ||
+        (usingSample ? SAMPLE_EXAMPLE_SENTENCES.join('\n') : '');
   }
 
   const mode = selectedModeFromUrl();
@@ -420,7 +427,8 @@ export function loadSampleWords() {
   const input = textarea();
   if (!input) return;
   input.value = SAMPLE_WORDS.join('\n');
-  if (sentenceTextarea()) sentenceTextarea().value = '';
+  if (sentenceTextarea())
+    sentenceTextarea().value = SAMPLE_EXAMPLE_SENTENCES.join('\n');
   status(t('sampleLoaded', { count: SAMPLE_WORDS.length }));
 }
 

@@ -8,15 +8,52 @@ import {
   createDictationSession,
   customTypingRoundComplete,
   currentDictationWord,
+  dictationSpeechText,
   dictationSummary,
+  exampleSentenceParts,
   normalizeAnswer,
   parseWords,
+  SAMPLE_EXAMPLE_SENTENCES,
+  SAMPLE_WORDS,
   retryMissedDictation,
   shouldEndTypingOnMiss,
   submitDictationAnswer,
   takeCustomWord,
   typingCompletionStats,
 } from "../src/js/spellingCore.mjs";
+
+test("sample words ship with one example sentence per word", () => {
+  assert.equal(SAMPLE_EXAMPLE_SENTENCES.length, SAMPLE_WORDS.length);
+  assert.ok(SAMPLE_EXAMPLE_SENTENCES.every((sentence) => sentence.trim()));
+  assert.ok(
+    SAMPLE_WORDS.every((word, index) =>
+      SAMPLE_EXAMPLE_SENTENCES[index].toLowerCase().includes(word),
+    ),
+  );
+});
+
+test("example sentences hide every standalone occurrence of the target word", () => {
+  const parts = exampleSentenceParts(
+    "I went to the library yesterday. The library was quiet.",
+    "library",
+  );
+  assert.equal(parts.filter((part) => part.blank).length, 2);
+  assert.equal(
+    parts
+      .filter((part) => !part.blank)
+      .map((part) => part.text)
+      .join(""),
+    "I went to the  yesterday. The  was quiet.",
+  );
+});
+
+test("dictation speech includes the word and sentence once, or just the word", () => {
+  assert.equal(
+    dictationSpeechText("library", "I went to the library yesterday."),
+    "library. I went to the library yesterday.",
+  );
+  assert.equal(dictationSpeechText("library", ""), "library");
+});
 
 test("dictation uses each word once and completes after the last answer", () => {
   const session = createDictationSession(["one", "two", "three"]);

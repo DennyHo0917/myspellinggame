@@ -872,6 +872,20 @@ textarea:focus-visible,
   line-height: 1.45;
 }
 
+.dictation-example,
+.assignment-example {
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.assignment-example-blank {
+  display: inline-block;
+  width: 7ch;
+  border-bottom: 2px solid currentColor;
+  vertical-align: -0.12em;
+}
+
 .dictation-speech-status {
   min-height: 1.4em;
   color: #9a6714;

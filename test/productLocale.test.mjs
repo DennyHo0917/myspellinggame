@@ -183,10 +183,35 @@ test("paid workspace features are localized in every product locale", () => {
     "invalidExampleSentence",
     "editAssignment",
     "assignmentHasResults",
+    "manageSubscription",
+    "resumeSubscription",
   ];
   for (const [locale] of PRODUCT_LOCALES) {
     const copy = productMessages(locale);
     for (const key of keys) assert.ok(copy[key], `${locale}: ${key}`);
+  }
+});
+
+test("subscription management actions are localized", () => {
+  for (const [locale] of PRODUCT_LOCALES) {
+    const copy = productMessages(locale);
+    assert.ok(copy.manageSubscription, `${locale}: manageSubscription`);
+    assert.ok(copy.resumeSubscription, `${locale}: resumeSubscription`);
+  }
+  assert.equal(productMessages("en").manageSubscription, "Manage subscription");
+  assert.equal(productMessages("en").resumeSubscription, "Resume subscription");
+  assert.equal(productMessages("zh").manageSubscription, "管理订阅");
+  assert.equal(productMessages("zh").resumeSubscription, "恢复订阅");
+});
+
+test("dictation speech fallback copy exists in every product locale", () => {
+  for (const [locale] of PRODUCT_LOCALES) {
+    const copy = productMessages(locale);
+    assert.ok(copy.speechUnsupported, `${locale}: speechUnsupported`);
+    assert.match(
+      copy.speechUnsupported,
+      /browser|navegador|navigateur|浏览器/i,
+    );
   }
 });
 

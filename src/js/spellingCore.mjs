@@ -8,6 +8,16 @@ export const SAMPLE_WORDS = [
   "library",
   "through",
 ];
+export const SAMPLE_EXAMPLE_SENTENCES = [
+  "I stayed inside because it was raining.",
+  "My friend helped me with my homework.",
+  "We saw a beautiful rainbow after the storm.",
+  "Please write the answer in your notebook.",
+  "We have enough time to finish the project.",
+  "Blue is my favorite color.",
+  "I borrowed a book from the library.",
+  "Sunlight came through the window.",
+];
 export const ANONYMOUS_WORD_LIMIT = 20;
 
 export function analyzeWords(text) {
@@ -40,6 +50,38 @@ export function normalizeAnswer(answer) {
   return String(answer || "")
     .trim()
     .toLowerCase();
+}
+
+export function exampleSentenceParts(sentence, word) {
+  const text = String(sentence || "").trim();
+  if (!text || !word) return text ? [{ text }] : [];
+  const escapedWord = String(word).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const matches = text.matchAll(
+    new RegExp(
+      `(^|[^\\p{L}\\p{N}])(${escapedWord})(?=$|[^\\p{L}\\p{N}])`,
+      "giu",
+    ),
+  );
+  const parts = [];
+  let offset = 0;
+  let found = false;
+  for (const match of matches) {
+    const wordStart = match.index + match[1].length;
+    if (wordStart > offset) parts.push({ text: text.slice(offset, wordStart) });
+    parts.push({ blank: true });
+    offset = wordStart + match[2].length;
+    found = true;
+  }
+  if (!found) return [{ text }];
+  if (offset < text.length) parts.push({ text: text.slice(offset) });
+  return parts;
+}
+
+export function dictationSpeechText(word, sentence) {
+  const cleanSentence = String(sentence || "")
+    .trim()
+    .replace(/[.!?]+$/, "");
+  return cleanSentence ? `${word}. ${cleanSentence}.` : word;
 }
 
 export function createDictationSession(words) {

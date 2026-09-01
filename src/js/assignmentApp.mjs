@@ -6,6 +6,8 @@ import {
   productMessage,
   productMessages,
 } from "./productLocale.mjs";
+import { renderExampleHint } from "./exampleSentence.mjs";
+import { speechSupported, speakWord as playSpeech } from "./speech.js";
 
 const root = document.getElementById("product-app");
 const locale = productLocale();
@@ -20,6 +22,7 @@ const storageKey = learnerLink
   : `mySpellingAssignment:${publicId}`;
 const MAX_RETRIES_PER_WORD = 2;
 const RETRY_GAP = 2;
+const MAX_DURATION_SECONDS = 7200;
 let assignment;
 let nickname = "";
 let attemptId = "";
@@ -29,6 +32,8 @@ let retryQueue = [];
 let promptStep = 0;
 let lastPromptWordId = "";
 let startedAt = 0;
+let activeDurationMs = 0;
+let activeSince = 0;
 let currentPrompt = null;
 let leaving = false;
 
@@ -205,7 +210,37 @@ function clearSavedState() {
   } catch {}
 }
 
+function syncActiveDuration(now = Date.now()) {
+  if (!activeSince || document.visibilityState === "hidden") return;
+  activeDurationMs += Math.max(0, now - activeSince);
+  activeSince = now;
+}
+
+function getDurationSeconds() {
+  syncActiveDuration();
+  return Math.min(
+    MAX_DURATION_SECONDS,
+    Math.max(1, Math.round(activeDurationMs / 1000)),
+  );
+}
+
+function pauseActiveTimer() {
+  if (activeSince) {
+    activeDurationMs += Math.max(0, Date.now() - activeSince);
+    activeSince = 0;
+  }
+  if (attemptId) saveProgress();
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (!attemptId) return;
+  if (document.visibilityState === "hidden") pauseActiveTimer();
+  else if (!activeSince) activeSince = Date.now();
+});
+window.addEventListener("pagehide", pauseActiveTimer);
+
 function saveProgress() {
+  syncActiveDuration();
   saveState({
     attemptId,
     nickname,
@@ -215,6 +250,7 @@ function saveProgress() {
     promptStep,
     lastPromptWordId,
     startedAt,
+    activeDurationMs,
     currentPrompt,
   });
 }
@@ -241,6 +277,10 @@ function restoreProgress(saved) {
   lastPromptWordId =
     typeof saved.lastPromptWordId === "string" ? saved.lastPromptWordId : "";
   startedAt = saved.startedAt;
+  activeDurationMs = Number.isFinite(saved.activeDurationMs)
+    ? Math.max(0, saved.activeDurationMs)
+    : 0;
+  activeSince = document.visibilityState === "visible" ? Date.now() : 0;
   currentPrompt = saved.currentPrompt || null;
   return true;
 }
@@ -319,60 +359,33 @@ function renderIntro() {
 }
 
 async function beginAssignment() {
+  const nextAttemptId = crypto.randomUUID();
   await request(`/api/public/assignments/${publicId}/start`, {
     method: "POST",
-    body: JSON.stringify(learnerLink ? { learnerPublicId } : { nickname }),
+    body: JSON.stringify(
+      learnerLink
+        ? { learnerPublicId, attemptId: nextAttemptId }
+        : { nickname, attemptId: nextAttemptId },
+    ),
   });
   nickname = assignment.learner?.name || nickname;
-  attemptId = crypto.randomUUID();
+  attemptId = nextAttemptId;
   index = 0;
   originalAnswers = [];
   retryQueue = [];
   promptStep = 0;
   lastPromptWordId = "";
   startedAt = Date.now();
+  activeDurationMs = 0;
+  activeSince = startedAt;
   currentPrompt = null;
   renderWord();
 }
 
 function speakWord(word) {
-  if (!("speechSynthesis" in window)) return;
-  speechSynthesis.cancel();
+  if (!speechSupported()) return false;
   const sentence = word.example_sentence?.trim().replace(/[.!?]+$/, "");
-  const utterance = new SpeechSynthesisUtterance(
-    sentence ? `${word.word}. ${sentence}.` : word.word,
-  );
-  utterance.lang = "en-US";
-  utterance.rate = 0.85;
-  speechSynthesis.speak(utterance);
-}
-
-function exampleHint(word) {
-  const sentence = word.example_sentence?.trim();
-  if (!sentence) return null;
-  const hint = document.createElement("p");
-  hint.className = "assignment-example";
-  const escapedWord = word.word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const matches = sentence.matchAll(
-    new RegExp(
-      `(^|[^\\p{L}\\p{N}])(${escapedWord})(?=$|[^\\p{L}\\p{N}])`,
-      "giu",
-    ),
-  );
-  let offset = 0;
-  for (const match of matches) {
-    const wordStart = match.index + match[1].length;
-    hint.append(sentence.slice(offset, wordStart));
-    const blank = document.createElement("span");
-    blank.className = "assignment-example-blank";
-    blank.setAttribute("aria-hidden", "true");
-    blank.textContent = "\u00a0";
-    hint.append(blank);
-    offset = wordStart + match[2].length;
-  }
-  if (offset === 0) hint.textContent = sentence;
-  else hint.append(sentence.slice(offset));
-  return hint;
+  return playSpeech(sentence ? `${word.word}. ${sentence}.` : word.word);
 }
 
 function nextPrompt() {
@@ -465,16 +478,33 @@ function renderWord() {
     section.append(review);
   }
   section.append(instruction);
-  const example = exampleHint(word);
+  const example = renderExampleHint(word.word, word.example_sentence);
   if (example) section.append(example);
   let listen;
+  let speechStatus;
   if (assignment.mode === "dictation") {
     listen = document.createElement("button");
     listen.type = "button";
     listen.className = "button-secondary";
     listen.textContent = copy.listen;
-    listen.addEventListener("click", () => speakWord(word));
-    queueMicrotask(() => speakWord(word));
+    speechStatus = document.createElement("p");
+    speechStatus.className = "status error assignment-speech-status";
+    speechStatus.setAttribute("role", "status");
+    speechStatus.hidden = speechSupported();
+    speechStatus.textContent = copy.speechUnsupported;
+    listen.disabled = !speechSupported();
+    listen.addEventListener("click", () => {
+      if (!speakWord(word)) {
+        speechStatus.hidden = false;
+        listen.disabled = true;
+      }
+    });
+    queueMicrotask(() => {
+      if (!speakWord(word)) {
+        speechStatus.hidden = false;
+        listen.disabled = true;
+      }
+    });
   } else {
     const shown = document.createElement("div");
     shown.className = "player-word falling";
@@ -502,6 +532,7 @@ function renderWord() {
   feedback.setAttribute("role", "status");
   form.append(input, actions, feedback);
   section.append(form);
+  if (speechStatus) section.insertBefore(speechStatus, form);
   const leave = document.createElement("button");
   leave.type = "button";
   leave.className = "button-secondary assignment-return";
@@ -571,10 +602,7 @@ async function leaveAssignment() {
         attemptId,
         ...(learnerLink ? { learnerPublicId } : { nickname }),
         answers: originalAnswers,
-        durationSeconds: Math.max(
-          1,
-          Math.round((Date.now() - startedAt) / 1000),
-        ),
+        durationSeconds: getDurationSeconds(),
         completed: false,
       }),
     });
@@ -589,6 +617,8 @@ async function leaveAssignment() {
     promptStep = 0;
     lastPromptWordId = "";
     index = 0;
+    activeDurationMs = 0;
+    activeSince = 0;
     currentPrompt = null;
     leaving = false;
     renderIntro();
@@ -608,10 +638,7 @@ async function saveResult() {
   status.className = "status";
   status.textContent = copy.sending;
   section.append(status);
-  const durationSeconds = Math.max(
-    1,
-    Math.round((Date.now() - startedAt) / 1000),
-  );
+  const durationSeconds = getDurationSeconds();
   const body = JSON.stringify({
     attemptId,
     ...(learnerLink ? { learnerPublicId } : { nickname }),

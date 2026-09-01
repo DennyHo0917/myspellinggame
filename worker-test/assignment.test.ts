@@ -262,7 +262,11 @@ async function submit(
 
 async function start(
   publicId: string,
-  options: { nickname?: string; learnerPublicId?: string } = {},
+  options: {
+    attemptId?: string;
+    nickname?: string;
+    learnerPublicId?: string;
+  } = {},
 ) {
   return call(
     `/api/public/assignments/${publicId}/start`,
@@ -270,8 +274,14 @@ async function start(
       method: "POST",
       body: JSON.stringify(
         options.learnerPublicId
-          ? { learnerPublicId: options.learnerPublicId }
-          : { nickname: options.nickname ?? "Student 01" },
+          ? {
+              learnerPublicId: options.learnerPublicId,
+              ...(options.attemptId ? { attemptId: options.attemptId } : {}),
+            }
+          : {
+              nickname: options.nickname ?? "Student 01",
+              ...(options.attemptId ? { attemptId: options.attemptId } : {}),
+            },
       ),
     },
     null,
@@ -448,6 +458,35 @@ describe("teacher authorization and quotas", () => {
     const me = (await (await call("/api/me")).json()) as { plan: string };
     expect(me.plan).toBe("free");
   });
+
+  it.each(["parent", "teacher"] as const)(
+    "returns cancelAtPeriodEnd for %s subscriptions",
+    async (plan) => {
+      await insertSubscription({ plan, status: "active" });
+      const current = (await (await call("/api/me")).json()) as {
+        plan: string;
+        cancelAtPeriodEnd: boolean;
+      };
+      expect(current).toMatchObject({
+        plan,
+        cancelAtPeriodEnd: false,
+      });
+
+      await bindings.DB.prepare(
+        "UPDATE subscriptions SET cancel_at_period_end = 1 WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .run();
+      const scheduled = (await (await call("/api/me")).json()) as {
+        plan: string;
+        cancelAtPeriodEnd: boolean;
+      };
+      expect(scheduled).toMatchObject({
+        plan,
+        cancelAtPeriodEnd: true,
+      });
+    },
+  );
 
   it("enforces word limits on assignment writes", async () => {
     const freeBoundary = await createAssignment(teacherA, {
@@ -700,6 +739,50 @@ describe("teacher authorization and quotas", () => {
         .bind(created.body.id)
         .first("count"),
     ).toBe(0);
+  });
+
+  it("does not lock assignment content for incomplete attempts", async () => {
+    const created = await createAssignment(teacherA, {
+      words: ["apple", "banana"],
+      exampleSentences: ["An apple.", "A banana."],
+      mode: "typing",
+    });
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    expect(
+      (
+        await submit(publicId, assignment.words, {
+          answers: ["wrong", "banana"],
+          completed: false,
+        })
+      ).status,
+    ).toBe(201);
+
+    const detailBefore = (await (
+      await call(`/api/assignments/${created.body.id}`, {}, teacherA)
+    ).json()) as { hasAttempts: boolean };
+    expect(detailBefore.hasAttempts).toBe(false);
+
+    const updated = await call(
+      `/api/assignments/${created.body.id}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({
+          words: ["cherry"],
+          exampleSentences: ["A cherry."],
+          mode: "dictation",
+        }),
+      },
+      teacherA,
+    );
+    expect(updated.status).toBe(200);
+    expect(
+      (
+        (await updated.json()) as {
+          words: Array<{ word: string; example_sentence: string | null }>;
+        }
+      ).words,
+    ).toMatchObject([{ word: "cherry", example_sentence: "A cherry." }]);
   });
 
   it("allows metadata and learner updates after attempts without changing words or mode", async () => {
@@ -2151,6 +2234,106 @@ describe("assignment attempts", () => {
     ).toBe("monthly_submission_limit");
   });
 
+  it("atomically limits concurrent Free Plan starts to eight reservations", async () => {
+    const created = await createAssignment();
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    const now = new Date().toISOString();
+    await bindings.DB.batch(
+      Array.from({ length: 7 }, () =>
+        bindings.DB.prepare(
+          `INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at)
+           VALUES (?, ?, ?, ?)`,
+        ).bind(crypto.randomUUID(), teacherA.id, monthStart(), now),
+      ),
+    );
+
+    const attemptIds = [crypto.randomUUID(), crypto.randomUUID()];
+    const responses = await Promise.all(
+      attemptIds.map((attemptId, index) =>
+        start(publicId, {
+          attemptId,
+          nickname: `Student ${index + 1}`,
+        }),
+      ),
+    );
+    expect(responses.map((response) => response.status).sort()).toEqual([
+      200, 403,
+    ]);
+    const reservations = await bindings.DB.prepare(
+      `SELECT attempt_id FROM monthly_submission_reservations
+       WHERE user_id = ? AND month_key = ?`,
+    )
+      .bind(teacherA.id, monthStart())
+      .all<{ attempt_id: string }>();
+    expect(reservations.results).toHaveLength(1);
+    const winner = attemptIds.find((attemptId) =>
+      reservations.results.some((row) => row.attempt_id === attemptId),
+    );
+    expect(winner).toBeDefined();
+    expect(
+      (
+        await submit(publicId, assignment.words, {
+          attemptId: winner,
+          nickname: "Student 1",
+        })
+      ).status,
+    ).toBe(201);
+    const usage = await bindings.DB.prepare(
+      `SELECT COUNT(*) AS count FROM monthly_submission_usage
+       WHERE user_id = ? AND month_key = ?`,
+    )
+      .bind(teacherA.id, monthStart())
+      .first<{ count: number }>();
+    expect(Number(usage?.count)).toBe(8);
+  });
+
+  it("keeps a successful start submit-able after other students use the remaining slots", async () => {
+    const created = await createAssignment();
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    const now = new Date().toISOString();
+    await bindings.DB.batch(
+      Array.from({ length: 5 }, () =>
+        bindings.DB.prepare(
+          `INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at)
+           VALUES (?, ?, ?, ?)`,
+        ).bind(crypto.randomUUID(), teacherA.id, monthStart(), now),
+      ),
+    );
+    const reservedAttemptId = crypto.randomUUID();
+    expect(
+      (
+        await start(publicId, {
+          attemptId: reservedAttemptId,
+          nickname: "Reserved student",
+        })
+      ).status,
+    ).toBe(200);
+    expect(
+      (
+        await submit(publicId, assignment.words, {
+          nickname: "Other student 1",
+        })
+      ).status,
+    ).toBe(201);
+    expect(
+      (
+        await submit(publicId, assignment.words, {
+          nickname: "Other student 2",
+        })
+      ).status,
+    ).toBe(201);
+    expect(
+      (
+        await submit(publicId, assignment.words, {
+          attemptId: reservedAttemptId,
+          nickname: "Reserved student",
+        })
+      ).status,
+    ).toBe(201);
+  });
+
   it.each(["parent", "teacher"] as const)(
     "expires Free results after 14 days and %s results after 365 days",
     async (plan) => {
@@ -2214,6 +2397,30 @@ describe("assignment attempts", () => {
       attempts: Array<{ status: string }>;
     };
     expect(body.attempts[0].status).toBe("incomplete");
+  });
+
+  it("keeps rejecting attempt durations over two hours", async () => {
+    const created = await createAssignment();
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    const response = await call(
+      `/api/public/assignments/${publicId}/attempts`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          attemptId: crypto.randomUUID(),
+          nickname: "Student 01",
+          durationSeconds: 7201,
+          answers: assignment.words.map((word) => ({
+            wordId: word.id,
+            answer: word.word,
+          })),
+        }),
+      },
+      null,
+    );
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ error: "invalid_duration" });
   });
 
   it("does not count incomplete records toward attempt numbers or limits", async () => {

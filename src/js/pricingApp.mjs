@@ -224,7 +224,7 @@ accountPromise
       if (renewButton) {
         renewButton.hidden = false;
         renewButton.textContent = productMessage(
-          "renewSubscription",
+          me.cancelAtPeriodEnd ? "resumeSubscription" : "manageSubscription",
           {},
           locale,
         );

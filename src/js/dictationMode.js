@@ -5,11 +5,13 @@ import {
   createDictationSession,
   currentDictationWord,
   dictationSummary,
+  dictationSpeechText,
   normalizeAnswer,
   retryMissedDictation as createMissedSession,
   submitDictationAnswer,
 } from './spellingCore.mjs';
 import { speechSupported, speakWord } from './speech.js';
+import { renderExampleHint } from './exampleSentence.mjs';
 import { renderResultWorkspaceCta, track } from './spellingMode.js';
 import { pageLocale } from './analytics.mjs';
 
@@ -27,7 +29,7 @@ function announceSpeechSupport() {
 function playCurrentWord() {
   const word = currentDictationWord(session);
   const sentence = gameState.exampleSentences?.[word];
-  const prompt = sentence ? `${word}. ${sentence} ${word}.` : word;
+  const prompt = dictationSpeechText(word, sentence);
   if (!word || !speakWord(prompt)) announceSpeechSupport();
 }
 
@@ -39,6 +41,9 @@ function renderQuestion() {
     current: session.index + 1,
     total: session.words.length,
   });
+  element('dictation-screen').querySelector('.dictation-example')?.remove();
+  const example = renderExampleHint(word, gameState.exampleSentences?.[word], 'dictation-example');
+  if (example) element('dictation-progress').after(example);
   const answer = element('dictation-answer');
   answer.value = '';
   answer.disabled = false;

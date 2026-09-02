@@ -36,7 +36,11 @@ import { gameState, resetGameState } from "./gameState.js";
 import { initializeWords } from "./gameLoop.js";
 import { fallingWords } from "./words.js";
 import { updateStats } from "./rendering.js";
-import { canStartPractice, prepareSession, renderSummary } from "./spellingMode.js";
+import {
+  canStartPractice,
+  prepareSession,
+  renderSummary,
+} from "./spellingMode.js";
 import { renderDictationSummary, startDictation } from "./dictationMode.js";
 import { t } from "./pageLocale.js";
 
@@ -117,6 +121,13 @@ export function showCongratulations() {
 
 // ---------- 游戏控制 ----------
 export async function startGame() {
+  const selectedMode = document.querySelector(
+    'input[name="practice-mode"]:checked',
+  )?.value;
+  if (selectedMode === "chase") {
+    window.startTypingChase?.();
+    return;
+  }
   if (!(await canStartPractice())) return;
   const session = prepareSession();
   if (!session) return;
@@ -266,6 +277,7 @@ export function endGame() {
 
 export function restartGame(startImmediately = false) {
   window.speechSynthesis?.cancel?.();
+  window.stopTypingChase?.();
   resetGameState();
   fallingWords.length = 0;
   if (typeof window !== "undefined") {
@@ -285,12 +297,16 @@ export function restartGame(startImmediately = false) {
     ?.classList.remove("dictation-active");
   document
     .getElementById("game-container")
-    ?.classList.remove("typing-mode-active");
+    ?.classList.remove("typing-mode-active", "chase-mode-active");
   const dictationScreen = document.getElementById("dictation-screen");
   if (dictationScreen) dictationScreen.hidden = true;
+  document.getElementById("chase-screen")?.setAttribute("hidden", "");
   document.getElementById("typing-final-stats")?.removeAttribute("hidden");
   document.getElementById("dictation-final-stats")?.setAttribute("hidden", "");
+  document.getElementById("chase-final-stats")?.setAttribute("hidden", "");
   document.getElementById("spelling-summary")?.setAttribute("hidden", "");
+  document.querySelector(".assignment-complete-btn")?.removeAttribute("hidden");
+  document.getElementById("edit-list-btn")?.removeAttribute("hidden");
   // 直接开始游戏，而不是显示开始界面
   updateStats();
   const startScreen = document.getElementById("game-start");
@@ -306,6 +322,21 @@ export function restartGame(startImmediately = false) {
 
 export function returnToMainMenu() {
   window.speechSynthesis?.cancel?.();
+  window.stopTypingChase?.();
+
+  const selectedMode = document.querySelector(
+    'input[name="practice-mode"]:checked',
+  );
+  if (selectedMode?.value === "chase") {
+    const dictationMode = document.querySelector(
+      'input[name="practice-mode"][value="dictation"]',
+    );
+    if (dictationMode) {
+      dictationMode.checked = true;
+      dictationMode.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
+
   resetGameState();
   gameState.gameRunning = false;
   gameState.gameStarted = false;
@@ -322,10 +353,18 @@ export function returnToMainMenu() {
   document.getElementById("dictation-screen")?.setAttribute("hidden", "");
   document
     .getElementById("game-container")
-    ?.classList.remove("dictation-active", "typing-mode-active");
+    ?.classList.remove(
+      "dictation-active",
+      "typing-mode-active",
+      "chase-mode-active",
+    );
+  document.getElementById("chase-screen")?.setAttribute("hidden", "");
   document.getElementById("spelling-summary")?.setAttribute("hidden", "");
   document.getElementById("typing-final-stats")?.removeAttribute("hidden");
   document.getElementById("dictation-final-stats")?.setAttribute("hidden", "");
+  document.getElementById("chase-final-stats")?.setAttribute("hidden", "");
+  document.querySelector(".assignment-complete-btn")?.removeAttribute("hidden");
+  document.getElementById("edit-list-btn")?.removeAttribute("hidden");
   document.getElementById("game-start")?.style &&
     (document.getElementById("game-start").style.display = "flex");
   const returnButton = document.getElementById("return-menu-btn");

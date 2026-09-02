@@ -1,4 +1,5 @@
 @import url("./footer.css");
+@import url("./account.css");
 
 :root {
   color-scheme: light;
@@ -2017,95 +2018,6 @@ body.workspace-page {
 .workspace-sidebar-home {
   border-top: 1px solid var(--line);
   border-radius: 8px 8px 0 0;
-}
-
-.workspace-user-menu {
-  position: relative;
-}
-
-.workspace-user-toggle {
-  display: flex;
-  min-height: 40px;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 9px 4px 5px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.86);
-  color: var(--brand-dark);
-  font-size: 0.86rem;
-  font-weight: 700;
-  list-style: none;
-  cursor: pointer;
-}
-
-.workspace-user-toggle::after {
-  content: "";
-  width: 7px;
-  height: 7px;
-  margin-left: 2px;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: translateY(-2px) rotate(45deg);
-}
-
-.workspace-user-toggle::-webkit-details-marker {
-  display: none;
-}
-
-.workspace-user-avatar {
-  display: inline-grid;
-  width: 30px;
-  height: 30px;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--brand);
-  color: #fff;
-}
-
-.workspace-user-dropdown {
-  position: absolute;
-  z-index: 1000;
-  top: calc(100% + 6px);
-  right: 0;
-  display: none;
-  width: max-content;
-  min-width: 210px;
-  padding: 6px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--card);
-  box-shadow: 0 18px 45px rgba(39, 62, 70, 0.12);
-}
-
-.workspace-user-menu[open] .workspace-user-dropdown {
-  display: grid;
-}
-
-.workspace-user-dropdown :is(a, button, .workspace-user-email) {
-  width: 100%;
-  min-height: 40px;
-  justify-content: flex-start;
-  padding: 8px 10px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  box-shadow: none;
-  color: var(--brand-dark);
-  font-size: 0.88rem;
-  font-weight: 700;
-  text-align: left;
-  text-decoration: none;
-}
-
-.workspace-user-email {
-  overflow-wrap: anywhere;
-  border-bottom: 1px solid var(--line);
-}
-
-.workspace-user-dropdown :is(a, button):hover,
-.workspace-user-dropdown :is(a, button):focus-visible {
-  background: #e6efee;
 }
 
 .workspace-sidebar.is-collapsed .workspace-sidebar-label {

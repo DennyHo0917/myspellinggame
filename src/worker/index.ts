@@ -44,6 +44,7 @@ import {
   recordLifecycleEvent,
   signupIntentForSource,
 } from "./lifecycle";
+import { randomChasePassage } from "./chase";
 
 interface RateLimiter {
   limit(input: { key: string }): Promise<{ success: boolean }>;
@@ -2483,6 +2484,14 @@ export async function handleRequest(
       workspaceType: workspace?.workspace_type ?? null,
       classPublicId,
       ...(await usage(env.DB, user.id, plan)),
+    });
+  }
+
+  if (url.pathname === "/api/chase/passage" && method === "GET") {
+    const user = await requireTeacher(env, request, getSession);
+    return json({
+      passage: randomChasePassage(),
+      plan: await getPlan(env, user.id),
     });
   }
 

@@ -10,7 +10,9 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style">
-    <link rel="preload" href="/src/js/index.js?v=spelling-test1" as="script">
+    <link rel="preload" href="/src/js/index.js?v=typing-chase4" as="script">
+    <link rel="preload" href="/images/chase/alley-loop.png" as="image">
+    <link rel="preload" href="/images/chase/runners-chroma.png" as="image">
     <link rel="preload" href="/src/css/main.css" as="style">
 
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
@@ -18,7 +20,7 @@
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
 
     <title>Teste de Ortografia Grátis com Suas Palavras — Sem Conta</title>
-    <meta name="description" content="Cole sua lista, ouça uma palavra escondida, digite a resposta e veja a correção na hora. Revise os erros sem criar conta.">
+    <meta name="description" content="Cole sua lista e pratique com teste de ortografia, chuva de palavras ou Typing Chase. Correção imediata e sem conta de aluno.">
     <meta name="author" content="My Spelling Game">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-9244949928133071">
@@ -94,6 +96,7 @@
             </div>
         </details>
         <a class="teacher-nav-link" href="/workspace?lang=pt-BR">Espaço de trabalho</a>
+        <a class="workspace-user-toggle home-account-link" href="/workspace?lang=pt-BR#teacher-sign-in" data-sign-out="Sair"><span class="workspace-user-avatar" aria-hidden="true">?</span><span>Anônimo</span></a>
     </header>
 
     <div class="main-content-wrapper">
@@ -143,6 +146,23 @@
                 </div>
             </section>
 
+            <section class="chase-screen" id="chase-screen" aria-labelledby="chase-passage-title" hidden>
+                <div class="chase-hud" aria-live="polite">
+                    <span>Alcance <strong id="chase-progress">0%</strong></span>
+                    <span>Velocidade <strong id="chase-wpm">0</strong> WPM</span>
+                                    <span>Ladrão <strong id="chase-thief-wpm">40</strong> WPM</span>
+                    <span>Precisão <strong id="chase-accuracy">100%</strong></span>
+                    <span>Erros <strong id="chase-errors">0</strong></span>
+                </div>
+                <div class="chase-passage-card">
+                    <h2 id="chase-passage-title"></h2>
+                    <p class="chase-help">Digite uma frase por vez. Use sua velocidade para alcançar o ladrão.</p>
+                    <div class="chase-passage-text" id="chase-passage-text" tabindex="0"></div>
+                    <label class="visually-hidden" for="chase-input">Digite a frase atual</label>
+                    <textarea id="chase-input" rows="1" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Digite esta frase..."></textarea>
+                </div>
+            </section>
+
             <div class="input-container">
                 <input type="text" id="word-input" placeholder="Digite uma palavra em inglês..." autocomplete="off" spellcheck="false" disabled>
             </div>
@@ -152,25 +172,37 @@
                     <div class="start-title">Pratique com sua própria lista</div>
                     <div class="spelling-start">
                         <div class="spelling-subtitle">Teste de ortografia ou jogo de palavras, sem conta</div>
-                        <p class="spelling-intro">Escolha o teste por áudio recomendado ou a chuva de palavras, cole as palavras e comece.</p>
-                        <div class="hero-proof-row" aria-label="Vantagens do My Spelling Game">
-                            <span>Correção imediata</span>
-                            <span>Palavra escondida</span>
-                            <span>Revise os erros</span>
-                            <span>Sem criar uma conta</span>
-                        </div>
                         <fieldset class="mode-selector">
                             <legend>Escolha um modo</legend>
                             <label class="mode-card">
-                                <input type="radio" name="practice-mode" value="dictation" checked>
-                                <span><strong>Teste de ortografia</strong><small>Ouça uma palavra escondida e digite a grafia.</small></span>
+                                <span class="mode-card-header"><input type="radio" name="practice-mode" value="dictation" checked><strong>Teste de ortografia</strong></span>
                                 <span class="recommended-badge">Recomendado</span>
                             </label>
                             <label class="mode-card">
-                                <input type="radio" name="practice-mode" value="typing">
-                                <span><strong>Chuva de palavras</strong><small>Digite cada palavra antes que ela chegue ao fim.</small></span>
+                                <span class="mode-card-header"><input type="radio" name="practice-mode" value="typing"><strong>Chuva de palavras</strong></span>
+                            </label>
+                            <label class="mode-card chase-mode-card">
+                                <span class="mode-card-header"><input type="radio" name="practice-mode" value="chase"><strong>Perseguição de digitação</strong></span>
+                                <span class="mode-lock" aria-hidden="true">Entrar</span>
                             </label>
                         </fieldset>
+                        <div class="chase-start-options" id="chase-start-options" hidden>
+                            <p id="chase-access-status" role="status">Verificando seu acesso...</p>
+                            <div class="chase-mode-options" id="chase-mode-options" hidden>
+                                <p class="chase-mode-help">Escolha a velocidade do ladrão antes de começar.</p>
+                                <div class="chase-mode-buttons" role="group" aria-label="Escolha a velocidade do ladrão antes de começar.">
+                                    <button type="button" class="chase-mode-choice" data-chase-mode="simple" aria-pressed="false"><strong>Modo simples</strong><small>O ladrão corre a 40 WPM.</small></button>
+                                    <button type="button" class="chase-mode-choice" data-chase-mode="hard" aria-pressed="false"><strong>Modo difícil</strong><small>Começa a 45 WPM e pode chegar a 55 WPM.</small></button>
+                                </div>
+                                <button type="button" class="start-btn chase-start-btn" id="chase-start-btn" disabled>Começar perseguição</button>
+                            </div>
+                            <div id="chase-paid-options" hidden>
+                                <label for="chase-custom-words">Palavras para sua história</label>
+                                <textarea id="chase-custom-words" rows="4" maxlength="1000" spellcheck="false" placeholder="aventura&#10;floresta&#10;cuidado"></textarea>
+                                <p class="spelling-help">A geração de histórias com IA estará disponível em breve. Por enquanto, experimente o jogo com uma história de exemplo.</p>
+                                <button type="button" id="chase-generate-btn" disabled>Gerar história com IA · Em breve</button>
+                            </div>
+                        </div>
                         <div class="spelling-builder">
                             <div class="word-entry-grid">
                                 <div class="word-entry-field">
@@ -218,13 +250,22 @@
                         <p>Incorretas: <span id="dictation-incorrect">0</span></p>
                         <p>Precisão: <span id="dictation-accuracy">0%</span></p>
                     </div>
+                    <div class="final-stats" id="chase-final-stats" hidden>
+                        <p>Velocidade: <span id="chase-final-wpm">0</span> WPM</p>
+                        <p>Precisão: <span id="chase-final-accuracy">100%</span></p>
+                        <p>Erros: <span id="chase-final-errors">0</span></p>
+                        <p>Tempo: <span id="chase-final-time">0:00</span></p>
+                    </div>
                     <div class="spelling-summary" id="spelling-summary" hidden>
                         <div id="spelling-result"></div>
                         <div id="missed-word-list"></div>
                         <button class="restart-btn" id="replay-missed-btn" onclick="replayMissedWords()">Praticar palavras erradas</button>
                     </div>
                     <div class="game-over-buttons">
+                        <button type="button" class="restart-btn chase-return-menu-btn" id="chase-return-menu-btn" onclick="returnToMainMenu()" hidden>Voltar ao menu principal</button>
                         <button class="restart-btn" id="restart-same-btn" onclick="restartGame(true)">Reiniciar</button>
+                        <button type="button" class="share-score-btn chase-share-btn" id="chase-share-btn" onclick="shareChaseResult()" hidden>Compartilhar desafio</button>
+                        <span class="chase-share-status" id="chase-share-status" role="status" aria-live="polite"></span>
                         <button class="share-score-btn" id="edit-list-btn" onclick="restartGame()">Editar lista</button>
                         <button type="button" class="share-score-btn assignment-complete-btn" onclick="openTeacherAssignment()">Criar tarefa para alunos com esta lista</button>
                     </div>
@@ -328,11 +369,11 @@
         </div>
 
         <div class="spelling-seo-copy">
-            <h2>Duas formas de praticar sua própria lista</h2>
-            <p><strong>Teste de ortografia</strong> toca uma palavra escondida e corrige a resposta. A <strong>chuva de palavras</strong> mantém o jogo original de palavras caindo.</p>
+            <h2>Três formas de praticar sua própria lista</h2>
+            <p>O <strong>teste de ortografia</strong> toca uma palavra escondida, a <strong>chuva de palavras</strong> traz palavras caindo e o <strong>Typing Chase</strong> transforma a velocidade ao digitar frases em uma perseguição.</p>
 
             <h3>Uma lista real deixa a prática mais útil</h3>
-            <p>Colar a lista da semana mantém o foco nas palavras certas. Os dois modos guardam os erros para uma rodada de revisão.</p>
+            <p>Colar a lista da semana mantém o foco nas palavras certas. Os três modos oferecem formas diferentes de praticar sem conta de aluno.</p>
             <ul>
                 <li><strong>Use sua lista real:</strong> Cole palavras da tarefa, da escola ou do material de educação em casa.</li>
                 <li><strong>Revise os erros:</strong> Respostas erradas e palavras perdidas entram em outra rodada.</li>
@@ -357,7 +398,7 @@
       window.pageLocale = 'pt-BR';
       window.currentLanguage = 'pt-BR';
     </script>
-    <script type="module" src="/src/js/index.js?v=spelling-test1"></script>
+    <script type="module" src="/src/js/index.js?v=typing-chase4"></script>
 
     <footer>
         <p>
@@ -373,7 +414,7 @@
   "@type": "SoftwareApplication",
   "@id": "https://myspellinggame.com/#software",
   "name": "My Spelling Game",
-  "description": "Cole suas palavras para um teste de ortografia por áudio ou uma chuva de palavras. Frases de exemplo deixam a palavra-alvo em branco enquanto o áudio lê a palavra e a frase completa.",
+  "description": "Pratique com suas próprias palavras em um teste de ortografia por áudio, uma chuva de palavras ou Typing Chase, um jogo de digitação de frases em formato de perseguição.",
   "url": "https://myspellinggame.com/pt-br/",
   "author": {
     "@type": "Organization",
@@ -398,7 +439,7 @@
   "applicationCategory": "EducationalApplication",
   "inLanguage": "pt-BR",
   "isAccessibleForFree": true,
-  "dateModified": "2026-09-01",
+  "dateModified": "2026-09-02",
   "offers": {
     "@type": "Offer",
     "price": "0",

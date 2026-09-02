@@ -409,7 +409,7 @@ function nav({ workspace = false, me = null } = {}) {
     ${workspace ? `<button class="workspace-drawer-toggle" id="workspace-menu-toggle" type="button" aria-label="${copy.openWorkspaceMenu}" aria-expanded="false"><span aria-hidden="true">☰</span></button>` : ""}
     <div class="product-nav-actions">
       <details class="language-switcher"><summary class="lang-btn" aria-label="${copy.language}">${copy.language}</summary><div class="lang-menu">${languageOptions}</div></details>
-      ${workspace ? "" : `<a class="button-link button-secondary" href="${homeHref}">${copy.homePage}</a>`}
+      <a class="button-link button-secondary" href="${homeHref}">${copy.homePage}</a>
     </div>`;
   if (!workspace || !me) return element;
   const actions = element.querySelector(".product-nav-actions");
@@ -3709,3 +3709,4 @@ async function init() {
 }
 
 init();
+import './lineNumbers.mjs';

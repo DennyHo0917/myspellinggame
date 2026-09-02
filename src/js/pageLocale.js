@@ -12,21 +12,26 @@ const MESSAGES = {
     wordsReady: "{count} words ready",
     emptyWords: "Add at least one spelling word before starting.",
     photoImport: "Import from photo",
-    photoImportRequired: "Photo import is included in Parent and Teacher Plans.",
+    photoImportRequired:
+      "Photo import is included in Parent and Teacher Plans.",
     photoImportSignIn: "Sign in",
     photoImportPlans: "View plans",
     photoImportProcessing: "Reading your spelling list…",
     photoImportReviewTitle: "Review imported words",
-    photoImportReviewHelp: "Edit the words, one per line, then add them to your list.",
+    photoImportReviewHelp:
+      "Edit the words, one per line, then add them to your list.",
     photoImportUse: "Use these words",
     photoImportCancel: "Cancel",
     photoImportNoWords: "No spelling words found. Try a clearer photo.",
     photoImportError: "We couldn’t read that image. Please try again.",
     sampleLoaded: "{count} sample words loaded",
     wordsInRound: "{count} words in this round",
-    anonymousWordLimit: "No-login practice supports up to 20 words per list. Sign in free to practice up to 30 words, or choose a paid plan for up to 40.",
-    freeWordLimit: "Free accounts support up to 30 words per list. Paid plans support up to 40.",
-    longListAdvice: "Longer lists can increase memory load. Consider a shorter practice or split these words across multiple assignments.",
+    anonymousWordLimit:
+      "No-login practice supports up to 20 words per list. Sign in free to practice up to 30 words, or choose a paid plan for up to 40.",
+    freeWordLimit:
+      "Free accounts support up to 30 words per list. Paid plans support up to 40.",
+    longListAdvice:
+      "Longer lists can increase memory load. Consider a shorter practice or split these words across multiple assignments.",
     signInFree: "Sign in free",
     upgradePlus: "View Plans",
     summaryTitle: "Practice Complete",
@@ -46,6 +51,25 @@ const MESSAGES = {
     startTyping: "Start Typing Rain",
     dictationTitle: "Spelling Test",
     typingTitle: "Typing Rain",
+    chaseTitle: "Persecución de escritura",
+    chaseChecking: "Checking your access...",
+    chasePaidHelp:
+      "Add words for a custom AI story, or play a sample story now.",
+    chaseLoadError: "Typing Chase could not load. Please try again.",
+    chaseCaught: "Thief caught!",
+    chaseEscaped: "The thief escaped",
+    chaseFreeBadge: "Free story",
+    chasePaidBadge: "Custom",
+    chaseChooseMode: "Choose a chase mode, then start.",
+    chaseSimpleSelected: "Simple mode selected.",
+    chaseHardSelected: "Hard mode selected.",
+    chaseReturnMenu: "Return to main menu",
+    chaseShare: "Share challenge",
+    chaseShareCaught:
+      "I caught the thief in {time} at {wpm} WPM. Can you beat me in Typing Chase?",
+    chaseShareEscaped:
+      "The thief got away after my {time} chase at {wpm} WPM. Can you catch them?",
+    chaseShareCopied: "Challenge text copied",
     speechUnsupported:
       "Speech playback is not supported in this browser. You can continue, but another browser is recommended for dictation.",
     dictationProgress: "Word {current} of {total}",
@@ -55,8 +79,10 @@ const MESSAGES = {
     dictationComplete: "Spelling Test Complete",
     dictationMissed: "{count} words to practice again",
     dictationPerfect: "Perfect score. No missed words.",
-    workspaceCtaMissed: "You missed {count} words. Keep this list and track what needs more practice.",
-    workspaceCtaClean: "Great work. Keep this list and track progress over time.",
+    workspaceCtaMissed:
+      "You missed {count} words. Keep this list and track what needs more practice.",
+    workspaceCtaClean:
+      "Great work. Keep this list and track progress over time.",
     workspaceCtaKeep: "Keep this spelling list",
     workspaceCtaTrack: "Track progress over time",
     workspaceCtaCreate: "Create an assignment from these words",
@@ -73,21 +99,27 @@ const MESSAGES = {
     wordsReady: "{count} palabras listas",
     emptyWords: "Añade al menos una palabra de ortografía antes de empezar.",
     photoImport: "Importar desde una foto",
-    photoImportRequired: "La importación desde fotos está incluida en los planes para familias y docentes.",
+    photoImportRequired:
+      "La importación desde fotos está incluida en los planes para familias y docentes.",
     photoImportSignIn: "Iniciar sesión",
     photoImportPlans: "Ver planes",
     photoImportProcessing: "Leyendo tu lista de spelling…",
     photoImportReviewTitle: "Revisa las palabras importadas",
-    photoImportReviewHelp: "Edita las palabras, una por línea, y añádelas a tu lista.",
+    photoImportReviewHelp:
+      "Edita las palabras, una por línea, y añádelas a tu lista.",
     photoImportUse: "Usar estas palabras",
     photoImportCancel: "Cancelar",
-    photoImportNoWords: "No se encontraron palabras. Prueba con una foto más clara.",
+    photoImportNoWords:
+      "No se encontraron palabras. Prueba con una foto más clara.",
     photoImportError: "No se pudo leer la imagen. Inténtalo de nuevo.",
     sampleLoaded: "{count} palabras de ejemplo cargadas",
     wordsInRound: "{count} palabras en esta ronda",
-    anonymousWordLimit: "La práctica sin cuenta admite hasta 20 palabras por lista. Inicia sesión gratis para practicar hasta 30 o elige un plan de pago para hasta 40.",
-    freeWordLimit: "Las cuentas gratis admiten hasta 30 palabras por lista. Los planes de pago admiten hasta 40.",
-    longListAdvice: "Las listas largas pueden aumentar la carga de memoria. Prueba sesiones más cortas o reparte las palabras en varias tareas.",
+    anonymousWordLimit:
+      "La práctica sin cuenta admite hasta 20 palabras por lista. Inicia sesión gratis para practicar hasta 30 o elige un plan de pago para hasta 40.",
+    freeWordLimit:
+      "Las cuentas gratis admiten hasta 30 palabras por lista. Los planes de pago admiten hasta 40.",
+    longListAdvice:
+      "Las listas largas pueden aumentar la carga de memoria. Prueba sesiones más cortas o reparte las palabras en varias tareas.",
     signInFree: "Iniciar sesión gratis",
     upgradePlus: "Ver planes",
     summaryTitle: "Práctica terminada",
@@ -101,12 +133,32 @@ const MESSAGES = {
     practiceOnlyCopy: "Copia un enlace que pueden abrir y usar de inmediato.",
     practiceOnlyMeta: "Sin iniciar sesión · Los resultados no se guardan",
     trackResultsTitle: "Seguir resultados",
-    trackResultsCopy: "Consulta si terminaron, la puntuación y las palabras falladas.",
+    trackResultsCopy:
+      "Consulta si terminaron, la puntuación y las palabras falladas.",
     trackResultsMeta: "Cuenta gratis · No necesitan una cuenta infantil",
     startDictation: "Empezar prueba de ortografía",
     startTyping: "Empezar lluvia de palabras",
     dictationTitle: "Prueba de ortografía",
     typingTitle: "Lluvia de palabras",
+    chaseTitle: "Perseguição de digitação",
+    chaseChecking: "Comprobando tu acceso...",
+    chasePaidHelp:
+      "Añade palabras para crear un relato con IA o juega ahora con un relato de ejemplo.",
+    chaseLoadError: "No se pudo cargar Typing Chase. Inténtalo de nuevo.",
+    chaseCaught: "¡Ladrón atrapado!",
+    chaseEscaped: "El ladrón escapó",
+    chaseFreeBadge: "Relato gratis",
+    chasePaidBadge: "Personalizado",
+    chaseChooseMode: "Elige un modo de persecución y empieza.",
+    chaseSimpleSelected: "Modo simple seleccionado.",
+    chaseHardSelected: "Modo difícil seleccionado.",
+    chaseReturnMenu: "Volver al menú principal",
+    chaseShare: "Compartir desafío",
+    chaseShareCaught:
+      "Atrapé al ladrón en {time} a {wpm} WPM. ¿Puedes superarme en Typing Chase?",
+    chaseShareEscaped:
+      "El ladrón escapó tras {time} de persecución a {wpm} WPM. ¿Puedes atraparlo?",
+    chaseShareCopied: "Texto del desafío copiado",
     speechUnsupported:
       "Este navegador no admite la lectura por voz. Puedes continuar, pero se recomienda otro navegador para el dictado.",
     dictationProgress: "Palabra {current} de {total}",
@@ -116,8 +168,10 @@ const MESSAGES = {
     dictationComplete: "Prueba de ortografía terminada",
     dictationMissed: "{count} palabras para volver a practicar",
     dictationPerfect: "Puntuación perfecta. No hay palabras falladas.",
-    workspaceCtaMissed: "Has fallado {count} palabras. Guarda esta lista y sigue lo que necesitas practicar.",
-    workspaceCtaClean: "Buen trabajo. Guarda esta lista y sigue tu progreso con el tiempo.",
+    workspaceCtaMissed:
+      "Has fallado {count} palabras. Guarda esta lista y sigue lo que necesitas practicar.",
+    workspaceCtaClean:
+      "Buen trabajo. Guarda esta lista y sigue tu progreso con el tiempo.",
     workspaceCtaKeep: "Guarda esta lista de palabras",
     workspaceCtaTrack: "Sigue tu progreso con el tiempo",
     workspaceCtaCreate: "Crea una tarea con estas palabras",
@@ -132,23 +186,30 @@ const MESSAGES = {
   },
   "pt-BR": {
     wordsReady: "{count} palavras prontas",
-    emptyWords: "Adicione pelo menos uma palavra de ortografia antes de começar.",
+    emptyWords:
+      "Adicione pelo menos uma palavra de ortografia antes de começar.",
     photoImport: "Importar de uma foto",
-    photoImportRequired: "A importação por foto está incluída nos planos para Pais e Professores.",
+    photoImportRequired:
+      "A importação por foto está incluída nos planos para Pais e Professores.",
     photoImportSignIn: "Entrar",
     photoImportPlans: "Ver planos",
     photoImportProcessing: "Lendo sua lista de ortografia…",
     photoImportReviewTitle: "Revise as palavras importadas",
-    photoImportReviewHelp: "Edite as palavras, uma por linha, e adicione-as à sua lista.",
+    photoImportReviewHelp:
+      "Edite as palavras, uma por linha, e adicione-as à sua lista.",
     photoImportUse: "Usar estas palavras",
     photoImportCancel: "Cancelar",
-    photoImportNoWords: "Nenhuma palavra foi encontrada. Tente uma foto mais nítida.",
+    photoImportNoWords:
+      "Nenhuma palavra foi encontrada. Tente uma foto mais nítida.",
     photoImportError: "Não foi possível ler a imagem. Tente novamente.",
     sampleLoaded: "{count} palavras de exemplo carregadas",
     wordsInRound: "{count} palavras nesta rodada",
-    anonymousWordLimit: "A prática sem conta aceita até 20 palavras por lista. Entre grátis para praticar até 30 ou escolha um plano pago para usar até 40.",
-    freeWordLimit: "Contas grátis aceitam até 30 palavras por lista. Os planos pagos aceitam até 40.",
-    longListAdvice: "Listas longas podem aumentar a carga de memorização. Faça práticas mais curtas ou divida as palavras em várias tarefas.",
+    anonymousWordLimit:
+      "A prática sem conta aceita até 20 palavras por lista. Entre grátis para praticar até 30 ou escolha um plano pago para usar até 40.",
+    freeWordLimit:
+      "Contas grátis aceitam até 30 palavras por lista. Os planos pagos aceitam até 40.",
+    longListAdvice:
+      "Listas longas podem aumentar a carga de memorização. Faça práticas mais curtas ou divida as palavras em várias tarefas.",
     signInFree: "Entrar grátis",
     upgradePlus: "Ver planos",
     summaryTitle: "Prática concluída",
@@ -159,7 +220,8 @@ const MESSAGES = {
     copyPrompt: "Copie este link de prática:",
     sharePracticeTitle: "Compartilhar esta prática",
     practiceOnlyTitle: "Somente praticar",
-    practiceOnlyCopy: "Copie um link que pode ser aberto para praticar na hora.",
+    practiceOnlyCopy:
+      "Copie um link que pode ser aberto para praticar na hora.",
     practiceOnlyMeta: "Sem login · Os resultados não são salvos",
     trackResultsTitle: "Acompanhar resultados",
     trackResultsCopy: "Veja a conclusão, a pontuação e as palavras erradas.",
@@ -168,6 +230,26 @@ const MESSAGES = {
     startTyping: "Começar chuva de palavras",
     dictationTitle: "Teste de ortografia",
     typingTitle: "Chuva de palavras",
+    chaseTitle: "Course de frappe",
+    chaseChecking: "Verificando seu acesso...",
+    chasePaidHelp:
+      "Adicione palavras para criar uma história com IA ou jogue agora com uma história de exemplo.",
+    chaseLoadError:
+      "Não foi possível carregar o Typing Chase. Tente novamente.",
+    chaseCaught: "Ladrão capturado!",
+    chaseEscaped: "O ladrão escapou",
+    chaseFreeBadge: "História grátis",
+    chasePaidBadge: "Personalizado",
+    chaseChooseMode: "Escolha um modo de perseguição e comece.",
+    chaseSimpleSelected: "Modo simples selecionado.",
+    chaseHardSelected: "Modo difícil selecionado.",
+    chaseReturnMenu: "Voltar ao menu principal",
+    chaseShare: "Compartilhar desafio",
+    chaseShareCaught:
+      "Capturei o ladrão em {time}, a {wpm} WPM. Você consegue superar meu resultado no Typing Chase?",
+    chaseShareEscaped:
+      "O ladrão escapou após {time} de perseguição, a {wpm} WPM. Você consegue capturá-lo?",
+    chaseShareCopied: "Texto do desafio copiado",
     speechUnsupported:
       "Este navegador não oferece leitura por voz. Você pode continuar, mas outro navegador é recomendado para o ditado.",
     dictationProgress: "Palavra {current} de {total}",
@@ -177,8 +259,10 @@ const MESSAGES = {
     dictationComplete: "Teste de ortografia concluído",
     dictationMissed: "{count} palavras para praticar novamente",
     dictationPerfect: "Pontuação perfeita. Nenhuma palavra errada.",
-    workspaceCtaMissed: "Você errou {count} palavras. Guarde esta lista e acompanhe o que precisa de mais prática.",
-    workspaceCtaClean: "Muito bem. Guarde esta lista e acompanhe seu progresso ao longo do tempo.",
+    workspaceCtaMissed:
+      "Você errou {count} palavras. Guarde esta lista e acompanhe o que precisa de mais prática.",
+    workspaceCtaClean:
+      "Muito bem. Guarde esta lista e acompanhe seu progresso ao longo do tempo.",
     workspaceCtaKeep: "Guarde esta lista de palavras",
     workspaceCtaTrack: "Acompanhe seu progresso ao longo do tempo",
     workspaceCtaCreate: "Crie uma tarefa com estas palavras",
@@ -195,21 +279,26 @@ const MESSAGES = {
     wordsReady: "{count} mots prêts",
     emptyWords: "Ajoutez au moins un mot d’orthographe avant de commencer.",
     photoImport: "Importer depuis une photo",
-    photoImportRequired: "L’importation par photo est incluse dans les offres Parents et Enseignants.",
+    photoImportRequired:
+      "L’importation par photo est incluse dans les offres Parents et Enseignants.",
     photoImportSignIn: "Se connecter",
     photoImportPlans: "Voir les offres",
     photoImportProcessing: "Lecture de votre liste…",
     photoImportReviewTitle: "Vérifiez les mots importés",
-    photoImportReviewHelp: "Modifiez les mots, un par ligne, puis ajoutez-les à votre liste.",
+    photoImportReviewHelp:
+      "Modifiez les mots, un par ligne, puis ajoutez-les à votre liste.",
     photoImportUse: "Utiliser ces mots",
     photoImportCancel: "Annuler",
     photoImportNoWords: "Aucun mot trouvé. Essayez une photo plus nette.",
     photoImportError: "Impossible de lire cette image. Réessayez.",
     sampleLoaded: "{count} mots d’exemple chargés",
     wordsInRound: "{count} mots dans cette partie",
-    anonymousWordLimit: "L’entraînement sans compte accepte jusqu’à 20 mots par liste. Connectez-vous gratuitement pour en pratiquer jusqu’à 30, ou choisissez une offre payante pour aller jusqu’à 40.",
-    freeWordLimit: "Les comptes gratuits acceptent jusqu’à 30 mots par liste. Les offres payantes vont jusqu’à 40.",
-    longListAdvice: "Les longues listes peuvent alourdir la mémorisation. Privilégiez des séances plus courtes ou répartissez les mots entre plusieurs devoirs.",
+    anonymousWordLimit:
+      "L’entraînement sans compte accepte jusqu’à 20 mots par liste. Connectez-vous gratuitement pour en pratiquer jusqu’à 30, ou choisissez une offre payante pour aller jusqu’à 40.",
+    freeWordLimit:
+      "Les comptes gratuits acceptent jusqu’à 30 mots par liste. Les offres payantes vont jusqu’à 40.",
+    longListAdvice:
+      "Les longues listes peuvent alourdir la mémorisation. Privilégiez des séances plus courtes ou répartissez les mots entre plusieurs devoirs.",
     signInFree: "Créer un compte gratuit",
     upgradePlus: "Voir les offres",
     summaryTitle: "Entraînement terminé",
@@ -223,12 +312,32 @@ const MESSAGES = {
     practiceOnlyCopy: "Copiez un lien à ouvrir pour commencer tout de suite.",
     practiceOnlyMeta: "Sans connexion · Les résultats ne sont pas enregistrés",
     trackResultsTitle: "Suivre les résultats",
-    trackResultsCopy: "Consultez la fin de l’exercice, le score et les mots manqués.",
+    trackResultsCopy:
+      "Consultez la fin de l’exercice, le score et les mots manqués.",
     trackResultsMeta: "Compte gratuit · Aucun compte enfant requis",
     startDictation: "Commencer le test d’orthographe",
     startTyping: "Commencer la pluie de mots",
     dictationTitle: "Test d’orthographe",
     typingTitle: "Pluie de mots",
+    chaseTitle: "Kejar Mengetik",
+    chaseChecking: "Vérification de votre accès...",
+    chasePaidHelp:
+      "Ajoutez des mots pour créer une histoire avec l’IA, ou jouez avec une histoire d’exemple.",
+    chaseLoadError: "Impossible de charger Typing Chase. Réessayez.",
+    chaseCaught: "Voleur arrêté !",
+    chaseEscaped: "Le voleur s’est échappé",
+    chaseFreeBadge: "Histoire gratuite",
+    chasePaidBadge: "Personnalisé",
+    chaseChooseMode: "Choisissez un mode de poursuite, puis commencez.",
+    chaseSimpleSelected: "Mode simple sélectionné.",
+    chaseHardSelected: "Mode difficile sélectionné.",
+    chaseReturnMenu: "Retour au menu principal",
+    chaseShare: "Partager le défi",
+    chaseShareCaught:
+      "J’ai rattrapé le voleur en {time}, à {wpm} MPM. Pouvez-vous faire mieux dans Typing Chase ?",
+    chaseShareEscaped:
+      "Le voleur m’a échappé après {time} de poursuite, à {wpm} MPM. Saurez-vous le rattraper ?",
+    chaseShareCopied: "Texte du défi copié",
     speechUnsupported:
       "La lecture vocale n’est pas disponible dans ce navigateur. Vous pouvez continuer, mais un autre navigateur est conseillé pour la dictée.",
     dictationProgress: "Mot {current} sur {total}",
@@ -238,8 +347,10 @@ const MESSAGES = {
     dictationComplete: "Test d’orthographe terminé",
     dictationMissed: "{count} mots à retravailler",
     dictationPerfect: "Score parfait. Aucun mot manqué.",
-    workspaceCtaMissed: "Vous avez manqué {count} mots. Gardez cette liste et suivez les mots à retravailler.",
-    workspaceCtaClean: "Bravo. Gardez cette liste et suivez vos progrès au fil du temps.",
+    workspaceCtaMissed:
+      "Vous avez manqué {count} mots. Gardez cette liste et suivez les mots à retravailler.",
+    workspaceCtaClean:
+      "Bravo. Gardez cette liste et suivez vos progrès au fil du temps.",
     workspaceCtaKeep: "Gardez cette liste de mots",
     workspaceCtaTrack: "Suivez vos progrès au fil du temps",
     workspaceCtaCreate: "Créez un devoir avec ces mots",
@@ -261,16 +372,21 @@ const MESSAGES = {
     photoImportPlans: "Lihat paket",
     photoImportProcessing: "Membaca daftar ejaan Anda…",
     photoImportReviewTitle: "Periksa kata yang diimpor",
-    photoImportReviewHelp: "Edit kata, satu per baris, lalu tambahkan ke daftar Anda.",
+    photoImportReviewHelp:
+      "Edit kata, satu per baris, lalu tambahkan ke daftar Anda.",
     photoImportUse: "Gunakan kata ini",
     photoImportCancel: "Batal",
-    photoImportNoWords: "Tidak ada kata yang ditemukan. Coba foto yang lebih jelas.",
+    photoImportNoWords:
+      "Tidak ada kata yang ditemukan. Coba foto yang lebih jelas.",
     photoImportError: "Gambar tidak dapat dibaca. Coba lagi.",
     sampleLoaded: "{count} contoh kata dimuat",
     wordsInRound: "{count} kata di ronde ini",
-    anonymousWordLimit: "Latihan tanpa akun mendukung hingga 20 kata per daftar. Masuk gratis untuk berlatih hingga 30 kata, atau pilih paket berbayar hingga 40 kata.",
-    freeWordLimit: "Akun Gratis mendukung hingga 30 kata per daftar. Paket berbayar mendukung hingga 40 kata.",
-    longListAdvice: "Daftar yang panjang dapat menambah beban ingatan. Coba latihan yang lebih singkat atau bagi kata ke beberapa tugas.",
+    anonymousWordLimit:
+      "Latihan tanpa akun mendukung hingga 20 kata per daftar. Masuk gratis untuk berlatih hingga 30 kata, atau pilih paket berbayar hingga 40 kata.",
+    freeWordLimit:
+      "Akun Gratis mendukung hingga 30 kata per daftar. Paket berbayar mendukung hingga 40 kata.",
+    longListAdvice:
+      "Daftar yang panjang dapat menambah beban ingatan. Coba latihan yang lebih singkat atau bagi kata ke beberapa tugas.",
     signInFree: "Masuk gratis",
     upgradePlus: "Lihat paket",
     summaryTitle: "Latihan selesai",
@@ -290,6 +406,25 @@ const MESSAGES = {
     startTyping: "Mulai hujan kata",
     dictationTitle: "Tes ejaan",
     typingTitle: "Hujan kata",
+    chaseTitle: "Typing Chase",
+    chaseChecking: "Memeriksa akses Anda...",
+    chasePaidHelp:
+      "Tambahkan kata untuk membuat cerita dengan AI, atau mainkan cerita contoh sekarang.",
+    chaseLoadError: "Typing Chase tidak dapat dimuat. Coba lagi.",
+    chaseCaught: "Pencuri tertangkap!",
+    chaseEscaped: "Pencuri berhasil kabur",
+    chaseFreeBadge: "Cerita gratis",
+    chasePaidBadge: "Kustom",
+    chaseChooseMode: "Pilih mode pengejaran, lalu mulai.",
+    chaseSimpleSelected: "Mode sederhana dipilih.",
+    chaseHardSelected: "Mode sulit dipilih.",
+    chaseReturnMenu: "Kembali ke menu utama",
+    chaseShare: "Bagikan tantangan",
+    chaseShareCaught:
+      "Saya menangkap pencuri dalam {time} dengan kecepatan {wpm} WPM. Bisakah kamu mengalahkan saya di Typing Chase?",
+    chaseShareEscaped:
+      "Pencuri kabur setelah saya mengejar selama {time} dengan kecepatan {wpm} WPM. Bisakah kamu menangkapnya?",
+    chaseShareCopied: "Teks tantangan disalin",
     speechUnsupported:
       "Browser ini tidak mendukung pembacaan suara. Anda tetap dapat melanjutkan, tetapi gunakan browser lain untuk dikte.",
     dictationProgress: "Kata {current} dari {total}",
@@ -299,8 +434,10 @@ const MESSAGES = {
     dictationComplete: "Tes ejaan selesai",
     dictationMissed: "{count} kata untuk dilatih lagi",
     dictationPerfect: "Nilai sempurna. Tidak ada kata yang salah.",
-    workspaceCtaMissed: "Kamu melewatkan {count} kata. Simpan daftar ini dan pantau kata yang perlu lebih banyak latihan.",
-    workspaceCtaClean: "Kerja bagus. Simpan daftar ini dan pantau kemajuanmu dari waktu ke waktu.",
+    workspaceCtaMissed:
+      "Kamu melewatkan {count} kata. Simpan daftar ini dan pantau kata yang perlu lebih banyak latihan.",
+    workspaceCtaClean:
+      "Kerja bagus. Simpan daftar ini dan pantau kemajuanmu dari waktu ke waktu.",
     workspaceCtaKeep: "Simpan daftar kata ini",
     workspaceCtaTrack: "Pantau kemajuan dari waktu ke waktu",
     workspaceCtaCreate: "Buat tugas dari kata-kata ini",
@@ -329,9 +466,11 @@ const MESSAGES = {
     photoImportError: "图片识别失败，请重试。",
     sampleLoaded: "已载入 {count} 个示例单词",
     wordsInRound: "本轮 {count} 个单词",
-    anonymousWordLimit: "无需登录的练习每份词表最多 20 个单词。免费登录后可练习最多 30 个，付费方案最多 40 个。",
+    anonymousWordLimit:
+      "无需登录的练习每份词表最多 20 个单词。免费登录后可练习最多 30 个，付费方案最多 40 个。",
     freeWordLimit: "免费账号每份词表最多 30 个单词。付费方案最多 40 个。",
-    longListAdvice: "词表较长时，记忆负担可能增加。建议缩短单次练习，或拆分成多份作业。",
+    longListAdvice:
+      "词表较长时，记忆负担可能增加。建议缩短单次练习，或拆分成多份作业。",
     signInFree: "免费登录",
     upgradePlus: "查看方案",
     summaryTitle: "练习完成",
@@ -351,6 +490,24 @@ const MESSAGES = {
     startTyping: "开始单词雨",
     dictationTitle: "听写测试",
     typingTitle: "单词雨",
+    chaseTitle: "极速追捕",
+    chaseChecking: "正在确认你的游玩权限…",
+    chasePaidHelp: "输入单词生成 AI 短文，或先用示例短文体验游戏。",
+    chaseLoadError: "极速追捕加载失败，请重试。",
+    chaseCaught: "抓到小偷了！",
+    chaseEscaped: "小偷逃走了",
+    chaseFreeBadge: "免费短文",
+    chasePaidBadge: "自定义",
+    chaseChooseMode: "选择追捕模式，然后开始。",
+    chaseSimpleSelected: "已选择简单模式。",
+    chaseHardSelected: "已选择困难模式。",
+    chaseReturnMenu: "返回主菜单",
+    chaseShare: "分享挑战",
+    chaseShareCaught:
+      "我用时 {time}、以 {wpm} WPM 的速度抓到了小偷。你也来试试极速追捕！",
+    chaseShareEscaped:
+      "我追了 {time}，打字速度达到 {wpm} WPM，但小偷还是跑掉了。你能抓住他吗？",
+    chaseShareCopied: "挑战文案已复制",
     speechUnsupported:
       "当前浏览器不支持语音朗读。你仍可继续，但建议换用支持语音的浏览器进行听写。",
     dictationProgress: "第 {current} 个，共 {total} 个",
@@ -360,7 +517,8 @@ const MESSAGES = {
     dictationComplete: "听写测试完成",
     dictationMissed: "有 {count} 个单词需要再练习",
     dictationPerfect: "全部正确，没有错词。",
-    workspaceCtaMissed: "这次有 {count} 个错词。保留这份词表，持续追踪需要加强的内容。",
+    workspaceCtaMissed:
+      "这次有 {count} 个错词。保留这份词表，持续追踪需要加强的内容。",
     workspaceCtaClean: "做得很好。保留这份词表，持续追踪练习进度。",
     workspaceCtaKeep: "保留这份单词表",
     workspaceCtaTrack: "持续追踪练习进度",

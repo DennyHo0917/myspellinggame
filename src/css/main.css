@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 @import url("./footer.css");
+@import url("./account.css");
 
 :root {
   --bg: #f6faf8;
@@ -425,7 +426,7 @@ a {
 
 .mode-selector {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin: 0 0 10px;
   padding: 0;
@@ -442,14 +443,24 @@ a {
 .mode-card {
   position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: flex-start;
   gap: 9px;
-  min-height: 76px;
-  padding: 12px;
+  min-height: 68px;
+  padding: 10px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface-soft);
   cursor: pointer;
+}
+
+.mode-card-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .mode-card:has(input:checked) {
@@ -460,7 +471,7 @@ a {
 
 .mode-card input {
   flex: 0 0 auto;
-  margin-top: 3px;
+  margin-top: 0;
   accent-color: var(--primary);
 }
 
@@ -472,6 +483,7 @@ a {
 .mode-card strong {
   color: var(--ink);
   font-size: 0.92rem;
+  overflow-wrap: break-word;
 }
 
 .mode-card small {
@@ -485,12 +497,171 @@ a {
   position: absolute;
   top: 7px;
   right: 7px;
+  z-index: 1;
   padding: 2px 6px;
   border-radius: 999px;
   background: var(--primary);
   color: #fff;
   font-size: 0.62rem;
   font-weight: 800;
+}
+
+.mode-lock {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  z-index: 1;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #fff3cd;
+  color: #805f12;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.chase-start-options {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f3f8f7;
+  text-align: left;
+}
+
+.chase-start-options > p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+#chase-paid-options {
+  display: grid;
+  gap: 9px;
+}
+
+#chase-paid-options > label {
+  color: var(--ink);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+#chase-custom-words {
+  width: 100%;
+  min-height: 88px;
+  resize: vertical;
+  padding: 12px;
+  border: 1px solid #cfded9;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+}
+
+.chase-start-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chase-start-actions button {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.chase-start-actions button:last-child {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+}
+
+.chase-mode-help {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.chase-mode-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.chase-mode-choice {
+  display: grid;
+  gap: 4px;
+  min-height: 68px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.chase-mode-choice strong {
+  font-size: 0.88rem;
+}
+
+.chase-mode-choice small {
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.3;
+}
+
+.chase-mode-choice.is-selected {
+  border-color: var(--primary);
+  background: #f0f8f5;
+  box-shadow: 0 0 0 3px rgba(47, 111, 115, 0.1);
+}
+
+.chase-start-btn {
+  margin-top: 10px;
+}
+
+.chase-share-status {
+  flex: 1 0 100%;
+  min-height: 1.2em;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+#chase-generate-btn {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--muted);
+  cursor: not-allowed;
+  font-weight: 800;
+}
+
+#game-container.chase-preview-active .game-start-screen {
+  background: rgba(247, 250, 248, 0.42);
+  backdrop-filter: none;
+}
+
+#game-container.chase-preview-active .start-screen-content {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 620px) {
+  .chase-mode-buttons {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chase-start-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
 }
 
 .spelling-builder {
@@ -556,6 +727,17 @@ a {
   cursor: pointer;
   font-size: 0.75rem;
   font-weight: 800;
+}
+
+#photo-import-btn,
+#auto-example-sentences-btn {
+  background: #edf6f3;
+  border-color: rgba(47, 111, 115, 0.25);
+}
+
+#photo-import-btn:hover,
+#auto-example-sentences-btn:hover {
+  background: #e2f0ec;
 }
 
 .auto-sentence-btn:hover {
@@ -639,6 +821,54 @@ a {
   font-weight: 400;
 }
 
+/* Word-like list markers stay inside the editor and outside its value. */
+.inline-numbered-input {
+  position: relative;
+  width: 100%;
+  border: 1px solid #cfded9;
+  border-radius: var(--radius);
+  background: #fbfdfc;
+  overflow: hidden;
+}
+
+.inline-numbered-input:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(47, 111, 115, 0.12);
+}
+
+.inline-numbered-textarea {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding-left: 42px !important;
+}
+
+.list-marker-layer {
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: 2;
+  width: 42px;
+  padding: 14px 8px 14px 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--muted);
+  line-height: 1.45;
+  text-align: right;
+  white-space: pre;
+  font-variant-numeric: tabular-nums;
+}
+
+.list-marker-layer div {
+  height: auto;
+  min-height: 1em;
+}
+
 .spelling-help {
   color: var(--muted);
   font-size: 0.76rem;
@@ -682,6 +912,25 @@ a {
   color: #8a6714;
   font-size: 0.84rem;
   font-weight: 800;
+}
+
+.copy-success-toast {
+  position: fixed;
+  top: 72px;
+  left: 50%;
+  z-index: 1200;
+  max-width: min(360px, calc(100vw - 48px));
+  padding: 11px 15px;
+  border: 1px solid rgba(31, 111, 92, 0.35);
+  border-radius: var(--radius);
+  background: #1f6f5c;
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 10px 24px rgba(23, 32, 42, 0.2);
 }
 
 .spelling-actions {
@@ -841,6 +1090,126 @@ textarea:focus-visible,
   place-items: center;
   padding: 24px;
   background: rgba(247, 250, 248, 0.96);
+}
+
+.chase-screen {
+  position: absolute;
+  inset: 58px 0 0;
+  z-index: 9;
+  pointer-events: none;
+}
+
+.chase-hud {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  display: flex;
+  gap: 8px;
+  width: min(94%, 720px);
+  transform: translateX(-50%);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.chase-hud span {
+  padding: 6px 10px;
+  border: 1px solid rgba(47, 111, 115, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(39, 62, 70, 0.08);
+}
+
+.chase-hud strong {
+  color: var(--ink);
+}
+
+.chase-passage-card {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  display: grid;
+  gap: 6px;
+  max-height: 31%;
+  padding: 12px 16px;
+  border: 1px solid rgba(47, 111, 115, 0.22);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 34px rgba(39, 62, 70, 0.16);
+  pointer-events: auto;
+}
+
+.chase-passage-card h2,
+.chase-passage-card p {
+  margin: 0;
+}
+
+.chase-passage-card h2 {
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+.chase-help {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.chase-passage-text {
+  min-height: 48px;
+  color: #586671;
+  cursor: text;
+  font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+  font-weight: 600;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.chase-passage-done {
+  color: #24845e;
+}
+
+.chase-passage-current {
+  border-bottom: 3px solid #2563eb;
+  background: #dbeafe;
+  color: #17202a;
+}
+
+.chase-passage-current.is-error {
+  border-color: #dc2626;
+  background: #fee2e2;
+}
+
+#chase-input {
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  resize: none;
+  padding: 10px 12px;
+  overflow: hidden;
+  border: 2px solid rgba(47, 111, 115, 0.25);
+  border-radius: 7px;
+  outline: none;
+  background: #fbfdfc;
+  color: var(--ink);
+  font: inherit;
+}
+
+#chase-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(47, 111, 115, 0.12);
+}
+
+#chase-input.is-error {
+  border-color: #dc2626;
+  background: #fff7f7;
+}
+
+#game-container.chase-mode-active .input-container,
+#game-container.chase-mode-active .background-particles {
+  display: none;
 }
 
 .dictation-card {
@@ -1789,7 +2158,7 @@ textarea:focus-visible,
   border-radius: 6px;
   background: transparent;
   box-shadow: none;
-  font-size: 0.8rem;
+  font-size: 0.86rem;
 }
 
 .top-right-nav .teacher-nav-link {
@@ -1919,8 +2288,8 @@ textarea:focus-visible,
 }
 
 .mode-card {
-  min-height: 78px;
-  padding: 13px;
+  min-height: 70px;
+  padding: 10px;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.7);
 }
@@ -2029,6 +2398,24 @@ textarea:focus-visible,
     grid-template-columns: 1fr;
   }
 
+  .chase-passage-card {
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    max-height: 34%;
+    padding: 12px;
+  }
+
+  .chase-hud {
+    top: 8px;
+    gap: 5px;
+  }
+
+  .chase-hud span {
+    padding: 5px 7px;
+    font-size: 0.68rem;
+  }
+
   .spelling-actions {
     flex-wrap: wrap;
     flex-direction: row;
@@ -2070,6 +2457,10 @@ body {
     width: 100%;
     margin: 0;
     padding: 8px 14px;
+  }
+
+  .copy-success-toast {
+    top: 58px;
   }
 }
 
@@ -2157,7 +2548,7 @@ body {
   color: var(--muted);
   cursor: pointer;
   font-family: inherit;
-  font-size: 0.8rem;
+  font-size: 0.86rem;
   font-weight: 700;
 }
 

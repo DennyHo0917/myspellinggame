@@ -1,489 +1,990 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/icon-32.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/images/icon-32.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/images/apple-touch-icon.png"
+    />
 
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style">
-    <link rel="preload" href="/src/js/index.js?v=spelling-test1" as="script">
-    <link rel="preload" href="/src/css/main.css" as="style">
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      as="style"
+    />
+    <link rel="preload" href="/src/js/index.js?v=typing-chase4" as="script" />
+    <link rel="preload" href="/images/chase/alley-loop.png" as="image" />
+    <link rel="preload" href="/images/chase/runners-chroma.png" as="image" />
+    <link rel="preload" href="/src/css/main.css" as="style" />
 
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="dns-prefetch" href="//www.googletagmanager.com">
-    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com" />
 
     <title>Free Spelling Test With Your Own Words — No Login</title>
-    <meta name="description" content="Paste your own words, hear each hidden word, type the answer, and get instant grading. Retry missed words with no account or login.">
-    <meta name="author" content="My Spelling Game">
-    <meta name="robots" content="index, follow">
-    <meta name="google-adsense-account" content="ca-pub-9244949928133071">
+    <meta
+      name="description"
+      content="Paste your own words and choose a spelling test, Typing Rain, or Typing Chase. Get instant feedback without a student account."
+    />
+    <meta name="author" content="My Spelling Game" />
+    <meta name="robots" content="index, follow" />
+    <meta name="google-adsense-account" content="ca-pub-9244949928133071" />
 
-    <meta property="og:title" content="Free Spelling Test With Your Own Words — No Login">
-    <meta property="og:description" content="Paste your own words, hear each hidden word, get instant grading, and retry missed words without an account.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://myspellinggame.com/">
-    <meta property="og:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="My Spelling Game custom spelling words game preview">
-    <meta property="og:site_name" content="My Spelling Game">
-    <meta property="og:locale" content="en_US">
+    <meta
+      property="og:title"
+      content="Free Spelling Test With Your Own Words — No Login"
+    />
+    <meta
+      property="og:description"
+      content="Practice your own words with a spelling test, Typing Rain, or Typing Chase. No student account required."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://myspellinggame.com/" />
+    <meta
+      property="og:image"
+      content="https://myspellinggame.com/images/my-spelling-game-og.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="My Spelling Game custom spelling words game preview"
+    />
+    <meta property="og:site_name" content="My Spelling Game" />
+    <meta property="og:locale" content="en_US" />
 
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Free Spelling Test With Your Own Words — No Login">
-    <meta name="twitter:description" content="Paste your own words, hear each hidden word, get instant grading, and retry missed words without an account.">
-    <meta name="twitter:image" content="https://myspellinggame.com/images/my-spelling-game-og.png">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Free Spelling Test With Your Own Words — No Login"
+    />
+    <meta
+      name="twitter:description"
+      content="Practice your own words with a spelling test, Typing Rain, or Typing Chase. No student account required."
+    />
+    <meta
+      name="twitter:image"
+      content="https://myspellinggame.com/images/my-spelling-game-og.png"
+    />
 
-    <meta name="theme-color" content="#2f6f73">
-    <meta name="application-name" content="My Spelling Game">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="My Spelling Game">
-    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#2f6f73" />
+    <meta name="application-name" content="My Spelling Game" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="My Spelling Game" />
+    <meta name="format-detection" content="telephone=no" />
 
-    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <link rel="canonical" href="https://myspellinggame.com/">
-    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/">
-    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/">
-    <link rel="alternate" hreflang="pt-BR" href="https://myspellinggame.com/pt-br/">
-    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/">
-    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/">
-    <link rel="alternate" hreflang="zh-CN" href="https://myspellinggame.com/zh/">
-    <link rel="alternate" hreflang="x-default" href="https://myspellinggame.com/">
+    <link rel="alternate" hreflang="en" href="https://myspellinggame.com/" />
+    <link rel="alternate" hreflang="es" href="https://myspellinggame.com/es/" />
+    <link
+      rel="alternate"
+      hreflang="pt-BR"
+      href="https://myspellinggame.com/pt-br/"
+    />
+    <link rel="alternate" hreflang="fr" href="https://myspellinggame.com/fr/" />
+    <link rel="alternate" hreflang="id" href="https://myspellinggame.com/id/" />
+    <link
+      rel="alternate"
+      hreflang="zh-CN"
+      href="https://myspellinggame.com/zh/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://myspellinggame.com/"
+    />
 
     <script src="/src/js/localeRedirect.js"></script>
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9244949928133071"
-      crossorigin="anonymous"></script>
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9244949928133071"
+      crossorigin="anonymous"
+    ></script>
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VYF1V40KVS"></script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-VYF1V40KVS"
+    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-VYF1V40KVS', {
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-VYF1V40KVS", {
         page_location: window.location.origin + window.location.pathname,
-        page_path: window.location.pathname
+        page_path: window.location.pathname,
       });
     </script>
     <script type="module" src="/src/js/analytics.mjs"></script>
 
-    <link rel="stylesheet" href="/src/css/main.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/src/css/main.css" />
+  </head>
+  <body>
     <header class="top-right-nav">
-        <a class="brand-link" href="/" aria-label="My Spelling Game home">
-            <img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt="">
-            <span class="brand-name">My Spelling Game</span>
-        </a>
-        <details class="language-switcher">
-            <summary class="lang-btn" aria-label="Change language">Language</summary>
-            <div class="lang-menu" id="language-menu">
-                <a class="lang-option" href="/" hreflang="en" aria-current="page">English</a>
-                <a class="lang-option" href="/es/" hreflang="es">Español</a>
-                <a class="lang-option" href="/pt-br/" hreflang="pt-BR">Português</a>
-                <a class="lang-option" href="/fr/" hreflang="fr">Français</a>
-                <a class="lang-option" href="/id/" hreflang="id">Bahasa Indonesia</a>
-                <a class="lang-option" href="/zh/" hreflang="zh-CN">中文</a>
-            </div>
-        </details>
-        <a class="teacher-nav-link" href="/workspace?lang=en">Workspace</a>
+      <a class="brand-link" href="/" aria-label="My Spelling Game home">
+        <img
+          class="brand-logo"
+          src="/images/icon-64.png"
+          width="32"
+          height="32"
+          alt=""
+        />
+        <span class="brand-name">My Spelling Game</span>
+      </a>
+      <details class="language-switcher">
+        <summary class="lang-btn" aria-label="Change language">
+          Language
+        </summary>
+        <div class="lang-menu" id="language-menu">
+          <a class="lang-option" href="/" hreflang="en" aria-current="page"
+            >English</a
+          >
+          <a class="lang-option" href="/es/" hreflang="es">Español</a>
+          <a class="lang-option" href="/pt-br/" hreflang="pt-BR">Português</a>
+          <a class="lang-option" href="/fr/" hreflang="fr">Français</a>
+          <a class="lang-option" href="/id/" hreflang="id">Bahasa Indonesia</a>
+          <a class="lang-option" href="/zh/" hreflang="zh-CN">中文</a>
+        </div>
+      </details>
+      <a class="teacher-nav-link" href="/workspace?lang=en">Workspace</a>
+      <a
+        class="workspace-user-toggle home-account-link"
+        href="/workspace?lang=en#teacher-sign-in"
+        data-sign-out="Sign out"
+        ><span class="workspace-user-avatar" aria-hidden="true">?</span
+        ><span>Anonymous</span></a
+      >
     </header>
 
     <div class="main-content-wrapper">
-        <section class="seo-content" id="seo-content">
-            <h1>Free Spelling Test With Your Own Words</h1>
-            <ul class="practice-flow" aria-label="Practice steps">
-                <li>No login required</li>
-                <li>Paste words</li>
-                <li>Hear a hidden word</li>
-                <li>Type the answer</li>
-                <li>Retry missed words</li>
-            </ul>
+      <section class="seo-content" id="seo-content">
+        <h1>Free Spelling Test With Your Own Words</h1>
+        <ul class="practice-flow" aria-label="Practice steps">
+          <li>No login required</li>
+          <li>Paste words</li>
+          <li>Hear a hidden word</li>
+          <li>Type the answer</li>
+          <li>Retry missed words</li>
+        </ul>
+      </section>
+
+      <div id="game-container">
+        <div class="background-particles">
+          <canvas id="particles-canvas"></canvas>
+        </div>
+
+        <div class="top-bar">
+          <div class="game-title">Practice Round</div>
+          <div class="game-toolbar-actions">
+            <button
+              type="button"
+              class="sound-btn game-sound-btn"
+              onclick="toggleSound()"
+              id="sound-toggle"
+              data-i18n-title-dynamic="sound"
+            >
+              Sound
+            </button>
+            <button
+              type="button"
+              class="return-menu-btn"
+              id="return-menu-btn"
+              onclick="returnToMainMenu()"
+            >
+              Return to main menu
+            </button>
+          </div>
+          <div class="combo-display" id="combo-display">
+            Streak <span id="combo-count">0</span>
+          </div>
+        </div>
+
+        <canvas id="game-canvas"></canvas>
+
+        <section
+          class="dictation-screen"
+          id="dictation-screen"
+          aria-labelledby="dictation-heading"
+          hidden
+        >
+          <div class="dictation-card">
+            <p class="dictation-progress" id="dictation-progress">
+              Word 1 of 1
+            </p>
+            <h2 id="dictation-heading">Listen and spell the word</h2>
+            <p class="dictation-help">
+              The word stays hidden until you submit your answer.
+            </p>
+            <button
+              type="button"
+              class="dictation-replay"
+              id="dictation-replay"
+              aria-label="Replay the current word"
+            >
+              Replay word
+            </button>
+            <p
+              class="dictation-speech-status"
+              id="dictation-speech-status"
+              role="status"
+            ></p>
+            <form id="dictation-form">
+              <label class="visually-hidden" for="dictation-answer"
+                >Your spelling</label
+              >
+              <input
+                type="text"
+                id="dictation-answer"
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+                placeholder="Type what you hear"
+                aria-describedby="dictation-feedback"
+              />
+              <button type="submit" id="dictation-submit">Submit answer</button>
+            </form>
+            <p
+              class="dictation-feedback"
+              id="dictation-feedback"
+              role="status"
+              aria-live="polite"
+            ></p>
+            <button
+              type="button"
+              class="dictation-next"
+              id="dictation-next"
+              hidden
+            >
+              Next word
+            </button>
+          </div>
         </section>
 
-        <div id="game-container">
-            <div class="background-particles">
-                <canvas id="particles-canvas"></canvas>
-            </div>
+        <section
+          class="chase-screen"
+          id="chase-screen"
+          aria-labelledby="chase-passage-title"
+          hidden
+        >
+          <div class="chase-hud" aria-live="polite">
+            <span>Catch <strong id="chase-progress">0%</strong></span>
+            <span>Speed <strong id="chase-wpm">0</strong> WPM</span>
+            <span>Thief <strong id="chase-thief-wpm">40</strong> WPM</span>
+            <span>Accuracy <strong id="chase-accuracy">100%</strong></span>
+            <span>Errors <strong id="chase-errors">0</strong></span>
+          </div>
+          <div class="chase-passage-card">
+            <h2 id="chase-passage-title"></h2>
+            <p class="chase-help">
+              Type one sentence at a time. Catch the thief with your speed.
+            </p>
+            <div
+              class="chase-passage-text"
+              id="chase-passage-text"
+              tabindex="0"
+            ></div>
+            <label class="visually-hidden" for="chase-input"
+              >Type the current sentence</label
+            >
+            <textarea
+              id="chase-input"
+              rows="1"
+              autocomplete="off"
+              autocapitalize="none"
+              spellcheck="false"
+              placeholder="Type this sentence..."
+            ></textarea>
+          </div>
+        </section>
 
-            <div class="top-bar">
-                <div class="game-title">Practice Round</div>
-                <div class="game-toolbar-actions">
-                    <button type="button" class="sound-btn game-sound-btn" onclick="toggleSound()" id="sound-toggle" data-i18n-title-dynamic="sound">Sound</button>
-                    <button type="button" class="return-menu-btn" id="return-menu-btn" onclick="returnToMainMenu()">Return to main menu</button>
-                </div>
-                <div class="combo-display" id="combo-display">
-                    Streak <span id="combo-count">0</span>
-                </div>
-            </div>
-
-            <canvas id="game-canvas"></canvas>
-
-            <section class="dictation-screen" id="dictation-screen" aria-labelledby="dictation-heading" hidden>
-                <div class="dictation-card">
-                    <p class="dictation-progress" id="dictation-progress">Word 1 of 1</p>
-                    <h2 id="dictation-heading">Listen and spell the word</h2>
-                    <p class="dictation-help">The word stays hidden until you submit your answer.</p>
-                    <button type="button" class="dictation-replay" id="dictation-replay" aria-label="Replay the current word">Replay word</button>
-                    <p class="dictation-speech-status" id="dictation-speech-status" role="status"></p>
-                    <form id="dictation-form">
-                        <label class="visually-hidden" for="dictation-answer">Your spelling</label>
-                        <input type="text" id="dictation-answer" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type what you hear" aria-describedby="dictation-feedback">
-                        <button type="submit" id="dictation-submit">Submit answer</button>
-                    </form>
-                    <p class="dictation-feedback" id="dictation-feedback" role="status" aria-live="polite"></p>
-                    <button type="button" class="dictation-next" id="dictation-next" hidden>Next word</button>
-                </div>
-            </section>
-
-            <div class="input-container">
-                <input type="text" id="word-input" placeholder="Type a spelling word..." autocomplete="off" spellcheck="false" disabled>
-            </div>
-
-            <div class="game-start-screen" id="game-start">
-                <div class="start-screen-content">
-                    <div class="start-title">Practice your own word list</div>
-                    <div class="spelling-start">
-                        <div class="spelling-subtitle">Free Spelling Test With Your Own Words</div>
-                        <p class="spelling-intro">Choose the recommended audio test or Typing Rain, paste your words, and start.</p>
-                        <div class="hero-proof-row" aria-label="My Spelling Game benefits">
-                            <span>Instant grading</span>
-                            <span>Hidden words</span>
-                            <span>Missed-word replay</span>
-                            <span>No account required</span>
-                        </div>
-                        <fieldset class="mode-selector">
-                            <legend>Choose a mode</legend>
-                            <label class="mode-card">
-                                <input type="radio" name="practice-mode" value="dictation" checked>
-                                <span><strong>Spelling Test</strong><small>Hear one word at a time and type the spelling.</small></span>
-                                <span class="recommended-badge">Recommended</span>
-                            </label>
-                            <label class="mode-card">
-                                <input type="radio" name="practice-mode" value="typing">
-                                <span><strong>Typing Rain</strong><small>Type each falling word before it reaches the bottom.</small></span>
-                            </label>
-                        </fieldset>
-                        <div class="spelling-builder">
-                            <div class="word-entry-grid">
-                                <div class="word-entry-field">
-                                    <div class="word-field-heading"><label for="custom-word-list">Your spelling words</label><button type="button" class="auto-sentence-btn photo-import-btn" id="photo-import-btn">Import from photo</button></div>
-                                    <input type="file" id="photo-import-input" accept="image/*" capture="environment" hidden>
-                                    <textarea id="custom-word-list" rows="7" spellcheck="false" placeholder="because&#10;friend&#10;beautiful&#10;answer"></textarea>
-                                </div>
-                                <div class="word-entry-field dictation-option">
-                                    <div class="sentence-field-heading"><label for="custom-example-sentences">Example sentences (optional)</label><button type="button" class="auto-sentence-btn" id="auto-example-sentences-btn">Auto-fill</button></div>
-                                    <textarea id="custom-example-sentences" rows="7" maxlength="30000" spellcheck="true" placeholder="I stayed inside because it was raining.&#10;My friend helped me with my homework."></textarea>
-                                    <small class="spelling-help">One sentence per line, in the same order as the words. Leave a blank line when a word does not need one.</small>
-                                </div>
-                            </div>
-                            <div class="spelling-options">
-                                <label class="read-toggle typing-option"><input type="checkbox" id="hear-words-toggle"> Hear each word before typing</label>
-                                <label class="read-toggle typing-option"><input type="checkbox" id="easy-mode-toggle"> Easy mode</label>
-                                <span id="spelling-status">8 words ready</span>
-                            </div>
-                            <div class="spelling-actions">
-                                <button type="button" onclick="loadSampleWords()">Sample list</button>
-                                <button type="button" id="copy-practice-link-btn" aria-haspopup="true" aria-controls="practice-share-options" aria-expanded="false" onclick="copyPracticeLink()">Copy practice link</button>
-                                <button type="button" onclick="showPrivacyPolicyLegacy()">Privacy</button>
-                                <button type="button" class="assignment-entry" onclick="openTeacherAssignment('assign_homework')">Assign homework</button>
-                            </div>
-                        </div>
-                        <button class="start-btn spelling-start-btn" id="start-practice-btn" onclick="startGame()">Start Spelling Test</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-over-screen" id="game-over">
-                <div class="game-over-content">
-                    <div class="game-over-title" id="game-over-title">Practice Complete</div>
-                    <div class="final-stats" id="typing-final-stats">
-                        <p><span data-i18n="finalScore">Final Score</span>: <span id="final-score">0</span></p>
-                        <p><span data-i18n="levelReached">Round Reached</span>: <span id="final-level">1</span></p>
-                        <p><span data-i18n="maxWPM">Best Speed</span>: <span id="final-wpm">0</span></p>
-                        <p><span data-i18n="accuracy">Accuracy</span>: <span id="final-accuracy">100%</span></p>
-                        <p id="duration-row" style="display:none;"><span data-i18n="duration">Duration</span>: <span id="final-duration">0:00</span></p>
-                        <p><span data-i18n="wordsMatched">Words Missed</span>: <span id="final-missed">0</span></p>
-                    </div>
-                    <div class="final-stats" id="dictation-final-stats" hidden>
-                        <p>Total words: <span id="dictation-total">0</span></p>
-                        <p>Correct: <span id="dictation-correct">0</span></p>
-                        <p>Incorrect: <span id="dictation-incorrect">0</span></p>
-                        <p>Accuracy: <span id="dictation-accuracy">0%</span></p>
-                    </div>
-                    <div class="spelling-summary" id="spelling-summary" hidden>
-                        <div id="spelling-result"></div>
-                        <div id="missed-word-list"></div>
-                        <button class="restart-btn" id="replay-missed-btn" onclick="replayMissedWords()">Practice Missed Words</button>
-                    </div>
-                    <div class="game-over-buttons">
-                        <button class="restart-btn" id="restart-same-btn" onclick="restartGame(true)">Restart</button>
-                        <button class="share-score-btn" id="edit-list-btn" onclick="restartGame()">Edit Word List</button>
-                        <button type="button" class="share-score-btn assignment-complete-btn" onclick="openTeacherAssignment()">Assign this list to students</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="privacy-screen" id="privacy-policy">
-                <div class="privacy-content">
-                    <div class="privacy-title">Privacy Policy</div>
-                    <div class="privacy-text">
-                        <h3>Data Collection</h3>
-                        <p>My Spelling Game is committed to protecting your privacy. This policy explains how we handle your data:</p>
-
-                        <h4>Local Storage</h4>
-                        <p>Your spelling list and optional hear-words preference are stored locally in your browser using localStorage.</p>
-                        <p>Photo import reads the image in your browser; it is not uploaded to our server, and you can edit detected words before using them.</p>
-                        <p>Assignments published by a teacher or parent and student results are stored in Cloudflare D1 for 14 days on Free Plan or 365 days on Parent and Teacher Plans. Student email, IP address, and User-Agent are not collected.</p>
-                        <p>New share links store the word list in the URL fragment, which is processed by your browser and not sent to our server.</p>
-                        <p>You can clear this data at any time through your browser settings.</p>
-
-                        <h4>Analytics</h4>
-                        <p>Google Analytics receives a cleaned page address without query parameters or URL fragments.</p>
-                        <p>Events contain aggregate details such as mode, word count, and result.</p>
-                        <p>We do not send your word list or typed answers to Analytics.</p>
-                        <p>You can opt out by using browser extensions or privacy settings.</p>
-
-                        <h4>Advertising</h4>
-                        <p>We use Google AdSense to display relevant advertisements.</p>
-                        <p>Ad personalization follows Google's privacy policies.</p>
-                        <p>You can manage ad preferences through Google's Ad Settings.</p>
-
-                        <h4>Your Rights</h4>
-                        <p>You can clear your saved spelling list at any time.</p>
-                        <p>You can disable analytics through browser settings.</p>
-                        <p>You can block advertisements using ad blockers.</p>
-
-                        <h4>Contact</h4>
-                        <p>If you have questions about this privacy policy, please contact us through our website.</p>
-
-                        <p class="privacy-update">Last updated: <span id="privacy-date"></span></p>
-                    </div>
-                    <div class="privacy-buttons">
-                        <button class="close-privacy-btn" onclick="closePrivacyPolicyLegacy()">Close</button>
-                        <button class="clear-data-btn" onclick="clearLocalDataLegacy()">Clear My Data</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="stats" aria-label="Practice stats">
-                <div class="stat-item">
-                    <div class="stat-label">POINTS</div>
-                    <div class="stat-value" id="score">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">ROUND</div>
-                    <div class="stat-value" id="level">1</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">SPEED</div>
-                    <div class="stat-value" id="wpm">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">ACCURACY</div>
-                    <div class="stat-value" id="accuracy">100%</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">MISSED</div>
-                    <div class="stat-value" id="missed-words">0/5</div>
-                </div>
-            </div>
+        <div class="input-container">
+          <input
+            type="text"
+            id="word-input"
+            placeholder="Type a spelling word..."
+            autocomplete="off"
+            spellcheck="false"
+            disabled
+          />
         </div>
+
+        <div class="game-start-screen" id="game-start">
+          <div class="start-screen-content">
+            <div class="start-title">Practice your own word list</div>
+            <div class="spelling-start">
+              <div class="spelling-subtitle">
+                Free Spelling Test With Your Own Words
+              </div>
+              <fieldset class="mode-selector">
+                <legend>Choose a mode</legend>
+                <label class="mode-card">
+                  <span class="mode-card-header"
+                    ><input
+                      type="radio"
+                      name="practice-mode"
+                      value="dictation"
+                      checked
+                    /><strong>Spelling Test</strong></span
+                  >
+                  <span class="recommended-badge">Recommended</span>
+                </label>
+                <label class="mode-card">
+                  <span class="mode-card-header"
+                    ><input
+                      type="radio"
+                      name="practice-mode"
+                      value="typing"
+                    /><strong>Typing Rain</strong></span
+                  >
+                </label>
+                <label class="mode-card chase-mode-card">
+                  <span class="mode-card-header"
+                    ><input
+                      type="radio"
+                      name="practice-mode"
+                      value="chase"
+                    /><strong>Typing Chase</strong></span
+                  >
+                  <span class="mode-lock" aria-hidden="true">Login</span>
+                </label>
+              </fieldset>
+              <div class="chase-start-options" id="chase-start-options" hidden>
+                <p id="chase-access-status" role="status">
+                  Checking your access...
+                </p>
+                <div class="chase-mode-options" id="chase-mode-options" hidden>
+                  <p class="chase-mode-help">
+                    Choose the thief's speed before you start.
+                  </p>
+                  <div
+                    class="chase-mode-buttons"
+                    role="group"
+                    aria-label="Choose the thief's speed before you start."
+                  >
+                    <button
+                      type="button"
+                      class="chase-mode-choice"
+                      data-chase-mode="simple"
+                      aria-pressed="false"
+                    >
+                      <strong>Simple mode</strong
+                      ><small>The thief runs at 40 WPM.</small>
+                    </button>
+                    <button
+                      type="button"
+                      class="chase-mode-choice"
+                      data-chase-mode="hard"
+                      aria-pressed="false"
+                    >
+                      <strong>Hard mode</strong
+                      ><small>Starts at 45 WPM and can reach 55 WPM.</small>
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    class="start-btn chase-start-btn"
+                    id="chase-start-btn"
+                    disabled
+                  >
+                    Start chase
+                  </button>
+                </div>
+                <div id="chase-paid-options" hidden>
+                  <label for="chase-custom-words">Words for your story</label>
+                  <textarea
+                    id="chase-custom-words"
+                    rows="4"
+                    maxlength="1000"
+                    spellcheck="false"
+                    placeholder="adventure&#10;forest&#10;careful"
+                  ></textarea>
+                  <p class="spelling-help">
+                    AI story generation is coming soon. You can preview the game
+                    with a sample story now.
+                  </p>
+                  <button type="button" id="chase-generate-btn" disabled>
+                    Generate story with AI · Coming soon
+                  </button>
+                </div>
+              </div>
+              <div class="spelling-builder">
+                <div class="word-entry-grid">
+                  <div class="word-entry-field">
+                    <div class="word-field-heading">
+                      <label for="custom-word-list">Your spelling words</label
+                      ><button
+                        type="button"
+                        class="auto-sentence-btn photo-import-btn"
+                        id="photo-import-btn"
+                      >
+                        Import from photo
+                      </button>
+                    </div>
+                    <input
+                      type="file"
+                      id="photo-import-input"
+                      accept="image/*"
+                      capture="environment"
+                      hidden
+                    />
+                    <textarea
+                      id="custom-word-list"
+                      rows="7"
+                      spellcheck="false"
+                      placeholder="because&#10;friend&#10;beautiful&#10;answer"
+                    ></textarea>
+                  </div>
+                  <div class="word-entry-field dictation-option">
+                    <div class="sentence-field-heading">
+                      <label for="custom-example-sentences"
+                        >Example sentences (optional)</label
+                      ><button
+                        type="button"
+                        class="auto-sentence-btn"
+                        id="auto-example-sentences-btn"
+                      >
+                        Auto-fill
+                      </button>
+                    </div>
+                    <textarea
+                      id="custom-example-sentences"
+                      rows="7"
+                      maxlength="30000"
+                      spellcheck="true"
+                      placeholder="I stayed inside because it was raining.&#10;My friend helped me with my homework."
+                    ></textarea>
+                    <small class="spelling-help"
+                      >One sentence per line, in the same order as the words.
+                      Leave a blank line when a word does not need one.</small
+                    >
+                  </div>
+                </div>
+                <div class="spelling-options">
+                  <label class="read-toggle typing-option"
+                    ><input type="checkbox" id="hear-words-toggle" /> Hear each
+                    word before typing</label
+                  >
+                  <label class="read-toggle typing-option"
+                    ><input type="checkbox" id="easy-mode-toggle" /> Easy
+                    mode</label
+                  >
+                  <span id="spelling-status">8 words ready</span>
+                </div>
+                <div class="spelling-actions">
+                  <button type="button" onclick="loadSampleWords()">
+                    Sample list
+                  </button>
+                  <button
+                    type="button"
+                    id="copy-practice-link-btn"
+                    aria-haspopup="true"
+                    aria-controls="practice-share-options"
+                    aria-expanded="false"
+                    onclick="copyPracticeLink()"
+                  >
+                    Copy practice link
+                  </button>
+                  <button type="button" onclick="showPrivacyPolicyLegacy()">
+                    Privacy
+                  </button>
+                  <button
+                    type="button"
+                    class="assignment-entry"
+                    onclick="openTeacherAssignment('assign_homework')"
+                  >
+                    Assign homework
+                  </button>
+                </div>
+              </div>
+              <button
+                class="start-btn spelling-start-btn"
+                id="start-practice-btn"
+                onclick="startGame()"
+              >
+                Start Spelling Test
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="game-over-screen" id="game-over">
+          <div class="game-over-content">
+            <div class="game-over-title" id="game-over-title">
+              Practice Complete
+            </div>
+            <div class="final-stats" id="typing-final-stats">
+              <p>
+                <span data-i18n="finalScore">Final Score</span>:
+                <span id="final-score">0</span>
+              </p>
+              <p>
+                <span data-i18n="levelReached">Round Reached</span>:
+                <span id="final-level">1</span>
+              </p>
+              <p>
+                <span data-i18n="maxWPM">Best Speed</span>:
+                <span id="final-wpm">0</span>
+              </p>
+              <p>
+                <span data-i18n="accuracy">Accuracy</span>:
+                <span id="final-accuracy">100%</span>
+              </p>
+              <p id="duration-row" style="display: none">
+                <span data-i18n="duration">Duration</span>:
+                <span id="final-duration">0:00</span>
+              </p>
+              <p>
+                <span data-i18n="wordsMatched">Words Missed</span>:
+                <span id="final-missed">0</span>
+              </p>
+            </div>
+            <div class="final-stats" id="dictation-final-stats" hidden>
+              <p>Total words: <span id="dictation-total">0</span></p>
+              <p>Correct: <span id="dictation-correct">0</span></p>
+              <p>Incorrect: <span id="dictation-incorrect">0</span></p>
+              <p>Accuracy: <span id="dictation-accuracy">0%</span></p>
+            </div>
+            <div class="final-stats" id="chase-final-stats" hidden>
+              <p>Speed: <span id="chase-final-wpm">0</span> WPM</p>
+              <p>Accuracy: <span id="chase-final-accuracy">100%</span></p>
+              <p>Errors: <span id="chase-final-errors">0</span></p>
+              <p>Time: <span id="chase-final-time">0:00</span></p>
+            </div>
+            <div class="spelling-summary" id="spelling-summary" hidden>
+              <div id="spelling-result"></div>
+              <div id="missed-word-list"></div>
+              <button
+                class="restart-btn"
+                id="replay-missed-btn"
+                onclick="replayMissedWords()"
+              >
+                Practice Missed Words
+              </button>
+            </div>
+            <div class="game-over-buttons">
+              <button
+                type="button"
+                class="restart-btn chase-return-menu-btn"
+                id="chase-return-menu-btn"
+                onclick="returnToMainMenu()"
+                hidden
+              >
+                Return to main menu
+              </button>
+              <button
+                class="restart-btn"
+                id="restart-same-btn"
+                onclick="restartGame(true)"
+              >
+                Restart
+              </button>
+              <button
+                type="button"
+                class="share-score-btn chase-share-btn"
+                id="chase-share-btn"
+                onclick="shareChaseResult()"
+                hidden
+              >
+                Share challenge
+              </button>
+              <span
+                class="chase-share-status"
+                id="chase-share-status"
+                role="status"
+                aria-live="polite"
+              ></span>
+              <button
+                class="share-score-btn"
+                id="edit-list-btn"
+                onclick="restartGame()"
+              >
+                Edit Word List
+              </button>
+              <button
+                type="button"
+                class="share-score-btn assignment-complete-btn"
+                onclick="openTeacherAssignment()"
+              >
+                Assign this list to students
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="privacy-screen" id="privacy-policy">
+          <div class="privacy-content">
+            <div class="privacy-title">Privacy Policy</div>
+            <div class="privacy-text">
+              <h3>Data Collection</h3>
+              <p>
+                My Spelling Game is committed to protecting your privacy. This
+                policy explains how we handle your data:
+              </p>
+
+              <h4>Local Storage</h4>
+              <p>
+                Your spelling list and optional hear-words preference are stored
+                locally in your browser using localStorage.
+              </p>
+              <p>
+                Photo import reads the image in your browser; it is not uploaded
+                to our server, and you can edit detected words before using
+                them.
+              </p>
+              <p>
+                Assignments published by a teacher or parent and student results
+                are stored in Cloudflare D1 for 14 days on Free Plan or 365 days
+                on Parent and Teacher Plans. Student email, IP address, and
+                User-Agent are not collected.
+              </p>
+              <p>
+                New share links store the word list in the URL fragment, which
+                is processed by your browser and not sent to our server.
+              </p>
+              <p>
+                You can clear this data at any time through your browser
+                settings.
+              </p>
+
+              <h4>Analytics</h4>
+              <p>
+                Google Analytics receives a cleaned page address without query
+                parameters or URL fragments.
+              </p>
+              <p>
+                Events contain aggregate details such as mode, word count, and
+                result.
+              </p>
+              <p>
+                We do not send your word list or typed answers to Analytics.
+              </p>
+              <p>
+                You can opt out by using browser extensions or privacy settings.
+              </p>
+
+              <h4>Advertising</h4>
+              <p>We use Google AdSense to display relevant advertisements.</p>
+              <p>Ad personalization follows Google's privacy policies.</p>
+              <p>You can manage ad preferences through Google's Ad Settings.</p>
+
+              <h4>Your Rights</h4>
+              <p>You can clear your saved spelling list at any time.</p>
+              <p>You can disable analytics through browser settings.</p>
+              <p>You can block advertisements using ad blockers.</p>
+
+              <h4>Contact</h4>
+              <p>
+                If you have questions about this privacy policy, please contact
+                us through our website.
+              </p>
+
+              <p class="privacy-update">
+                Last updated: <span id="privacy-date"></span>
+              </p>
+            </div>
+            <div class="privacy-buttons">
+              <button
+                class="close-privacy-btn"
+                onclick="closePrivacyPolicyLegacy()"
+              >
+                Close
+              </button>
+              <button class="clear-data-btn" onclick="clearLocalDataLegacy()">
+                Clear My Data
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats" aria-label="Practice stats">
+          <div class="stat-item">
+            <div class="stat-label">POINTS</div>
+            <div class="stat-value" id="score">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">ROUND</div>
+            <div class="stat-value" id="level">1</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">SPEED</div>
+            <div class="stat-value" id="wpm">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">ACCURACY</div>
+            <div class="stat-value" id="accuracy">100%</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">MISSED</div>
+            <div class="stat-value" id="missed-words">0/5</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <aside class="ad-slot ad-slot-after-game" aria-label="Advertisement">
-        <span>Advertisement</span>
+      <span>Advertisement</span>
     </aside>
 
     <div class="below-game">
-        <div class="practice-info-grid">
-            <div class="game-instructions">
-                <div class="instructions-content">
-                    <h3>For This Week's List</h3>
-                    <p>Paste the spelling words your class or child already has.</p>
-                    <p>Use Spelling Test to hear one hidden word at a time, or Typing Rain to type falling words.</p>
-                    <p>In either mode, press <kbd>Enter</kbd> to submit.</p>
-                    <p>Missed words are saved for one-click replay.</p>
-                    <p>Copy a practice link to share the same list.</p>
-                    <h4>Easy Mode</h4>
-                    <p>Typing Rain keeps the original falling-word controls and offers an optional slower Easy mode.</p>
-                </div>
-            </div>
-
-            <div class="power-ups-container practice-proof">
-                <div class="practice-proof-copy">
-                    <h3>Why It Works</h3>
-                    <p>Exact weekly words, not a random word bank.</p>
-                    <p>Fast start for classroom homework, grade-level lists, tutoring, ESL, and homeschool practice.</p>
-                    <p>Replay practice focuses on the words the student missed.</p>
-                    <p>Spelling Test and Typing Rain use the same list, sharing, and missed-word review.</p>
-                    <p>Parent and Teacher Plans add photo import, automatic example sentences, and Today's Review.</p>
-                </div>
-            </div>
+      <div class="practice-info-grid">
+        <div class="game-instructions">
+          <div class="instructions-content">
+            <h3>For This Week's List</h3>
+            <p>Paste the spelling words your class or child already has.</p>
+            <p>
+              Use Spelling Test to hear one hidden word at a time, or Typing
+              Rain to type falling words.
+            </p>
+            <p>In either mode, press <kbd>Enter</kbd> to submit.</p>
+            <p>Missed words are saved for one-click replay.</p>
+            <p>Copy a practice link to share the same list.</p>
+            <h4>Easy Mode</h4>
+            <p>
+              Typing Rain keeps the original falling-word controls and offers an
+              optional slower Easy mode.
+            </p>
+          </div>
         </div>
 
-        <div class="spelling-seo-copy">
-            <h2>Two Ways to Practice Your Own Words</h2>
-            <p><strong>Spelling Test</strong> reads one hidden word at a time and grades the typed answer. <strong>Typing Rain</strong> keeps the original falling-word typing challenge.</p>
-
-            <h3>Why A Custom Spelling List Matters</h3>
-            <p>A pasted list keeps practice focused on the words needed now. Both modes record misses, support a focused retry round, and work without a student account.</p>
-            <ul>
-                <li><strong>Use your own custom word list:</strong> Paste words from a teacher handout, homework sheet, grade-level list, or homeschool curriculum.</li>
-                <li><strong>Run a real audio test:</strong> The spelling stays hidden until the answer is submitted.</li>
-                <li><strong>Use context without giving away the answer:</strong> In an example sentence, the target word appears as a blank while audio reads the word and the full sentence.</li>
-                <li><strong>Use missed-word replay:</strong> Incorrect or missed words are saved for another round.</li>
-                <li><strong>Share a practice link:</strong> Copy the same list and selected mode without an account.</li>
-                <li><strong>Use paid workspace tools:</strong> Import a school list photo, fill curated example sentences, and review words due today.</li>
-            </ul>
-
+        <div class="power-ups-container practice-proof">
+          <div class="practice-proof-copy">
+            <h3>Why It Works</h3>
+            <p>Exact weekly words, not a random word bank.</p>
+            <p>
+              Fast start for classroom homework, grade-level lists, tutoring,
+              ESL, and homeschool practice.
+            </p>
+            <p>Replay practice focuses on the words the student missed.</p>
+            <p>
+              Spelling Test and Typing Rain use the same list, sharing, and
+              missed-word review.
+            </p>
+            <p>
+              Parent and Teacher Plans add photo import, automatic example
+              sentences, and Today's Review.
+            </p>
+          </div>
         </div>
+      </div>
 
-        <section class="spelling-seo-copy workspace-seo-section">
-            <h2>For parents and teachers</h2>
-            <p>Want to use the same spelling lists week after week? Create a free workspace to save lists, assign practice without student accounts, track progress across assignments, and see which words need review next.</p>
-            <a class="seo-cta" href="/workspace?lang=en">Open Workspace</a>
-        </section>
+      <div class="spelling-seo-copy">
+        <h2>Three Ways to Practice Your Own Words</h2>
+        <p>
+          <strong>Spelling Test</strong> reads one hidden word at a time and
+          grades the typed answer. <strong>Typing Rain</strong> keeps the
+          falling-word challenge. <strong>Typing Chase</strong> turns
+          sentence-typing speed into a chase to catch the thief.
+        </p>
+
+        <h3>Why A Custom Spelling List Matters</h3>
+        <p>
+          A pasted list keeps practice focused on the words needed now. The
+          three modes offer different ways to practice without a student
+          account; Spelling Test and Typing Rain also collect missed words for a
+          focused retry round.
+        </p>
+        <ul>
+          <li>
+            <strong>Use your own custom word list:</strong> Paste words from a
+            teacher handout, homework sheet, grade-level list, or homeschool
+            curriculum.
+          </li>
+          <li>
+            <strong>Run a real audio test:</strong> The spelling stays hidden
+            until the answer is submitted.
+          </li>
+          <li>
+            <strong>Use context without giving away the answer:</strong> In an
+            example sentence, the target word appears as a blank while audio
+            reads the word and the full sentence.
+          </li>
+          <li>
+            <strong>Use missed-word replay:</strong> Incorrect or missed words
+            are saved for another round.
+          </li>
+          <li>
+            <strong>Build sentence-typing speed:</strong> Typing Chase measures
+            speed and accuracy while the player tries to catch a thief.
+          </li>
+          <li>
+            <strong>Share a practice link:</strong> Copy the same list and
+            selected mode without an account.
+          </li>
+          <li>
+            <strong>Use paid workspace tools:</strong> Import a school list
+            photo, fill curated example sentences, and review words due today.
+          </li>
+        </ul>
+      </div>
+
+      <section class="spelling-seo-copy workspace-seo-section">
+        <h2>For parents and teachers</h2>
+        <p>
+          Want to use the same spelling lists week after week? Create a free
+          workspace to save lists, assign practice without student accounts,
+          track progress across assignments, and see which words need review
+          next.
+        </p>
+        <a class="seo-cta" href="/workspace?lang=en">Open Workspace</a>
+      </section>
     </div>
 
     <script>
       window.disableLegacyLanguageUI = true;
-      window.pageLocale = 'en';
-      window.currentLanguage = 'en';
+      window.pageLocale = "en";
+      window.currentLanguage = "en";
     </script>
-    <script type="module" src="/src/js/index.js?v=spelling-test1"></script>
+    <script type="module" src="/src/js/index.js?v=typing-chase4"></script>
 
     <footer>
-        <p>
-            <span class="footer-links"><a href="/custom-spelling-words-game">Custom Words</a> &middot; <a href="/weekly-spelling-practice">Weekly Practice</a> &middot; <a href="/sight-word-typing-game">Sight Words</a> &middot; <a href="/spelling-practice-for-parents">For Parents</a> &middot; <a href="/spelling-assignments-for-teachers">For Teachers</a></span><br>
-            &copy; 2026 My Spelling Game All rights reserved.
-        </p>
+      <p>
+        <span class="footer-links"
+          ><a href="/custom-spelling-words-game">Custom Words</a> &middot;
+          <a href="/weekly-spelling-practice">Weekly Practice</a> &middot;
+          <a href="/sight-word-typing-game">Sight Words</a> &middot;
+          <a href="/spelling-practice-for-parents">For Parents</a> &middot;
+          <a href="/spelling-assignments-for-teachers">For Teachers</a></span
+        ><br />
+        &copy; 2026 My Spelling Game All rights reserved.
+      </p>
     </footer>
 
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "@id": "https://myspellinggame.com/#software",
-      "name": "My Spelling Game",
-      "description": "Paste your own words for a hidden-word audio spelling test or the Typing Rain game. Example sentences blank the target word on screen while audio reads the word and the full sentence.",
-      "url": "https://myspellinggame.com/",
-      "mainEntityOfPage": "https://myspellinggame.com/",
-      "inLanguage": "en",
-      "datePublished": "2026-06-19",
-      "dateModified": "2026-09-01",
-      "isAccessibleForFree": true,
-      "author": {
-        "@type": "Organization",
-        "@id": "https://myspellinggame.com/#organization",
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "@id": "https://myspellinggame.com/#software",
         "name": "My Spelling Game",
+        "description": "Practice your own words with a hidden-word audio spelling test, Typing Rain, or Typing Chase, a sentence-typing game where speed drives a chase.",
         "url": "https://myspellinggame.com/",
-        "logo": "https://myspellinggame.com/images/icon-512.png"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "@id": "https://myspellinggame.com/#organization",
-        "name": "My Spelling Game",
-        "url": "https://myspellinggame.com/",
-        "logo": "https://myspellinggame.com/images/icon-512.png"
-      },
-      "genre": ["Educational Game", "Spelling Game", "Typing Game"],
-      "operatingSystem": "Web Browser",
-      "applicationCategory": "EducationalApplication",
-      "audience": [
-        { "@type": "EducationalAudience", "educationalRole": "teacher" },
-        { "@type": "EducationalAudience", "educationalRole": "parent" },
-        { "@type": "EducationalAudience", "educationalRole": "student" }
-      ],
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      }
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "inLanguage": "en",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Can I use my own spelling words?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Paste a weekly spelling list and My Spelling Game will use those exact words in either Spelling Test or Typing Rain."
-          }
+        "mainEntityOfPage": "https://myspellinggame.com/",
+        "inLanguage": "en",
+        "datePublished": "2026-06-19",
+        "dateModified": "2026-09-02",
+        "isAccessibleForFree": true,
+        "author": {
+          "@type": "Organization",
+          "@id": "https://myspellinggame.com/#organization",
+          "name": "My Spelling Game",
+          "url": "https://myspellinggame.com/",
+          "logo": "https://myspellinggame.com/images/icon-512.png"
         },
-        {
-          "@type": "Question",
-          "name": "Can I use this as a spelling test with my own words?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. The audio test keeps each word hidden until the answer is submitted, then shows the result and saves missed words for retry."
-          }
+        "publisher": {
+          "@type": "Organization",
+          "@id": "https://myspellinggame.com/#organization",
+          "name": "My Spelling Game",
+          "url": "https://myspellinggame.com/",
+          "logo": "https://myspellinggame.com/images/icon-512.png"
         },
-        {
-          "@type": "Question",
-          "name": "Can example sentences give context without revealing the spelling?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. The target word appears as a blank in the visible example sentence, while audio reads the word and the full sentence."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can teachers share a custom spelling list with a class?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Teachers can copy a practice link that keeps the same word list, so students can open it without creating an account."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can students replay missed words?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Missed words are saved at the end of the round so students can replay only the words that need more practice."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Do students need an account?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "No. My Spelling Game works in the browser with no student account, class setup, or login."
-          }
+        "genre": ["Educational Game", "Spelling Game", "Typing Game"],
+        "operatingSystem": "Web Browser",
+        "applicationCategory": "EducationalApplication",
+        "audience": [
+          { "@type": "EducationalAudience", "educationalRole": "teacher" },
+          { "@type": "EducationalAudience", "educationalRole": "parent" },
+          { "@type": "EducationalAudience", "educationalRole": "student" }
+        ],
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
         }
-      ]
-    }
+      }
     </script>
 
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [{
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "https://myspellinggame.com/"
-      },{
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Custom Spelling Words Game",
-        "item": "https://myspellinggame.com/#software"
-      }]
-    }
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "inLanguage": "en",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Can I use my own spelling words?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Paste a weekly spelling list and My Spelling Game will use those exact words in either Spelling Test or Typing Rain."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I use this as a spelling test with my own words?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. The audio test keeps each word hidden until the answer is submitted, then shows the result and saves missed words for retry."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can example sentences give context without revealing the spelling?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. The target word appears as a blank in the visible example sentence, while audio reads the word and the full sentence."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can teachers share a custom spelling list with a class?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Teachers can copy a practice link that keeps the same word list, so students can open it without creating an account."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can students replay missed words?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Missed words are saved at the end of the round so students can replay only the words that need more practice."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do students need an account?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. My Spelling Game works in the browser with no student account, class setup, or login."
+            }
+          }
+        ]
+      }
     </script>
-</body>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://myspellinggame.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Custom Spelling Words Game",
+            "item": "https://myspellinggame.com/#software"
+          }
+        ]
+      }
+    </script>
+  </body>
 </html>

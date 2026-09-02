@@ -68,6 +68,19 @@ const EVENT_PARAMS = {
   locked_feature_attempted: ["feature", "current_plan"],
   checkout_cancelled: ["plan", "billing_interval"],
   checkout_failed: ["plan", "billing_interval", "error_code"],
+  typing_chase_selected: ["locale"],
+  typing_chase_auth_required: ["locale"],
+  typing_chase_mode_selected: ["chase_mode", "locale"],
+  typing_chase_started: ["chase_mode", "locale"],
+  typing_chase_completed: [
+    "chase_mode",
+    "outcome",
+    "wpm_range",
+    "accuracy_range",
+    "duration_range",
+    "locale",
+  ],
+  typing_chase_result_shared: ["outcome", "share_method", "locale"],
 };
 
 const LIMIT_TYPES = {

@@ -58,9 +58,14 @@ test("large share links compress repeated words and sentences", () => {
     entryPage: "",
   });
   assert.match(hash, /^#data=z\./);
-  assert.ok(hash.length < Math.ceil(new TextEncoder().encode(rawJson).length * 4 / 3));
+  assert.ok(
+    hash.length < Math.ceil((new TextEncoder().encode(rawJson).length * 4) / 3),
+  );
   assert.deepEqual(readShareState({ hash, search: "" }).words, words.join(","));
-  assert.deepEqual(readShareState({ hash, search: "" }).exampleSentences, exampleSentences);
+  assert.deepEqual(
+    readShareState({ hash, search: "" }).exampleSentences,
+    exampleSentences,
+  );
 });
 
 test("legacy hash shares with plain words and sentences remain readable", () => {
@@ -242,6 +247,29 @@ test("practice share analytics keep only chooser and anonymous-share fields", ()
       word_count: 8,
       locale: "en",
       share_type: "practice_only",
+    },
+  );
+});
+
+test("Typing Chase analytics keep only aggregate gameplay fields", () => {
+  assert.deepEqual(
+    sanitizeEventParams("typing_chase_completed", {
+      chase_mode: "hard",
+      outcome: "caught",
+      wpm_range: "45_59",
+      accuracy_range: "95_99",
+      duration_range: "60_119",
+      locale: "en",
+      passage: "private passage text",
+      typed_input: "private input",
+    }),
+    {
+      chase_mode: "hard",
+      outcome: "caught",
+      wpm_range: "45_59",
+      accuracy_range: "95_99",
+      duration_range: "60_119",
+      locale: "en",
     },
   );
 });

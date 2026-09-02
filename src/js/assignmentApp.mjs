@@ -756,3 +756,4 @@ async function init() {
 }
 
 init();
+import './lineNumbers.mjs';

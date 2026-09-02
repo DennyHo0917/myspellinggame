@@ -1,3 +1,4 @@
+import './lineNumbers.mjs';
 import { ANONYMOUS_WORD_LIMIT, parseWords } from './spellingCore.mjs';
 import { buildShareHash } from './shareState.mjs';
 
@@ -31,3 +32,4 @@ if (typeof document !== 'undefined') {
     });
   });
 }
+import './lineNumbers.mjs';

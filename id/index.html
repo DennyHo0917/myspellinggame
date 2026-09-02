@@ -10,7 +10,9 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style">
-    <link rel="preload" href="/src/js/index.js?v=spelling-test1" as="script">
+    <link rel="preload" href="/src/js/index.js?v=typing-chase4" as="script">
+    <link rel="preload" href="/images/chase/alley-loop.png" as="image">
+    <link rel="preload" href="/images/chase/runners-chroma.png" as="image">
     <link rel="preload" href="/src/css/main.css" as="style">
 
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
@@ -18,7 +20,7 @@
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
 
     <title>Tes Ejaan Gratis dengan Kata Sendiri — Tanpa Akun</title>
-    <meta name="description" content="Tempel daftar sendiri, dengarkan kata yang disembunyikan, ketik jawaban, lalu lihat hasilnya. Ulangi kata yang salah tanpa akun.">
+    <meta name="description" content="Tempel daftar sendiri lalu pilih tes ejaan, hujan kata, atau Typing Chase. Hasil langsung dan tanpa akun siswa.">
     <meta name="author" content="My Spelling Game">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-9244949928133071">
@@ -94,6 +96,7 @@
             </div>
         </details>
         <a class="teacher-nav-link" href="/workspace?lang=id">Ruang kerja</a>
+        <a class="workspace-user-toggle home-account-link" href="/workspace?lang=id#teacher-sign-in" data-sign-out="Keluar"><span class="workspace-user-avatar" aria-hidden="true">?</span><span>Anonim</span></a>
     </header>
 
     <div class="main-content-wrapper">
@@ -143,6 +146,23 @@
                 </div>
             </section>
 
+            <section class="chase-screen" id="chase-screen" aria-labelledby="chase-passage-title" hidden>
+                <div class="chase-hud" aria-live="polite">
+                    <span>Kejar <strong id="chase-progress">0%</strong></span>
+                    <span>Kecepatan <strong id="chase-wpm">0</strong> WPM</span>
+                                    <span>Pencuri <strong id="chase-thief-wpm">40</strong> WPM</span>
+                    <span>Akurasi <strong id="chase-accuracy">100%</strong></span>
+                    <span>Kesalahan <strong id="chase-errors">0</strong></span>
+                </div>
+                <div class="chase-passage-card">
+                    <h2 id="chase-passage-title"></h2>
+                    <p class="chase-help">Ketik satu kalimat setiap kali. Kejar pencuri dengan kecepatan Anda.</p>
+                    <div class="chase-passage-text" id="chase-passage-text" tabindex="0"></div>
+                    <label class="visually-hidden" for="chase-input">Ketik kalimat saat ini</label>
+                    <textarea id="chase-input" rows="1" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Ketik kalimat ini..."></textarea>
+                </div>
+            </section>
+
             <div class="input-container">
                 <input type="text" id="word-input" placeholder="Ketik kata bahasa Inggris..." autocomplete="off" spellcheck="false" disabled>
             </div>
@@ -152,25 +172,37 @@
                     <div class="start-title">Latihan dengan daftar kata sendiri</div>
                     <div class="spelling-start">
                         <div class="spelling-subtitle">Tes ejaan atau permainan kata, tanpa akun</div>
-                        <p class="spelling-intro">Pilih tes audio yang direkomendasikan atau hujan kata, tempel kata, lalu mulai.</p>
-                        <div class="hero-proof-row" aria-label="Keunggulan My Spelling Game">
-                            <span>Hasil langsung</span>
-                            <span>Kata disembunyikan</span>
-                            <span>Ulangi yang salah</span>
-                            <span>Tanpa membuat akun</span>
-                        </div>
                         <fieldset class="mode-selector">
                             <legend>Pilih mode</legend>
                             <label class="mode-card">
-                                <input type="radio" name="practice-mode" value="dictation" checked>
-                                <span><strong>Tes ejaan</strong><small>Dengarkan satu kata tersembunyi lalu ketik ejaannya.</small></span>
+                                <span class="mode-card-header"><input type="radio" name="practice-mode" value="dictation" checked><strong>Tes ejaan</strong></span>
                                 <span class="recommended-badge">Disarankan</span>
                             </label>
                             <label class="mode-card">
-                                <input type="radio" name="practice-mode" value="typing">
-                                <span><strong>Hujan kata</strong><small>Ketik setiap kata sebelum mencapai bagian bawah.</small></span>
+                                <span class="mode-card-header"><input type="radio" name="practice-mode" value="typing"><strong>Hujan kata</strong></span>
+                            </label>
+                            <label class="mode-card chase-mode-card">
+                                <span class="mode-card-header"><input type="radio" name="practice-mode" value="chase"><strong>Kejar Mengetik</strong></span>
+                                <span class="mode-lock" aria-hidden="true">Masuk</span>
                             </label>
                         </fieldset>
+                        <div class="chase-start-options" id="chase-start-options" hidden>
+                            <p id="chase-access-status" role="status">Memeriksa akses Anda...</p>
+                            <div class="chase-mode-options" id="chase-mode-options" hidden>
+                                <p class="chase-mode-help">Pilih kecepatan pencuri sebelum mulai.</p>
+                                <div class="chase-mode-buttons" role="group" aria-label="Pilih kecepatan pencuri sebelum mulai.">
+                                    <button type="button" class="chase-mode-choice" data-chase-mode="simple" aria-pressed="false"><strong>Mode sederhana</strong><small>Pencuri berlari pada 40 WPM.</small></button>
+                                    <button type="button" class="chase-mode-choice" data-chase-mode="hard" aria-pressed="false"><strong>Mode sulit</strong><small>Mulai pada 45 WPM dan dapat mencapai 55 WPM.</small></button>
+                                </div>
+                                <button type="button" class="start-btn chase-start-btn" id="chase-start-btn" disabled>Mulai pengejaran</button>
+                            </div>
+                            <div id="chase-paid-options" hidden>
+                                <label for="chase-custom-words">Kata untuk cerita Anda</label>
+                                <textarea id="chase-custom-words" rows="4" maxlength="1000" spellcheck="false" placeholder="petualangan&#10;hutan&#10;hati-hati"></textarea>
+                                <p class="spelling-help">Pembuatan cerita dengan AI akan segera hadir. Untuk sekarang, coba permainan dengan cerita contoh.</p>
+                                <button type="button" id="chase-generate-btn" disabled>Buat cerita dengan AI · Segera hadir</button>
+                            </div>
+                        </div>
                         <div class="spelling-builder">
                             <div class="word-entry-grid">
                                 <div class="word-entry-field">
@@ -218,13 +250,22 @@
                         <p>Salah: <span id="dictation-incorrect">0</span></p>
                         <p>Akurasi: <span id="dictation-accuracy">0%</span></p>
                     </div>
+                    <div class="final-stats" id="chase-final-stats" hidden>
+                        <p>Kecepatan: <span id="chase-final-wpm">0</span> WPM</p>
+                        <p>Akurasi: <span id="chase-final-accuracy">100%</span></p>
+                        <p>Kesalahan: <span id="chase-final-errors">0</span></p>
+                        <p>Waktu: <span id="chase-final-time">0:00</span></p>
+                    </div>
                     <div class="spelling-summary" id="spelling-summary" hidden>
                         <div id="spelling-result"></div>
                         <div id="missed-word-list"></div>
                         <button class="restart-btn" id="replay-missed-btn" onclick="replayMissedWords()">Latih kata yang salah</button>
                     </div>
                     <div class="game-over-buttons">
+                        <button type="button" class="restart-btn chase-return-menu-btn" id="chase-return-menu-btn" onclick="returnToMainMenu()" hidden>Kembali ke menu utama</button>
                         <button class="restart-btn" id="restart-same-btn" onclick="restartGame(true)">Mulai ulang</button>
+                        <button type="button" class="share-score-btn chase-share-btn" id="chase-share-btn" onclick="shareChaseResult()" hidden>Bagikan tantangan</button>
+                        <span class="chase-share-status" id="chase-share-status" role="status" aria-live="polite"></span>
                         <button class="share-score-btn" id="edit-list-btn" onclick="restartGame()">Ubah daftar kata</button>
                         <button type="button" class="share-score-btn assignment-complete-btn" onclick="openTeacherAssignment()">Berikan daftar ini ke siswa</button>
                     </div>
@@ -328,11 +369,11 @@
         </div>
 
         <div class="spelling-seo-copy">
-            <h2>Dua cara berlatih dengan daftar sendiri</h2>
-            <p><strong>Tes ejaan</strong> membacakan kata tersembunyi dan memeriksa jawaban. <strong>Hujan kata</strong> mempertahankan permainan kata jatuh yang asli.</p>
+            <h2>Tiga cara berlatih dengan daftar sendiri</h2>
+            <p><strong>Tes ejaan</strong> membacakan kata tersembunyi, <strong>hujan kata</strong> menghadirkan kata yang jatuh, dan <strong>Typing Chase</strong> mengubah kecepatan mengetik kalimat menjadi aksi kejar-kejaran.</p>
 
             <h3>Daftar yang tepat membuat latihan lebih berguna</h3>
-            <p>Menempel daftar minggu ini membuat latihan tetap fokus. Kedua mode menyimpan kesalahan untuk ronde ulang.</p>
+            <p>Menempel daftar minggu ini membuat latihan tetap fokus. Ketiga mode memberi cara latihan yang berbeda tanpa akun siswa.</p>
             <ul>
                 <li><strong>Pakai daftar nyata:</strong> Tempel kata dari PR, lembar guru, atau materi belajar di rumah.</li>
                 <li><strong>Latihan ulang:</strong> Jawaban salah dan kata yang terlewat masuk ronde berikutnya.</li>
@@ -357,7 +398,7 @@
       window.pageLocale = 'id';
       window.currentLanguage = 'id';
     </script>
-    <script type="module" src="/src/js/index.js?v=spelling-test1"></script>
+    <script type="module" src="/src/js/index.js?v=typing-chase4"></script>
 
     <footer>
         <p>
@@ -373,7 +414,7 @@
   "@type": "SoftwareApplication",
   "@id": "https://myspellinggame.com/#software",
   "name": "My Spelling Game",
-  "description": "Tempel kata sendiri untuk tes ejaan dengan audio atau hujan kata. Kalimat contoh mengosongkan kata target sementara audio membacakan kata dan kalimat lengkap.",
+  "description": "Berlatihlah dengan kata sendiri melalui tes ejaan audio, hujan kata, atau Typing Chase, game mengetik kalimat dalam aksi kejar-kejaran.",
   "url": "https://myspellinggame.com/id/",
   "author": {
     "@type": "Organization",
@@ -398,7 +439,7 @@
   "applicationCategory": "EducationalApplication",
   "inLanguage": "id",
   "isAccessibleForFree": true,
-  "dateModified": "2026-09-01",
+  "dateModified": "2026-09-02",
   "offers": {
     "@type": "Offer",
     "price": "0",

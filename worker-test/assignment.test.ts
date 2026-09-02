@@ -26,6 +26,7 @@ import {
   createPortal,
   processStripeEvent,
 } from "../src/worker/stripe";
+import { CHASE_PASSAGES } from "../src/worker/chase";
 
 type TestBindings = {
   DB: D1Database;
@@ -364,6 +365,32 @@ describe("teacher auth callback", () => {
       provider: "google",
       callbackURL: "/workspace",
     });
+  });
+});
+
+describe("Typing Chase passages", () => {
+  it("keeps every fixed passage between 200 and 300 words", () => {
+    for (const passage of CHASE_PASSAGES) {
+      const count = passage.text.trim().split(/\s+/).length;
+      expect(count).toBeGreaterThanOrEqual(200);
+      expect(count).toBeLessThanOrEqual(300);
+    }
+  });
+
+  it("requires login and returns the current plan with a random passage", async () => {
+    const anonymous = await call("/api/chase/passage", {}, null);
+    expect(anonymous.status).toBe(401);
+
+    const free = await call("/api/chase/passage");
+    expect(free.status).toBe(200);
+    await expect(free.json()).resolves.toMatchObject({
+      plan: "free",
+      passage: { title: expect.any(String), text: expect.any(String) },
+    });
+
+    await insertSubscription({ plan: "parent", status: "active" });
+    const paid = await call("/api/chase/passage");
+    await expect(paid.json()).resolves.toMatchObject({ plan: "parent" });
   });
 });
 

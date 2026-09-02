@@ -10,7 +10,9 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style">
-    <link rel="preload" href="/src/js/index.js?v=spelling-test1" as="script">
+    <link rel="preload" href="/src/js/index.js?v=typing-chase4" as="script">
+    <link rel="preload" href="/images/chase/alley-loop.png" as="image">
+    <link rel="preload" href="/images/chase/runners-chroma.png" as="image">
     <link rel="preload" href="/src/css/main.css" as="style">
 
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
@@ -18,7 +20,7 @@
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
 
     <title>用自己的单词做免费英语听写 — 无需登录</title>
-    <meta name="description" content="粘贴自己的英语单词表，听隐藏单词并输入答案，立即查看批改结果，还能单独重练错词，全程无需账号。">
+    <meta name="description" content="粘贴自己的英语单词表，选择听写测试、单词雨或 Typing Chase 打字追逐。即时查看结果，无需学生账号。">
     <meta name="author" content="My Spelling Game">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-9244949928133071">
@@ -94,6 +96,7 @@
             </div>
         </details>
         <a class="teacher-nav-link" href="/workspace?lang=zh">工作台</a>
+        <a class="workspace-user-toggle home-account-link" href="/workspace?lang=zh#teacher-sign-in" data-sign-out="退出登录"><span class="workspace-user-avatar" aria-hidden="true">?</span><span>未登录</span></a>
     </header>
 
     <div class="main-content-wrapper">
@@ -143,6 +146,23 @@
                 </div>
             </section>
 
+            <section class="chase-screen" id="chase-screen" aria-labelledby="chase-passage-title" hidden>
+                <div class="chase-hud" aria-live="polite">
+                    <span>追赶 <strong id="chase-progress">0%</strong></span>
+                    <span>速度 <strong id="chase-wpm">0</strong> WPM</span>
+                                    <span>小偷 <strong id="chase-thief-wpm">40</strong> WPM</span>
+                    <span>准确率 <strong id="chase-accuracy">100%</strong></span>
+                    <span>错误 <strong id="chase-errors">0</strong></span>
+                </div>
+                <div class="chase-passage-card">
+                    <h2 id="chase-passage-title"></h2>
+                    <p class="chase-help">一次输入一句，速度够快就能追上小偷。</p>
+                    <div class="chase-passage-text" id="chase-passage-text" tabindex="0"></div>
+                    <label class="visually-hidden" for="chase-input">输入当前句子</label>
+                    <textarea id="chase-input" rows="1" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="输入这一句…"></textarea>
+                </div>
+            </section>
+
             <div class="input-container">
                 <input type="text" id="word-input" placeholder="输入掉落的英语单词..." autocomplete="off" spellcheck="false" disabled>
             </div>
@@ -152,25 +172,37 @@
                     <div class="start-title">用自己的单词表开始练习</div>
                     <div class="spelling-start">
                         <div class="spelling-subtitle">可选听写测试或单词雨游戏</div>
-                        <p class="spelling-intro">推荐使用听写测试，也可以选择单词雨；粘贴单词后即可开始。</p>
-                        <div class="hero-proof-row" aria-label="练习优势">
-                            <span>即时批改</span>
-                            <span>作答前隐藏单词</span>
-                            <span>错词重练</span>
-                            <span>无需创建账号</span>
-                        </div>
                         <fieldset class="mode-selector">
                             <legend>选择模式</legend>
                             <label class="mode-card">
-                                <input type="radio" name="practice-mode" value="dictation" checked>
-                                <span><strong>听写测试</strong><small>每次听一个隐藏单词，然后输入拼写。</small></span>
+                                <span class="mode-card-header"><input type="radio" name="practice-mode" value="dictation" checked><strong>听写测试</strong></span>
                                 <span class="recommended-badge">推荐</span>
                             </label>
                             <label class="mode-card">
-                                <input type="radio" name="practice-mode" value="typing">
-                                <span><strong>单词雨</strong><small>在单词落到底部前完成输入。</small></span>
+                                <span class="mode-card-header"><input type="radio" name="practice-mode" value="typing"><strong>单词雨</strong></span>
+                            </label>
+                            <label class="mode-card chase-mode-card">
+                                <span class="mode-card-header"><input type="radio" name="practice-mode" value="chase"><strong>极速追捕</strong></span>
+                                <span class="mode-lock" aria-hidden="true">登录</span>
                             </label>
                         </fieldset>
+                        <div class="chase-start-options" id="chase-start-options" hidden>
+                            <p id="chase-access-status" role="status">正在确认你的游玩权限…</p>
+                            <div class="chase-mode-options" id="chase-mode-options" hidden>
+                                <p class="chase-mode-help">开始前先选择小偷的速度。</p>
+                                <div class="chase-mode-buttons" role="group" aria-label="开始前先选择小偷的速度。">
+                                    <button type="button" class="chase-mode-choice" data-chase-mode="simple" aria-pressed="false"><strong>简单模式</strong><small>小偷速度固定为 40 WPM。</small></button>
+                                    <button type="button" class="chase-mode-choice" data-chase-mode="hard" aria-pressed="false"><strong>困难模式</strong><small>小偷从 45 WPM 起步，最高加速到 55 WPM。</small></button>
+                                </div>
+                                <button type="button" class="start-btn chase-start-btn" id="chase-start-btn" disabled>开始追捕</button>
+                            </div>
+                            <div id="chase-paid-options" hidden>
+                                <label for="chase-custom-words">短文中需要包含的单词</label>
+                                <textarea id="chase-custom-words" rows="4" maxlength="1000" spellcheck="false" placeholder="adventure&#10;forest&#10;careful"></textarea>
+                                <p class="spelling-help">AI 短文生成即将上线。现在可以先用示例短文体验游戏。</p>
+                                <button type="button" id="chase-generate-btn" disabled>用 AI 生成短文 · 即将上线</button>
+                            </div>
+                        </div>
                         <div class="spelling-builder">
                             <div class="word-entry-grid">
                                 <div class="word-entry-field">
@@ -218,13 +250,22 @@
                         <p>错误: <span id="dictation-incorrect">0</span></p>
                         <p>准确率: <span id="dictation-accuracy">0%</span></p>
                     </div>
+                    <div class="final-stats" id="chase-final-stats" hidden>
+                        <p>速度: <span id="chase-final-wpm">0</span> WPM</p>
+                        <p>准确率: <span id="chase-final-accuracy">100%</span></p>
+                        <p>错误: <span id="chase-final-errors">0</span></p>
+                        <p>时间: <span id="chase-final-time">0:00</span></p>
+                    </div>
                     <div class="spelling-summary" id="spelling-summary" hidden>
                         <div id="spelling-result"></div>
                         <div id="missed-word-list"></div>
                         <button class="restart-btn" id="replay-missed-btn" onclick="replayMissedWords()">重新练习错词</button>
                     </div>
                     <div class="game-over-buttons">
+                        <button type="button" class="restart-btn chase-return-menu-btn" id="chase-return-menu-btn" onclick="returnToMainMenu()" hidden>返回主菜单</button>
                         <button class="restart-btn" id="restart-same-btn" onclick="restartGame(true)">重新开始</button>
+                        <button type="button" class="share-score-btn chase-share-btn" id="chase-share-btn" onclick="shareChaseResult()" hidden>分享挑战</button>
+                        <span class="chase-share-status" id="chase-share-status" role="status" aria-live="polite"></span>
                         <button class="share-score-btn" id="edit-list-btn" onclick="restartGame()">重新设置单词表</button>
                         <button type="button" class="share-score-btn assignment-complete-btn" onclick="openTeacherAssignment()">用这份词表给学生布置作业</button>
                     </div>
@@ -328,11 +369,11 @@
         </div>
 
         <div class="spelling-seo-copy">
-            <h2>同一份单词表，两种练习方式</h2>
-            <p><strong>听写测试</strong>会朗读隐藏单词并立即批改；<strong>单词雨</strong>保留原有的掉落单词打字玩法。</p>
+            <h2>同一份单词表，三种练习方式</h2>
+            <p><strong>听写测试</strong>会朗读隐藏单词，<strong>单词雨</strong>提供掉落单词玩法，<strong>Typing Chase</strong>则把整句打字速度变成追捕小偷的游戏。</p>
 
             <h3>只练现在真正需要的单词</h3>
-            <p>粘贴本周词表后，两种模式都会只使用这些单词，并把答错或漏掉的词整理出来重练。</p>
+            <p>粘贴本周词表后，可以用三种不同方式练习；听写和单词雨还会整理答错或漏掉的词，方便重练。</p>
             <ul>
                 <li><strong>使用真实单词表：</strong> 可以来自作业、教材、老师讲义或自学计划。</li>
                 <li><strong>自动记录错词：</strong> 答错或漏掉的单词会进入下一轮。</li>
@@ -357,7 +398,7 @@
       window.pageLocale = 'zh';
       window.currentLanguage = 'zh';
     </script>
-    <script type="module" src="/src/js/index.js?v=spelling-test1"></script>
+    <script type="module" src="/src/js/index.js?v=typing-chase4"></script>
 
     <footer>
         <p>
@@ -373,7 +414,7 @@
   "@type": "SoftwareApplication",
   "@id": "https://myspellinggame.com/#software",
   "name": "My Spelling Game",
-  "description": "粘贴自己的英语单词，选择隐藏单词听写测试或单词雨，并在结束后重练错词。例句会把目标词显示为空白，语音仍会读出单词和完整例句。",
+  "description": "粘贴自己的英语单词，选择隐藏单词听写测试、单词雨或 Typing Chase。Typing Chase 会把整句打字速度变成追逐游戏。",
   "url": "https://myspellinggame.com/zh/",
   "author": {
     "@type": "Organization",
@@ -398,7 +439,7 @@
   "applicationCategory": "EducationalApplication",
   "inLanguage": "zh-CN",
   "isAccessibleForFree": true,
-  "dateModified": "2026-09-01",
+  "dateModified": "2026-09-02",
   "offers": {
     "@type": "Offer",
     "price": "0",

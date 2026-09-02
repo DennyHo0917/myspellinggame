@@ -35,12 +35,48 @@ const localizedSeoSlugs = [
   "contact",
 ];
 const secondaryLinks = {
-  en: [["/pricing", "Pricing"], ["/faq", "FAQ"], ["/privacy", "Privacy"], ["/about", "About"], ["/contact", "Contact"]],
-  es: [["/pricing", "Precios"], ["/faq", "Preguntas frecuentes"], ["/privacy", "Privacidad"], ["/about", "Acerca de"], ["/contact", "Contacto"]],
-  "pt-BR": [["/pricing", "Preços"], ["/faq", "Perguntas frequentes"], ["/privacy", "Privacidade"], ["/about", "Sobre"], ["/contact", "Contato"]],
-  fr: [["/pricing", "Tarifs"], ["/faq", "Questions fréquentes"], ["/privacy", "Confidentialité"], ["/about", "À propos"], ["/contact", "Contact"]],
-  id: [["/pricing", "Harga"], ["/faq", "Pertanyaan umum"], ["/privacy", "Privasi"], ["/about", "Tentang"], ["/contact", "Kontak"]],
-  zh: [["/pricing", "价格"], ["/faq", "常见问题"], ["/privacy", "隐私"], ["/about", "关于"], ["/contact", "联系"]],
+  en: [
+    ["/pricing", "Pricing"],
+    ["/faq", "FAQ"],
+    ["/privacy", "Privacy"],
+    ["/about", "About"],
+    ["/contact", "Contact"],
+  ],
+  es: [
+    ["/pricing", "Precios"],
+    ["/faq", "Preguntas frecuentes"],
+    ["/privacy", "Privacidad"],
+    ["/about", "Acerca de"],
+    ["/contact", "Contacto"],
+  ],
+  "pt-BR": [
+    ["/pricing", "Preços"],
+    ["/faq", "Perguntas frequentes"],
+    ["/privacy", "Privacidade"],
+    ["/about", "Sobre"],
+    ["/contact", "Contato"],
+  ],
+  fr: [
+    ["/pricing", "Tarifs"],
+    ["/faq", "Questions fréquentes"],
+    ["/privacy", "Confidentialité"],
+    ["/about", "À propos"],
+    ["/contact", "Contact"],
+  ],
+  id: [
+    ["/pricing", "Harga"],
+    ["/faq", "Pertanyaan umum"],
+    ["/privacy", "Privasi"],
+    ["/about", "Tentang"],
+    ["/contact", "Kontak"],
+  ],
+  zh: [
+    ["/pricing", "价格"],
+    ["/faq", "常见问题"],
+    ["/privacy", "隐私"],
+    ["/about", "关于"],
+    ["/contact", "联系"],
+  ],
 };
 const footerRights = {
   en: "All rights reserved.",
@@ -58,15 +94,6 @@ const comboLabels = {
   id: "Rentetan",
   zh: "连续正确",
 };
-const benefitsLabels = {
-  en: "My Spelling Game benefits",
-  es: "Ventajas de My Spelling Game",
-  "pt-BR": "Vantagens do My Spelling Game",
-  fr: "Atouts de My Spelling Game",
-  id: "Keunggulan My Spelling Game",
-  zh: "练习优势",
-};
-
 const workspaceCopy = {
   en: {
     heading: "For parents and teachers",
@@ -108,15 +135,17 @@ const pages = {
     ogLocale: "es_ES",
     title: "Prueba de Ortografía Gratis con Tus Palabras — Sin Cuenta",
     description:
-      "Pega tu propia lista, escucha una palabra oculta, escribe la respuesta y recibe corrección al instante. Repite los fallos sin crear una cuenta.",
+      "Pega tu propia lista y practica con una prueba de ortografía, lluvia de palabras o Typing Chase. Corrección instantánea y sin cuenta de estudiante.",
     keywords:
-      "juego de spelling en inglés,juego de deletreo en inglés,juego de ortografía inglesa,practicar spelling en inglés,juego con tus propias palabras,lista de vocabulario en inglés,juego de palabras en inglés para niños,práctica de spelling sin cuenta",
+      "juego de spelling en inglés,juego de deletreo en inglés,juego de ortografía inglesa,Typing Chase,juego de mecanografía,practicar spelling en inglés,juego con tus propias palabras,lista de vocabulario en inglés,juego de palabras en inglés para niños,práctica de spelling sin cuenta",
     ogTitle: "Prueba de ortografía con tus propias palabras",
     ogDescription:
       "Escucha palabras ocultas, recibe corrección al instante y repite los fallos. Sin cuenta.",
     nav: {
       language: "Idioma",
       teacher: "Espacio de trabajo",
+      account: "Anónimo",
+      signOut: "Cerrar sesión",
       privacy: "Privacidad",
       sound: "Sonido",
     },
@@ -140,7 +169,7 @@ const pages = {
       startTitle: "Practica con tu propia lista",
       subtitle: "Prueba de ortografía o juego de palabras, sin cuenta",
       intro:
-        "Elige la prueba de audio recomendada o la lluvia de palabras, pega tus palabras y empieza.",
+        "Elige un modo de práctica, añade palabras cuando sea necesario y empieza.",
       chips: ["Corrección inmediata", "Palabra oculta", "Repite los fallos"],
       noLogin: "Sin crear una cuenta",
       wordsLabel: "Tus palabras en inglés",
@@ -225,12 +254,12 @@ const pages = {
         "El modo fácil baja la velocidad sin cambiar las reglas de ortografía.",
         "Los planes para familias y docentes añaden importación por foto, frases automáticas y Repaso de hoy.",
       ],
-      seoTitle: "Dos formas de practicar tu propia lista",
+      seoTitle: "Tres formas de practicar tu propia lista",
       seoIntro:
-        "<strong>Prueba de ortografía</strong> reproduce una palabra oculta y corrige la respuesta. La <strong>lluvia de palabras</strong> mantiene el juego original de palabras que caen.",
+        "<strong>Prueba de ortografía</strong> reproduce una palabra oculta, la <strong>lluvia de palabras</strong> propone palabras que caen y <strong>Typing Chase</strong> convierte la velocidad al escribir frases en una persecución.",
       sectionTitle: "Una lista concreta, una práctica más útil",
       sectionText:
-        "Pegar la lista real mantiene la práctica centrada en las palabras de esta semana. Los dos modos guardan los fallos para repasarlos.",
+        "Pegar la lista real mantiene la práctica centrada en las palabras de esta semana. Los tres modos ofrecen una forma distinta de practicar sin cuenta de estudiante.",
       bullets: [
         "<strong>Usa tu lista real:</strong> Pega palabras de una hoja del profesor, deberes o material de educación en casa.",
         "<strong>Repite lo fallado:</strong> Las respuestas incorrectas y las palabras perdidas vuelven en otra ronda.",
@@ -252,7 +281,7 @@ const pages = {
     legalLinks: ["Privacidad", "Acerca de", "Contacto"],
     schema: {
       description:
-        "Pega tus palabras para una prueba de ortografía por audio o una lluvia de palabras. Las frases de ejemplo muestran la palabra objetivo como un espacio en blanco mientras el audio lee la palabra y la frase completa.",
+        "Practica con tus propias palabras mediante una prueba de ortografía por audio, una lluvia de palabras o Typing Chase, un juego de mecanografía por frases con una persecución.",
       faq: [
         [
           "¿Puedo usar mis propias palabras?",
@@ -277,15 +306,17 @@ const pages = {
     ogLocale: "pt_BR",
     title: "Teste de Ortografia Grátis com Suas Palavras — Sem Conta",
     description:
-      "Cole sua lista, ouça uma palavra escondida, digite a resposta e veja a correção na hora. Revise os erros sem criar conta.",
+      "Cole sua lista e pratique com teste de ortografia, chuva de palavras ou Typing Chase. Correção imediata e sem conta de aluno.",
     keywords:
-      "jogo de soletrar em inglês,soletrar em inglês,jogo de spelling em inglês,jogo de ortografia em inglês,praticar spelling em inglês,lista de palavras em inglês,jogo com suas próprias palavras,atividade de inglês para crianças,spelling bee online grátis",
+      "jogo de soletrar em inglês,soletrar em inglês,jogo de spelling em inglês,Typing Chase,jogo de digitação,praticar spelling em inglês,lista de palavras em inglês,jogo com suas próprias palavras,atividade de inglês para crianças,spelling bee online grátis",
     ogTitle: "Teste de ortografia com suas próprias palavras",
     ogDescription:
       "Ouça palavras escondidas, veja a correção na hora e revise os erros. Sem login.",
     nav: {
       language: "Idioma",
       teacher: "Espaço de trabalho",
+      account: "Anônimo",
+      signOut: "Sair",
       privacy: "Privacidade",
       sound: "Som",
     },
@@ -309,7 +340,7 @@ const pages = {
       startTitle: "Pratique com sua própria lista",
       subtitle: "Teste de ortografia ou jogo de palavras, sem conta",
       intro:
-        "Escolha o teste por áudio recomendado ou a chuva de palavras, cole as palavras e comece.",
+        "Escolha um modo de prática, adicione palavras quando necessário e comece.",
       chips: ["Correção imediata", "Palavra escondida", "Revise os erros"],
       noLogin: "Sem criar uma conta",
       wordsLabel: "Suas palavras em inglês",
@@ -394,12 +425,12 @@ const pages = {
         "O modo fácil reduz a velocidade sem mudar as regras de ortografia.",
         "Os planos para Pais e Professores acrescentam importação por foto, frases automáticas e Revisão de hoje.",
       ],
-      seoTitle: "Duas formas de praticar sua própria lista",
+      seoTitle: "Três formas de praticar sua própria lista",
       seoIntro:
-        "<strong>Teste de ortografia</strong> toca uma palavra escondida e corrige a resposta. A <strong>chuva de palavras</strong> mantém o jogo original de palavras caindo.",
+        "O <strong>teste de ortografia</strong> toca uma palavra escondida, a <strong>chuva de palavras</strong> traz palavras caindo e o <strong>Typing Chase</strong> transforma a velocidade ao digitar frases em uma perseguição.",
       sectionTitle: "Uma lista real deixa a prática mais útil",
       sectionText:
-        "Colar a lista da semana mantém o foco nas palavras certas. Os dois modos guardam os erros para uma rodada de revisão.",
+        "Colar a lista da semana mantém o foco nas palavras certas. Os três modos oferecem formas diferentes de praticar sem conta de aluno.",
       bullets: [
         "<strong>Use sua lista real:</strong> Cole palavras da tarefa, da escola ou do material de educação em casa.",
         "<strong>Revise os erros:</strong> Respostas erradas e palavras perdidas entram em outra rodada.",
@@ -421,7 +452,7 @@ const pages = {
     legalLinks: ["Privacidade", "Sobre", "Contato"],
     schema: {
       description:
-        "Cole suas palavras para um teste de ortografia por áudio ou uma chuva de palavras. Frases de exemplo deixam a palavra-alvo em branco enquanto o áudio lê a palavra e a frase completa.",
+        "Pratique com suas próprias palavras em um teste de ortografia por áudio, uma chuva de palavras ou Typing Chase, um jogo de digitação de frases em formato de perseguição.",
       faq: [
         [
           "Posso usar minhas próprias palavras?",
@@ -446,15 +477,17 @@ const pages = {
     ogLocale: "fr_FR",
     title: "Test d’Orthographe Anglaise avec Vos Mots — Sans Compte",
     description:
-      "Collez votre liste, écoutez un mot caché, tapez la réponse et obtenez la correction immédiatement. Reprenez vos erreurs sans compte.",
+      "Collez votre liste et choisissez un test d’orthographe, une pluie de mots ou Typing Chase. Correction immédiate, sans compte élève.",
     keywords:
-      "jeu d'orthographe anglais,orthographe anglaise,pratiquer l'orthographe anglaise,jeu de spelling anglais,épeler des mots anglais,liste de mots anglais,jeu avec vos propres mots,spelling bee anglais gratuit",
+      "jeu d'orthographe anglais,orthographe anglaise,Typing Chase,jeu de dactylographie,pratiquer l'orthographe anglaise,jeu de spelling anglais,épeler des mots anglais,liste de mots anglais,jeu avec vos propres mots,spelling bee anglais gratuit",
     ogTitle: "Test d’orthographe anglaise avec vos propres mots",
     ogDescription:
       "Écoutez des mots cachés, obtenez la correction immédiatement et reprenez vos erreurs. Sans compte.",
     nav: {
       language: "Langue",
       teacher: "Espace de travail",
+      account: "Anonyme",
+      signOut: "Se déconnecter",
       privacy: "Confidentialité",
       sound: "Son",
     },
@@ -478,7 +511,7 @@ const pages = {
       startTitle: "Pratiquez avec votre propre liste",
       subtitle: "Test d’orthographe ou jeu de frappe, sans compte",
       intro:
-        "Choisissez le test audio recommandé ou la pluie de mots, collez vos mots et commencez.",
+        "Choisissez un mode d’entraînement, ajoutez des mots si nécessaire et commencez.",
       chips: ["Correction immédiate", "Mot caché", "Reprendre les erreurs"],
       noLogin: "Sans créer de compte",
       wordsLabel: "Vos mots anglais",
@@ -563,12 +596,12 @@ const pages = {
         "Le mode facile ralentit la partie sans changer la règle.",
         "Les offres Parents et Enseignants ajoutent l’import photo, les phrases automatiques et la Révision du jour.",
       ],
-      seoTitle: "Deux façons de travailler votre propre liste",
+      seoTitle: "Trois façons de travailler votre propre liste",
       seoIntro:
-        "<strong>Test d’orthographe</strong> lit un mot caché et corrige la réponse. La <strong>pluie de mots</strong> conserve le jeu original de mots qui tombent.",
+        "Le <strong>test d’orthographe</strong> lit un mot caché, la <strong>pluie de mots</strong> fait tomber les mots et <strong>Typing Chase</strong> transforme la saisie rapide de phrases en course-poursuite.",
       sectionTitle: "Une liste précise rend la pratique plus utile",
       sectionText:
-        "Coller la liste de la semaine garde la pratique centrée sur les bons mots. Les deux modes enregistrent les erreurs pour les reprendre.",
+        "Coller la liste de la semaine garde la pratique centrée sur les bons mots. Les trois modes proposent des exercices différents sans compte élève.",
       bullets: [
         "<strong>Votre vraie liste :</strong> Collez les mots d’un devoir, d’un cours ou d’un support d’école à la maison.",
         "<strong>Révision ciblée :</strong> Les mots manqués reviennent dans une autre partie.",
@@ -590,7 +623,7 @@ const pages = {
     legalLinks: ["Confidentialité", "À propos", "Contact"],
     schema: {
       description:
-        "Collez vos mots pour un test audio ou une pluie de mots. Les phrases d’exemple laissent le mot cible en blanc tandis que l’audio lit le mot et la phrase complète.",
+        "Travaillez vos propres mots avec un test audio, une pluie de mots ou Typing Chase, un jeu de saisie de phrases sous forme de course-poursuite.",
       faq: [
         [
           "Puis-je utiliser mes propres mots ?",
@@ -615,15 +648,17 @@ const pages = {
     ogLocale: "id_ID",
     title: "Tes Ejaan Gratis dengan Kata Sendiri — Tanpa Akun",
     description:
-      "Tempel daftar sendiri, dengarkan kata yang disembunyikan, ketik jawaban, lalu lihat hasilnya. Ulangi kata yang salah tanpa akun.",
+      "Tempel daftar sendiri lalu pilih tes ejaan, hujan kata, atau Typing Chase. Hasil langsung dan tanpa akun siswa.",
     keywords:
-      "game spelling bahasa Inggris,permainan spelling bahasa Inggris,permainan mengeja bahasa Inggris,latihan mengeja bahasa Inggris,belajar spelling bahasa Inggris,game kosakata bahasa Inggris,daftar kata bahasa Inggris,buat daftar kata sendiri,game dengan kata sendiri,latihan spelling anak,spelling bee online gratis",
+      "game spelling bahasa Inggris,permainan spelling bahasa Inggris,Typing Chase,game mengetik,permainan mengeja bahasa Inggris,latihan mengeja bahasa Inggris,belajar spelling bahasa Inggris,game kosakata bahasa Inggris,daftar kata bahasa Inggris,buat daftar kata sendiri,game dengan kata sendiri,latihan spelling anak,spelling bee online gratis",
     ogTitle: "Tes ejaan dengan daftar kata sendiri",
     ogDescription:
       "Dengarkan kata tersembunyi, lihat hasilnya, lalu ulangi yang salah. Tanpa login.",
     nav: {
       language: "Bahasa",
       teacher: "Ruang kerja",
+      account: "Anonim",
+      signOut: "Keluar",
       privacy: "Privasi",
       sound: "Suara",
     },
@@ -646,8 +681,7 @@ const pages = {
       placeholder: "Ketik kata bahasa Inggris...",
       startTitle: "Latihan dengan daftar kata sendiri",
       subtitle: "Tes ejaan atau permainan kata, tanpa akun",
-      intro:
-        "Pilih tes audio yang direkomendasikan atau hujan kata, tempel kata, lalu mulai.",
+      intro: "Pilih mode latihan, tambahkan kata jika diperlukan, lalu mulai.",
       chips: ["Hasil langsung", "Kata disembunyikan", "Ulangi yang salah"],
       noLogin: "Tanpa membuat akun",
       wordsLabel: "Daftar kata bahasa Inggris",
@@ -732,12 +766,12 @@ const pages = {
         "Mode mudah memperlambat permainan tanpa mengubah aturan ejaan.",
         "Paket Orang Tua dan Guru menambahkan impor foto, kalimat otomatis, dan Ulasan hari ini.",
       ],
-      seoTitle: "Dua cara berlatih dengan daftar sendiri",
+      seoTitle: "Tiga cara berlatih dengan daftar sendiri",
       seoIntro:
-        "<strong>Tes ejaan</strong> membacakan kata tersembunyi dan memeriksa jawaban. <strong>Hujan kata</strong> mempertahankan permainan kata jatuh yang asli.",
+        "<strong>Tes ejaan</strong> membacakan kata tersembunyi, <strong>hujan kata</strong> menghadirkan kata yang jatuh, dan <strong>Typing Chase</strong> mengubah kecepatan mengetik kalimat menjadi aksi kejar-kejaran.",
       sectionTitle: "Daftar yang tepat membuat latihan lebih berguna",
       sectionText:
-        "Menempel daftar minggu ini membuat latihan tetap fokus. Kedua mode menyimpan kesalahan untuk ronde ulang.",
+        "Menempel daftar minggu ini membuat latihan tetap fokus. Ketiga mode memberi cara latihan yang berbeda tanpa akun siswa.",
       bullets: [
         "<strong>Pakai daftar nyata:</strong> Tempel kata dari PR, lembar guru, atau materi belajar di rumah.",
         "<strong>Latihan ulang:</strong> Jawaban salah dan kata yang terlewat masuk ronde berikutnya.",
@@ -759,7 +793,7 @@ const pages = {
     legalLinks: ["Privasi", "Tentang", "Kontak"],
     schema: {
       description:
-        "Tempel kata sendiri untuk tes ejaan dengan audio atau hujan kata. Kalimat contoh mengosongkan kata target sementara audio membacakan kata dan kalimat lengkap.",
+        "Berlatihlah dengan kata sendiri melalui tes ejaan audio, hujan kata, atau Typing Chase, game mengetik kalimat dalam aksi kejar-kejaran.",
       faq: [
         [
           "Bisa memakai daftar kata sendiri?",
@@ -784,14 +818,16 @@ const pages = {
     ogLocale: "zh_CN",
     title: "用自己的单词做免费英语听写 — 无需登录",
     description:
-      "粘贴自己的英语单词表，听隐藏单词并输入答案，立即查看批改结果，还能单独重练错词，全程无需账号。",
+      "粘贴自己的英语单词表，选择听写测试、单词雨或 Typing Chase 打字追逐。即时查看结果，无需学生账号。",
     keywords:
-      "英语拼写练习,spelling game,英语单词拼写游戏,自定义单词表游戏,自定义英语单词表,英语听写练习,英语默写练习,英语单词练习小游戏,小学生英语拼写,背单词打字游戏,自定义单词表背单词,无需注册英语练习",
+      "英语拼写练习,spelling game,Typing Chase,打字追逐游戏,英语单词拼写游戏,自定义单词表游戏,自定义英语单词表,英语听写练习,英语默写练习,英语单词练习小游戏,小学生英语拼写,背单词打字游戏,自定义单词表背单词,无需注册英语练习",
     ogTitle: "用自己的单词做英语听写测试",
     ogDescription: "听隐藏单词、即时查看批改结果并重练错词，无需登录。",
     nav: {
       language: "语言",
       teacher: "工作台",
+      account: "未登录",
+      signOut: "退出登录",
       privacy: "隐私",
       sound: "声音",
     },
@@ -808,7 +844,7 @@ const pages = {
       placeholder: "输入掉落的英语单词...",
       startTitle: "用自己的单词表开始练习",
       subtitle: "可选听写测试或单词雨游戏",
-      intro: "推荐使用听写测试，也可以选择单词雨；粘贴单词后即可开始。",
+      intro: "选择一种练习模式，需要时添加单词，然后开始。",
       chips: ["即时批改", "作答前隐藏单词", "错词重练"],
       noLogin: "无需创建账号",
       wordsLabel: "你的英语单词",
@@ -891,12 +927,12 @@ const pages = {
         "简单模式只降低速度，不改变拼写规则。",
         "家长方案和教师方案还支持拍照导入、自动填充例句和今日复习。",
       ],
-      seoTitle: "同一份单词表，两种练习方式",
+      seoTitle: "同一份单词表，三种练习方式",
       seoIntro:
-        "<strong>听写测试</strong>会朗读隐藏单词并立即批改；<strong>单词雨</strong>保留原有的掉落单词打字玩法。",
+        "<strong>听写测试</strong>会朗读隐藏单词，<strong>单词雨</strong>提供掉落单词玩法，<strong>Typing Chase</strong>则把整句打字速度变成追捕小偷的游戏。",
       sectionTitle: "只练现在真正需要的单词",
       sectionText:
-        "粘贴本周词表后，两种模式都会只使用这些单词，并把答错或漏掉的词整理出来重练。",
+        "粘贴本周词表后，可以用三种不同方式练习；听写和单词雨还会整理答错或漏掉的词，方便重练。",
       bullets: [
         "<strong>使用真实单词表：</strong> 可以来自作业、教材、老师讲义或自学计划。",
         "<strong>自动记录错词：</strong> 答错或漏掉的单词会进入下一轮。",
@@ -912,7 +948,7 @@ const pages = {
     legalLinks: ["隐私", "关于", "联系"],
     schema: {
       description:
-        "粘贴自己的英语单词，选择隐藏单词听写测试或单词雨，并在结束后重练错词。例句会把目标词显示为空白，语音仍会读出单词和完整例句。",
+        "粘贴自己的英语单词，选择隐藏单词听写测试、单词雨或 Typing Chase。Typing Chase 会把整句打字速度变成追逐游戏。",
       faq: [
         [
           "可以用自己的英语单词吗？",
@@ -1052,6 +1088,153 @@ const modeCopy = {
   },
 };
 
+const chaseCopy = {
+  es: {
+    name: "Persecución de escritura",
+    description: "Escribe rápido y atrapa al ladrón.",
+    login: "Acceso",
+    checking: "Comprobando tu acceso...",
+    help: "Escribe una frase a la vez. Alcanza al ladrón con tu velocidad.",
+    inputLabel: "Escribe la frase actual",
+    inputPlaceholder: "Escribe esta frase...",
+    wordsLabel: "Palabras para tu relato",
+    wordsPlaceholder: "aventura&#10;bosque&#10;cuidado",
+    coming:
+      "La generación de relatos con IA estará disponible pronto. Mientras tanto, puedes probar el juego con un relato de ejemplo.",
+    generate: "Generar relato con IA · Próximamente",
+    sample: "Jugar con un relato de ejemplo",
+    progress: "Alcance",
+    speed: "Velocidad",
+    thief: "Ladrón",
+    accuracy: "Precisión",
+    errors: "Errores",
+    time: "Tiempo",
+    modeHelp: "Elige la velocidad del ladrón antes de empezar.",
+    simple: "Modo simple",
+    simpleDescription: "El ladrón corre a 40 WPM.",
+    hard: "Modo difícil",
+    hardDescription: "Empieza a 45 WPM y puede llegar a 55 WPM.",
+    start: "Empezar persecución",
+    returnMenu: "Volver al menú principal",
+    share: "Compartir desafío",
+  },
+  "pt-BR": {
+    name: "Perseguição de digitação",
+    description: "Digite rápido e capture o ladrão.",
+    login: "Entrar",
+    checking: "Verificando seu acesso...",
+    help: "Digite uma frase por vez. Use sua velocidade para alcançar o ladrão.",
+    inputLabel: "Digite a frase atual",
+    inputPlaceholder: "Digite esta frase...",
+    wordsLabel: "Palavras para sua história",
+    wordsPlaceholder: "aventura&#10;floresta&#10;cuidado",
+    coming:
+      "A geração de histórias com IA estará disponível em breve. Por enquanto, experimente o jogo com uma história de exemplo.",
+    generate: "Gerar história com IA · Em breve",
+    sample: "Jogar uma história de exemplo",
+    progress: "Alcance",
+    speed: "Velocidade",
+    thief: "Ladrão",
+    accuracy: "Precisão",
+    errors: "Erros",
+    time: "Tempo",
+    modeHelp: "Escolha a velocidade do ladrão antes de começar.",
+    simple: "Modo simples",
+    simpleDescription: "O ladrão corre a 40 WPM.",
+    hard: "Modo difícil",
+    hardDescription: "Começa a 45 WPM e pode chegar a 55 WPM.",
+    start: "Começar perseguição",
+    returnMenu: "Voltar ao menu principal",
+    share: "Compartilhar desafio",
+  },
+  fr: {
+    name: "Course de frappe",
+    description: "Tapez vite et rattrapez le voleur.",
+    login: "Connexion",
+    checking: "Vérification de votre accès...",
+    help: "Saisissez une phrase à la fois. Votre vitesse vous permet de rattraper le voleur.",
+    inputLabel: "Saisissez la phrase affichée",
+    inputPlaceholder: "Saisissez cette phrase...",
+    wordsLabel: "Mots pour votre histoire",
+    wordsPlaceholder: "aventure&#10;forêt&#10;prudent",
+    coming:
+      "La génération d’histoires par IA arrive bientôt. Vous pouvez déjà essayer le jeu avec une histoire d’exemple.",
+    generate: "Générer avec l’IA · Bientôt",
+    sample: "Jouer avec une histoire d’exemple",
+    progress: "Rattrapage",
+    speed: "Vitesse",
+    thief: "Voleur",
+    accuracy: "Précision",
+    errors: "Erreurs",
+    time: "Temps",
+    modeHelp: "Choisissez la vitesse du voleur avant de commencer.",
+    simple: "Mode simple",
+    simpleDescription: "Le voleur court à 40 MPM.",
+    hard: "Mode difficile",
+    hardDescription: "Il démarre à 45 MPM et peut atteindre 55 MPM.",
+    start: "Commencer la poursuite",
+    returnMenu: "Retour au menu principal",
+    share: "Partager le défi",
+  },
+  id: {
+    name: "Kejar Mengetik",
+    description: "Ketik cepat dan tangkap pencurinya.",
+    login: "Masuk",
+    checking: "Memeriksa akses Anda...",
+    help: "Ketik satu kalimat setiap kali. Kejar pencuri dengan kecepatan Anda.",
+    inputLabel: "Ketik kalimat saat ini",
+    inputPlaceholder: "Ketik kalimat ini...",
+    wordsLabel: "Kata untuk cerita Anda",
+    wordsPlaceholder: "petualangan&#10;hutan&#10;hati-hati",
+    coming:
+      "Pembuatan cerita dengan AI akan segera hadir. Untuk sekarang, coba permainan dengan cerita contoh.",
+    generate: "Buat cerita dengan AI · Segera hadir",
+    sample: "Mainkan cerita contoh",
+    progress: "Kejar",
+    speed: "Kecepatan",
+    thief: "Pencuri",
+    accuracy: "Akurasi",
+    errors: "Kesalahan",
+    time: "Waktu",
+    modeHelp: "Pilih kecepatan pencuri sebelum mulai.",
+    simple: "Mode sederhana",
+    simpleDescription: "Pencuri berlari pada 40 WPM.",
+    hard: "Mode sulit",
+    hardDescription: "Mulai pada 45 WPM dan dapat mencapai 55 WPM.",
+    start: "Mulai pengejaran",
+    returnMenu: "Kembali ke menu utama",
+    share: "Bagikan tantangan",
+  },
+  zh: {
+    name: "极速追捕",
+    description: "快速输入，追上小偷。",
+    login: "登录",
+    checking: "正在确认你的游玩权限…",
+    help: "一次输入一句，速度够快就能追上小偷。",
+    inputLabel: "输入当前句子",
+    inputPlaceholder: "输入这一句…",
+    wordsLabel: "短文中需要包含的单词",
+    wordsPlaceholder: "adventure&#10;forest&#10;careful",
+    coming: "AI 短文生成即将上线。现在可以先用示例短文体验游戏。",
+    generate: "用 AI 生成短文 · 即将上线",
+    sample: "使用示例短文试玩",
+    progress: "追赶",
+    speed: "速度",
+    thief: "小偷",
+    accuracy: "准确率",
+    errors: "错误",
+    time: "时间",
+    modeHelp: "开始前先选择小偷的速度。",
+    simple: "简单模式",
+    simpleDescription: "小偷速度固定为 40 WPM。",
+    hard: "困难模式",
+    hardDescription: "小偷从 45 WPM 起步，最高加速到 55 WPM。",
+    start: "开始追捕",
+    returnMenu: "返回主菜单",
+    share: "分享挑战",
+  },
+};
+
 function escapeAttr(value) {
   return String(value).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 }
@@ -1099,7 +1282,9 @@ function head(page) {
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style">
-    <link rel="preload" href="/src/js/index.js?v=spelling-test1" as="script">
+    <link rel="preload" href="/src/js/index.js?v=typing-chase4" as="script">
+    <link rel="preload" href="/images/chase/alley-loop.png" as="image">
+    <link rel="preload" href="/images/chase/runners-chroma.png" as="image">
     <link rel="preload" href="/src/css/main.css" as="style">
 
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
@@ -1182,6 +1367,7 @@ function body(page, code) {
   const info = page.info;
   const nav = page.nav;
   const mode = modeCopy[code];
+  const chase = chaseCopy[code];
   const legalBase = page.path === "/" ? "" : page.path.replace(/\/$/, "");
   return `<body>
     <header class="top-right-nav">
@@ -1191,6 +1377,7 @@ function body(page, code) {
         </a>
 ${languageMenu(code, nav)}
         <a class="teacher-nav-link" href="/workspace?lang=${encodeURIComponent(code)}">${nav.teacher}</a>
+        <a class="workspace-user-toggle home-account-link" href="/workspace?lang=${encodeURIComponent(code)}#teacher-sign-in" data-sign-out="${escapeAttr(nav.signOut)}"><span class="workspace-user-avatar" aria-hidden="true">?</span><span>${nav.account}</span></a>
     </header>
 
     <div class="main-content-wrapper">
@@ -1236,6 +1423,23 @@ ${page.hero.flow.map((step) => `            <li>${step}</li>`).join("\n")}
                 </div>
             </section>
 
+            <section class="chase-screen" id="chase-screen" aria-labelledby="chase-passage-title" hidden>
+                <div class="chase-hud" aria-live="polite">
+                    <span>${chase.progress} <strong id="chase-progress">0%</strong></span>
+                    <span>${chase.speed} <strong id="chase-wpm">0</strong> WPM</span>
+                                    <span>${chase.thief} <strong id="chase-thief-wpm">40</strong> WPM</span>
+                    <span>${chase.accuracy} <strong id="chase-accuracy">100%</strong></span>
+                    <span>${chase.errors} <strong id="chase-errors">0</strong></span>
+                </div>
+                <div class="chase-passage-card">
+                    <h2 id="chase-passage-title"></h2>
+                    <p class="chase-help">${chase.help}</p>
+                    <div class="chase-passage-text" id="chase-passage-text" tabindex="0"></div>
+                    <label class="visually-hidden" for="chase-input">${chase.inputLabel}</label>
+                    <textarea id="chase-input" rows="1" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="${escapeAttr(chase.inputPlaceholder)}"></textarea>
+                </div>
+            </section>
+
             <div class="input-container">
                 <input type="text" id="word-input" placeholder="${escapeAttr(game.placeholder)}" autocomplete="off" spellcheck="false" disabled>
             </div>
@@ -1245,23 +1449,37 @@ ${page.hero.flow.map((step) => `            <li>${step}</li>`).join("\n")}
                     <div class="start-title">${game.startTitle}</div>
                     <div class="spelling-start">
                         <div class="spelling-subtitle">${game.subtitle}</div>
-                        <p class="spelling-intro">${game.intro}</p>
-                        <div class="hero-proof-row" aria-label="${benefitsLabels[page.pageLocale]}">
-${game.chips.map((chip) => `                            <span>${chip}</span>`).join("\n")}
-                            <span>${game.noLogin}</span>
-                        </div>
                         <fieldset class="mode-selector">
                             <legend>${mode.choose}</legend>
                             <label class="mode-card">
-                                <input type="radio" name="practice-mode" value="dictation" checked>
-                                <span><strong>${mode.dictation}</strong><small>${mode.dictationDescription}</small></span>
+                                <span class="mode-card-header"><input type="radio" name="practice-mode" value="dictation" checked><strong>${mode.dictation}</strong></span>
                                 <span class="recommended-badge">${mode.recommended}</span>
                             </label>
                             <label class="mode-card">
-                                <input type="radio" name="practice-mode" value="typing">
-                                <span><strong>${mode.typing}</strong><small>${mode.typingDescription}</small></span>
+                                <span class="mode-card-header"><input type="radio" name="practice-mode" value="typing"><strong>${mode.typing}</strong></span>
+                            </label>
+                            <label class="mode-card chase-mode-card">
+                                <span class="mode-card-header"><input type="radio" name="practice-mode" value="chase"><strong>${chase.name}</strong></span>
+                                <span class="mode-lock" aria-hidden="true">${chase.login}</span>
                             </label>
                         </fieldset>
+                        <div class="chase-start-options" id="chase-start-options" hidden>
+                            <p id="chase-access-status" role="status">${chase.checking}</p>
+                            <div class="chase-mode-options" id="chase-mode-options" hidden>
+                                <p class="chase-mode-help">${chase.modeHelp}</p>
+                                <div class="chase-mode-buttons" role="group" aria-label="${chase.modeHelp}">
+                                    <button type="button" class="chase-mode-choice" data-chase-mode="simple" aria-pressed="false"><strong>${chase.simple}</strong><small>${chase.simpleDescription}</small></button>
+                                    <button type="button" class="chase-mode-choice" data-chase-mode="hard" aria-pressed="false"><strong>${chase.hard}</strong><small>${chase.hardDescription}</small></button>
+                                </div>
+                                <button type="button" class="start-btn chase-start-btn" id="chase-start-btn" disabled>${chase.start}</button>
+                            </div>
+                            <div id="chase-paid-options" hidden>
+                                <label for="chase-custom-words">${chase.wordsLabel}</label>
+                                <textarea id="chase-custom-words" rows="4" maxlength="1000" spellcheck="false" placeholder="${chase.wordsPlaceholder}"></textarea>
+                                <p class="spelling-help">${chase.coming}</p>
+                                <button type="button" id="chase-generate-btn" disabled>${chase.generate}</button>
+                            </div>
+                        </div>
                         <div class="spelling-builder">
                             <div class="word-entry-grid">
                                 <div class="word-entry-field">
@@ -1309,13 +1527,22 @@ ${game.chips.map((chip) => `                            <span>${chip}</span>`).j
                         <p>${mode.incorrect}: <span id="dictation-incorrect">0</span></p>
                         <p>${game.accuracy}: <span id="dictation-accuracy">0%</span></p>
                     </div>
+                    <div class="final-stats" id="chase-final-stats" hidden>
+                        <p>${chase.speed}: <span id="chase-final-wpm">0</span> WPM</p>
+                        <p>${chase.accuracy}: <span id="chase-final-accuracy">100%</span></p>
+                        <p>${chase.errors}: <span id="chase-final-errors">0</span></p>
+                        <p>${chase.time}: <span id="chase-final-time">0:00</span></p>
+                    </div>
                     <div class="spelling-summary" id="spelling-summary" hidden>
                         <div id="spelling-result"></div>
                         <div id="missed-word-list"></div>
                         <button class="restart-btn" id="replay-missed-btn" onclick="replayMissedWords()">${mode.retry}</button>
                     </div>
                     <div class="game-over-buttons">
+                        <button type="button" class="restart-btn chase-return-menu-btn" id="chase-return-menu-btn" onclick="returnToMainMenu()" hidden>${chase.returnMenu}</button>
                         <button class="restart-btn" id="restart-same-btn" onclick="restartGame(true)">${mode.restart}</button>
+                        <button type="button" class="share-score-btn chase-share-btn" id="chase-share-btn" onclick="shareChaseResult()" hidden>${chase.share}</button>
+                        <span class="chase-share-status" id="chase-share-status" role="status" aria-live="polite"></span>
                         <button class="share-score-btn" id="edit-list-btn" onclick="restartGame()">${game.edit}</button>
                         <button type="button" class="share-score-btn assignment-complete-btn" onclick="openTeacherAssignment()">${game.assignComplete}</button>
                     </div>
@@ -1418,7 +1645,7 @@ ${listItems(info.bullets)}
       window.pageLocale = '${page.pageLocale}';
       window.currentLanguage = '${page.pageLocale}';
     </script>
-    <script type="module" src="/src/js/index.js?v=spelling-test1"></script>
+    <script type="module" src="/src/js/index.js?v=typing-chase4"></script>
 
     <footer>
         <p>
@@ -1460,7 +1687,7 @@ function schemaScripts(page) {
     applicationCategory: "EducationalApplication",
     inLanguage: page.htmlLang,
     isAccessibleForFree: true,
-    dateModified: "2026-09-01",
+    dateModified: "2026-09-02",
     offers: {
       "@type": "Offer",
       price: "0",

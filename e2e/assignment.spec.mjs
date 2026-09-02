@@ -560,7 +560,9 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
   await page.getByLabel("Spelling words").fill("apple\nbanana");
   await page.getByLabel("Typing").check();
   await page.getByRole("button", { name: "Create and publish" }).click();
-  await expect(page).toHaveURL(`/workspace/assignments/${assignmentId}?lang=en`);
+  await expect(page).toHaveURL(
+    `/workspace/assignments/${assignmentId}?lang=en`,
+  );
   expect(createdBody.learnerIds).toEqual([learnerId]);
   await expect(page.getByRole("link", { name: "Export CSV" })).toBeVisible();
   const learnerAssignmentUrl = `${new URL(page.url()).origin}/a/${publicId}?learner=${learnerPublicId}&lang=en`;
@@ -875,7 +877,9 @@ test("assignment edit form prefills fields and submits a combined patch", async 
   await page.getByLabel("Typing").check();
   await page.getByLabel("Maximum attempts per nickname").selectOption("5");
   await page.getByRole("button", { name: "Save changes" }).click();
-  await expect(page).toHaveURL(`/workspace/assignments/${assignmentId}?lang=en`);
+  await expect(page).toHaveURL(
+    `/workspace/assignments/${assignmentId}?lang=en`,
+  );
   expect(patches[0]).toMatchObject({
     title: "Updated assignment",
     mode: "typing",
@@ -894,7 +898,9 @@ test("assignment edit form prefills fields and submits a combined patch", async 
   await page.getByLabel("Assignment title").fill("Metadata only");
   await page.getByLabel("Link sharing only").check();
   await page.getByRole("button", { name: "Save changes" }).click();
-  await expect(page).toHaveURL(`/workspace/assignments/${assignmentId}?lang=en`);
+  await expect(page).toHaveURL(
+    `/workspace/assignments/${assignmentId}?lang=en`,
+  );
   expect(patches[1]).toMatchObject({
     title: "Metadata only",
     maxAttempts: 5,
@@ -965,7 +971,9 @@ test("editing a link-only assignment keeps link sharing selected", async ({
     .getByLabel("Assignment title")
     .fill("Renamed link-only assignment");
   await page.getByRole("button", { name: "Save changes" }).click();
-  await expect(page).toHaveURL(`/workspace/assignments/${assignmentId}?lang=en`);
+  await expect(page).toHaveURL(
+    `/workspace/assignments/${assignmentId}?lang=en`,
+  );
   expect(patches[0]).not.toHaveProperty("learnerIds");
 });
 
@@ -1433,8 +1441,12 @@ test("Copy practice link chooses anonymous practice before copying", async ({
     .locator(".practice-share-option", { hasText: "Practice only" })
     .click();
   expect(await page.evaluate(() => window.copiedPracticeUrl)).toMatch(
-    /\/#words=/,
+    /\/#(?:words|data)=/,
   );
+  await expect(page.locator("#copy-success-toast")).toHaveText(
+    "Practice link copied",
+  );
+  await expect(page.locator("#copy-success-toast")).toBeVisible();
   await expect(page).toHaveURL("/");
   await expect(chooser).toHaveCount(0);
   await expect(
@@ -1472,7 +1484,7 @@ test("Practice only keeps the existing prompt fallback", async ({ page }) => {
     .locator(".practice-share-option", { hasText: "Practice only" })
     .click();
   expect(await page.evaluate(() => window.promptedPracticeUrl)).toMatch(
-    /\/#words=/,
+    /\/#(?:words|data)=/,
   );
   await expect(page.locator("#practice-share-options")).toHaveCount(0);
   await expect(page.locator("#spelling-status")).toHaveText(
@@ -1643,7 +1655,9 @@ test("Track results skips anonymous copying and opens the existing assignment fl
     });
   });
   await page.getByRole("button", { name: "Create and publish" }).click();
-  await expect(page).toHaveURL(`/workspace/assignments/${assignmentId}?lang=en`);
+  await expect(page).toHaveURL(
+    `/workspace/assignments/${assignmentId}?lang=en`,
+  );
   expect(
     await page.evaluate(() =>
       JSON.parse(sessionStorage.getItem("trackCreateEvents") || "[]")
@@ -2130,7 +2144,9 @@ test("teacher creates an assignment with an example sentence and the student pla
     });
   });
   await page.getByRole("button", { name: "Create and publish" }).click();
-  await expect(page).toHaveURL(`/workspace/assignments/${assignmentId}?lang=en`);
+  await expect(page).toHaveURL(
+    `/workspace/assignments/${assignmentId}?lang=en`,
+  );
   expect(createdBody).toMatchObject({
     title: "Sentence practice",
     words: "because",
@@ -3594,7 +3610,9 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
   await page.getByLabel("Typing").check();
   await page.getByRole("button", { name: "Create and publish" }).click();
 
-  await expect(page).toHaveURL(`/workspace/assignments/${assignmentId}?lang=en`);
+  await expect(page).toHaveURL(
+    `/workspace/assignments/${assignmentId}?lang=en`,
+  );
   expect(createdBody.learnerIds).toEqual(childIds);
   expect(String(createdBody.words).split("\n")).toHaveLength(40);
   await expect(

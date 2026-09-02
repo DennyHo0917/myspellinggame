@@ -783,6 +783,22 @@ test("localized home SEO uses each locale's Typing Chase name", () => {
   }
 });
 
+test("home SEO separates custom-list practice from Typing Chase", () => {
+  const distinctions = {
+    "": ["built-in passages", "does not use the custom list"],
+    es: ["relatos incluidos", "no usa esa lista"],
+    "pt-br": ["histórias incluídas", "não usa essa lista"],
+    fr: ["textes intégrés", "n’utilise pas cette liste"],
+    id: ["bacaan bawaan", "tidak memakai daftar tersebut"],
+    zh: ["固定内置短文", "不会读取这份词表"],
+  };
+  for (const [locale, terms] of Object.entries(distinctions)) {
+    const html = fs.readFileSync(path.join(root, locale, "index.html"), "utf8");
+    for (const term of terms)
+      assert.ok(html.includes(term), `${locale}: ${term}`);
+  }
+});
+
 test("FAQ, About, and Parent pages describe current product capabilities", () => {
   const faq = fs.readFileSync(path.join(root, "faq.html"), "utf8");
   for (const term of [
@@ -862,6 +878,8 @@ test("llms.txt publishes the current product summary and canonical sources", () 
     "## Today's Review",
     "## Mastery",
     "## Plans",
+    "Typing Chase never uses the user's custom word list",
+    "fixed library of built-in passages",
     "1 active assignment",
     "8 student submissions per month",
     "1 saved list",

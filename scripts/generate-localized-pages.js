@@ -135,7 +135,7 @@ const pages = {
     ogLocale: "es_ES",
     title: "Prueba de Ortografía Gratis con Tus Palabras — Sin Cuenta",
     description:
-      "Pega tu propia lista y practica con una prueba de ortografía, lluvia de palabras o Persecución de escritura. Corrección instantánea y sin cuenta de estudiante.",
+      "Pega tu lista para practicar con la prueba de ortografía o la lluvia de palabras, o juega a Persecución de escritura con relatos incluidos. Sin cuenta de estudiante.",
     keywords:
       "juego de spelling en inglés,juego de deletreo en inglés,juego de ortografía inglesa,Persecución de escritura,juego de mecanografía,practicar spelling en inglés,juego con tus propias palabras,lista de vocabulario en inglés,juego de palabras en inglés para niños,práctica de spelling sin cuenta",
     ogTitle: "Prueba de ortografía con tus propias palabras",
@@ -254,12 +254,12 @@ const pages = {
         "El modo fácil baja la velocidad sin cambiar las reglas de ortografía.",
         "Los planes para familias y docentes añaden importación por foto, frases automáticas y Repaso de hoy.",
       ],
-      seoTitle: "Tres formas de practicar tu propia lista",
+      seoTitle: "Dos formas de practicar tu lista y un juego de mecanografía",
       seoIntro:
-        "<strong>Prueba de ortografía</strong> reproduce una palabra oculta, la <strong>lluvia de palabras</strong> propone palabras que caen y <strong>Persecución de escritura</strong> convierte la velocidad al escribir frases en una persecución.",
+        "La <strong>prueba de ortografía</strong> y la <strong>lluvia de palabras</strong> usan la lista que pegas. <strong>Persecución de escritura</strong> es un juego independiente que usa relatos incluidos para convertir la escritura de frases en una persecución.",
       sectionTitle: "Una lista concreta, una práctica más útil",
       sectionText:
-        "Pegar la lista real mantiene la práctica centrada en las palabras de esta semana. Los tres modos ofrecen una forma distinta de practicar sin cuenta de estudiante.",
+        "Pegar la lista real mantiene la prueba de ortografía y la lluvia de palabras centradas en las palabras de esta semana. Persecución de escritura no usa esa lista: es un juego de mecanografía independiente.",
       bullets: [
         "<strong>Usa tu lista real:</strong> Pega palabras de una hoja del profesor, deberes o material de educación en casa.",
         "<strong>Repite lo fallado:</strong> Las respuestas incorrectas y las palabras perdidas vuelven en otra ronda.",
@@ -281,7 +281,7 @@ const pages = {
     legalLinks: ["Privacidad", "Acerca de", "Contacto"],
     schema: {
       description:
-        "Practica con tus propias palabras mediante una prueba de ortografía por audio, una lluvia de palabras o Persecución de escritura, un juego de mecanografía por frases con una persecución.",
+        "Practica tus propias palabras con una prueba de ortografía por audio o una lluvia de palabras. Persecución de escritura es un juego independiente de mecanografía con relatos incluidos.",
       faq: [
         [
           "¿Puedo usar mis propias palabras?",
@@ -306,7 +306,7 @@ const pages = {
     ogLocale: "pt_BR",
     title: "Teste de Ortografia Grátis com Suas Palavras — Sem Conta",
     description:
-      "Cole sua lista e pratique com teste de ortografia, chuva de palavras ou Perseguição de digitação. Correção imediata e sem conta de aluno.",
+      "Cole sua lista para praticar com teste de ortografia ou chuva de palavras, ou jogue Perseguição de digitação com histórias incluídas. Sem conta de aluno.",
     keywords:
       "jogo de soletrar em inglês,soletrar em inglês,jogo de spelling em inglês,Perseguição de digitação,jogo de digitação,praticar spelling em inglês,lista de palavras em inglês,jogo com suas próprias palavras,atividade de inglês para crianças,spelling bee online grátis",
     ogTitle: "Teste de ortografia com suas próprias palavras",
@@ -425,12 +425,12 @@ const pages = {
         "O modo fácil reduz a velocidade sem mudar as regras de ortografia.",
         "Os planos para Pais e Professores acrescentam importação por foto, frases automáticas e Revisão de hoje.",
       ],
-      seoTitle: "Três formas de praticar sua própria lista",
+      seoTitle: "Duas formas de praticar sua lista e um jogo de digitação",
       seoIntro:
-        "O <strong>teste de ortografia</strong> toca uma palavra escondida, a <strong>chuva de palavras</strong> traz palavras caindo e a <strong>Perseguição de digitação</strong> transforma a velocidade ao digitar frases em uma perseguição.",
+        "O <strong>teste de ortografia</strong> e a <strong>chuva de palavras</strong> usam a lista colada. A <strong>Perseguição de digitação</strong> é um jogo separado que usa histórias incluídas em uma perseguição de frases digitadas.",
       sectionTitle: "Uma lista real deixa a prática mais útil",
       sectionText:
-        "Colar a lista da semana mantém o foco nas palavras certas. Os três modos oferecem formas diferentes de praticar sem conta de aluno.",
+        "Colar a lista da semana mantém o teste de ortografia e a chuva de palavras focados nas palavras certas. A Perseguição de digitação não usa essa lista: é um jogo de digitação independente.",
       bullets: [
         "<strong>Use sua lista real:</strong> Cole palavras da tarefa, da escola ou do material de educação em casa.",
         "<strong>Revise os erros:</strong> Respostas erradas e palavras perdidas entram em outra rodada.",
@@ -452,7 +452,7 @@ const pages = {
     legalLinks: ["Privacidade", "Sobre", "Contato"],
     schema: {
       description:
-        "Pratique com suas próprias palavras em um teste de ortografia por áudio, uma chuva de palavras ou Perseguição de digitação, um jogo de digitação de frases em formato de perseguição.",
+        "Pratique suas próprias palavras com um teste de ortografia por áudio ou uma chuva de palavras. A Perseguição de digitação é um jogo independente com histórias incluídas.",
       faq: [
         [
           "Posso usar minhas próprias palavras?",
@@ -477,7 +477,7 @@ const pages = {
     ogLocale: "fr_FR",
     title: "Test d’Orthographe Anglaise avec Vos Mots — Sans Compte",
     description:
-      "Collez votre liste et choisissez un test d’orthographe, une pluie de mots ou Course de frappe. Correction immédiate, sans compte élève.",
+      "Collez votre liste pour le test d’orthographe ou la pluie de mots, ou jouez à Course de frappe avec des textes intégrés. Sans compte élève.",
     keywords:
       "jeu d'orthographe anglais,orthographe anglaise,Course de frappe,jeu de dactylographie,pratiquer l'orthographe anglaise,jeu de spelling anglais,épeler des mots anglais,liste de mots anglais,jeu avec vos propres mots,spelling bee anglais gratuit",
     ogTitle: "Test d’orthographe anglaise avec vos propres mots",
@@ -596,12 +596,12 @@ const pages = {
         "Le mode facile ralentit la partie sans changer la règle.",
         "Les offres Parents et Enseignants ajoutent l’import photo, les phrases automatiques et la Révision du jour.",
       ],
-      seoTitle: "Trois façons de travailler votre propre liste",
+      seoTitle: "Deux façons de travailler votre liste, plus un jeu de frappe",
       seoIntro:
-        "Le <strong>test d’orthographe</strong> lit un mot caché, la <strong>pluie de mots</strong> fait tomber les mots et la <strong>Course de frappe</strong> transforme la saisie rapide de phrases en course-poursuite.",
+        "Le <strong>test d’orthographe</strong> et la <strong>pluie de mots</strong> utilisent la liste collée. <strong>Course de frappe</strong> est un jeu indépendant qui transforme la saisie de textes intégrés en course-poursuite.",
       sectionTitle: "Une liste précise rend la pratique plus utile",
       sectionText:
-        "Coller la liste de la semaine garde la pratique centrée sur les bons mots. Les trois modes proposent des exercices différents sans compte élève.",
+        "Coller la liste de la semaine garde le test d’orthographe et la pluie de mots centrés sur les bons mots. Course de frappe n’utilise pas cette liste : c’est un jeu de frappe indépendant.",
       bullets: [
         "<strong>Votre vraie liste :</strong> Collez les mots d’un devoir, d’un cours ou d’un support d’école à la maison.",
         "<strong>Révision ciblée :</strong> Les mots manqués reviennent dans une autre partie.",
@@ -623,7 +623,7 @@ const pages = {
     legalLinks: ["Confidentialité", "À propos", "Contact"],
     schema: {
       description:
-        "Travaillez vos propres mots avec un test audio, une pluie de mots ou Course de frappe, un jeu de saisie de phrases sous forme de course-poursuite.",
+        "Travaillez vos propres mots avec un test audio ou une pluie de mots. Course de frappe est un jeu indépendant qui utilise des textes intégrés.",
       faq: [
         [
           "Puis-je utiliser mes propres mots ?",
@@ -648,7 +648,7 @@ const pages = {
     ogLocale: "id_ID",
     title: "Tes Ejaan Gratis dengan Kata Sendiri — Tanpa Akun",
     description:
-      "Tempel daftar sendiri lalu pilih tes ejaan, hujan kata, atau Kejar Mengetik. Hasil langsung dan tanpa akun siswa.",
+      "Tempel daftar untuk tes ejaan atau hujan kata, atau mainkan Kejar Mengetik dengan bacaan bawaan. Tanpa akun siswa.",
     keywords:
       "game spelling bahasa Inggris,permainan spelling bahasa Inggris,Kejar Mengetik,game mengetik,permainan mengeja bahasa Inggris,latihan mengeja bahasa Inggris,belajar spelling bahasa Inggris,game kosakata bahasa Inggris,daftar kata bahasa Inggris,buat daftar kata sendiri,game dengan kata sendiri,latihan spelling anak,spelling bee online gratis",
     ogTitle: "Tes ejaan dengan daftar kata sendiri",
@@ -766,12 +766,13 @@ const pages = {
         "Mode mudah memperlambat permainan tanpa mengubah aturan ejaan.",
         "Paket Orang Tua dan Guru menambahkan impor foto, kalimat otomatis, dan Ulasan hari ini.",
       ],
-      seoTitle: "Tiga cara berlatih dengan daftar sendiri",
+      seoTitle:
+        "Dua cara berlatih dengan daftar sendiri dan satu game mengetik terpisah",
       seoIntro:
-        "<strong>Tes ejaan</strong> membacakan kata tersembunyi, <strong>hujan kata</strong> menghadirkan kata yang jatuh, dan <strong>Kejar Mengetik</strong> mengubah kecepatan mengetik kalimat menjadi aksi kejar-kejaran.",
+        "<strong>Tes ejaan</strong> dan <strong>hujan kata</strong> memakai daftar yang ditempel. <strong>Kejar Mengetik</strong> adalah game terpisah yang memakai bacaan bawaan untuk aksi kejar-kejaran sambil mengetik.",
       sectionTitle: "Daftar yang tepat membuat latihan lebih berguna",
       sectionText:
-        "Menempel daftar minggu ini membuat latihan tetap fokus. Ketiga mode memberi cara latihan yang berbeda tanpa akun siswa.",
+        "Menempel daftar minggu ini membuat tes ejaan dan hujan kata tetap fokus pada kata yang dibutuhkan. Kejar Mengetik tidak memakai daftar tersebut: ini adalah game mengetik mandiri.",
       bullets: [
         "<strong>Pakai daftar nyata:</strong> Tempel kata dari PR, lembar guru, atau materi belajar di rumah.",
         "<strong>Latihan ulang:</strong> Jawaban salah dan kata yang terlewat masuk ronde berikutnya.",
@@ -793,7 +794,7 @@ const pages = {
     legalLinks: ["Privasi", "Tentang", "Kontak"],
     schema: {
       description:
-        "Berlatihlah dengan kata sendiri melalui tes ejaan audio, hujan kata, atau Kejar Mengetik, game mengetik kalimat dalam aksi kejar-kejaran.",
+        "Latih kata sendiri lewat tes ejaan audio atau hujan kata. Kejar Mengetik adalah game terpisah yang memakai bacaan bawaan.",
       faq: [
         [
           "Bisa memakai daftar kata sendiri?",
@@ -818,7 +819,7 @@ const pages = {
     ogLocale: "zh_CN",
     title: "用自己的单词做免费英语听写 — 无需登录",
     description:
-      "粘贴自己的英语单词表，选择听写测试、单词雨或极速追捕。即时查看结果，无需学生账号。",
+      "粘贴自己的英语单词表，用听写测试或单词雨练习；也可以使用内置短文玩极速追捕。无需学生账号。",
     keywords:
       "英语拼写练习,spelling game,极速追捕,打字追逐游戏,英语单词拼写游戏,自定义单词表游戏,自定义英语单词表,英语听写练习,英语默写练习,英语单词练习小游戏,小学生英语拼写,背单词打字游戏,自定义单词表背单词,无需注册英语练习",
     ogTitle: "用自己的单词做英语听写测试",
@@ -927,12 +928,12 @@ const pages = {
         "简单模式只降低速度，不改变拼写规则。",
         "家长方案和教师方案还支持拍照导入、自动填充例句和今日复习。",
       ],
-      seoTitle: "同一份单词表，三种练习方式",
+      seoTitle: "两种单词表练习，再加一个打字小游戏",
       seoIntro:
-        "<strong>听写测试</strong>会朗读隐藏单词，<strong>单词雨</strong>提供掉落单词玩法，<strong>极速追捕</strong>则把整句打字速度变成追捕小偷的游戏。",
+        "<strong>听写测试</strong>和<strong>单词雨</strong>会使用你粘贴的单词表；<strong>极速追捕</strong>使用固定内置短文，是独立的整句打字追逐游戏。",
       sectionTitle: "只练现在真正需要的单词",
       sectionText:
-        "粘贴本周词表后，可以用三种不同方式练习；听写和单词雨还会整理答错或漏掉的词，方便重练。",
+        "粘贴本周词表后，可以用听写测试或单词雨练习，系统会整理答错或漏掉的词。极速追捕不会读取这份词表，只作为独立的打字小游戏。",
       bullets: [
         "<strong>使用真实单词表：</strong> 可以来自作业、教材、老师讲义或自学计划。",
         "<strong>自动记录错词：</strong> 答错或漏掉的单词会进入下一轮。",
@@ -948,7 +949,7 @@ const pages = {
     legalLinks: ["隐私", "关于", "联系"],
     schema: {
       description:
-        "粘贴自己的英语单词，选择隐藏单词听写测试、单词雨或极速追捕。极速追捕会把整句打字速度变成追逐游戏。",
+        "使用自己的英语单词进行隐藏单词听写测试或单词雨练习。极速追捕是使用固定内置短文的独立整句打字游戏。",
       faq: [
         [
           "可以用自己的英语单词吗？",

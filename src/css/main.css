@@ -533,29 +533,6 @@ a {
   line-height: 1.45;
 }
 
-#chase-paid-options {
-  display: grid;
-  gap: 9px;
-}
-
-#chase-paid-options > label {
-  color: var(--ink);
-  font-size: 0.86rem;
-  font-weight: 800;
-}
-
-#chase-custom-words {
-  width: 100%;
-  min-height: 88px;
-  resize: vertical;
-  padding: 12px;
-  border: 1px solid #cfded9;
-  border-radius: 6px;
-  background: #fff;
-  color: var(--ink);
-  font: inherit;
-}
-
 .chase-start-actions {
   display: flex;
   flex-wrap: wrap;
@@ -631,17 +608,6 @@ a {
   color: var(--muted);
   font-size: 0.78rem;
   font-weight: 700;
-}
-
-#chase-generate-btn {
-  min-height: 42px;
-  padding: 0 14px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: #fff;
-  color: var(--muted);
-  cursor: not-allowed;
-  font-weight: 800;
 }
 
 #game-container.chase-preview-active .game-start-screen {

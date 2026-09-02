@@ -53,13 +53,10 @@ const MESSAGES = {
     typingTitle: "Typing Rain",
     chaseTitle: "Typing Chase",
     chaseChecking: "Checking your access...",
-    chasePaidHelp:
-      "Add words for a custom AI story, or play a sample story now.",
     chaseLoadError: "Typing Chase could not load. Please try again.",
     chaseCaught: "Thief caught!",
     chaseEscaped: "The thief escaped",
-    chaseFreeBadge: "Free story",
-    chasePaidBadge: "Custom",
+    chaseBuiltInBadge: "Built-in story",
     chaseChooseMode: "Choose a chase mode, then start.",
     chaseSimpleSelected: "Simple mode selected.",
     chaseHardSelected: "Hard mode selected.",
@@ -69,7 +66,7 @@ const MESSAGES = {
       "I caught the thief in {time} at {wpm} WPM. Can you beat me in Typing Chase?",
     chaseShareEscaped:
       "The thief got away after my {time} chase at {wpm} WPM. Can you catch them?",
-    chaseShareCopied: "Challenge text copied",
+    chaseShareCopied: "Challenge link copied",
     speechUnsupported:
       "Speech playback is not supported in this browser. You can continue, but another browser is recommended for dictation.",
     dictationProgress: "Word {current} of {total}",
@@ -142,13 +139,10 @@ const MESSAGES = {
     typingTitle: "Lluvia de palabras",
     chaseTitle: "Persecución de escritura",
     chaseChecking: "Comprobando tu acceso...",
-    chasePaidHelp:
-      "Añade palabras para crear un relato con IA o juega ahora con un relato de ejemplo.",
     chaseLoadError: "No se pudo cargar Typing Chase. Inténtalo de nuevo.",
     chaseCaught: "¡Ladrón atrapado!",
     chaseEscaped: "El ladrón escapó",
-    chaseFreeBadge: "Relato gratis",
-    chasePaidBadge: "Personalizado",
+    chaseBuiltInBadge: "Relato incluido",
     chaseChooseMode: "Elige un modo de persecución y empieza.",
     chaseSimpleSelected: "Modo simple seleccionado.",
     chaseHardSelected: "Modo difícil seleccionado.",
@@ -158,7 +152,7 @@ const MESSAGES = {
       "Atrapé al ladrón en {time} a {wpm} WPM. ¿Puedes superarme en Typing Chase?",
     chaseShareEscaped:
       "El ladrón escapó tras {time} de persecución a {wpm} WPM. ¿Puedes atraparlo?",
-    chaseShareCopied: "Texto del desafío copiado",
+    chaseShareCopied: "Enlace del desafío copiado",
     speechUnsupported:
       "Este navegador no admite la lectura por voz. Puedes continuar, pero se recomienda otro navegador para el dictado.",
     dictationProgress: "Palabra {current} de {total}",
@@ -232,14 +226,11 @@ const MESSAGES = {
     typingTitle: "Chuva de palavras",
     chaseTitle: "Perseguição de digitação",
     chaseChecking: "Verificando seu acesso...",
-    chasePaidHelp:
-      "Adicione palavras para criar uma história com IA ou jogue agora com uma história de exemplo.",
     chaseLoadError:
       "Não foi possível carregar o Typing Chase. Tente novamente.",
     chaseCaught: "Ladrão capturado!",
     chaseEscaped: "O ladrão escapou",
-    chaseFreeBadge: "História grátis",
-    chasePaidBadge: "Personalizado",
+    chaseBuiltInBadge: "História incluída",
     chaseChooseMode: "Escolha um modo de perseguição e comece.",
     chaseSimpleSelected: "Modo simples selecionado.",
     chaseHardSelected: "Modo difícil selecionado.",
@@ -249,7 +240,7 @@ const MESSAGES = {
       "Capturei o ladrão em {time}, a {wpm} WPM. Você consegue superar meu resultado no Typing Chase?",
     chaseShareEscaped:
       "O ladrão escapou após {time} de perseguição, a {wpm} WPM. Você consegue capturá-lo?",
-    chaseShareCopied: "Texto do desafio copiado",
+    chaseShareCopied: "Link do desafio copiado",
     speechUnsupported:
       "Este navegador não oferece leitura por voz. Você pode continuar, mas outro navegador é recomendado para o ditado.",
     dictationProgress: "Palavra {current} de {total}",
@@ -321,13 +312,10 @@ const MESSAGES = {
     typingTitle: "Pluie de mots",
     chaseTitle: "Course de frappe",
     chaseChecking: "Vérification de votre accès...",
-    chasePaidHelp:
-      "Ajoutez des mots pour créer une histoire avec l’IA, ou jouez avec une histoire d’exemple.",
     chaseLoadError: "Impossible de charger Typing Chase. Réessayez.",
     chaseCaught: "Voleur arrêté !",
     chaseEscaped: "Le voleur s’est échappé",
-    chaseFreeBadge: "Histoire gratuite",
-    chasePaidBadge: "Personnalisé",
+    chaseBuiltInBadge: "Histoire incluse",
     chaseChooseMode: "Choisissez un mode de poursuite, puis commencez.",
     chaseSimpleSelected: "Mode simple sélectionné.",
     chaseHardSelected: "Mode difficile sélectionné.",
@@ -337,7 +325,7 @@ const MESSAGES = {
       "J’ai rattrapé le voleur en {time}, à {wpm} MPM. Pouvez-vous faire mieux dans Typing Chase ?",
     chaseShareEscaped:
       "Le voleur m’a échappé après {time} de poursuite, à {wpm} MPM. Saurez-vous le rattraper ?",
-    chaseShareCopied: "Texte du défi copié",
+    chaseShareCopied: "Lien du défi copié",
     speechUnsupported:
       "La lecture vocale n’est pas disponible dans ce navigateur. Vous pouvez continuer, mais un autre navigateur est conseillé pour la dictée.",
     dictationProgress: "Mot {current} sur {total}",
@@ -408,13 +396,10 @@ const MESSAGES = {
     typingTitle: "Hujan kata",
     chaseTitle: "Kejar Mengetik",
     chaseChecking: "Memeriksa akses Anda...",
-    chasePaidHelp:
-      "Tambahkan kata untuk membuat cerita dengan AI, atau mainkan cerita contoh sekarang.",
     chaseLoadError: "Typing Chase tidak dapat dimuat. Coba lagi.",
     chaseCaught: "Pencuri tertangkap!",
     chaseEscaped: "Pencuri berhasil kabur",
-    chaseFreeBadge: "Cerita gratis",
-    chasePaidBadge: "Kustom",
+    chaseBuiltInBadge: "Cerita bawaan",
     chaseChooseMode: "Pilih mode pengejaran, lalu mulai.",
     chaseSimpleSelected: "Mode sederhana dipilih.",
     chaseHardSelected: "Mode sulit dipilih.",
@@ -424,7 +409,7 @@ const MESSAGES = {
       "Saya menangkap pencuri dalam {time} dengan kecepatan {wpm} WPM. Bisakah kamu mengalahkan saya di Typing Chase?",
     chaseShareEscaped:
       "Pencuri kabur setelah saya mengejar selama {time} dengan kecepatan {wpm} WPM. Bisakah kamu menangkapnya?",
-    chaseShareCopied: "Teks tantangan disalin",
+    chaseShareCopied: "Link tantangan disalin",
     speechUnsupported:
       "Browser ini tidak mendukung pembacaan suara. Anda tetap dapat melanjutkan, tetapi gunakan browser lain untuk dikte.",
     dictationProgress: "Kata {current} dari {total}",
@@ -492,12 +477,10 @@ const MESSAGES = {
     typingTitle: "单词雨",
     chaseTitle: "极速追捕",
     chaseChecking: "正在确认你的游玩权限…",
-    chasePaidHelp: "输入单词生成 AI 短文，或先用示例短文体验游戏。",
     chaseLoadError: "极速追捕加载失败，请重试。",
     chaseCaught: "抓到小偷了！",
     chaseEscaped: "小偷逃走了",
-    chaseFreeBadge: "免费短文",
-    chasePaidBadge: "自定义",
+    chaseBuiltInBadge: "内置短文",
     chaseChooseMode: "选择追捕模式，然后开始。",
     chaseSimpleSelected: "已选择简单模式。",
     chaseHardSelected: "已选择困难模式。",
@@ -507,7 +490,7 @@ const MESSAGES = {
       "我用时 {time}、以 {wpm} WPM 的速度抓到了小偷。你也来试试极速追捕！",
     chaseShareEscaped:
       "我追了 {time}，打字速度达到 {wpm} WPM，但小偷还是跑掉了。你能抓住他吗？",
-    chaseShareCopied: "挑战文案已复制",
+    chaseShareCopied: "挑战链接已复制",
     speechUnsupported:
       "当前浏览器不支持语音朗读。你仍可继续，但建议换用支持语音的浏览器进行听写。",
     dictationProgress: "第 {current} 个，共 {total} 个",

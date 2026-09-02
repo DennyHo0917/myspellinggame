@@ -2488,10 +2488,9 @@ export async function handleRequest(
   }
 
   if (url.pathname === "/api/chase/passage" && method === "GET") {
-    const user = await requireTeacher(env, request, getSession);
+    await requireTeacher(env, request, getSession);
     return json({
       passage: randomChasePassage(),
-      plan: await getPlan(env, user.id),
     });
   }
 

@@ -5,11 +5,11 @@ const passage = {
   text: "Run to the bridge. Keep moving until you see the old clock tower and the thief.",
 };
 
-async function mockPassage(page, plan = "free") {
+async function mockPassage(page) {
   await page.route("**/api/chase/passage", (route) =>
     route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify({ plan, passage }),
+      body: JSON.stringify({ passage }),
     }),
   );
 }
@@ -81,25 +81,28 @@ test("Typing Chase fits beside the two existing modes and starts for Free users"
   await expect
     .poll(() => page.evaluate(() => window.__clipboardText || ""))
     .toContain("caught the thief");
+  expect(await page.evaluate(() => window.__clipboardText)).toContain(
+    new URL("/", page.url()).href,
+  );
   expect(await page.evaluate(() => window.__shareCalled)).toBeFalsy();
   await expect(page.locator("#chase-share-status")).toHaveText(
-    "Challenge text copied",
+    "Challenge link copied",
   );
   await page.locator("#chase-return-menu-btn").click();
   await expect(page.locator("#game-start")).toBeVisible();
   await expect(page.locator("#chase-screen")).toBeHidden();
 });
 
-test("paid Typing Chase shows custom words while AI generation is disabled", async ({
+test("Typing Chase has no custom-passage controls", async ({
   page,
 }) => {
-  await mockPassage(page, "teacher");
+  await mockPassage(page);
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.locator('input[name="practice-mode"][value="chase"]').check();
 
-  await expect(page.locator("#chase-paid-options")).toBeVisible();
-  await expect(page.locator("#chase-custom-words")).toBeEditable();
-  await expect(page.locator("#chase-generate-btn")).toBeDisabled();
+  await expect(page.locator("#chase-paid-options")).toHaveCount(0);
+  await expect(page.locator("#chase-custom-words")).toHaveCount(0);
+  await expect(page.locator("#chase-generate-btn")).toHaveCount(0);
   await expect(page.locator("#chase-mode-options")).toBeVisible();
   await expect(page.locator("#chase-start-btn")).toBeDisabled();
   await expect(page.locator("#chase-screen")).toBeHidden();

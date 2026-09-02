@@ -57,10 +57,6 @@ function element(id) {
   return document.getElementById(id);
 }
 
-function paidPlan(plan) {
-  return plan === "parent" || plan === "teacher";
-}
-
 function formatTime(milliseconds) {
   const seconds = Math.max(0, Math.ceil(milliseconds / 1000));
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
@@ -341,10 +337,12 @@ async function shareChaseResult() {
   const wpm = element("chase-final-wpm")?.textContent || "0";
   const time = element("chase-final-time")?.textContent || "0:00";
   const caught = chaseOutcome() === "caught";
-  const text = t(caught ? "chaseShareCaught" : "chaseShareEscaped", {
+  const result = t(caught ? "chaseShareCaught" : "chaseShareEscaped", {
     wpm,
     time,
   });
+  const shareUrl = new URL(location.pathname, location.origin).href;
+  const text = `${result}\n${shareUrl}`;
   const status = element("chase-share-status");
   if (navigator.clipboard?.writeText) {
     try {
@@ -492,14 +490,12 @@ export function startTypingChase(
 async function enterTypingChase() {
   trackEvent("typing_chase_selected", { locale: getPageLocale() });
   const status = element("chase-access-status");
-  const paidOptions = element("chase-paid-options");
   const modeOptions = element("chase-mode-options");
   const startButton = element("chase-start-btn");
   selectedChaseMode = null;
   modeOptions?.setAttribute("hidden", "");
   if (startButton) startButton.disabled = true;
   if (status) status.textContent = t("chaseChecking");
-  paidOptions?.setAttribute("hidden", "");
   try {
     const response = await fetch("/api/chase/passage", {
       credentials: "same-origin",
@@ -514,16 +510,8 @@ async function enterTypingChase() {
       throw new Error("chase_passage_error");
     samplePassage = data.passage;
     const badge = document.querySelector(".chase-mode-card .mode-lock");
-    if (badge)
-      badge.textContent = t(
-        paidPlan(data.plan) ? "chasePaidBadge" : "chaseFreeBadge",
-      );
-    if (paidPlan(data.plan)) {
-      if (status) status.textContent = t("chasePaidHelp");
-      paidOptions?.removeAttribute("hidden");
-    } else if (status) {
-      status.textContent = t("chaseChooseMode");
-    }
+    if (badge) badge.textContent = t("chaseBuiltInBadge");
+    if (status) status.textContent = t("chaseChooseMode");
     modeOptions?.removeAttribute("hidden");
     showChasePreview();
   } catch {

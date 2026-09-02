@@ -1097,12 +1097,6 @@ const chaseCopy = {
     help: "Escribe una frase a la vez. Alcanza al ladrón con tu velocidad.",
     inputLabel: "Escribe la frase actual",
     inputPlaceholder: "Escribe esta frase...",
-    wordsLabel: "Palabras para tu relato",
-    wordsPlaceholder: "aventura&#10;bosque&#10;cuidado",
-    coming:
-      "La generación de relatos con IA estará disponible pronto. Mientras tanto, puedes probar el juego con un relato de ejemplo.",
-    generate: "Generar relato con IA · Próximamente",
-    sample: "Jugar con un relato de ejemplo",
     progress: "Alcance",
     speed: "Velocidad",
     thief: "Ladrón",
@@ -1126,12 +1120,6 @@ const chaseCopy = {
     help: "Digite uma frase por vez. Use sua velocidade para alcançar o ladrão.",
     inputLabel: "Digite a frase atual",
     inputPlaceholder: "Digite esta frase...",
-    wordsLabel: "Palavras para sua história",
-    wordsPlaceholder: "aventura&#10;floresta&#10;cuidado",
-    coming:
-      "A geração de histórias com IA estará disponível em breve. Por enquanto, experimente o jogo com uma história de exemplo.",
-    generate: "Gerar história com IA · Em breve",
-    sample: "Jogar uma história de exemplo",
     progress: "Alcance",
     speed: "Velocidade",
     thief: "Ladrão",
@@ -1155,12 +1143,6 @@ const chaseCopy = {
     help: "Saisissez une phrase à la fois. Votre vitesse vous permet de rattraper le voleur.",
     inputLabel: "Saisissez la phrase affichée",
     inputPlaceholder: "Saisissez cette phrase...",
-    wordsLabel: "Mots pour votre histoire",
-    wordsPlaceholder: "aventure&#10;forêt&#10;prudent",
-    coming:
-      "La génération d’histoires par IA arrive bientôt. Vous pouvez déjà essayer le jeu avec une histoire d’exemple.",
-    generate: "Générer avec l’IA · Bientôt",
-    sample: "Jouer avec une histoire d’exemple",
     progress: "Rattrapage",
     speed: "Vitesse",
     thief: "Voleur",
@@ -1184,12 +1166,6 @@ const chaseCopy = {
     help: "Ketik satu kalimat setiap kali. Kejar pencuri dengan kecepatan Anda.",
     inputLabel: "Ketik kalimat saat ini",
     inputPlaceholder: "Ketik kalimat ini...",
-    wordsLabel: "Kata untuk cerita Anda",
-    wordsPlaceholder: "petualangan&#10;hutan&#10;hati-hati",
-    coming:
-      "Pembuatan cerita dengan AI akan segera hadir. Untuk sekarang, coba permainan dengan cerita contoh.",
-    generate: "Buat cerita dengan AI · Segera hadir",
-    sample: "Mainkan cerita contoh",
     progress: "Kejar",
     speed: "Kecepatan",
     thief: "Pencuri",
@@ -1213,11 +1189,6 @@ const chaseCopy = {
     help: "一次输入一句，速度够快就能追上小偷。",
     inputLabel: "输入当前句子",
     inputPlaceholder: "输入这一句…",
-    wordsLabel: "短文中需要包含的单词",
-    wordsPlaceholder: "adventure&#10;forest&#10;careful",
-    coming: "AI 短文生成即将上线。现在可以先用示例短文体验游戏。",
-    generate: "用 AI 生成短文 · 即将上线",
-    sample: "使用示例短文试玩",
     progress: "追赶",
     speed: "速度",
     thief: "小偷",
@@ -1472,12 +1443,6 @@ ${page.hero.flow.map((step) => `            <li>${step}</li>`).join("\n")}
                                     <button type="button" class="chase-mode-choice" data-chase-mode="hard" aria-pressed="false"><strong>${chase.hard}</strong><small>${chase.hardDescription}</small></button>
                                 </div>
                                 <button type="button" class="start-btn chase-start-btn" id="chase-start-btn" disabled>${chase.start}</button>
-                            </div>
-                            <div id="chase-paid-options" hidden>
-                                <label for="chase-custom-words">${chase.wordsLabel}</label>
-                                <textarea id="chase-custom-words" rows="4" maxlength="1000" spellcheck="false" placeholder="${chase.wordsPlaceholder}"></textarea>
-                                <p class="spelling-help">${chase.coming}</p>
-                                <button type="button" id="chase-generate-btn" disabled>${chase.generate}</button>
                             </div>
                         </div>
                         <div class="spelling-builder">

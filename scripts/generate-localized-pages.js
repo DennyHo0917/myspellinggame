@@ -135,9 +135,9 @@ const pages = {
     ogLocale: "es_ES",
     title: "Prueba de Ortografía Gratis con Tus Palabras — Sin Cuenta",
     description:
-      "Pega tu propia lista y practica con una prueba de ortografía, lluvia de palabras o Typing Chase. Corrección instantánea y sin cuenta de estudiante.",
+      "Pega tu propia lista y practica con una prueba de ortografía, lluvia de palabras o Persecución de escritura. Corrección instantánea y sin cuenta de estudiante.",
     keywords:
-      "juego de spelling en inglés,juego de deletreo en inglés,juego de ortografía inglesa,Typing Chase,juego de mecanografía,practicar spelling en inglés,juego con tus propias palabras,lista de vocabulario en inglés,juego de palabras en inglés para niños,práctica de spelling sin cuenta",
+      "juego de spelling en inglés,juego de deletreo en inglés,juego de ortografía inglesa,Persecución de escritura,juego de mecanografía,practicar spelling en inglés,juego con tus propias palabras,lista de vocabulario en inglés,juego de palabras en inglés para niños,práctica de spelling sin cuenta",
     ogTitle: "Prueba de ortografía con tus propias palabras",
     ogDescription:
       "Escucha palabras ocultas, recibe corrección al instante y repite los fallos. Sin cuenta.",
@@ -256,7 +256,7 @@ const pages = {
       ],
       seoTitle: "Tres formas de practicar tu propia lista",
       seoIntro:
-        "<strong>Prueba de ortografía</strong> reproduce una palabra oculta, la <strong>lluvia de palabras</strong> propone palabras que caen y <strong>Typing Chase</strong> convierte la velocidad al escribir frases en una persecución.",
+        "<strong>Prueba de ortografía</strong> reproduce una palabra oculta, la <strong>lluvia de palabras</strong> propone palabras que caen y <strong>Persecución de escritura</strong> convierte la velocidad al escribir frases en una persecución.",
       sectionTitle: "Una lista concreta, una práctica más útil",
       sectionText:
         "Pegar la lista real mantiene la práctica centrada en las palabras de esta semana. Los tres modos ofrecen una forma distinta de practicar sin cuenta de estudiante.",
@@ -281,7 +281,7 @@ const pages = {
     legalLinks: ["Privacidad", "Acerca de", "Contacto"],
     schema: {
       description:
-        "Practica con tus propias palabras mediante una prueba de ortografía por audio, una lluvia de palabras o Typing Chase, un juego de mecanografía por frases con una persecución.",
+        "Practica con tus propias palabras mediante una prueba de ortografía por audio, una lluvia de palabras o Persecución de escritura, un juego de mecanografía por frases con una persecución.",
       faq: [
         [
           "¿Puedo usar mis propias palabras?",
@@ -306,9 +306,9 @@ const pages = {
     ogLocale: "pt_BR",
     title: "Teste de Ortografia Grátis com Suas Palavras — Sem Conta",
     description:
-      "Cole sua lista e pratique com teste de ortografia, chuva de palavras ou Typing Chase. Correção imediata e sem conta de aluno.",
+      "Cole sua lista e pratique com teste de ortografia, chuva de palavras ou Perseguição de digitação. Correção imediata e sem conta de aluno.",
     keywords:
-      "jogo de soletrar em inglês,soletrar em inglês,jogo de spelling em inglês,Typing Chase,jogo de digitação,praticar spelling em inglês,lista de palavras em inglês,jogo com suas próprias palavras,atividade de inglês para crianças,spelling bee online grátis",
+      "jogo de soletrar em inglês,soletrar em inglês,jogo de spelling em inglês,Perseguição de digitação,jogo de digitação,praticar spelling em inglês,lista de palavras em inglês,jogo com suas próprias palavras,atividade de inglês para crianças,spelling bee online grátis",
     ogTitle: "Teste de ortografia com suas próprias palavras",
     ogDescription:
       "Ouça palavras escondidas, veja a correção na hora e revise os erros. Sem login.",
@@ -427,7 +427,7 @@ const pages = {
       ],
       seoTitle: "Três formas de praticar sua própria lista",
       seoIntro:
-        "O <strong>teste de ortografia</strong> toca uma palavra escondida, a <strong>chuva de palavras</strong> traz palavras caindo e o <strong>Typing Chase</strong> transforma a velocidade ao digitar frases em uma perseguição.",
+        "O <strong>teste de ortografia</strong> toca uma palavra escondida, a <strong>chuva de palavras</strong> traz palavras caindo e a <strong>Perseguição de digitação</strong> transforma a velocidade ao digitar frases em uma perseguição.",
       sectionTitle: "Uma lista real deixa a prática mais útil",
       sectionText:
         "Colar a lista da semana mantém o foco nas palavras certas. Os três modos oferecem formas diferentes de praticar sem conta de aluno.",
@@ -452,7 +452,7 @@ const pages = {
     legalLinks: ["Privacidade", "Sobre", "Contato"],
     schema: {
       description:
-        "Pratique com suas próprias palavras em um teste de ortografia por áudio, uma chuva de palavras ou Typing Chase, um jogo de digitação de frases em formato de perseguição.",
+        "Pratique com suas próprias palavras em um teste de ortografia por áudio, uma chuva de palavras ou Perseguição de digitação, um jogo de digitação de frases em formato de perseguição.",
       faq: [
         [
           "Posso usar minhas próprias palavras?",
@@ -477,9 +477,9 @@ const pages = {
     ogLocale: "fr_FR",
     title: "Test d’Orthographe Anglaise avec Vos Mots — Sans Compte",
     description:
-      "Collez votre liste et choisissez un test d’orthographe, une pluie de mots ou Typing Chase. Correction immédiate, sans compte élève.",
+      "Collez votre liste et choisissez un test d’orthographe, une pluie de mots ou Course de frappe. Correction immédiate, sans compte élève.",
     keywords:
-      "jeu d'orthographe anglais,orthographe anglaise,Typing Chase,jeu de dactylographie,pratiquer l'orthographe anglaise,jeu de spelling anglais,épeler des mots anglais,liste de mots anglais,jeu avec vos propres mots,spelling bee anglais gratuit",
+      "jeu d'orthographe anglais,orthographe anglaise,Course de frappe,jeu de dactylographie,pratiquer l'orthographe anglaise,jeu de spelling anglais,épeler des mots anglais,liste de mots anglais,jeu avec vos propres mots,spelling bee anglais gratuit",
     ogTitle: "Test d’orthographe anglaise avec vos propres mots",
     ogDescription:
       "Écoutez des mots cachés, obtenez la correction immédiatement et reprenez vos erreurs. Sans compte.",
@@ -598,7 +598,7 @@ const pages = {
       ],
       seoTitle: "Trois façons de travailler votre propre liste",
       seoIntro:
-        "Le <strong>test d’orthographe</strong> lit un mot caché, la <strong>pluie de mots</strong> fait tomber les mots et <strong>Typing Chase</strong> transforme la saisie rapide de phrases en course-poursuite.",
+        "Le <strong>test d’orthographe</strong> lit un mot caché, la <strong>pluie de mots</strong> fait tomber les mots et la <strong>Course de frappe</strong> transforme la saisie rapide de phrases en course-poursuite.",
       sectionTitle: "Une liste précise rend la pratique plus utile",
       sectionText:
         "Coller la liste de la semaine garde la pratique centrée sur les bons mots. Les trois modes proposent des exercices différents sans compte élève.",
@@ -623,7 +623,7 @@ const pages = {
     legalLinks: ["Confidentialité", "À propos", "Contact"],
     schema: {
       description:
-        "Travaillez vos propres mots avec un test audio, une pluie de mots ou Typing Chase, un jeu de saisie de phrases sous forme de course-poursuite.",
+        "Travaillez vos propres mots avec un test audio, une pluie de mots ou Course de frappe, un jeu de saisie de phrases sous forme de course-poursuite.",
       faq: [
         [
           "Puis-je utiliser mes propres mots ?",
@@ -648,9 +648,9 @@ const pages = {
     ogLocale: "id_ID",
     title: "Tes Ejaan Gratis dengan Kata Sendiri — Tanpa Akun",
     description:
-      "Tempel daftar sendiri lalu pilih tes ejaan, hujan kata, atau Typing Chase. Hasil langsung dan tanpa akun siswa.",
+      "Tempel daftar sendiri lalu pilih tes ejaan, hujan kata, atau Kejar Mengetik. Hasil langsung dan tanpa akun siswa.",
     keywords:
-      "game spelling bahasa Inggris,permainan spelling bahasa Inggris,Typing Chase,game mengetik,permainan mengeja bahasa Inggris,latihan mengeja bahasa Inggris,belajar spelling bahasa Inggris,game kosakata bahasa Inggris,daftar kata bahasa Inggris,buat daftar kata sendiri,game dengan kata sendiri,latihan spelling anak,spelling bee online gratis",
+      "game spelling bahasa Inggris,permainan spelling bahasa Inggris,Kejar Mengetik,game mengetik,permainan mengeja bahasa Inggris,latihan mengeja bahasa Inggris,belajar spelling bahasa Inggris,game kosakata bahasa Inggris,daftar kata bahasa Inggris,buat daftar kata sendiri,game dengan kata sendiri,latihan spelling anak,spelling bee online gratis",
     ogTitle: "Tes ejaan dengan daftar kata sendiri",
     ogDescription:
       "Dengarkan kata tersembunyi, lihat hasilnya, lalu ulangi yang salah. Tanpa login.",
@@ -768,7 +768,7 @@ const pages = {
       ],
       seoTitle: "Tiga cara berlatih dengan daftar sendiri",
       seoIntro:
-        "<strong>Tes ejaan</strong> membacakan kata tersembunyi, <strong>hujan kata</strong> menghadirkan kata yang jatuh, dan <strong>Typing Chase</strong> mengubah kecepatan mengetik kalimat menjadi aksi kejar-kejaran.",
+        "<strong>Tes ejaan</strong> membacakan kata tersembunyi, <strong>hujan kata</strong> menghadirkan kata yang jatuh, dan <strong>Kejar Mengetik</strong> mengubah kecepatan mengetik kalimat menjadi aksi kejar-kejaran.",
       sectionTitle: "Daftar yang tepat membuat latihan lebih berguna",
       sectionText:
         "Menempel daftar minggu ini membuat latihan tetap fokus. Ketiga mode memberi cara latihan yang berbeda tanpa akun siswa.",
@@ -793,7 +793,7 @@ const pages = {
     legalLinks: ["Privasi", "Tentang", "Kontak"],
     schema: {
       description:
-        "Berlatihlah dengan kata sendiri melalui tes ejaan audio, hujan kata, atau Typing Chase, game mengetik kalimat dalam aksi kejar-kejaran.",
+        "Berlatihlah dengan kata sendiri melalui tes ejaan audio, hujan kata, atau Kejar Mengetik, game mengetik kalimat dalam aksi kejar-kejaran.",
       faq: [
         [
           "Bisa memakai daftar kata sendiri?",
@@ -818,9 +818,9 @@ const pages = {
     ogLocale: "zh_CN",
     title: "用自己的单词做免费英语听写 — 无需登录",
     description:
-      "粘贴自己的英语单词表，选择听写测试、单词雨或 Typing Chase 打字追逐。即时查看结果，无需学生账号。",
+      "粘贴自己的英语单词表，选择听写测试、单词雨或极速追捕。即时查看结果，无需学生账号。",
     keywords:
-      "英语拼写练习,spelling game,Typing Chase,打字追逐游戏,英语单词拼写游戏,自定义单词表游戏,自定义英语单词表,英语听写练习,英语默写练习,英语单词练习小游戏,小学生英语拼写,背单词打字游戏,自定义单词表背单词,无需注册英语练习",
+      "英语拼写练习,spelling game,极速追捕,打字追逐游戏,英语单词拼写游戏,自定义单词表游戏,自定义英语单词表,英语听写练习,英语默写练习,英语单词练习小游戏,小学生英语拼写,背单词打字游戏,自定义单词表背单词,无需注册英语练习",
     ogTitle: "用自己的单词做英语听写测试",
     ogDescription: "听隐藏单词、即时查看批改结果并重练错词，无需登录。",
     nav: {
@@ -929,7 +929,7 @@ const pages = {
       ],
       seoTitle: "同一份单词表，三种练习方式",
       seoIntro:
-        "<strong>听写测试</strong>会朗读隐藏单词，<strong>单词雨</strong>提供掉落单词玩法，<strong>Typing Chase</strong>则把整句打字速度变成追捕小偷的游戏。",
+        "<strong>听写测试</strong>会朗读隐藏单词，<strong>单词雨</strong>提供掉落单词玩法，<strong>极速追捕</strong>则把整句打字速度变成追捕小偷的游戏。",
       sectionTitle: "只练现在真正需要的单词",
       sectionText:
         "粘贴本周词表后，可以用三种不同方式练习；听写和单词雨还会整理答错或漏掉的词，方便重练。",
@@ -948,7 +948,7 @@ const pages = {
     legalLinks: ["隐私", "关于", "联系"],
     schema: {
       description:
-        "粘贴自己的英语单词，选择隐藏单词听写测试、单词雨或 Typing Chase。Typing Chase 会把整句打字速度变成追逐游戏。",
+        "粘贴自己的英语单词，选择隐藏单词听写测试、单词雨或极速追捕。极速追捕会把整句打字速度变成追逐游戏。",
       faq: [
         [
           "可以用自己的英语单词吗？",

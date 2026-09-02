@@ -516,8 +516,12 @@ export function loadSampleWords() {
   const input = textarea();
   if (!input) return;
   input.value = SAMPLE_WORDS.join("\n");
-  if (sentenceTextarea())
-    sentenceTextarea().value = SAMPLE_EXAMPLE_SENTENCES.join("\n");
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  const sentences = sentenceTextarea();
+  if (sentences) {
+    sentences.value = SAMPLE_EXAMPLE_SENTENCES.join("\n");
+    sentences.dispatchEvent(new Event("input", { bubbles: true }));
+  }
   status(t("sampleLoaded", { count: SAMPLE_WORDS.length }));
 }
 

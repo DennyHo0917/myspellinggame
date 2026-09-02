@@ -285,7 +285,10 @@ test("custom spelling pages emphasize own words and launch without login", () =>
       path.join(root, locale, "custom-spelling-words-game.html"),
       "utf8",
     );
-    assert.match(html, /<form[^>]*class="[^"]*\blanding-launcher\b[^"]*"[^>]*data-mode="typing"/);
+    assert.match(
+      html,
+      /<form[^>]*class="[^"]*\blanding-launcher\b[^"]*"[^>]*data-mode="typing"/,
+    );
     assert.match(html, /placeholder="because&#10;friend&#10;beautiful"/);
     for (const term of terms) assert.ok(html.includes(term), term);
   }
@@ -318,7 +321,10 @@ test("sight-word pages launch a localized no-login typing game", () => {
       "utf8",
     );
     assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
-    assert.match(html, /<form[^>]*class="[^"]*\blanding-launcher\b[^"]*"[^>]*data-mode="typing"/);
+    assert.match(
+      html,
+      /<form[^>]*class="[^"]*\blanding-launcher\b[^"]*"[^>]*data-mode="typing"/,
+    );
     assert.match(html, /placeholder="the&#10;and&#10;you&#10;said"/);
     for (const term of terms) assert.ok(html.includes(term), term);
     for (const hreflang of [
@@ -465,7 +471,10 @@ test("parent landing pages launch practice and expose localized workspace value"
       "utf8",
     );
     assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
-    assert.match(html, /class="[^"]*\blanding-launcher\b[^"]*"[^>]+data-mode="dictation"/);
+    assert.match(
+      html,
+      /class="[^"]*\blanding-launcher\b[^"]*"[^>]+data-mode="dictation"/,
+    );
     assert.match(html, /href="\/workspace\?lang=/);
     assert.match(html, /href="[^"]*\/pricing"/);
     for (const term of terms)
@@ -519,13 +528,7 @@ test("teacher landing pages launch practice and expose localized assignment valu
       "Perkembangan",
       "Penguasaan",
     ],
-    zh: [
-      "进入教师工作台",
-      "学生练习无需账号",
-      "作业",
-      "学习进度",
-      "掌握度",
-    ],
+    zh: ["进入教师工作台", "学生练习无需账号", "作业", "学习进度", "掌握度"],
   };
   for (const [locale, terms] of Object.entries(expected)) {
     const html = fs.readFileSync(
@@ -762,6 +765,24 @@ test("localized home pages expose the Workspace section without changing practic
   assert.doesNotMatch(home, /365 days on P(?:ro)/);
 });
 
+test("localized home SEO uses each locale's Typing Chase name", () => {
+  const names = {
+    es: "Persecución de escritura",
+    "pt-br": "Perseguição de digitação",
+    fr: "Course de frappe",
+    id: "Kejar Mengetik",
+    zh: "极速追捕",
+  };
+  for (const [locale, name] of Object.entries(names)) {
+    const html = fs.readFileSync(path.join(root, locale, "index.html"), "utf8");
+    assert.ok(
+      html.split(name).length >= 5,
+      `${locale}: metadata, visible copy, and schema should use ${name}`,
+    );
+    assert.doesNotMatch(html, /Typing Chase/, locale);
+  }
+});
+
 test("FAQ, About, and Parent pages describe current product capabilities", () => {
   const faq = fs.readFileSync(path.join(root, "faq.html"), "utf8");
   for (const term of [
@@ -804,7 +825,11 @@ test("localized SEO pages describe blanked example-sentence prompts", () => {
       assert.match(html, markers[locale], `${prefix}${file}`);
     }
   }
-  assert.ok(fs.readFileSync(path.join(root, "llms.txt"), "utf8").includes("blanks the target word"));
+  assert.ok(
+    fs
+      .readFileSync(path.join(root, "llms.txt"), "utf8")
+      .includes("blanks the target word"),
+  );
 });
 
 test("FAQ visible questions and JSON-LD entities stay synchronized", () => {

@@ -51,7 +51,7 @@ const MESSAGES = {
     startTyping: "Start Typing Rain",
     dictationTitle: "Spelling Test",
     typingTitle: "Typing Rain",
-    chaseTitle: "Persecución de escritura",
+    chaseTitle: "Typing Chase",
     chaseChecking: "Checking your access...",
     chasePaidHelp:
       "Add words for a custom AI story, or play a sample story now.",
@@ -140,7 +140,7 @@ const MESSAGES = {
     startTyping: "Empezar lluvia de palabras",
     dictationTitle: "Prueba de ortografía",
     typingTitle: "Lluvia de palabras",
-    chaseTitle: "Perseguição de digitação",
+    chaseTitle: "Persecución de escritura",
     chaseChecking: "Comprobando tu acceso...",
     chasePaidHelp:
       "Añade palabras para crear un relato con IA o juega ahora con un relato de ejemplo.",
@@ -230,7 +230,7 @@ const MESSAGES = {
     startTyping: "Começar chuva de palavras",
     dictationTitle: "Teste de ortografia",
     typingTitle: "Chuva de palavras",
-    chaseTitle: "Course de frappe",
+    chaseTitle: "Perseguição de digitação",
     chaseChecking: "Verificando seu acesso...",
     chasePaidHelp:
       "Adicione palavras para criar uma história com IA ou jogue agora com uma história de exemplo.",
@@ -319,7 +319,7 @@ const MESSAGES = {
     startTyping: "Commencer la pluie de mots",
     dictationTitle: "Test d’orthographe",
     typingTitle: "Pluie de mots",
-    chaseTitle: "Kejar Mengetik",
+    chaseTitle: "Course de frappe",
     chaseChecking: "Vérification de votre accès...",
     chasePaidHelp:
       "Ajoutez des mots pour créer une histoire avec l’IA, ou jouez avec une histoire d’exemple.",
@@ -406,7 +406,7 @@ const MESSAGES = {
     startTyping: "Mulai hujan kata",
     dictationTitle: "Tes ejaan",
     typingTitle: "Hujan kata",
-    chaseTitle: "Typing Chase",
+    chaseTitle: "Kejar Mengetik",
     chaseChecking: "Memeriksa akses Anda...",
     chasePaidHelp:
       "Tambahkan kata untuk membuat cerita dengan AI, atau mainkan cerita contoh sekarang.",

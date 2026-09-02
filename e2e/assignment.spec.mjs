@@ -1909,6 +1909,11 @@ test("clearing the word list stays empty until sample words are loaded", async (
 
   await page.getByRole("button", { name: "Sample list" }).click();
   await expect(words).toHaveValue(/because/);
+  await expect(
+    page.locator(
+      ".inline-numbered-input:has(#custom-word-list) .list-marker-layer div",
+    ),
+  ).toHaveCount(8);
   await page.getByRole("button", { name: "Start Spelling Test" }).click();
   await expect(
     page.getByRole("button", { name: "Return to main menu" }),

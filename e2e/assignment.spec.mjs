@@ -1920,6 +1920,27 @@ test("clearing the word list stays empty until sample words are loaded", async (
   ).toBeVisible();
 });
 
+test("example sentence numbers follow logical lines when text wraps", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 820, height: 700 });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  await page
+    .locator("#custom-example-sentences")
+    .fill(
+      "I stayed inside because it was raining and the weather kept everyone indoors all afternoon.\nMy friend helped me.",
+    );
+
+  const markers = page.locator(
+    ".inline-numbered-input:has(#custom-example-sentences) .list-marker-layer div",
+  );
+  await expect(markers).toHaveCount(2);
+  await expect
+    .poll(() => markers.first().evaluate((marker) => marker.offsetHeight))
+    .toBeGreaterThan(30);
+});
+
 test("shared practice links do not reuse or overwrite local example sentences", async ({
   page,
 }) => {

@@ -68,6 +68,7 @@ Set `RESEND_API_KEY` as a Cloudflare secret. The first time Better Auth creates 
    - `customer.subscription.created`
    - `customer.subscription.updated`
    - `customer.subscription.deleted`
+   - `invoice.created`
    - `invoice.payment_succeeded`
    - `invoice.payment_failed`
 9. Store the API key and webhook signing secret as `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` Cloudflare secrets.

@@ -3682,6 +3682,16 @@ describe("Stripe checkout", () => {
       status: "active",
       stripe_price_id: "price_parent_monthly",
     });
+    await expect(
+      bindings.DB.prepare(
+        "SELECT plan, billing_interval, status, stripe_price_id FROM payment_orders WHERE id = 'in_change'",
+      ).first(),
+    ).resolves.toEqual({
+      plan: "teacher",
+      billing_interval: "month",
+      status: "pending",
+      stripe_price_id: "price_teacher_monthly",
+    });
   });
 
   it("keeps Teacher active and schedules Parent for the current period end", async () => {
@@ -3876,6 +3886,102 @@ describe("Stripe event processing", () => {
         },
       },
     }) as unknown as Stripe.Event;
+
+  it("recreates a missing order when Stripe completes Checkout", async () => {
+    await processStripeEvent(
+      bindings.DB,
+      {
+        id: "evt_checkout_completed_missing_order",
+        type: "checkout.session.completed",
+        data: {
+          object: {
+            id: "cs_created",
+            created: Math.floor(Date.now() / 1000),
+            status: "complete",
+            payment_status: "paid",
+            client_reference_id: teacherA.id,
+            metadata: {
+              owner_user_id: teacherA.id,
+              plan: "parent",
+              billing_interval: "year",
+            },
+          },
+        },
+      } as unknown as Stripe.Event,
+      testEnv(),
+    );
+
+    await expect(
+      bindings.DB.prepare(
+        "SELECT plan, billing_interval, status, stripe_price_id FROM payment_orders WHERE id = 'cs_created'",
+      ).first(),
+    ).resolves.toEqual({
+      plan: "parent",
+      billing_interval: "year",
+      status: "paid",
+      stripe_price_id: "price_parent_yearly",
+    });
+  });
+
+  it("records a Stripe plan-change invoice before it is paid", async () => {
+    await insertSubscription({
+      plan: "parent",
+      status: "active",
+      priceId: "price_parent_monthly",
+      currentPeriodEnd: new Date(Date.now() + 86_400_000).toISOString(),
+    });
+    await bindings.DB.prepare(
+      `UPDATE subscriptions
+       SET stripe_customer_id = 'cus_invoice', stripe_subscription_id = 'sub_invoice'
+       WHERE user_id = ?`,
+    )
+      .bind(teacherA.id)
+      .run();
+
+    await processStripeEvent(
+      bindings.DB,
+      {
+        id: "evt_invoice_created",
+        type: "invoice.created",
+        data: {
+          object: {
+            id: "in_created",
+            billing_reason: "subscription_update",
+            status: "open",
+            customer: "cus_invoice",
+            parent: {
+              subscription_details: { subscription: "sub_invoice" },
+            },
+            amount_due: 500,
+            currency: "usd",
+            created: Math.floor(Date.now() / 1000),
+            lines: {
+              data: [
+                {
+                  amount: 500,
+                  pricing: {
+                    price_details: { price: "price_teacher_monthly" },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      } as unknown as Stripe.Event,
+      testEnv(),
+    );
+
+    await expect(
+      bindings.DB.prepare(
+        "SELECT plan, billing_interval, status, amount_total FROM payment_orders WHERE id = 'in_created'",
+      ).first(),
+    ).resolves.toEqual({
+      plan: "teacher",
+      billing_interval: "month",
+      status: "pending",
+      amount_total: 500,
+    });
+  });
 
   it.each(["month", "year"] as const)(
     "activates Parent from the configured %s subscription Price",
@@ -4186,6 +4292,11 @@ describe("Stripe event processing", () => {
       status: "active",
       stripe_price_id: "price_parent_monthly",
     });
+    expect(
+      await bindings.DB.prepare(
+        "SELECT status FROM payment_orders WHERE id = 'in_plan_change_failed'",
+      ).first("status"),
+    ).toBe("failed");
   });
 
   it.each(["checkout.session.expired", "checkout.session.completed"] as const)(

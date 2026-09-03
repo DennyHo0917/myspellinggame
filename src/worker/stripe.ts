@@ -126,6 +126,14 @@ function configuredPricePlan(priceId: string, env: StripeEnv) {
   return null;
 }
 
+function configuredPriceInterval(priceId: string, env: StripeEnv) {
+  return priceId === env.STRIPE_PARENT_PRICE_YEARLY ||
+    priceId === env.STRIPE_TEACHER_PRICE_YEARLY ||
+    priceId === env.STRIPE_PRICE_YEARLY
+    ? "year"
+    : "month";
+}
+
 export function hasActiveSubscription(
   subscription: SubscriptionAccess | null,
   env: StripeEnv,
@@ -187,7 +195,7 @@ function scheduleDiscounts(
 
 async function ownerFromStripeObject(
   db: D1Database,
-  value: { metadata?: Stripe.Metadata; customer?: unknown; id?: string },
+  value: { metadata?: Stripe.Metadata | null; customer?: unknown; id?: string },
 ) {
   const metadataOwner = value.metadata?.owner_user_id;
   if (metadataOwner) return metadataOwner;
@@ -215,6 +223,197 @@ async function clearCheckoutLock(
     )
     .bind(ownerUserId, session.id)
     .run();
+}
+
+type PaymentOrder = {
+  id: string;
+  userId: string;
+  plan: "parent" | "teacher";
+  interval: "month" | "year";
+  status: "pending" | "completed" | "paid" | "failed" | "canceled" | "expired";
+  priceId: string;
+  customerId: string | null;
+  subscriptionId: string | null;
+  amountTotal: number | null;
+  currency: string | null;
+  createdAt: string;
+};
+
+async function upsertPaymentOrder(db: D1Database, order: PaymentOrder) {
+  const now = new Date().toISOString();
+  await db
+    .prepare(
+      `INSERT INTO payment_orders (
+         id, user_id, plan, billing_interval, status, stripe_price_id,
+         stripe_customer_id, stripe_subscription_id, amount_total, currency,
+         created_at, updated_at
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET
+         status = CASE WHEN payment_orders.status IN ('paid', 'canceled')
+                       THEN payment_orders.status ELSE excluded.status END,
+         stripe_customer_id = COALESCE(excluded.stripe_customer_id, payment_orders.stripe_customer_id),
+         stripe_subscription_id = COALESCE(excluded.stripe_subscription_id, payment_orders.stripe_subscription_id),
+         amount_total = COALESCE(excluded.amount_total, payment_orders.amount_total),
+         currency = COALESCE(excluded.currency, payment_orders.currency),
+         updated_at = excluded.updated_at`,
+    )
+    .bind(
+      order.id,
+      order.userId,
+      order.plan,
+      order.interval,
+      order.status,
+      order.priceId,
+      order.customerId,
+      order.subscriptionId,
+      order.amountTotal,
+      order.currency,
+      order.createdAt,
+      now,
+    )
+    .run();
+}
+
+async function orderContext(
+  db: D1Database,
+  userId: string,
+  plan?: string,
+  interval?: string,
+) {
+  const row = await db
+    .prepare(
+      `SELECT u.workspace_type, s.plan, s.billing_interval
+       FROM user u LEFT JOIN subscriptions s ON s.user_id = u.id
+       WHERE u.id = ?`,
+    )
+    .bind(userId)
+    .first<{
+      workspace_type: string | null;
+      plan: string | null;
+      billing_interval: string | null;
+    }>();
+  if (!row) return null;
+  return {
+    plan:
+      plan === "parent" || plan === "teacher"
+        ? plan
+        : row.plan === "parent" || row.plan === "teacher"
+          ? row.plan
+          : row.workspace_type === "teacher"
+            ? "teacher"
+            : "parent",
+    interval:
+      interval === "year" || row.billing_interval === "year" ? "year" : "month",
+  } as const;
+}
+
+async function recordCheckoutOrder(
+  db: D1Database,
+  session: Stripe.Checkout.Session,
+  env: StripeEnv,
+) {
+  const userId =
+    session.client_reference_id ||
+    session.metadata?.owner_user_id ||
+    (await ownerFromStripeObject(db, session));
+  if (!userId) return;
+  const context = await orderContext(
+    db,
+    userId,
+    session.metadata?.plan,
+    session.metadata?.billing_interval,
+  );
+  if (!context) return;
+  const status =
+    session.payment_status === "paid"
+      ? "paid"
+      : session.status === "complete"
+        ? "completed"
+        : session.status === "expired"
+          ? "expired"
+          : "pending";
+  await upsertPaymentOrder(db, {
+    id: session.id,
+    userId,
+    ...context,
+    status,
+    priceId: checkoutPrice(env, context.plan, context.interval),
+    customerId: objectId(session.customer),
+    subscriptionId: objectId(session.subscription),
+    amountTotal: session.amount_total ?? null,
+    currency: session.currency ?? null,
+    createdAt: unixToIso(session.created) ?? new Date().toISOString(),
+  });
+}
+
+async function recordPlanChangeInvoice(
+  db: D1Database,
+  invoice: Stripe.Invoice,
+  env: StripeEnv,
+  explicit?: {
+    userId: string;
+    plan: "parent" | "teacher";
+    interval: "month" | "year";
+    priceId: string;
+  },
+  eventStatus?: "pending" | "paid" | "failed",
+) {
+  if (!explicit && invoice.billing_reason !== "subscription_update") return;
+  const dynamicInvoice = invoice as unknown as {
+    subscription?: unknown;
+    parent?: { subscription_details?: { subscription?: unknown } };
+  };
+  const subscriptionId = objectId(
+    dynamicInvoice.subscription ??
+      dynamicInvoice.parent?.subscription_details?.subscription,
+  );
+  const customerId = objectId(invoice.customer);
+  const userId =
+    explicit?.userId ||
+    (await ownerFromStripeObject(db, {
+      customer: invoice.customer,
+      id: subscriptionId ?? undefined,
+    }));
+  if (!userId) return;
+  const invoiceLines = invoice.lines?.data ?? [];
+  const priceLine =
+    invoiceLines.find((line) => {
+      const candidate = objectId(line.pricing?.price_details?.price);
+      return (
+        line.amount > 0 && candidate && configuredPricePlan(candidate, env)
+      );
+    }) ??
+    invoiceLines.find((line) => {
+      const candidate = objectId(line.pricing?.price_details?.price);
+      return candidate && configuredPricePlan(candidate, env);
+    });
+  const linePriceId = objectId(priceLine?.pricing?.price_details?.price);
+  const priceId = explicit?.priceId || linePriceId;
+  const pricePlan = priceId ? configuredPricePlan(priceId, env) : null;
+  const context = await orderContext(
+    db,
+    userId,
+    explicit?.plan ?? pricePlan ?? undefined,
+    explicit?.interval ??
+      (priceId ? configuredPriceInterval(priceId, env) : undefined),
+  );
+  if (!context) return;
+  const failed =
+    invoice.status === "void" || invoice.status === "uncollectible";
+  await upsertPaymentOrder(db, {
+    id: invoice.id,
+    userId,
+    ...context,
+    status:
+      eventStatus ??
+      (invoice.status === "paid" ? "paid" : failed ? "failed" : "pending"),
+    priceId: priceId || checkoutPrice(env, context.plan, context.interval),
+    customerId,
+    subscriptionId,
+    amountTotal: invoice.amount_due ?? invoice.amount_paid ?? null,
+    currency: invoice.currency ?? null,
+    createdAt: unixToIso(invoice.created) ?? new Date().toISOString(),
+  });
 }
 
 async function updateOrderFromSession(
@@ -442,28 +641,19 @@ export async function createCheckout(
       );
     }
     try {
-      await db
-        .prepare(
-          `INSERT INTO payment_orders (
-             id, user_id, plan, billing_interval, status, stripe_price_id,
-             stripe_customer_id, stripe_subscription_id, amount_total, currency,
-             created_at, updated_at
-           ) VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?)`,
-        )
-        .bind(
-          session.id,
-          user.id,
-          plan,
-          interval,
-          price,
-          objectId(session.customer),
-          objectId(session.subscription),
-          session.amount_total ?? null,
-          session.currency ?? null,
-          nowIso,
-          nowIso,
-        )
-        .run();
+      await upsertPaymentOrder(db, {
+        id: session.id,
+        userId: user.id,
+        plan,
+        interval,
+        status: "pending",
+        priceId: price,
+        customerId: objectId(session.customer),
+        subscriptionId: objectId(session.subscription),
+        amountTotal: session.amount_total ?? null,
+        currency: session.currency ?? null,
+        createdAt: nowIso,
+      });
     } catch (error) {
       await expireCheckoutSession(session.id);
       throw error;
@@ -686,6 +876,13 @@ export async function changeSubscriptionPlan(
       : null;
   if (!invoice && typeof updated.latest_invoice === "string")
     invoice = await retrieveInvoice(updated.latest_invoice);
+  if (invoice)
+    await recordPlanChangeInvoice(db, invoice, env, {
+      userId,
+      plan,
+      interval,
+      priceId: price,
+    });
   if (updated.pending_update || (invoice && invoice.status !== "paid")) {
     if (invoice?.hosted_invoice_url) return { url: invoice.hosted_invoice_url };
     throw new HttpError(
@@ -911,6 +1108,11 @@ export async function applyStripeEvent(
 ) {
   switch (event.type) {
     case "checkout.session.completed":
+      await recordCheckoutOrder(
+        db,
+        event.data.object as Stripe.Checkout.Session,
+        env,
+      );
       await applyCheckout(
         db,
         event.data.object as Stripe.Checkout.Session,
@@ -918,6 +1120,11 @@ export async function applyStripeEvent(
       );
       break;
     case "checkout.session.expired":
+      await recordCheckoutOrder(
+        db,
+        event.data.object as Stripe.Checkout.Session,
+        env,
+      );
       await updateOrderFromSession(
         db,
         event.data.object as Stripe.Checkout.Session,
@@ -926,6 +1133,11 @@ export async function applyStripeEvent(
       await clearCheckoutLock(db, event.data.object as Stripe.Checkout.Session);
       break;
     case "checkout.session.async_payment_failed":
+      await recordCheckoutOrder(
+        db,
+        event.data.object as Stripe.Checkout.Session,
+        env,
+      );
       await updateOrderFromSession(
         db,
         event.data.object as Stripe.Checkout.Session,
@@ -934,6 +1146,11 @@ export async function applyStripeEvent(
       await clearCheckoutLock(db, event.data.object as Stripe.Checkout.Session);
       break;
     case "checkout.session.async_payment_succeeded":
+      await recordCheckoutOrder(
+        db,
+        event.data.object as Stripe.Checkout.Session,
+        env,
+      );
       await updateOrderFromSession(
         db,
         event.data.object as Stripe.Checkout.Session,
@@ -950,7 +1167,23 @@ export async function applyStripeEvent(
         env,
       );
       break;
+    case "invoice.created":
+      await recordPlanChangeInvoice(
+        db,
+        event.data.object as Stripe.Invoice,
+        env,
+        undefined,
+        "pending",
+      );
+      break;
     case "invoice.payment_succeeded":
+      await recordPlanChangeInvoice(
+        db,
+        event.data.object as Stripe.Invoice,
+        env,
+        undefined,
+        "paid",
+      );
       if (Number((event.data.object as Stripe.Invoice).amount_paid) <= 0) break;
       await applyInvoiceStatus(
         db,
@@ -960,6 +1193,13 @@ export async function applyStripeEvent(
       );
       break;
     case "invoice.payment_failed":
+      await recordPlanChangeInvoice(
+        db,
+        event.data.object as Stripe.Invoice,
+        env,
+        undefined,
+        "failed",
+      );
       if (
         (event.data.object as Stripe.Invoice).billing_reason ===
         "subscription_update"

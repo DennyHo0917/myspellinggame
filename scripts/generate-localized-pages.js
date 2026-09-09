@@ -1254,7 +1254,7 @@ function head(page) {
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style">
-    <link rel="preload" href="/src/js/index.js?v=typing-chase4" as="script">
+    <link rel="modulepreload" href="/src/js/index.js?v=typing-chase4">
     <link rel="preload" href="/images/chase/alley-loop.png" as="image">
     <link rel="preload" href="/images/chase/runners-chroma.png" as="image">
     <link rel="preload" href="/src/css/main.css" as="style">

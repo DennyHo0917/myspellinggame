@@ -736,7 +736,7 @@ async function matchSentenceLibrary(
   const rows = await db
     .prepare(
       `SELECT word, simple_sentence, difficult_sentence FROM word_sentences
-       WHERE lower(word) IN (${placeholders})`,
+       WHERE word IN (${placeholders})`,
     )
     .bind(...words)
     .all<{

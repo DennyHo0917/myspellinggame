@@ -765,6 +765,22 @@ test("localized home pages expose the Workspace section without changing practic
   assert.doesNotMatch(home, /365 days on P(?:ro)/);
 });
 
+test("home pages preload the module entry without a duplicate classic-script fetch", () => {
+  for (const locale of locales) {
+    const html = fs.readFileSync(path.join(root, locale, "index.html"), "utf8");
+    assert.match(
+      html,
+      /<link rel="modulepreload" href="\/src\/js\/index\.js\?v=typing-chase4"/,
+      locale || "en",
+    );
+    assert.doesNotMatch(
+      html,
+      /<link rel="preload" href="\/src\/js\/index\.js[^>]+as="script"/,
+      locale || "en",
+    );
+  }
+});
+
 test("localized home SEO uses each locale's Typing Chase name", () => {
   const names = {
     es: "Persecución de escritura",

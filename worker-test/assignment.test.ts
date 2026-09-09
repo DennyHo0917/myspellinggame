@@ -2721,6 +2721,18 @@ describe("assignment attempts", () => {
       error: "pro_required",
       message: "CSV export is included in the Teacher Plan.",
     });
+    await bindings.DB.prepare(
+      `INSERT INTO word_sentences (word, simple_sentence, difficult_sentence)
+       VALUES ('apple', 'I ate an apple.', 'The orchard produced a crisp apple.')`,
+    ).run();
+    const parentSentenceLibrary = await call("/api/sentence-library/match", {
+      method: "POST",
+      body: JSON.stringify({ words: ["APPLE"] }),
+    });
+    expect(parentSentenceLibrary.status).toBe(200);
+    expect(await parentSentenceLibrary.json()).toMatchObject({
+      matches: { apple: "I ate an apple." },
+    });
     const parentDetail = (await (
       await call(`/api/assignments/${id}`)
     ).json()) as Record<string, unknown>;

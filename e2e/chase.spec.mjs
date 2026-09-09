@@ -24,6 +24,89 @@ const analyticsEvents = (page, name) =>
     name,
   );
 
+test("homepage signs out with a JSON request before reloading", async ({
+  page,
+}) => {
+  let signedIn = true;
+  let signOutHeaders;
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      status: signedIn ? 200 : 401,
+      contentType: "application/json",
+      body: JSON.stringify(
+        signedIn
+          ? {
+              user: {
+                id: "teacher-a",
+                name: "Teacher A",
+                email: "teacher@example.test",
+              },
+            }
+          : { error: "sign_in_required" },
+      ),
+    }),
+  );
+  await page.route("**/api/auth/sign-out", async (route) => {
+    signOutHeaders = route.request().headers();
+    signedIn = true;
+    if (signOutHeaders["content-type"] === "application/json") {
+      signedIn = false;
+    }
+    await route.fulfill({
+      status: signedIn ? 403 : 200,
+      contentType: "application/json",
+      body: "{}",
+    });
+  });
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.getByText("Teacher A", { exact: true }).click();
+  await page.getByRole("button", { name: "Sign out" }).click();
+
+  await expect(page.locator(".home-account-link")).toBeVisible();
+  expect(signOutHeaders["content-type"]).toBe("application/json");
+});
+
+test("homepage keeps the signed-in state when sign-out fails", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const loads = Number(sessionStorage.getItem("homepageTestLoads") || "0");
+    sessionStorage.setItem("homepageTestLoads", String(loads + 1));
+  });
+  await page.route("**/api/me", (route) => {
+    return route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: {
+          id: "teacher-a",
+          name: "Teacher A",
+          email: "teacher@example.test",
+        },
+      }),
+    });
+  });
+  await page.route("**/api/auth/sign-out", (route) =>
+    route.fulfill({
+      status: 403,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "invalid_origin" }),
+    }),
+  );
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const loadsBeforeSignOut = await page.evaluate(() =>
+    sessionStorage.getItem("homepageTestLoads"),
+  );
+  await page.getByText("Teacher A", { exact: true }).click();
+  await page.getByRole("button", { name: "Sign out" }).click();
+
+  await expect(page.getByText("Teacher A", { exact: true })).toBeVisible();
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("homepageTestLoads")),
+  ).toBe(loadsBeforeSignOut);
+});
+
 test("anonymous Typing Chase players are sent to sign in", async ({ page }) => {
   await page.route("**/api/chase/passage", (route) =>
     route.fulfill({

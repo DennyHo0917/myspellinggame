@@ -41,12 +41,13 @@ async function syncHomeAccount() {
     logout.type = "button";
     logout.textContent = link.dataset.signOut;
     logout.addEventListener("click", async () => {
-      await fetch("/api/auth/sign-out", {
+      const response = await fetch("/api/auth/sign-out", {
         method: "POST",
         credentials: "same-origin",
+        headers: { "content-type": "application/json" },
         body: "{}",
       }).catch(() => null);
-      location.reload();
+      if (response?.ok) location.reload();
     });
     menu.append(email, logout);
     userMenu.append(toggle, menu);

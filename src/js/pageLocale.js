@@ -21,7 +21,7 @@ const MESSAGES = {
     wordLimitValue: "Keep the whole list together with up to 40 words.",
     parentPlanMonthly: "Parent Plan · $4.99/month",
     upgradeParentMonthly: "Upgrade to Parent · $4.99/month",
-    continueFree30: "Continue free with 30 words",
+    continueFree25: "Continue free with 25 words",
     photoImportSignIn: "Sign in",
     photoImportPlans: "View plans",
     photoImportProcessing: "Reading your spelling list…",
@@ -35,9 +35,9 @@ const MESSAGES = {
     sampleLoaded: "{count} sample words loaded",
     wordsInRound: "{count} words in this round",
     anonymousWordLimit:
-      "No-login practice supports up to 20 words per list. Sign in free to practice up to 30 words, or choose a paid plan for up to 40.",
+      "No-login practice supports up to 20 words per list. Sign in free to practice up to 25 words, or choose a paid plan for up to 40.",
     freeWordLimit:
-      "Free accounts support up to 30 words per list. Paid plans support up to 40.",
+      "Free accounts support up to 25 words per list. Paid plans support up to 40.",
     longListAdvice:
       "Longer lists can increase memory load. Consider a shorter practice or split these words across multiple assignments.",
     signInFree: "Sign in free",
@@ -113,7 +113,7 @@ const MESSAGES = {
     wordLimitValue: "Mantén la lista completa con hasta 40 palabras.",
     parentPlanMonthly: "Plan para familias · $4.99/mes",
     upgradeParentMonthly: "Mejorar al plan familiar · $4.99/mes",
-    continueFree30: "Continuar gratis con 30 palabras",
+    continueFree25: "Continuar gratis con 25 palabras",
     photoImportSignIn: "Iniciar sesión",
     photoImportPlans: "Ver planes",
     photoImportProcessing: "Leyendo tu lista de spelling…",
@@ -128,9 +128,9 @@ const MESSAGES = {
     sampleLoaded: "{count} palabras de ejemplo cargadas",
     wordsInRound: "{count} palabras en esta ronda",
     anonymousWordLimit:
-      "La práctica sin cuenta admite hasta 20 palabras por lista. Inicia sesión gratis para practicar hasta 30 o elige un plan de pago para hasta 40.",
+      "La práctica sin cuenta admite hasta 20 palabras por lista. Inicia sesión gratis para practicar hasta 25 o elige un plan de pago para hasta 40.",
     freeWordLimit:
-      "Las cuentas gratis admiten hasta 30 palabras por lista. Los planes de pago admiten hasta 40.",
+      "Las cuentas gratis admiten hasta 25 palabras por lista. Los planes de pago admiten hasta 40.",
     longListAdvice:
       "Las listas largas pueden aumentar la carga de memoria. Prueba sesiones más cortas o reparte las palabras en varias tareas.",
     signInFree: "Iniciar sesión gratis",
@@ -208,7 +208,7 @@ const MESSAGES = {
     wordLimitValue: "Mantenha a lista completa com até 40 palavras.",
     parentPlanMonthly: "Plano para Pais · US$ 4,99/mês",
     upgradeParentMonthly: "Assinar Plano para Pais · US$ 4,99/mês",
-    continueFree30: "Continuar grátis com 30 palavras",
+    continueFree25: "Continuar grátis com 25 palavras",
     photoImportSignIn: "Entrar",
     photoImportPlans: "Ver planos",
     photoImportProcessing: "Lendo sua lista de ortografia…",
@@ -223,9 +223,9 @@ const MESSAGES = {
     sampleLoaded: "{count} palavras de exemplo carregadas",
     wordsInRound: "{count} palavras nesta rodada",
     anonymousWordLimit:
-      "A prática sem conta aceita até 20 palavras por lista. Entre grátis para praticar até 30 ou escolha um plano pago para usar até 40.",
+      "A prática sem conta aceita até 20 palavras por lista. Entre grátis para praticar até 25 ou escolha um plano pago para usar até 40.",
     freeWordLimit:
-      "Contas grátis aceitam até 30 palavras por lista. Os planos pagos aceitam até 40.",
+      "Contas grátis aceitam até 25 palavras por lista. Os planos pagos aceitam até 40.",
     longListAdvice:
       "Listas longas podem aumentar a carga de memorização. Faça práticas mais curtas ou divida as palavras em várias tarefas.",
     signInFree: "Entrar grátis",
@@ -303,7 +303,7 @@ const MESSAGES = {
     wordLimitValue: "Gardez toute la liste ensemble, jusqu’à 40 mots.",
     parentPlanMonthly: "Offre Parents · 4,99 $US/mois",
     upgradeParentMonthly: "Choisir l’offre Parents · 4,99 $US/mois",
-    continueFree30: "Continuer gratuitement avec 30 mots",
+    continueFree25: "Continuer gratuitement avec 25 mots",
     photoImportSignIn: "Se connecter",
     photoImportPlans: "Voir les offres",
     photoImportProcessing: "Lecture de votre liste…",
@@ -317,9 +317,9 @@ const MESSAGES = {
     sampleLoaded: "{count} mots d’exemple chargés",
     wordsInRound: "{count} mots dans cette partie",
     anonymousWordLimit:
-      "L’entraînement sans compte accepte jusqu’à 20 mots par liste. Connectez-vous gratuitement pour en pratiquer jusqu’à 30, ou choisissez une offre payante pour aller jusqu’à 40.",
+      "L’entraînement sans compte accepte jusqu’à 20 mots par liste. Connectez-vous gratuitement pour en pratiquer jusqu’à 25, ou choisissez une offre payante pour aller jusqu’à 40.",
     freeWordLimit:
-      "Les comptes gratuits acceptent jusqu’à 30 mots par liste. Les offres payantes vont jusqu’à 40.",
+      "Les comptes gratuits acceptent jusqu’à 25 mots par liste. Les offres payantes vont jusqu’à 40.",
     longListAdvice:
       "Les longues listes peuvent alourdir la mémorisation. Privilégiez des séances plus courtes ou répartissez les mots entre plusieurs devoirs.",
     signInFree: "Créer un compte gratuit",
@@ -395,7 +395,7 @@ const MESSAGES = {
     wordLimitValue: "Pertahankan seluruh daftar hingga 40 kata.",
     parentPlanMonthly: "Paket Orang Tua · US$4,99/bulan",
     upgradeParentMonthly: "Upgrade Paket Orang Tua · US$4,99/bulan",
-    continueFree30: "Lanjut gratis dengan 30 kata",
+    continueFree25: "Lanjut gratis dengan 25 kata",
     photoImportSignIn: "Masuk",
     photoImportPlans: "Lihat paket",
     photoImportProcessing: "Membaca daftar ejaan Anda…",
@@ -410,9 +410,9 @@ const MESSAGES = {
     sampleLoaded: "{count} contoh kata dimuat",
     wordsInRound: "{count} kata di ronde ini",
     anonymousWordLimit:
-      "Latihan tanpa akun mendukung hingga 20 kata per daftar. Masuk gratis untuk berlatih hingga 30 kata, atau pilih paket berbayar hingga 40 kata.",
+      "Latihan tanpa akun mendukung hingga 20 kata per daftar. Masuk gratis untuk berlatih hingga 25 kata, atau pilih paket berbayar hingga 40 kata.",
     freeWordLimit:
-      "Akun Gratis mendukung hingga 30 kata per daftar. Paket berbayar mendukung hingga 40 kata.",
+      "Akun Gratis mendukung hingga 25 kata per daftar. Paket berbayar mendukung hingga 40 kata.",
     longListAdvice:
       "Daftar yang panjang dapat menambah beban ingatan. Coba latihan yang lebih singkat atau bagi kata ke beberapa tugas.",
     signInFree: "Masuk gratis",
@@ -485,7 +485,7 @@ const MESSAGES = {
     wordLimitValue: "整份词表一次练完，最多支持 40 个单词。",
     parentPlanMonthly: "家长方案 · US$4.99/月",
     upgradeParentMonthly: "升级家长方案 · US$4.99/月",
-    continueFree30: "免费登录，继续使用 30 个单词",
+    continueFree25: "免费登录，继续使用 25 个单词",
     photoImportSignIn: "登录",
     photoImportPlans: "查看方案",
     photoImportProcessing: "正在识别单词表…",
@@ -498,8 +498,8 @@ const MESSAGES = {
     sampleLoaded: "已载入 {count} 个示例单词",
     wordsInRound: "本轮 {count} 个单词",
     anonymousWordLimit:
-      "无需登录的练习每份词表最多 20 个单词。免费登录后可练习最多 30 个，付费方案最多 40 个。",
-    freeWordLimit: "免费账号每份词表最多 30 个单词。付费方案最多 40 个。",
+      "无需登录的练习每份词表最多 20 个单词。免费登录后可练习最多 25 个，付费方案最多 40 个。",
+    freeWordLimit: "免费账号每份词表最多 25 个单词。付费方案最多 40 个。",
     longListAdvice:
       "词表较长时，记忆负担可能增加。建议缩短单次练习，或拆分成多份作业。",
     signInFree: "免费登录",

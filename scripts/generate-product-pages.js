@@ -97,7 +97,7 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Free forever",
     freeItems: [
-      "Up to 30 words per assignment",
+      "Up to 25 words per assignment",
       "1 active assignment",
       "1 saved list",
       "1 learner",
@@ -162,7 +162,7 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Gratis para siempre",
     freeItems: [
-      "Hasta 30 palabras por tarea",
+      "Hasta 25 palabras por tarea",
       "1 tarea activa",
       "1 lista guardada",
       "1 estudiante",
@@ -227,7 +227,7 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Grátis para sempre",
     freeItems: [
-      "Até 30 palavras por tarefa",
+      "Até 25 palavras por tarefa",
       "1 tarefa ativa",
       "1 lista salva",
       "1 aluno",
@@ -292,7 +292,7 @@ const copy = {
     freePrice: "0 $",
     freeBilling: "Gratuit pour toujours",
     freeItems: [
-      "Jusqu’à 30 mots par devoir",
+      "Jusqu’à 25 mots par devoir",
       "1 devoir actif",
       "1 liste enregistrée",
       "1 élève",
@@ -357,7 +357,7 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Gratis selamanya",
     freeItems: [
-      "Hingga 30 kata per tugas",
+      "Hingga 25 kata per tugas",
       "1 tugas aktif",
       "1 daftar tersimpan",
       "1 siswa",
@@ -421,7 +421,7 @@ const copy = {
     freePrice: "$0",
     freeBilling: "永久免费",
     freeItems: [
-      "每份作业最多 30 个单词",
+      "每份作业最多 25 个单词",
       "最多 1 个活跃作业",
       "保存 1 个词表",
       "创建 1 个学习者档案",

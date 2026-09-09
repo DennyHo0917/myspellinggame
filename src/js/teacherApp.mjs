@@ -275,7 +275,7 @@ function syncFormSubmit(form) {
 function attachWordLimit(form, me, wordsSelector, { locked = false } = {}) {
   const input = form.querySelector(wordsSelector);
   if (!input) return;
-  const limit = isPlusPlan(me) ? 40 : 30;
+  const limit = isPlusPlan(me) ? 40 : 25;
   const field = input.closest(".field");
   const count = document.createElement("small");
   count.className = "word-count";

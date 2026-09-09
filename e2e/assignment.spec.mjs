@@ -1270,7 +1270,7 @@ test("practice advises signed-in plans after 20 words and preserves hard limits"
   await expect(
     page
       .locator("#spelling-limit-cta")
-      .getByRole("link", { name: "Continue free with 30 words" }),
+      .getByRole("link", { name: "Continue free with 25 words" }),
   ).toHaveAttribute("href", "/workspace?lang=en#teacher-sign-in");
 
   await page.getByRole("button", { name: "Copy practice link" }).click();
@@ -1292,23 +1292,23 @@ test("practice advises signed-in plans after 20 words and preserves hard limits"
   await expect(page.locator("#long-list-advice")).not.toContainText(/upgrade/i);
   await expect(page.locator("#spelling-limit-cta")).toHaveCount(0);
   await expect(page.locator("#custom-word-list")).toHaveValue(limitWords(21));
-  await page.locator("#custom-word-list").fill(limitWords(30));
+  await page.locator("#custom-word-list").fill(limitWords(25));
   await page.getByRole("button", { name: "Start Spelling Test" }).click();
   await expect(
     page.getByRole("button", { name: "Return to main menu" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Return to main menu" }).click();
-  await page.locator("#custom-word-list").fill(limitWords(31));
+  await page.locator("#custom-word-list").fill(limitWords(26));
   await page.getByRole("button", { name: "Start Spelling Test" }).click();
   await expect(page.locator("#spelling-status")).toContainText(
-    "Free accounts support up to 30 words",
+    "Free accounts support up to 25 words",
   );
   await page.getByRole("button", { name: "Start Spelling Test" }).click();
   expect(await analyticsEvents(page, "word_limit_hit")).toEqual([
     {
-      limit: 30,
+      limit: 25,
       account_tier: "free",
-      word_count_range: "31-80",
+      word_count_range: "26-80",
       action: "spelling_test",
     },
   ]);
@@ -3163,7 +3163,7 @@ test("new assignment validates Free word-count boundaries before submit", async 
   const wordsInput = page.getByLabel("Spelling words");
   const submit = page.getByRole("button", { name: "Create and publish" });
   await wordsInput.fill(limitWords(20));
-  await expect(page.locator(".word-count")).toHaveText("20 / 30");
+  await expect(page.locator(".word-count")).toHaveText("20 / 25");
   await expect(page.locator(".long-list-advice")).toBeHidden();
   await wordsInput.fill(limitWords(21));
   await expect(page.locator(".long-list-advice")).toBeVisible();
@@ -3171,15 +3171,15 @@ test("new assignment validates Free word-count boundaries before submit", async 
     "background-color",
     "rgb(255, 248, 220)",
   );
-  await expect(page.locator(".word-count")).toHaveText("21 / 30");
+  await expect(page.locator(".word-count")).toHaveText("21 / 25");
   await expect(page.locator(".word-limit-upgrade")).toBeHidden();
   await expect(submit).toBeEnabled();
 
-  await wordsInput.fill(limitWords(30));
-  await expect(page.locator(".word-count")).toHaveText("30 / 30");
+  await wordsInput.fill(limitWords(25));
+  await expect(page.locator(".word-count")).toHaveText("25 / 25");
   await expect(submit).toBeEnabled();
-  await wordsInput.fill(limitWords(31));
-  await expect(page.locator(".word-count")).toHaveText("31 / 30");
+  await wordsInput.fill(limitWords(26));
+  await expect(page.locator(".word-count")).toHaveText("26 / 25");
   await expect(page.locator(".word-count")).toHaveClass(/error/);
   await expect(wordsInput).toHaveAttribute("aria-invalid", "true");
   await expect(submit).toBeDisabled();
@@ -3187,7 +3187,7 @@ test("new assignment validates Free word-count boundaries before submit", async 
   await expect(page.locator(".word-limit-upgrade")).toHaveCount(1);
 
   await wordsInput.fill(`Apple\napple\na\n${"x".repeat(25)}`);
-  await expect(page.locator(".word-count")).toHaveText("1 / 30");
+  await expect(page.locator(".word-count")).toHaveText("1 / 25");
   await expect(page.locator(".word-list-error")).toContainText(
     "Repeated words: apple",
   );

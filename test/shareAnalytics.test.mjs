@@ -129,15 +129,15 @@ test("commercial funnel analytics keep their dimensions and omit PII", () => {
   assert.deepEqual(
     sanitizeEventParams("word_limit_hit", {
       ...pii,
-      limit: 30,
+      limit: 25,
       account_tier: "free",
-      word_count_range: "31-80",
+      word_count_range: "26-80",
       action: "spelling_test",
     }),
     {
-      limit: 30,
+      limit: 25,
       account_tier: "free",
-      word_count_range: "31-80",
+      word_count_range: "26-80",
       action: "spelling_test",
     },
   );

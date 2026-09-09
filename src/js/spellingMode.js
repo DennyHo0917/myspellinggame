@@ -71,7 +71,7 @@ function appendContextualPaywall(
   if (freeCta) {
     const free = document.createElement("a");
     free.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
-    free.textContent = t("continueFree30");
+    free.textContent = t("continueFree25");
     actions.append(free);
   }
   notice.append(benefit, price, actions);
@@ -338,7 +338,7 @@ function isPlusAccount(account) {
 
 function practiceLimit(account, anonymousOnly = false) {
   if (anonymousOnly || !account) return ANONYMOUS_WORD_LIMIT;
-  return isPlusAccount(account) ? 40 : 30;
+  return isPlusAccount(account) ? 40 : 25;
 }
 
 function showLimitCta(key, account) {

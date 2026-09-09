@@ -208,7 +208,7 @@ const PACKS = {
     invalidTitle: "Use an assignment title with 1–80 characters.",
     invalidWords: "Use 1–80 words, each 2–24 characters long.",
     wordLimit:
-      "Free accounts support up to 30 words per list. Paid plans support up to 40.",
+      "Free accounts support up to 25 words per list. Paid plans support up to 40.",
     invalidExampleSentence:
       "Example sentences must be 300 characters or fewer.",
     invalidDeadline: "Choose a future deadline within the next year.",
@@ -574,7 +574,7 @@ const PACKS = {
     invalidTitle: "Usa un título de entre 1 y 80 caracteres.",
     invalidWords: "Usa entre 1 y 80 palabras, de 2 a 24 caracteres cada una.",
     wordLimit:
-      "Las cuentas gratuitas admiten hasta 30 palabras por lista. Los planes de pago admiten hasta 40.",
+      "Las cuentas gratuitas admiten hasta 25 palabras por lista. Los planes de pago admiten hasta 40.",
     invalidExampleSentence:
       "Las frases de ejemplo deben tener 300 caracteres o menos.",
     invalidDeadline: "Elige una fecha futura dentro del próximo año.",
@@ -940,7 +940,7 @@ const PACKS = {
     invalidTitle: "Use um título com 1 a 80 caracteres.",
     invalidWords: "Use de 1 a 80 palavras, cada uma com 2 a 24 caracteres.",
     wordLimit:
-      "As contas grátis aceitam até 30 palavras por lista. Os planos pagos aceitam até 40.",
+      "As contas grátis aceitam até 25 palavras por lista. Os planos pagos aceitam até 40.",
     invalidExampleSentence:
       "As frases de exemplo devem ter no máximo 300 caracteres.",
     invalidDeadline: "Escolha um prazo futuro dentro do próximo ano.",
@@ -1306,7 +1306,7 @@ const PACKS = {
     invalidTitle: "Utilisez un titre de 1 à 80 caractères.",
     invalidWords: "Utilisez 1 à 80 mots de 2 à 24 caractères chacun.",
     wordLimit:
-      "Les comptes gratuits acceptent jusqu’à 30 mots par liste. Les offres payantes vont jusqu’à 40.",
+      "Les comptes gratuits acceptent jusqu’à 25 mots par liste. Les offres payantes vont jusqu’à 40.",
     invalidExampleSentence:
       "Les phrases d’exemple doivent contenir au plus 300 caractères.",
     invalidDeadline: "Choisissez une échéance future dans l’année à venir.",
@@ -1669,7 +1669,7 @@ const PACKS = {
     invalidTitle: "Gunakan judul sepanjang 1–80 karakter.",
     invalidWords: "Gunakan 1–80 kata, masing-masing sepanjang 2–24 karakter.",
     wordLimit:
-      "Akun Gratis mendukung hingga 30 kata per daftar. Paket berbayar mendukung hingga 40 kata.",
+      "Akun Gratis mendukung hingga 25 kata per daftar. Paket berbayar mendukung hingga 40 kata.",
     invalidExampleSentence:
       "Kalimat contoh harus terdiri dari paling banyak 300 karakter.",
     invalidDeadline:
@@ -2009,7 +2009,7 @@ const PACKS = {
     checkAgain: "再次检查",
     invalidTitle: "作业标题需为 1～80 个字符。",
     invalidWords: "请输入 1～80 个单词，每个单词 2～24 个字符。",
-    wordLimit: "免费账号每份词表最多支持 30 个单词。付费方案最多支持 40 个。",
+    wordLimit: "免费账号每份词表最多支持 25 个单词。付费方案最多支持 40 个。",
     invalidExampleSentence: "例句长度不能超过 300 个字符。",
     invalidDeadline: "请选择未来一年内的截止时间。",
     invalidMaxAttempts: "最多尝试次数需为 1～10 次。",

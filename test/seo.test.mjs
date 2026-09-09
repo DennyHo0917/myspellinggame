@@ -642,7 +642,7 @@ test("pricing shows the Free, Parent, and Teacher plans in every locale", () => 
       "$49.99 / year",
       "$9.99 / month",
       "$99.99 / year",
-      "Up to 30 words per assignment",
+      "Up to 25 words per assignment",
       "Up to 5 children",
       "Up to 40 students",
     ],

@@ -577,37 +577,37 @@ const planQuestions = {
   en: [
     [
       "How many spelling words can I practice?",
-      "Without an account, you can practice up to 20 words per list. Free Plan supports up to 30 words, while Parent and Teacher Plans support up to 40.",
+      "Without an account, you can practice up to 20 words per list. Free Plan supports up to 25 words, while Parent and Teacher Plans support up to 40.",
     ],
   ],
   es: [
     [
       "¿Cuántas palabras puedo practicar?",
-      "Sin cuenta puedes practicar hasta 20 palabras por lista. El Plan Gratis admite hasta 30 y los planes para familias y docentes hasta 40.",
+      "Sin cuenta puedes practicar hasta 20 palabras por lista. El Plan Gratis admite hasta 25 y los planes para familias y docentes hasta 40.",
     ],
   ],
   "pt-br": [
     [
       "Quantas palavras posso praticar?",
-      "Sem conta, você pode praticar até 20 palavras por lista. O Plano Grátis aceita até 30, e os planos para Pais e Professores até 40.",
+      "Sem conta, você pode praticar até 20 palavras por lista. O Plano Grátis aceita até 25, e os planos para Pais e Professores até 40.",
     ],
   ],
   fr: [
     [
       "Combien de mots puis-je pratiquer ?",
-      "Sans compte, vous pouvez pratiquer jusqu’à 20 mots par liste. L’offre gratuite accepte jusqu’à 30 mots et les offres Parents et Enseignants jusqu’à 40.",
+      "Sans compte, vous pouvez pratiquer jusqu’à 20 mots par liste. L’offre gratuite accepte jusqu’à 25 mots et les offres Parents et Enseignants jusqu’à 40.",
     ],
   ],
   id: [
     [
       "Berapa banyak kata yang bisa dilatih?",
-      "Tanpa akun, Anda dapat berlatih hingga 20 kata per daftar. Paket Gratis mendukung hingga 30 kata, sedangkan Paket Orang Tua dan Guru hingga 40.",
+      "Tanpa akun, Anda dapat berlatih hingga 20 kata per daftar. Paket Gratis mendukung hingga 25 kata, sedangkan Paket Orang Tua dan Guru hingga 40.",
     ],
   ],
   zh: [
     [
       "可以练习多少个单词？",
-      "无需账号时，每份词表最多练习 20 个单词。免费方案支持最多 30 个，家长方案和教师方案支持最多 40 个。",
+      "无需账号时，每份词表最多练习 20 个单词。免费方案支持最多 25 个，家长方案和教师方案支持最多 40 个。",
     ],
   ],
 };

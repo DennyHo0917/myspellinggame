@@ -449,15 +449,15 @@ describe("teacher authorization and quotas", () => {
     });
   });
 
-  it("enforces 30-word Free and 40-word paid limits", () => {
-    expect(planWordLimit("free")).toBe(30);
+  it("enforces 25-word Free and 40-word paid limits", () => {
+    expect(planWordLimit("free")).toBe(25);
     expect(planWordLimit("parent")).toBe(40);
     expect(planWordLimit("teacher")).toBe(40);
     expect(() =>
-      enforcePlanWordLimit(Array.from({ length: 30 }), "free"),
+      enforcePlanWordLimit(Array.from({ length: 25 }), "free"),
     ).not.toThrow();
     expect(() =>
-      enforcePlanWordLimit(Array.from({ length: 31 }), "free"),
+      enforcePlanWordLimit(Array.from({ length: 26 }), "free"),
     ).toThrow(HttpError);
     expect(() =>
       enforcePlanWordLimit(Array.from({ length: 40 }), "parent"),
@@ -538,10 +538,10 @@ describe("teacher authorization and quotas", () => {
 
   it("enforces word limits on assignment writes", async () => {
     const freeBoundary = await createAssignment(teacherA, {
-      words: testWords(30),
+      words: testWords(25),
     });
     expect(freeBoundary.response.status).toBe(201);
-    const free = await createAssignment(teacherA, { words: testWords(31) });
+    const free = await createAssignment(teacherA, { words: testWords(26) });
     expect(free.response.status).toBe(403);
     expect(free.body.error).toBe("word_limit");
   });
@@ -969,13 +969,13 @@ describe("saved lists and learner profiles", () => {
     const freeBoundary = await createSavedList(
       "Free boundary",
       teacherA,
-      testWords(30),
+      testWords(25),
     );
     expect(freeBoundary.response.status).toBe(201);
     const freeRejected = await createSavedList(
       "Free too long",
       teacherA,
-      testWords(31),
+      testWords(26),
     );
     expect(freeRejected.response.status).toBe(403);
     expect(freeRejected.body.error).toBe("word_limit");

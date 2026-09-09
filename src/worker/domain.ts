@@ -52,7 +52,7 @@ export function resolvePlan(
 }
 
 export function planWordLimit(plan: Plan): number {
-  return plan === "free" ? 30 : 40;
+  return plan === "free" ? 25 : 40;
 }
 
 export function enforcePlanWordLimit(words: readonly unknown[], plan: Plan) {

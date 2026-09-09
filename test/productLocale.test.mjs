@@ -91,7 +91,7 @@ test("product locale uses browser language until a manual choice exists", () => 
 test("word-limit copy states Free and paid list limits in every locale", () => {
   for (const [locale] of PRODUCT_LOCALES) {
     const copy = productMessages(locale);
-    assert.match(copy.wordLimit, /30/);
+    assert.match(copy.wordLimit, /25/);
     assert.match(copy.wordLimit, /40/);
     assert.doesNotMatch(copy.wordLimit, /80/);
   }

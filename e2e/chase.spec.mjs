@@ -14,6 +14,16 @@ async function mockPassage(page) {
   );
 }
 
+const analyticsEvents = (page, name) =>
+  page.evaluate(
+    (eventName) =>
+      (window.dataLayer || [])
+        .map((entry) => Array.from(entry))
+        .filter((entry) => entry[0] === "event" && entry[1] === eventName)
+        .map((entry) => entry[2]),
+    name,
+  );
+
 test("anonymous Typing Chase players are sent to sign in", async ({ page }) => {
   await page.route("**/api/chase/passage", (route) =>
     route.fulfill({
@@ -26,6 +36,81 @@ test("anonymous Typing Chase players are sent to sign in", async ({ page }) => {
   await page.locator('input[name="practice-mode"][value="chase"]').check();
 
   await expect(page).toHaveURL(/\/workspace\?lang=en#teacher-sign-in$/);
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("pendingTypingChase")),
+  ).toBe("1");
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("pendingTypingChaseLocale"),
+    ),
+  ).toBe("en");
+});
+
+test("Typing Chase intent resumes at mode selection after sign-in", async ({
+  page,
+}) => {
+  let signedIn = false;
+  await page.route("**/api/config", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ googleAuthConfigured: true }),
+    }),
+  );
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      status: signedIn ? 200 : 401,
+      contentType: "application/json",
+      body: JSON.stringify(
+        signedIn
+          ? {
+              plan: "free",
+              user: {
+                id: "teacher-a",
+                name: "Teacher A",
+                email: "teacher@example.test",
+              },
+            }
+          : { error: "sign_in_required" },
+      ),
+    }),
+  );
+  await page.route("**/api/auth/sign-in/social", async (route) => {
+    signedIn = true;
+    const body = route.request().postDataJSON();
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ url: body.callbackURL }),
+    });
+  });
+  await page.route("**/api/chase/passage", (route) =>
+    route.fulfill({
+      status: signedIn ? 200 : 401,
+      contentType: "application/json",
+      body: JSON.stringify(
+        signedIn ? { passage } : { error: "sign_in_required" },
+      ),
+    }),
+  );
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.locator('input[name="practice-mode"][value="chase"]').check();
+  await expect(page).toHaveURL(/\/workspace\?lang=en#teacher-sign-in$/);
+  await page.getByRole("button", { name: "Continue with Google" }).click();
+
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator("#chase-mode-options")).toBeVisible();
+  await expect(page.locator("#chase-start-btn")).toBeDisabled();
+  await expect(
+    page.locator('[data-chase-mode][aria-pressed="true"]'),
+  ).toHaveCount(0);
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("pendingTypingChase")),
+  ).toBeNull();
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("pendingTypingChaseLocale"),
+    ),
+  ).toBeNull();
 });
 
 test("Typing Chase fits beside the two existing modes and starts for Free users", async ({
@@ -48,6 +133,11 @@ test("Typing Chase fits beside the two existing modes and starts for Free users"
   await page.locator('[data-chase-mode="simple"]').click();
   await page.locator("#chase-start-btn").click();
   await expect(page.locator("#chase-screen")).toBeVisible();
+  await expect
+    .poll(() => analyticsEvents(page, "typing_chase_started"))
+    .toEqual([{ chase_mode: "simple", locale: "en" }]);
+  await page.waitForTimeout(100);
+  expect(await analyticsEvents(page, "typing_chase_started")).toHaveLength(1);
   await expect(page.locator("#chase-passage-title")).toHaveText(passage.title);
   await expect(page.locator("#chase-passage-text")).toHaveText(
     "Run to the bridge.",
@@ -61,6 +151,8 @@ test("Typing Chase fits beside the two existing modes and starts for Free users"
   await expect(page.locator("#game-over-title")).toHaveText("Thief caught!");
   await expect(page.locator("#chase-return-menu-btn")).toBeVisible();
   await expect(page.locator("#chase-share-btn")).toBeVisible();
+  expect(await analyticsEvents(page, "typing_chase_started")).toHaveLength(1);
+  expect(await analyticsEvents(page, "typing_chase_completed")).toHaveLength(1);
   await page.evaluate(() => {
     Object.defineProperty(navigator, "share", {
       configurable: true,
@@ -93,9 +185,7 @@ test("Typing Chase fits beside the two existing modes and starts for Free users"
   await expect(page.locator("#chase-screen")).toBeHidden();
 });
 
-test("Typing Chase has no custom-passage controls", async ({
-  page,
-}) => {
+test("Typing Chase has no custom-passage controls", async ({ page }) => {
   await mockPassage(page);
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.locator('input[name="practice-mode"][value="chase"]').check();

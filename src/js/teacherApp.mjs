@@ -25,6 +25,8 @@ const AUTH_PENDING_KEY = "teacherOAuthPending";
 const AUTH_PROVIDER_KEY = "teacherOAuthProvider";
 const CHECKOUT_RETRY_REQUIRED_KEY = "pendingCheckoutRetryRequired";
 const PENDING_UPGRADE_FEATURE_KEY = "pendingUpgradeFeature";
+const PENDING_TYPING_CHASE_KEY = "pendingTypingChase";
+const PENDING_TYPING_CHASE_LOCALE_KEY = "pendingTypingChaseLocale";
 const ACTIVATION_POLL_ATTEMPTS = 10;
 const SIGNUP_INTENTS = {
   copy_track: "track_shared_practice",
@@ -3700,6 +3702,21 @@ async function init() {
       history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
     }
   } catch {}
+  try {
+    if (sessionStorage.getItem(PENDING_TYPING_CHASE_KEY) === "1") {
+      const pendingLocale =
+        sessionStorage.getItem(PENDING_TYPING_CHASE_LOCALE_KEY) || locale;
+      sessionStorage.removeItem(PENDING_TYPING_CHASE_KEY);
+      sessionStorage.removeItem(PENDING_TYPING_CHASE_LOCALE_KEY);
+      location.href = `${productPagePath("", pendingLocale)}?lang=${encodeURIComponent(pendingLocale)}&typing_chase=1`;
+      return;
+    }
+  } catch {
+    try {
+      sessionStorage.removeItem(PENDING_TYPING_CHASE_KEY);
+      sessionStorage.removeItem(PENDING_TYPING_CHASE_LOCALE_KEY);
+    } catch {}
+  }
   workspaceState = { me };
   bindWorkspaceNavigation();
   let pendingInterval = null;

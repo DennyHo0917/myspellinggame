@@ -21,6 +21,9 @@ let escaping = false;
 let escapeStartedAt = 0;
 let selectedChaseMode = null;
 let previewVisible = false;
+let restoringTypingChase = false;
+const PENDING_TYPING_CHASE_KEY = "pendingTypingChase";
+const PENDING_TYPING_CHASE_LOCALE_KEY = "pendingTypingChaseLocale";
 const ESCAPE_DURATION_MS = 1_100;
 const CHASE_MODES = {
   simple: { thiefWpm: 40, dynamicThief: false },
@@ -399,10 +402,6 @@ function chaseFrame(now) {
     return;
   }
   frameId = requestAnimationFrame(chaseFrame);
-  trackEvent("typing_chase_started", {
-    chase_mode: selectedChaseMode,
-    locale: getPageLocale(),
-  });
 }
 
 export function stopTypingChase({ keepPassage = true } = {}) {
@@ -434,7 +433,7 @@ export function startTypingChase(
   passage = samplePassage,
   mode = selectedChaseMode || "simple",
 ) {
-  if (!passage?.text) return;
+  if (!passage?.text) return false;
   stopTypingChase();
   samplePassage = passage;
   const chaseMode = CHASE_MODES[mode] || CHASE_MODES.simple;
@@ -485,10 +484,14 @@ export function startTypingChase(
   if (window.innerWidth > 620 && window.matchMedia("(pointer: fine)").matches) {
     capture?.focus();
   }
+  return true;
 }
 
 async function enterTypingChase() {
-  trackEvent("typing_chase_selected", { locale: getPageLocale() });
+  const restoring = restoringTypingChase;
+  restoringTypingChase = false;
+  if (!restoring)
+    trackEvent("typing_chase_selected", { locale: getPageLocale() });
   const status = element("chase-access-status");
   const modeOptions = element("chase-mode-options");
   const startButton = element("chase-start-btn");
@@ -501,7 +504,18 @@ async function enterTypingChase() {
       credentials: "same-origin",
     });
     if (response.status === 401) {
+      if (restoring) {
+        if (status) status.textContent = t("chaseLoadError");
+        return;
+      }
       trackEvent("typing_chase_auth_required", { locale: getPageLocale() });
+      try {
+        sessionStorage.setItem(PENDING_TYPING_CHASE_KEY, "1");
+        sessionStorage.setItem(
+          PENDING_TYPING_CHASE_LOCALE_KEY,
+          getPageLocale(),
+        );
+      } catch {}
       window.location.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
       return;
     }
@@ -564,8 +578,12 @@ function initTypingChase() {
     );
   });
   element("chase-start-btn")?.addEventListener("click", () => {
-    if (selectedChaseMode && samplePassage)
-      startTypingChase(samplePassage, selectedChaseMode);
+    const mode = selectedChaseMode;
+    if (mode && samplePassage && startTypingChase(samplePassage, mode))
+      trackEvent("typing_chase_started", {
+        chase_mode: mode,
+        locale: getPageLocale(),
+      });
   });
   const capture = element("chase-input");
   capture?.addEventListener("paste", (event) => event.preventDefault());
@@ -608,6 +626,22 @@ function initTypingChase() {
   element("chase-passage-text")?.addEventListener("click", () =>
     capture?.focus(),
   );
+  const params = new URLSearchParams(location.search);
+  if (params.get("typing_chase") === "1") {
+    params.delete("typing_chase");
+    history.replaceState(
+      {},
+      "",
+      `${location.pathname}${params.size ? `?${params}` : ""}${location.hash}`,
+    );
+    const radio = document.querySelector(
+      'input[name="practice-mode"][value="chase"]',
+    );
+    if (radio) {
+      restoringTypingChase = true;
+      radio.click();
+    }
+  }
 }
 
 if (typeof window !== "undefined") {

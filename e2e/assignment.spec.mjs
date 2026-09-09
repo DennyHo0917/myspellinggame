@@ -1208,8 +1208,11 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
   await expect(
     page
       .locator(".locked-feature-plan")
-      .getByRole("link", { name: "View Plans" }),
+      .getByRole("button", { name: "Upgrade to Parent · $4.99/month" }),
   ).toHaveCount(1);
+  await expect(page.locator(".locked-feature-plan")).toContainText(
+    "Parent Plan · $4.99/month",
+  );
 });
 
 const analyticsEvents = (page, name) =>
@@ -1261,6 +1264,14 @@ test("practice advises signed-in plans after 20 words and preserves hard limits"
   await expect(page.locator("#spelling-status")).toContainText(
     "No-login practice supports up to 20 words",
   );
+  await expect(page.locator("#spelling-limit-cta")).toContainText(
+    "Keep the whole list together with up to 40 words",
+  );
+  await expect(
+    page
+      .locator("#spelling-limit-cta")
+      .getByRole("link", { name: "Continue free with 30 words" }),
+  ).toHaveAttribute("href", "/workspace?lang=en#teacher-sign-in");
 
   await page.getByRole("button", { name: "Copy practice link" }).click();
   await page
@@ -1304,10 +1315,11 @@ test("practice advises signed-in plans after 20 words and preserves hard limits"
   expect(await analyticsEvents(page, "locked_feature_attempted")).toEqual([
     { feature: "word_limit", current_plan: "free" },
   ]);
-  await expect(page.locator("#spelling-limit-cta")).toHaveAttribute(
-    "href",
-    "/pricing#pricing",
-  );
+  await expect(
+    page
+      .locator("#spelling-limit-cta")
+      .getByRole("link", { name: "Upgrade to Parent · $4.99/month" }),
+  ).toHaveAttribute("href", "/workspace?lang=en#teacher-sign-in");
 
   account.plan = "parent";
   await page.reload();
@@ -1336,13 +1348,20 @@ test("practice advises signed-in plans after 20 words and preserves hard limits"
   );
 });
 
-for (const [locale, href, advice] of [
-  ["es", "/es/pricing#pricing", "Las listas largas pueden aumentar"],
-  ["zh", "/zh/pricing#pricing", "词表较长时，记忆负担可能增加"],
+for (const [locale, label, advice] of [
+  [
+    "es",
+    "Mejorar al plan familiar · $4.99/mes",
+    "Las listas largas pueden aumentar",
+  ],
+  ["zh", "升级家长方案 · US$4.99/月", "词表较长时，记忆负担可能增加"],
 ]) {
   test(`${locale} Free word-limit upgrade stays in the active locale`, async ({
     page,
   }) => {
+    await page.addInitScript((selectedLocale) => {
+      localStorage.setItem("mySpellingGameManualLocale", selectedLocale);
+    }, locale);
     await page.route("**/api/me", (route) =>
       route.fulfill({
         contentType: "application/json",
@@ -1357,10 +1376,9 @@ for (const [locale, href, advice] of [
     await expect(page.locator("#long-list-advice")).toContainText(advice);
     await page.locator("#custom-word-list").fill(limitWords(41));
     await page.locator("#start-practice-btn").click();
-    await expect(page.locator("#spelling-limit-cta")).toHaveAttribute(
-      "href",
-      href,
-    );
+    await expect(
+      page.locator("#spelling-limit-cta").getByRole("link", { name: label }),
+    ).toHaveAttribute("href", `/workspace?lang=${locale}#teacher-sign-in`);
   });
 }
 
@@ -2635,6 +2653,9 @@ test("Parent plan starts Checkout with its plan and interval", async ({
   expect(await analyticsEvents(page, "upgrade_clicked")).toEqual([
     { plan: "parent", billing_interval: "year" },
   ]);
+  expect(await analyticsEvents(page, "checkout_attempted")).toEqual([
+    { plan: "parent", billing_interval: "year" },
+  ]);
   expect(await analyticsEvents(page, "checkout_started")).toEqual([
     { plan: "parent", billing_interval: "year" },
   ]);
@@ -2673,6 +2694,9 @@ test("Teacher plan starts Checkout with its plan and interval", async ({
     locale: "en",
   });
   expect(await analyticsEvents(page, "upgrade_clicked")).toEqual([
+    { plan: "teacher", billing_interval: "month" },
+  ]);
+  expect(await analyticsEvents(page, "checkout_attempted")).toEqual([
     { plan: "teacher", billing_interval: "month" },
   ]);
 });
@@ -2764,6 +2788,10 @@ test("failed automatic Checkout stays retryable on the teacher page", async ({
       billing_interval: "year",
       error_code: "internal_error",
     },
+  ]);
+  expect(await analyticsEvents(page, "checkout_attempted")).toEqual([
+    { plan: "parent", billing_interval: "year" },
+    { plan: "parent", billing_interval: "year" },
   ]);
 });
 

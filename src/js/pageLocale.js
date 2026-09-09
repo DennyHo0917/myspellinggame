@@ -14,6 +14,14 @@ const MESSAGES = {
     photoImport: "Import from photo",
     photoImportRequired:
       "Photo import is included in Parent and Teacher Plans.",
+    photoImportValue:
+      "Turn a photo of the school list into editable spelling words in seconds.",
+    exampleSentencesValue:
+      "Fill matching example sentences instantly, then edit them before practice.",
+    wordLimitValue: "Keep the whole list together with up to 40 words.",
+    parentPlanMonthly: "Parent Plan · $4.99/month",
+    upgradeParentMonthly: "Upgrade to Parent · $4.99/month",
+    continueFree30: "Continue free with 30 words",
     photoImportSignIn: "Sign in",
     photoImportPlans: "View plans",
     photoImportProcessing: "Reading your spelling list…",
@@ -98,6 +106,14 @@ const MESSAGES = {
     photoImport: "Importar desde una foto",
     photoImportRequired:
       "La importación desde fotos está incluida en los planes para familias y docentes.",
+    photoImportValue:
+      "Convierte una foto de la lista escolar en palabras editables en segundos.",
+    exampleSentencesValue:
+      "Completa frases de ejemplo al instante y edítalas antes de practicar.",
+    wordLimitValue: "Mantén la lista completa con hasta 40 palabras.",
+    parentPlanMonthly: "Plan para familias · $4.99/mes",
+    upgradeParentMonthly: "Mejorar al plan familiar · $4.99/mes",
+    continueFree30: "Continuar gratis con 30 palabras",
     photoImportSignIn: "Iniciar sesión",
     photoImportPlans: "Ver planes",
     photoImportProcessing: "Leyendo tu lista de spelling…",
@@ -185,6 +201,14 @@ const MESSAGES = {
     photoImport: "Importar de uma foto",
     photoImportRequired:
       "A importação por foto está incluída nos planos para Pais e Professores.",
+    photoImportValue:
+      "Transforme uma foto da lista escolar em palavras editáveis em segundos.",
+    exampleSentencesValue:
+      "Preencha frases de exemplo na hora e edite antes da prática.",
+    wordLimitValue: "Mantenha a lista completa com até 40 palavras.",
+    parentPlanMonthly: "Plano para Pais · US$ 4,99/mês",
+    upgradeParentMonthly: "Assinar Plano para Pais · US$ 4,99/mês",
+    continueFree30: "Continuar grátis com 30 palavras",
     photoImportSignIn: "Entrar",
     photoImportPlans: "Ver planos",
     photoImportProcessing: "Lendo sua lista de ortografia…",
@@ -272,6 +296,14 @@ const MESSAGES = {
     photoImport: "Importer depuis une photo",
     photoImportRequired:
       "L’importation par photo est incluse dans les offres Parents et Enseignants.",
+    photoImportValue:
+      "Transformez la photo d’une liste scolaire en mots modifiables en quelques secondes.",
+    exampleSentencesValue:
+      "Ajoutez instantanément des phrases d’exemple, puis modifiez-les avant l’exercice.",
+    wordLimitValue: "Gardez toute la liste ensemble, jusqu’à 40 mots.",
+    parentPlanMonthly: "Offre Parents · 4,99 $US/mois",
+    upgradeParentMonthly: "Choisir l’offre Parents · 4,99 $US/mois",
+    continueFree30: "Continuer gratuitement avec 30 mots",
     photoImportSignIn: "Se connecter",
     photoImportPlans: "Voir les offres",
     photoImportProcessing: "Lecture de votre liste…",
@@ -356,6 +388,14 @@ const MESSAGES = {
     emptyWords: "Tambahkan setidaknya satu kata ejaan sebelum memulai.",
     photoImport: "Impor dari foto",
     photoImportRequired: "Impor foto tersedia dalam Paket Orang Tua dan Guru.",
+    photoImportValue:
+      "Ubah foto daftar sekolah menjadi kata yang dapat diedit dalam hitungan detik.",
+    exampleSentencesValue:
+      "Isi kalimat contoh seketika, lalu edit sebelum mulai latihan.",
+    wordLimitValue: "Pertahankan seluruh daftar hingga 40 kata.",
+    parentPlanMonthly: "Paket Orang Tua · US$4,99/bulan",
+    upgradeParentMonthly: "Upgrade Paket Orang Tua · US$4,99/bulan",
+    continueFree30: "Lanjut gratis dengan 30 kata",
     photoImportSignIn: "Masuk",
     photoImportPlans: "Lihat paket",
     photoImportProcessing: "Membaca daftar ejaan Anda…",
@@ -440,6 +480,12 @@ const MESSAGES = {
     emptyWords: "开始前请至少添加一个单词。",
     photoImport: "拍照导入",
     photoImportRequired: "拍照导入包含在家长方案和教师方案中。",
+    photoImportValue: "拍下学校词表，几秒内转成可编辑的拼写单词。",
+    exampleSentencesValue: "自动匹配例句，练习前仍可自由修改。",
+    wordLimitValue: "整份词表一次练完，最多支持 40 个单词。",
+    parentPlanMonthly: "家长方案 · US$4.99/月",
+    upgradeParentMonthly: "升级家长方案 · US$4.99/月",
+    continueFree30: "免费登录，继续使用 30 个单词",
     photoImportSignIn: "登录",
     photoImportPlans: "查看方案",
     photoImportProcessing: "正在识别单词表…",

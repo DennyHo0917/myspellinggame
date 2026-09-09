@@ -464,6 +464,43 @@ test("Checkout activation recovers from a temporary network error", async ({
   ]);
 });
 
+test("a failed Checkout waits for the Retry CTA after reload", async ({
+  page,
+}) => {
+  let checkoutCalls = 0;
+  await page.addInitScript(() => {
+    sessionStorage.setItem("pendingCheckoutPlan", "parent");
+    sessionStorage.setItem("pendingCheckoutInterval", "month");
+    sessionStorage.setItem("pendingCheckoutRetryRequired", "1");
+  });
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(account("free")),
+    }),
+  );
+  await mockAssignments(page, "free");
+  await page.route("**/api/billing/checkout", (route) => {
+    checkoutCalls += 1;
+    return route.fulfill({
+      status: 500,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "internal_error" }),
+    });
+  });
+
+  await page.goto("/workspace?lang=en");
+  await expect(
+    page.getByRole("button", { name: "Try checkout again" }),
+  ).toBeVisible();
+  expect(checkoutCalls).toBe(0);
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: "Try checkout again" }),
+  ).toBeVisible();
+  expect(checkoutCalls).toBe(0);
+});
+
 for (const viewport of [
   { name: "desktop", width: 1280, height: 900 },
   { name: "mobile", width: 390, height: 844 },
@@ -544,6 +581,100 @@ test("Microsoft sign-in submits the Microsoft provider", async ({ page }) => {
     provider: "microsoft",
     callbackURL: "/workspace?lang=en",
   });
+});
+
+test("anonymous Photo Import keeps Parent upgrade intent through OAuth", async ({
+  page,
+}) => {
+  let signedIn = false;
+  let checkoutBody;
+  await page.route("**/api/config", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ googleAuthConfigured: true }),
+    }),
+  );
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      status: signedIn ? 200 : 401,
+      contentType: "application/json",
+      body: JSON.stringify(
+        signedIn ? account("free") : { error: "sign_in_required" },
+      ),
+    }),
+  );
+  await page.route("**/api/auth/sign-in/social", async (route) => {
+    signedIn = true;
+    const body = route.request().postDataJSON();
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ url: body.newUserCallbackURL }),
+    });
+  });
+  await page.route("**/api/lifecycle/signup", (route) =>
+    route.fulfill({ contentType: "application/json", body: "{}" }),
+  );
+  await page.route("**/api/billing/checkout", (route) => {
+    checkoutBody = route.request().postDataJSON();
+    return route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ url: "/workspace?lang=en#stripe-checkout" }),
+    });
+  });
+
+  await page.goto("/");
+  await page.getByRole("button", { name: "Import from photo" }).click();
+  const paywall = page.locator(".photo-import-notice");
+  await expect(paywall).toContainText(
+    "Turn a photo of the school list into editable spelling words",
+  );
+  await expect(paywall).toContainText("Parent Plan · $4.99/month");
+  await paywall
+    .getByRole("link", { name: "Upgrade to Parent · $4.99/month" })
+    .click();
+
+  await expect(page).toHaveURL(/\/workspace\?lang=en#teacher-sign-in$/);
+  await expect(
+    page.getByRole("heading", { name: "Finish your Parent Plan upgrade" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Continue with Google" }).click();
+  await expect(page).toHaveURL(/#stripe-checkout$/);
+  expect(checkoutBody).toEqual({
+    plan: "parent",
+    interval: "month",
+    locale: "en",
+  });
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("pendingUpgradeFeature")),
+  ).toBeNull();
+});
+
+test("Free Workspace explains the example-sentence upgrade in context", async ({
+  page,
+}) => {
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(account("free")),
+    }),
+  );
+  await mockAssignments(page, "free");
+
+  await page.goto("/workspace/assignments/new?lang=en");
+  await page
+    .getByRole("button", { name: "Auto-fill example sentences" })
+    .click();
+
+  const paywall = page.locator(".locked-feature-plan");
+  await expect(paywall).toContainText(
+    "Automatically match example sentences to your spelling words",
+  );
+  await expect(paywall).toContainText("Parent Plan · $4.99/month");
+  await expect(
+    paywall.getByRole("button", {
+      name: "Upgrade to Parent · $4.99/month",
+    }),
+  ).toBeVisible();
 });
 
 test("successful social auth records signup dimensions once", async ({
@@ -639,6 +770,43 @@ test("signed-out pricing switches yearly and monthly plan prices", async ({
   await monthly.click();
   await expect(parentPrice).toHaveText("$4.99 / month");
   await expect(teacherPrice).toHaveText("$9.99 / month");
+});
+
+test("failed Pricing checkout records an attempt and shows an explicit Retry CTA", async ({
+  page,
+}) => {
+  let checkoutCalls = 0;
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(account("free")),
+    }),
+  );
+  await page.route("**/api/billing/checkout", (route) => {
+    checkoutCalls += 1;
+    return route.fulfill({
+      status: 500,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "internal_error" }),
+    });
+  });
+
+  await page.goto("/pricing");
+  await page.getByRole("button", { name: "Select Parent Plan" }).click();
+  await expect(
+    page.getByRole("button", { name: "Try checkout again" }),
+  ).toBeVisible();
+  expect(await analyticsEvents(page, "checkout_attempted")).toEqual([
+    { plan: "parent", billing_interval: "month" },
+  ]);
+  expect(await analyticsEvents(page, "checkout_started")).toEqual([]);
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem("pendingCheckoutRetryRequired"),
+    ),
+  ).toBe("1");
+  await page.getByRole("button", { name: "Try checkout again" }).click();
+  await expect.poll(() => checkoutCalls).toBe(2);
 });
 
 test("signed-in Free standalone pricing remains available", async ({

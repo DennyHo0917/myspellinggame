@@ -722,11 +722,40 @@ a {
   line-height: 1.4;
 }
 
-.sentence-library-notice a,
-#spelling-limit-cta {
+.sentence-library-notice a {
   color: var(--primary);
   font-size: 0.75rem;
   font-weight: 800;
+}
+
+.contextual-paywall {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.65rem;
+  border: 1px solid rgba(47, 111, 115, 0.25);
+  border-radius: 8px;
+  background: #f4faf8;
+}
+
+.contextual-paywall-benefit,
+.contextual-paywall-price {
+  display: block;
+}
+
+.contextual-paywall-price {
+  color: var(--text);
+}
+
+.contextual-paywall-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.contextual-paywall-actions > a:not(.button-link) {
+  color: var(--muted);
+  font-weight: 700;
 }
 
 .photo-import-review {

@@ -57,6 +57,7 @@ const EVENT_PARAMS = {
   upgrade_clicked: ["plan", "billing_interval"],
   upgrade_cta_clicked: ["cta_location"],
   usage_limit_reached: ["limit_type"],
+  checkout_attempted: ["plan", "billing_interval"],
   checkout_started: ["plan", "billing_interval"],
   checkout_redirected: ["plan", "billing_interval"],
   subscription_started: ["plan", "billing_interval"],

@@ -143,6 +143,7 @@ test("commercial funnel analytics keep their dimensions and omit PII", () => {
   );
   for (const event of [
     "upgrade_clicked",
+    "checkout_attempted",
     "checkout_started",
     "checkout_redirected",
     "subscription_started",
@@ -296,6 +297,14 @@ test("teacher analytics omit student, assignment, and Stripe identifiers", () =>
       ...expected,
     }),
     expected,
+  );
+  assert.deepEqual(
+    sanitizeEventParams("checkout_attempted", {
+      ...privateValues,
+      plan: "teacher",
+      billing_interval: "year",
+    }),
+    { plan: "teacher", billing_interval: "year" },
   );
   assert.deepEqual(
     sanitizeEventParams("checkout_started", {

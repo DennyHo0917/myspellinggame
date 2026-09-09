@@ -25,6 +25,7 @@ const SENTENCES_STORAGE_KEY = "mySpellingGameExampleSentences";
 const HEAR_KEY = "mySpellingGameHearWords";
 const LEGACY_READ_KEY = "mySpellingGameReadWords";
 const EASY_KEY = "mySpellingGameEasyMode";
+const PENDING_UPGRADE_FEATURE_KEY = "pendingUpgradeFeature";
 let signupCtaViewTracked = false;
 let shareOptionsViewTracked = false;
 let accountPromise;
@@ -35,6 +36,47 @@ let copyToastTimer;
 
 export { parseWords };
 
+function parentUpgradeLink(feature) {
+  const link = document.createElement("a");
+  link.className = "button-link button-secondary contextual-paywall-cta";
+  link.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
+  link.textContent = t("upgradeParentMonthly");
+  link.addEventListener("click", () => {
+    try {
+      sessionStorage.setItem("pendingCheckoutPlan", "parent");
+      sessionStorage.setItem("pendingCheckoutInterval", "month");
+      sessionStorage.setItem("pendingCheckoutLocale", getPageLocale());
+      sessionStorage.setItem(PENDING_UPGRADE_FEATURE_KEY, feature);
+    } catch {}
+    trackEvent("upgrade_cta_clicked", { cta_location: feature });
+  });
+  return link;
+}
+
+function appendContextualPaywall(
+  notice,
+  feature,
+  value,
+  { freeCta = false } = {},
+) {
+  const benefit = document.createElement("span");
+  benefit.className = "contextual-paywall-benefit";
+  benefit.textContent = value;
+  const price = document.createElement("strong");
+  price.className = "contextual-paywall-price";
+  price.textContent = t("parentPlanMonthly");
+  const actions = document.createElement("span");
+  actions.className = "contextual-paywall-actions";
+  actions.append(parentUpgradeLink(feature));
+  if (freeCta) {
+    const free = document.createElement("a");
+    free.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
+    free.textContent = t("continueFree30");
+    actions.append(free);
+  }
+  notice.append(benefit, price, actions);
+}
+
 function textarea() {
   return document.getElementById("custom-word-list");
 }
@@ -43,28 +85,15 @@ function sentenceTextarea() {
   return document.getElementById("custom-example-sentences");
 }
 
-function photoImportNotice(account) {
+function photoImportNotice() {
   const field = textarea()?.closest(".word-entry-field");
   if (!field) return;
   field.querySelector(".photo-import-notice, .photo-import-review")?.remove();
   const notice = document.createElement("small");
-  notice.className = "photo-import-notice sentence-library-notice";
+  notice.className =
+    "photo-import-notice sentence-library-notice contextual-paywall";
   notice.setAttribute("role", "status");
-  notice.textContent = t("photoImportRequired");
-  const primary = document.createElement("a");
-  primary.href = account
-    ? `${productPagePath("pricing", getPageLocale())}#pricing`
-    : `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
-  primary.textContent = account
-    ? t("photoImportPlans")
-    : t("photoImportSignIn");
-  notice.append(" ", primary);
-  if (!account) {
-    const plans = document.createElement("a");
-    plans.href = `${productPagePath("pricing", getPageLocale())}#pricing`;
-    plans.textContent = t("photoImportPlans");
-    notice.append(" · ", plans);
-  }
+  appendContextualPaywall(notice, "photo_import", t("photoImportValue"));
   field.append(notice);
 }
 
@@ -205,13 +234,15 @@ function sentenceLibraryNotice(
   if (!field) return;
   field.querySelector(".sentence-library-notice")?.remove();
   const notice = document.createElement("small");
-  notice.className = "sentence-library-notice";
+  notice.className = "sentence-library-notice contextual-paywall";
   notice.setAttribute("role", "status");
-  notice.textContent = message;
-  const link = document.createElement("a");
-  link.href = `${productPagePath("pricing", getPageLocale())}#pricing`;
-  link.textContent = productMessage("upgrade", {}, getPageLocale());
-  notice.append(" ", link);
+  appendContextualPaywall(
+    notice,
+    "example_sentences",
+    message === productMessage("sentenceLibraryRequired", {}, getPageLocale())
+      ? t("exampleSentencesValue")
+      : message,
+  );
   field.append(notice);
 }
 
@@ -310,16 +341,17 @@ function practiceLimit(account, anonymousOnly = false) {
   return isPlusAccount(account) ? 40 : 30;
 }
 
-function showLimitCta(key, href, ctaKey) {
+function showLimitCta(key, account) {
   status(t(key));
   const host = document.querySelector(".spelling-options");
   if (!host) return;
-  const link = document.createElement("a");
-  link.id = "spelling-limit-cta";
-  link.className = "button-link button-secondary";
-  link.href = href;
-  link.textContent = t(ctaKey);
-  host.append(link);
+  const notice = document.createElement("div");
+  notice.id = "spelling-limit-cta";
+  notice.className = "notice contextual-paywall";
+  appendContextualPaywall(notice, "word_limit", t("wordLimitValue"), {
+    freeCta: !account,
+  });
+  host.append(notice);
 }
 
 async function getAccount() {
@@ -359,18 +391,9 @@ export async function canStartPractice({ anonymousOnly = false } = {}) {
     return false;
   }
   if (anonymous || !account) {
-    const lang = encodeURIComponent(pageLocale());
-    showLimitCta(
-      "anonymousWordLimit",
-      `/workspace?lang=${lang}#teacher-sign-in`,
-      "signInFree",
-    );
+    showLimitCta("anonymousWordLimit", null);
   } else {
-    showLimitCta(
-      "freeWordLimit",
-      `${productPagePath("pricing", pageLocale())}#pricing`,
-      "upgradePlus",
-    );
+    showLimitCta("freeWordLimit", account);
   }
   if (!wordLimitHitTracked) {
     wordLimitHitTracked = true;

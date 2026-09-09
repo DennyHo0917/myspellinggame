@@ -23,6 +23,8 @@ const copy = productMessages(locale);
 const PURCHASE_RECORDED_KEY = "teacherPurchaseRecorded";
 const AUTH_PENDING_KEY = "teacherOAuthPending";
 const AUTH_PROVIDER_KEY = "teacherOAuthProvider";
+const CHECKOUT_RETRY_REQUIRED_KEY = "pendingCheckoutRetryRequired";
+const PENDING_UPGRADE_FEATURE_KEY = "pendingUpgradeFeature";
 const ACTIVATION_POLL_ATTEMPTS = 10;
 const SIGNUP_INTENTS = {
   copy_track: "track_shared_practice",
@@ -284,7 +286,7 @@ function attachWordLimit(form, me, wordsSelector, { locked = false } = {}) {
   const error = document.createElement("small");
   error.className = "word-list-error";
   error.setAttribute("role", "alert");
-  const upgrade = upgradeLink("word_limit");
+  const upgrade = upgradeLink("word_limit", true);
   upgrade.classList.add("word-limit-upgrade");
   field.append(count, advice, error, upgrade);
   const update = () => {
@@ -835,13 +837,25 @@ function statusElement(parent) {
   return status;
 }
 
-function upgradeLink(ctaLocation) {
-  const link = document.createElement("a");
-  link.className = "button-link pro";
-  link.href = productPagePath("pricing", locale);
-  link.textContent = copy.upgrade;
-  link.addEventListener("click", () => {
+function upgradeLink(ctaLocation, direct = false) {
+  const link = document.createElement(direct ? "button" : "a");
+  link.className = direct ? "button-secondary pro" : "button-link pro";
+  if (direct) link.type = "button";
+  else link.href = productPagePath("pricing", locale);
+  link.textContent = direct ? copy.upgradeParentMonthly : copy.upgrade;
+  link.addEventListener("click", async () => {
     trackEvent("upgrade_cta_clicked", { cta_location: ctaLocation });
+    if (!direct) return;
+    link.disabled = true;
+    try {
+      sessionStorage.setItem(PENDING_UPGRADE_FEATURE_KEY, ctaLocation);
+    } catch {}
+    try {
+      await startCheckout("month", "parent");
+    } catch (error) {
+      showCheckoutRetry("month", "parent", error);
+      link.disabled = false;
+    }
   });
   return link;
 }
@@ -854,6 +868,9 @@ function showLockedFeaturePlan(host, message, ctaLocation) {
   notice.className = "notice locked-feature-plan";
   const text = document.createElement("p");
   text.textContent = message;
+  const price = document.createElement("strong");
+  price.className = "contextual-paywall-price";
+  price.textContent = copy.parentUpgradePrice;
   const feature = {
     sentence_library: "example_sentences",
     smart_review: "smart_review",
@@ -863,7 +880,7 @@ function showLockedFeaturePlan(host, message, ctaLocation) {
     learner_limit: "learner_limit",
   }[ctaLocation];
   if (feature) trackLockedFeature(feature, workspaceState?.me?.plan || "free");
-  notice.append(text, upgradeLink(ctaLocation));
+  notice.append(text, price, upgradeLink(ctaLocation, true));
   host.append(notice);
 }
 
@@ -926,9 +943,19 @@ async function renderLogin() {
   card.id = "teacher-sign-in";
   card.className = "product-card auth-card";
   const title = document.createElement("h1");
-  title.textContent = copy.signInTitle;
+  let pendingUpgrade = false;
+  try {
+    pendingUpgrade =
+      sessionStorage.getItem("pendingCheckoutPlan") === "parent" &&
+      ["month", "year"].includes(
+        sessionStorage.getItem("pendingCheckoutInterval"),
+      );
+  } catch {}
+  title.textContent = pendingUpgrade
+    ? copy.pendingUpgradeTitle
+    : copy.signInTitle;
   const text = document.createElement("p");
-  text.textContent = copy.signInCopy;
+  text.textContent = pendingUpgrade ? copy.pendingUpgradeCopy : copy.signInCopy;
   const benefitTitle = document.createElement("h2");
   benefitTitle.textContent = copy.workspaceBenefitTitle;
   const benefitText = document.createElement("p");
@@ -1077,7 +1104,8 @@ function showSectionError(section, error, ctaLocation) {
   const message = document.createElement("p");
   message.textContent = error.message;
   notice.append(message);
-  if (ctaLocation) notice.append(upgradeLink(ctaLocation));
+  if (ctaLocation)
+    notice.append(upgradeLink(ctaLocation, ctaLocation === "word_limit"));
   section.append(notice);
 }
 
@@ -2421,7 +2449,10 @@ async function startCheckout(interval, plan = "teacher") {
     sessionStorage.setItem("pendingCheckoutInterval", interval);
   } catch {}
   try {
-    trackEvent("checkout_started", { plan, billing_interval: interval });
+    try {
+      sessionStorage.removeItem(CHECKOUT_RETRY_REQUIRED_KEY);
+    } catch {}
+    trackEvent("checkout_attempted", { plan, billing_interval: interval });
     const checkout = await api("/api/billing/checkout", {
       method: "POST",
       body: JSON.stringify({ plan, interval, locale }),
@@ -2431,13 +2462,19 @@ async function startCheckout(interval, plan = "teacher") {
       error.code = "checkout_unavailable";
       throw error;
     }
+    trackEvent("checkout_started", { plan, billing_interval: interval });
     trackEvent("checkout_redirected", { plan, billing_interval: interval });
     try {
       sessionStorage.removeItem("pendingCheckoutInterval");
+      sessionStorage.removeItem(CHECKOUT_RETRY_REQUIRED_KEY);
+      sessionStorage.removeItem(PENDING_UPGRADE_FEATURE_KEY);
       sessionStorage.removeItem(PURCHASE_RECORDED_KEY);
     } catch {}
     location.href = checkout.url;
   } catch (error) {
+    try {
+      sessionStorage.setItem(CHECKOUT_RETRY_REQUIRED_KEY, "1");
+    } catch {}
     trackEvent("checkout_failed", {
       plan,
       billing_interval: interval,
@@ -2458,7 +2495,8 @@ function showCheckoutRetry(interval, plan, error) {
   message.textContent = copy.checkoutRetry;
   const status = document.createElement("p");
   status.className = "status error";
-  status.textContent = error.message;
+  status.textContent = error?.message || "";
+  status.hidden = !error?.message;
   const retry = document.createElement("button");
   retry.type = "button";
   retry.className = "button-secondary";
@@ -2466,6 +2504,7 @@ function showCheckoutRetry(interval, plan, error) {
   retry.addEventListener("click", async () => {
     retry.disabled = true;
     status.textContent = copy.loading;
+    status.hidden = false;
     status.className = "status";
     try {
       await startCheckout(interval, plan);
@@ -3666,20 +3705,31 @@ async function init() {
   let pendingInterval = null;
   let pendingPlan = "teacher";
   let pendingCheckoutError = null;
+  let checkoutRetryRequired = false;
   try {
     pendingInterval = sessionStorage.getItem("pendingCheckoutInterval");
     pendingPlan =
       sessionStorage.getItem("pendingCheckoutPlan") === "parent"
         ? "parent"
         : "teacher";
+    checkoutRetryRequired =
+      sessionStorage.getItem(CHECKOUT_RETRY_REQUIRED_KEY) === "1";
   } catch {}
-  if (pendingInterval === "month" || pendingInterval === "year") {
+  if (
+    (pendingInterval === "month" || pendingInterval === "year") &&
+    !checkoutRetryRequired
+  ) {
     try {
       await startCheckout(pendingInterval, pendingPlan);
       return;
     } catch (error) {
       pendingCheckoutError = error;
     }
+  } else if (
+    (pendingInterval === "month" || pendingInterval === "year") &&
+    checkoutRetryRequired
+  ) {
+    pendingCheckoutError = null;
   }
   const params = new URLSearchParams(location.search);
   if (params.get("checkout") === "success") {
@@ -3704,9 +3754,9 @@ async function init() {
   } else {
     await renderTeacherRoute(me);
   }
-  if (pendingCheckoutError)
+  if (pendingCheckoutError || checkoutRetryRequired)
     showCheckoutRetry(pendingInterval, pendingPlan, pendingCheckoutError);
 }
 
 init();
-import './lineNumbers.mjs';
+import "./lineNumbers.mjs";

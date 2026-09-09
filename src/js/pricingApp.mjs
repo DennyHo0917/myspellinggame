@@ -24,6 +24,28 @@ const accountPromise = fetch("/api/me", { credentials: "same-origin" })
   .then((response) => (response.ok ? response.json() : null))
   .catch(() => null);
 
+function showCheckoutRetry(choice, error) {
+  document.querySelector(".checkout-retry-notice")?.remove();
+  const notice = document.createElement("div");
+  notice.className = "notice checkout-retry-notice";
+  notice.setAttribute("role", "alert");
+  const message = document.createElement("p");
+  message.textContent = productMessage("checkoutRetry", {}, locale);
+  const status = document.createElement("p");
+  status.className = "status error";
+  status.textContent = error.message;
+  const retry = document.createElement("button");
+  retry.type = "button";
+  retry.className = "button-secondary";
+  retry.textContent = productMessage("retryCheckout", {}, locale);
+  retry.addEventListener("click", () => {
+    notice.remove();
+    choice.click();
+  });
+  notice.append(message, retry, status);
+  choice.closest(".pricing-card")?.append(notice);
+}
+
 let checkoutCanceled = false;
 try {
   checkoutCanceled =
@@ -42,6 +64,8 @@ try {
     trackCheckoutCancelled(canceledCheckoutPlan, canceledCheckoutInterval);
     sessionStorage.removeItem("pendingCheckoutInterval");
     sessionStorage.removeItem("pendingCheckoutPlan");
+    sessionStorage.removeItem("pendingCheckoutRetryRequired");
+    sessionStorage.removeItem("pendingUpgradeFeature");
     sessionStorage.removeItem(PENDING_CHECKOUT_LOCALE_KEY);
   }
 } catch {}
@@ -141,9 +165,11 @@ for (const choice of planChoices)
         sessionStorage.setItem("pendingCheckoutInterval", interval);
         sessionStorage.setItem("pendingCheckoutPlan", plan);
         sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
+        sessionStorage.removeItem("pendingCheckoutRetryRequired");
       }
     } catch {}
     trackEvent("upgrade_clicked", { plan, billing_interval: interval });
+    trackEvent("checkout_attempted", { plan, billing_interval: interval });
     try {
       const response = await fetch(
         changingPlan ? "/api/billing/change-plan" : "/api/billing/checkout",
@@ -196,9 +222,14 @@ for (const choice of planChoices)
       trackEvent("checkout_redirected", { plan, billing_interval: interval });
       try {
         sessionStorage.removeItem("pendingCheckoutInterval");
+        sessionStorage.removeItem("pendingCheckoutRetryRequired");
       } catch {}
       location.href = data.url;
     } catch (error) {
+      try {
+        if (!changingPlan)
+          sessionStorage.setItem("pendingCheckoutRetryRequired", "1");
+      } catch {}
       trackEvent("checkout_failed", {
         plan,
         billing_interval: interval,
@@ -206,7 +237,7 @@ for (const choice of planChoices)
       });
       choice.textContent = label;
       choice.disabled = false;
-      alert(error.message);
+      showCheckoutRetry(choice, error);
     }
   });
 

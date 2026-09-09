@@ -401,6 +401,11 @@ a {
 .checkout-retry-notice .status {
   flex-basis: 100%;
 }
+.locked-feature-plan .contextual-paywall-price {
+  display: block;
+  margin: 0.35rem 0 0.65rem;
+  color: var(--text);
+}
 .grid {
   display: grid;
   gap: 1rem;

@@ -192,6 +192,11 @@ const PACKS = {
     checkoutRetry:
       "We couldn’t open Stripe Checkout. Your selected plan is still saved.",
     retryCheckout: "Try checkout again",
+    parentUpgradePrice: "Parent Plan · $4.99/month",
+    upgradeParentMonthly: "Upgrade to Parent · $4.99/month",
+    pendingUpgradeTitle: "Finish your Parent Plan upgrade",
+    pendingUpgradeCopy:
+      "Sign in once and we’ll continue straight to secure checkout. Your selected feature is saved.",
     activatingPro: "Activating your plan…",
     activatingPlan: "Activating your {plan}…",
     activationDelayed:
@@ -553,6 +558,11 @@ const PACKS = {
     checkoutRetry:
       "No pudimos abrir el pago seguro. El plan que elegiste sigue guardado.",
     retryCheckout: "Reintentar el pago",
+    parentUpgradePrice: "Plan para familias · $4.99/mes",
+    upgradeParentMonthly: "Mejorar al plan familiar · $4.99/mes",
+    pendingUpgradeTitle: "Termina de activar el plan familiar",
+    pendingUpgradeCopy:
+      "Inicia sesión una vez y continuaremos directamente al pago seguro. La función elegida está guardada.",
     activatingPro: "Activando tu plan…",
     activatingPlan: "Activando {plan}…",
     activationDelayed:
@@ -914,6 +924,11 @@ const PACKS = {
     checkoutRetry:
       "Não foi possível abrir o checkout. O plano escolhido continua salvo.",
     retryCheckout: "Tentar o checkout novamente",
+    parentUpgradePrice: "Plano para Pais · US$ 4,99/mês",
+    upgradeParentMonthly: "Assinar Plano para Pais · US$ 4,99/mês",
+    pendingUpgradeTitle: "Conclua o upgrade para o Plano para Pais",
+    pendingUpgradeCopy:
+      "Entre uma vez e seguiremos direto para o checkout seguro. O recurso escolhido está salvo.",
     activatingPro: "Ativando seu plano…",
     activatingPlan: "Ativando {plan}…",
     activationDelayed:
@@ -1275,6 +1290,11 @@ const PACKS = {
     checkoutRetry:
       "Impossible d’ouvrir le paiement sécurisé. Votre offre reste enregistrée.",
     retryCheckout: "Réessayer le paiement",
+    parentUpgradePrice: "Offre Parents · 4,99 $US/mois",
+    upgradeParentMonthly: "Choisir l’offre Parents · 4,99 $US/mois",
+    pendingUpgradeTitle: "Terminez l’activation de l’offre Parents",
+    pendingUpgradeCopy:
+      "Connectez-vous une fois et nous continuerons directement vers le paiement sécurisé. La fonctionnalité choisie est conservée.",
     activatingPro: "Activation de votre offre…",
     activatingPlan: "Activation de {plan}…",
     activationDelayed:
@@ -1635,6 +1655,11 @@ const PACKS = {
     checkoutRetry:
       "Checkout belum dapat dibuka. Paket yang dipilih tetap tersimpan.",
     retryCheckout: "Coba checkout lagi",
+    parentUpgradePrice: "Paket Orang Tua · US$4,99/bulan",
+    upgradeParentMonthly: "Upgrade Paket Orang Tua · US$4,99/bulan",
+    pendingUpgradeTitle: "Selesaikan upgrade Paket Orang Tua",
+    pendingUpgradeCopy:
+      "Masuk sekali dan kami akan langsung melanjutkan ke checkout aman. Fitur pilihan Anda tetap tersimpan.",
     activatingPro: "Mengaktifkan paket Anda…",
     activatingPlan: "Mengaktifkan {plan}…",
     activationDelayed: "Checkout selesai. Aktivasi paket masih diproses.",
@@ -1971,6 +1996,11 @@ const PACKS = {
     checkoutPending: "结账请求正在处理中，请稍后重试。",
     checkoutRetry: "暂时无法打开 Stripe 结账页，你选择的方案仍已保留。",
     retryCheckout: "重新尝试结账",
+    parentUpgradePrice: "家长方案 · US$4.99/月",
+    upgradeParentMonthly: "升级家长方案 · US$4.99/月",
+    pendingUpgradeTitle: "继续完成家长方案升级",
+    pendingUpgradeCopy:
+      "登录一次即可直接继续安全结账，你刚才选择的功能会保留。",
     activatingPro: "正在激活方案…",
     activatingPlan: "正在激活{plan}…",
     activationDelayed: "结账已完成，方案仍在激活中。",
@@ -2145,7 +2175,7 @@ const SENTENCE_LIBRARY_COPY = {
     fillSentenceLibraryPlus: "Auto-fill example sentences",
     upgradeBadge: "Upgrade",
     sentenceLibraryRequired:
-      "Sentence library is included in Parent and Teacher Plans.",
+      "Automatically match example sentences to your spelling words, ready to review and edit.",
     sentenceLibraryError:
       "We couldn’t load example sentences. Please try again.",
     invalidSentenceLevel: "Choose simple or difficult sentences.",
@@ -2158,7 +2188,7 @@ const SENTENCE_LIBRARY_COPY = {
     fillSentenceLibraryPlus: "Autocompletar frases",
     upgradeBadge: "Mejorar",
     sentenceLibraryRequired:
-      "La biblioteca de frases está incluida en los planes para familias y docentes.",
+      "Añade automáticamente frases de ejemplo para cada palabra y edítalas antes de practicar.",
     sentenceLibraryError:
       "No se pudieron cargar las frases de ejemplo. Inténtalo de nuevo.",
     invalidSentenceLevel: "Elige frases sencillas o difíciles.",
@@ -2171,7 +2201,7 @@ const SENTENCE_LIBRARY_COPY = {
     fillSentenceLibraryPlus: "Preencher frases automaticamente",
     upgradeBadge: "Upgrade",
     sentenceLibraryRequired:
-      "A biblioteca de frases está incluída nos planos para Pais e Professores.",
+      "Preencha automaticamente frases de exemplo para cada palavra e edite antes de praticar.",
     sentenceLibraryError:
       "Não foi possível carregar as frases de exemplo. Tente novamente.",
     invalidSentenceLevel: "Escolha frases simples ou difíceis.",
@@ -2184,7 +2214,7 @@ const SENTENCE_LIBRARY_COPY = {
     fillSentenceLibraryPlus: "Remplir automatiquement",
     upgradeBadge: "Améliorer",
     sentenceLibraryRequired:
-      "La bibliothèque de phrases est incluse dans les offres Parents et Enseignants.",
+      "Ajoutez automatiquement une phrase d’exemple à chaque mot, puis modifiez-la avant l’exercice.",
     sentenceLibraryError:
       "Impossible de charger les phrases d’exemple. Réessayez.",
     invalidSentenceLevel: "Choisissez des phrases simples ou difficiles.",
@@ -2197,7 +2227,7 @@ const SENTENCE_LIBRARY_COPY = {
     fillSentenceLibraryPlus: "Isi otomatis kalimat",
     upgradeBadge: "Upgrade",
     sentenceLibraryRequired:
-      "Pustaka kalimat tersedia pada Paket Orang Tua dan Guru.",
+      "Isi otomatis contoh kalimat untuk setiap kata, lalu edit sebelum latihan.",
     sentenceLibraryError: "Kalimat contoh tidak dapat dimuat. Coba lagi.",
     invalidSentenceLevel: "Pilih kalimat sederhana atau sulit.",
   },
@@ -2208,7 +2238,7 @@ const SENTENCE_LIBRARY_COPY = {
     fillSentenceLibrary: "从例句库填充",
     fillSentenceLibraryPlus: "自动填充例句",
     upgradeBadge: "升级",
-    sentenceLibraryRequired: "例句库包含在家长方案和教师方案中。",
+    sentenceLibraryRequired: "为每个单词自动匹配例句，并可在练习前检查和编辑。",
     sentenceLibraryError: "例句加载失败，请重试。",
     invalidSentenceLevel: "请选择简单或进阶例句。",
   },

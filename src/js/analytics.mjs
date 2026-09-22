@@ -61,7 +61,7 @@ const EVENT_PARAMS = {
   checkout_started: ["plan", "billing_interval"],
   checkout_redirected: ["plan", "billing_interval"],
   subscription_started: ["plan", "billing_interval"],
-  purchase: ["plan", "billing_interval", "value", "currency"],
+  purchase: ["plan", "billing_interval", "value", "currency", "transaction_id"],
   word_limit_hit: ["limit", "account_tier", "word_count_range", "action"],
   sign_up: ["provider", "workspace_type"],
   learner_created: [],
@@ -94,6 +94,7 @@ const LIMIT_TYPES = {
 const reportedLimits = new Set();
 const reportedLockedFeatures = new Set();
 const reportedCheckoutCancellations = new Set();
+const reportedPurchases = new Set();
 const LOCKED_FEATURE_ERRORS = {
   active_assignment_limit: "active_assignments",
   monthly_submission_limit: "monthly_submissions",
@@ -194,6 +195,39 @@ export function trackCheckoutCancelled(plan, billingInterval) {
     plan: plan || "unknown",
     billing_interval: billingInterval || "unknown",
   });
+}
+
+export function trackPurchase(purchase) {
+  const transactionId = purchase?.transactionId;
+  if (
+    typeof transactionId !== "string" ||
+    !/^in_[A-Za-z0-9_]+$/.test(transactionId) ||
+    !Number.isInteger(purchase?.amountTotal) ||
+    purchase.amountTotal < 0 ||
+    !/^[A-Za-z]{3}$/.test(purchase?.currency || "") ||
+    !["parent", "teacher"].includes(purchase?.plan) ||
+    !["month", "year"].includes(purchase?.billingInterval) ||
+    typeof window === "undefined" ||
+    typeof window.gtag !== "function"
+  )
+    return false;
+  const storageKey = `mySpellingPurchase:${transactionId}`;
+  try {
+    if (localStorage.getItem(storageKey) === "1") return false;
+  } catch {}
+  if (reportedPurchases.has(transactionId)) return false;
+  reportedPurchases.add(transactionId);
+  trackEvent("purchase", {
+    plan: purchase.plan,
+    billing_interval: purchase.billingInterval,
+    value: purchase.amountTotal / 100,
+    currency: purchase.currency.toUpperCase(),
+    transaction_id: transactionId,
+  });
+  try {
+    localStorage.setItem(storageKey, "1");
+  } catch {}
+  return true;
 }
 
 function visitRange(count) {

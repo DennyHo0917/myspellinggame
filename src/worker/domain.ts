@@ -78,6 +78,7 @@ export class HttpError extends Error {
 
 export function normalizeWord(value: unknown): string {
   return String(value ?? "")
+    .replace(/[\u2018\u2019\u02bc]/g, "'")
     .trim()
     .toLowerCase();
 }
@@ -86,24 +87,24 @@ export function parseWordList(value: unknown): string[] {
   const raw = Array.isArray(value)
     ? value.map(String).join("\n")
     : String(value ?? "");
-  const words = [
-    ...new Set(
-      raw
-        .toLowerCase()
-        .split(/[^a-z'-]+/)
-        .map((word) => word.trim())
-        .filter(Boolean),
-    ),
-  ];
+  const tokens = normalizeWord(raw)
+    .split(/[\s,]+/)
+    .filter(Boolean);
+  const validShape = (word: string) => /^[a-z]+(?:['-][a-z]+)*$/.test(word);
+  const validWord = (word: string) =>
+    validShape(word) &&
+    word.length <= 24 &&
+    (word.length > 1 || /[ai]/.test(word));
+  const words = [...new Set(tokens)];
   if (
     !words.length ||
     words.length > 80 ||
-    words.some((word) => word.length < 2 || word.length > 24)
+    words.some((word) => !validWord(word))
   ) {
     throw new HttpError(
       400,
       "invalid_words",
-      "Use 1–80 words, each 2–24 characters long.",
+      "Use 1–80 valid words of 1–24 characters; one-letter words must be a or I.",
     );
   }
   return words;

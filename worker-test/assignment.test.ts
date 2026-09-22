@@ -471,6 +471,21 @@ describe("teacher authorization and quotas", () => {
     );
   });
 
+  it("parses a and I and normalizes curly apostrophes without splitting", () => {
+    expect(parseWordList("a I don’t we’re")).toEqual([
+      "a",
+      "i",
+      "don't",
+      "we're",
+    ]);
+    expect(() => parseWordList("apple bad.word")).toThrowError(
+      expect.objectContaining({ code: "invalid_words" }),
+    );
+    expect(() => parseWordList("x")).toThrowError(
+      expect.objectContaining({ code: "invalid_words" }),
+    );
+  });
+
   it("resolves canonical plans and legacy Plus/Pro values", () => {
     expect(resolvePlan("free", null, false)).toBe("free");
     expect(resolvePlan("parent", null, true)).toBe("parent");
@@ -714,6 +729,34 @@ describe("teacher authorization and quotas", () => {
       word: "beautiful",
       example_sentence: null,
     });
+  });
+
+  it("normalizes valid one-letter and apostrophe words in assignments and rejects malformed input", async () => {
+    const created = await createAssignment(teacherA, {
+      words: "a\nI\ndon’t\nwe’re",
+    });
+    expect(created.response.status).toBe(201);
+    const assignment = await publicWords(String(created.body.publicId));
+    expect(assignment.words.map((item) => item.word)).toEqual([
+      "a",
+      "i",
+      "don't",
+      "we're",
+    ]);
+
+    const rejected = await call(`/api/assignments/${created.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ title: "Invalid", words: "apple bad.word" }),
+    });
+    expect(rejected.status).toBe(400);
+    expect(((await rejected.json()) as { error: string }).error).toBe(
+      "invalid_words",
+    );
+    expect(
+      (await publicWords(String(created.body.publicId))).words.map(
+        (item) => item.word,
+      ),
+    ).toEqual(["a", "i", "don't", "we're"]);
   });
 
   it("rejects example sentences over 300 characters", async () => {
@@ -979,6 +1022,38 @@ describe("saved lists and learner profiles", () => {
     );
     expect(freeRejected.response.status).toBe(403);
     expect(freeRejected.body.error).toBe("word_limit");
+  });
+
+  it("uses the same strict word parsing for saved lists", async () => {
+    const saved = await createSavedList(
+      "Apostrophes",
+      teacherA,
+      "a\nI\ndon’t\nwe’re",
+    );
+    expect(saved.response.status).toBe(201);
+    const detail = await call(`/api/saved-lists/${saved.body.id}`);
+    expect(((await detail.json()) as { words: string[] }).words).toEqual([
+      "a",
+      "i",
+      "don't",
+      "we're",
+    ]);
+
+    const rejected = await call(`/api/saved-lists/${saved.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ title: "Invalid", words: "apple bad.word" }),
+    });
+    expect(rejected.status).toBe(400);
+    expect(((await rejected.json()) as { error: string }).error).toBe(
+      "invalid_words",
+    );
+    const unchanged = await call(`/api/saved-lists/${saved.body.id}`);
+    expect(((await unchanged.json()) as { words: string[] }).words).toEqual([
+      "a",
+      "i",
+      "don't",
+      "we're",
+    ]);
   });
 
   it.each(["parent", "teacher"] as const)(
@@ -2832,7 +2907,7 @@ describe("Stripe checkout", () => {
 
       expect(sent).toMatchObject({
         line_items: [{ price: priceId, quantity: 1 }],
-        success_url: `https://example.test/workspace?lang=en&checkout=success&interval=${interval}&plan=parent`,
+        success_url: `https://example.test/workspace?lang=en&checkout=success&interval=${interval}&plan=parent&checkout_session_id={CHECKOUT_SESSION_ID}`,
         metadata: { plan: "parent", billing_interval: interval },
         subscription_data: {
           metadata: { plan: "parent", billing_interval: interval },
@@ -3152,7 +3227,7 @@ describe("Stripe checkout", () => {
       );
 
       expect(successUrl).toBe(
-        `https://example.test/workspace?lang=${expected}&checkout=success&interval=month&plan=teacher`,
+        `https://example.test/workspace?lang=${expected}&checkout=success&interval=month&plan=teacher&checkout_session_id={CHECKOUT_SESSION_ID}`,
       );
       expect(cancelUrl).toBe(
         `https://example.test${pricingPath}?checkout=cancelled`,
@@ -3706,6 +3781,59 @@ describe("Stripe checkout", () => {
     });
   });
 
+  it("returns the verified invoice ID for an immediately paid plan change", async () => {
+    await insertSubscription({
+      plan: "parent",
+      status: "active",
+      priceId: "price_parent_monthly",
+      currentPeriodEnd: future,
+    });
+    await bindings.DB.prepare(
+      `UPDATE subscriptions
+       SET stripe_customer_id = 'cus_test', stripe_subscription_id = 'sub_test'
+       WHERE user_id = ?`,
+    )
+      .bind(teacherA.id)
+      .run();
+
+    await expect(
+      changeSubscriptionPlan(
+        testEnv(),
+        bindings.DB,
+        teacherA.id,
+        "teacher",
+        "month",
+        "https://example.test",
+        {
+          retrieveSubscription: async () =>
+            ({
+              id: "sub_test",
+              items: {
+                data: [
+                  {
+                    id: "si_test",
+                    price: { id: "price_parent_monthly" },
+                  },
+                ],
+              },
+            }) as unknown as Stripe.Subscription,
+          updateSubscription: async () =>
+            ({
+              id: "sub_test",
+              latest_invoice: {
+                id: "in_paid_change",
+                status: "paid",
+                amount_paid: 275,
+                currency: "usd",
+              },
+            }) as unknown as Stripe.Subscription,
+        },
+      ),
+    ).resolves.toEqual({
+      url: "https://example.test/workspace?lang=en&checkout=success&interval=month&plan=teacher&transaction_id=in_paid_change",
+    });
+  });
+
   it("keeps Teacher active and schedules Parent for the current period end", async () => {
     await insertSubscription({
       plan: "teacher",
@@ -3863,6 +3991,7 @@ describe("Stripe event processing", () => {
     status: string,
     interval: "month" | "year" = "month",
     plan: "parent" | "teacher" = "teacher",
+    subscriptionId = "sub_trial",
   ) =>
     ({
       id: eventId,
@@ -3872,7 +4001,8 @@ describe("Stripe event processing", () => {
           : "customer.subscription.updated",
       data: {
         object: {
-          id: "sub_trial",
+          id: subscriptionId,
+          created: subscriptionId === "sub_old" ? 100 : 200,
           customer: "cus_trial",
           status,
           cancel_at_period_end: status === "canceled",
@@ -3891,6 +4021,61 @@ describe("Stripe event processing", () => {
                         ? "price_teacher_yearly"
                         : "price_teacher_monthly",
                   recurring: { interval },
+                },
+              },
+            ],
+          },
+        },
+      },
+    }) as unknown as Stripe.Event;
+
+  const stripeEventOptions = {
+    retrieveSubscription: async (id: string) =>
+      ({ id, created: id === "sub_old" ? 100 : 200 }) as Stripe.Subscription,
+  };
+
+  const processSubscription = (
+    eventId: string,
+    status: string,
+    subscriptionId: string,
+    plan: "parent" | "teacher" = "teacher",
+    interval: "month" | "year" = "month",
+  ) =>
+    processStripeEvent(
+      bindings.DB,
+      subscriptionEvent(eventId, status, interval, plan, subscriptionId),
+      testEnv(),
+      stripeEventOptions,
+    );
+
+  const paidInvoiceEvent = (
+    eventId: string,
+    invoiceId: string,
+    billingReason: "subscription_create" | "subscription_update",
+    amountPaid: number,
+    currency = "usd",
+    livemode: boolean | undefined = undefined,
+  ) =>
+    ({
+      id: eventId,
+      type: "invoice.paid",
+      data: {
+        object: {
+          id: invoiceId,
+          billing_reason: billingReason,
+          status: "paid",
+          amount_due: 999,
+          amount_paid: amountPaid,
+          currency,
+          livemode,
+          customer: "cus_trial",
+          subscription: "sub_trial",
+          lines: {
+            data: [
+              {
+                amount: 999,
+                pricing: {
+                  price_details: { price: "price_teacher_monthly" },
                 },
               },
             ],
@@ -3930,7 +4115,7 @@ describe("Stripe event processing", () => {
     ).resolves.toEqual({
       plan: "parent",
       billing_interval: "year",
-      status: "paid",
+      status: "completed",
       stripe_price_id: "price_parent_yearly",
     });
   });
@@ -3965,6 +4150,7 @@ describe("Stripe event processing", () => {
               subscription_details: { subscription: "sub_invoice" },
             },
             amount_due: 500,
+            amount_paid: 0,
             currency: "usd",
             created: Math.floor(Date.now() / 1000),
             lines: {
@@ -3982,7 +4168,6 @@ describe("Stripe event processing", () => {
       } as unknown as Stripe.Event,
       testEnv(),
     );
-
     await expect(
       bindings.DB.prepare(
         "SELECT plan, billing_interval, status, amount_total FROM payment_orders WHERE id = 'in_created'",
@@ -3991,8 +4176,311 @@ describe("Stripe event processing", () => {
       plan: "teacher",
       billing_interval: "month",
       status: "pending",
-      amount_total: 500,
+      amount_total: 0,
     });
+  });
+
+  it("counts first-purchase revenue once by invoice ID", async () => {
+    await processSubscription("evt_first_subscription", "active", "sub_trial");
+    await processStripeEvent(
+      bindings.DB,
+      {
+        id: "evt_first_checkout",
+        type: "checkout.session.completed",
+        data: {
+          object: {
+            id: "cs_first",
+            status: "complete",
+            payment_status: "paid",
+            amount_total: 900,
+            currency: "usd",
+            customer: "cus_trial",
+            subscription: "sub_trial",
+            client_reference_id: teacherA.id,
+            metadata: { owner_user_id: teacherA.id, plan: "teacher" },
+          },
+        },
+      } as unknown as Stripe.Event,
+      testEnv(),
+    );
+    const invoice = {
+      id: "in_first",
+      billing_reason: "subscription_create",
+      status: "paid",
+      amount_due: 1200,
+      amount_paid: 900,
+      currency: "usd",
+      customer: "cus_trial",
+      subscription: "sub_trial",
+      lines: {
+        data: [
+          {
+            amount: 1200,
+            pricing: { price_details: { price: "price_teacher_monthly" } },
+          },
+        ],
+      },
+    };
+    for (const id of ["evt_first_invoice", "evt_first_invoice_duplicate"])
+      await processStripeEvent(
+        bindings.DB,
+        {
+          id,
+          type: "invoice.payment_succeeded",
+          data: { object: invoice },
+        } as unknown as Stripe.Event,
+        testEnv(),
+      );
+
+    await expect(
+      bindings.DB.prepare(
+        `SELECT COUNT(*) AS paid_count, SUM(amount_total) AS revenue
+         FROM payment_orders WHERE status = 'paid'`,
+      ).first(),
+    ).resolves.toEqual({ paid_count: 1, revenue: 900 });
+    expect(
+      await bindings.DB.prepare(
+        "SELECT status FROM payment_orders WHERE id = 'cs_first'",
+      ).first("status"),
+    ).toBe("completed");
+  });
+
+  it("returns a discounted first purchase on refresh from verified ledger data", async () => {
+    await processSubscription(
+      "evt_purchase_subscription",
+      "active",
+      "sub_trial",
+    );
+    await processStripeEvent(
+      bindings.DB,
+      {
+        id: "evt_purchase_checkout",
+        type: "checkout.session.completed",
+        data: {
+          object: {
+            id: "cs_purchase",
+            created: 100,
+            status: "complete",
+            payment_status: "paid",
+            customer: "cus_trial",
+            subscription: "sub_trial",
+            client_reference_id: teacherA.id,
+            metadata: { owner_user_id: teacherA.id, plan: "teacher" },
+          },
+        },
+      } as unknown as Stripe.Event,
+      testEnv(),
+    );
+    await processStripeEvent(
+      bindings.DB,
+      paidInvoiceEvent(
+        "evt_discounted_invoice",
+        "in_discounted",
+        "subscription_create",
+        399,
+        "eur",
+      ),
+      testEnv(),
+    );
+    await processStripeEvent(
+      bindings.DB,
+      paidInvoiceEvent(
+        "evt_test_mode_invoice",
+        "in_test_mode",
+        "subscription_update",
+        999,
+        "usd",
+        false,
+      ),
+      testEnv(),
+    );
+
+    for (let visit = 0; visit < 2; visit += 1) {
+      const response = await call(
+        "/api/billing/purchase?checkout_session_id=cs_purchase",
+      );
+      expect(await response.json()).toEqual({
+        purchase: {
+          transactionId: "in_discounted",
+          plan: "teacher",
+          billingInterval: "month",
+          amountTotal: 399,
+          currency: "eur",
+        },
+      });
+    }
+    expect(
+      await (
+        await call("/api/billing/purchase?transaction_id=in_test_mode")
+      ).json(),
+    ).toEqual({ purchase: null });
+  });
+
+  it("returns a paid plan-change difference but never pending or failed orders", async () => {
+    await processSubscription("evt_change_subscription", "active", "sub_trial");
+    expect(await (await call("/api/billing/purchase")).json()).toEqual({
+      purchase: null,
+    });
+    await processStripeEvent(
+      bindings.DB,
+      paidInvoiceEvent(
+        "evt_change_paid",
+        "in_change_paid",
+        "subscription_update",
+        275,
+      ),
+      testEnv(),
+    );
+    await bindings.DB.prepare(
+      `INSERT INTO payment_orders (
+         id, user_id, plan, billing_interval, status, stripe_price_id,
+         stripe_subscription_id, amount_total, currency, created_at, updated_at
+       ) VALUES
+         ('in_pending_private', ?, 'teacher', 'month', 'pending', 'price_teacher_monthly',
+          'sub_trial', 0, 'usd', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+         ('in_failed_private', ?, 'teacher', 'month', 'failed', 'price_teacher_monthly',
+          'sub_trial', 0, 'usd', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+    )
+      .bind(teacherA.id, teacherA.id)
+      .run();
+
+    expect(
+      await (
+        await call("/api/billing/purchase?transaction_id=in_change_paid")
+      ).json(),
+    ).toEqual({
+      purchase: {
+        transactionId: "in_change_paid",
+        plan: "teacher",
+        billingInterval: "month",
+        amountTotal: 275,
+        currency: "usd",
+      },
+    });
+    for (const id of ["in_pending_private", "in_failed_private"])
+      expect(
+        await (await call(`/api/billing/purchase?transaction_id=${id}`)).json(),
+      ).toEqual({ purchase: null });
+  });
+
+  it("records regular renewals and paid plan changes by invoice ID", async () => {
+    await processSubscription("evt_ledger_subscription", "active", "sub_trial");
+    for (const [id, reason, amount] of [
+      ["in_renewal", "subscription_cycle", 599],
+      ["in_upgrade", "subscription_update", 300],
+    ] as const)
+      await processStripeEvent(
+        bindings.DB,
+        {
+          id: `evt_${id}`,
+          type: "invoice.payment_succeeded",
+          data: {
+            object: {
+              id,
+              billing_reason: reason,
+              status: "paid",
+              amount_paid: amount,
+              currency: "usd",
+              customer: "cus_trial",
+              subscription: "sub_trial",
+              lines: {
+                data: [
+                  {
+                    amount,
+                    pricing: {
+                      price_details: { price: "price_teacher_monthly" },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        } as unknown as Stripe.Event,
+        testEnv(),
+      );
+
+    await expect(
+      bindings.DB.prepare(
+        `SELECT id, status, amount_total, currency FROM payment_orders
+         WHERE id IN ('in_renewal', 'in_upgrade') ORDER BY id`,
+      ).all(),
+    ).resolves.toMatchObject({
+      results: [
+        {
+          id: "in_renewal",
+          status: "paid",
+          amount_total: 599,
+          currency: "usd",
+        },
+        {
+          id: "in_upgrade",
+          status: "paid",
+          amount_total: 300,
+          currency: "usd",
+        },
+      ],
+    });
+  });
+
+  it("does not count pending or failed invoices as revenue", async () => {
+    await processSubscription("evt_unpaid_subscription", "active", "sub_trial");
+    const invoice = (id: string) => ({
+      id,
+      billing_reason: "subscription_cycle",
+      status: "open",
+      amount_due: 599,
+      amount_paid: 0,
+      currency: "usd",
+      customer: "cus_trial",
+      subscription: "sub_trial",
+      lines: {
+        data: [
+          {
+            amount: 599,
+            pricing: { price_details: { price: "price_teacher_monthly" } },
+          },
+        ],
+      },
+    });
+    await processStripeEvent(
+      bindings.DB,
+      {
+        id: "evt_pending_invoice",
+        type: "invoice.created",
+        data: { object: invoice("in_pending") },
+      } as unknown as Stripe.Event,
+      testEnv(),
+    );
+    await processStripeEvent(
+      bindings.DB,
+      {
+        id: "evt_failed_invoice",
+        type: "invoice.payment_failed",
+        data: { object: invoice("in_failed") },
+      } as unknown as Stripe.Event,
+      testEnv(),
+    );
+    await processStripeEvent(
+      bindings.DB,
+      {
+        id: "evt_failed_invoice_late_created",
+        type: "invoice.created",
+        data: { object: invoice("in_failed") },
+      } as unknown as Stripe.Event,
+      testEnv(),
+    );
+
+    await expect(
+      bindings.DB.prepare(
+        `SELECT COUNT(*) AS paid_count, COALESCE(SUM(amount_total), 0) AS revenue
+         FROM payment_orders WHERE status = 'paid'`,
+      ).first(),
+    ).resolves.toEqual({ paid_count: 0, revenue: 0 });
+    expect(
+      await bindings.DB.prepare(
+        "SELECT status FROM payment_orders WHERE id = 'in_failed'",
+      ).first("status"),
+    ).toBe("failed");
   });
 
   it.each(["month", "year"] as const)(
@@ -4383,6 +4871,93 @@ describe("Stripe event processing", () => {
         "SELECT stripe_price_id FROM subscriptions",
       ).first("stripe_price_id"),
     ).toBe("price_monthly");
+  });
+
+  it("does not let an old subscription payment failure revoke a new subscription", async () => {
+    await processSubscription("evt_old_active", "active", "sub_old");
+    await processSubscription("evt_old_canceled", "canceled", "sub_old");
+    await processSubscription(
+      "evt_new_active",
+      "active",
+      "sub_new",
+      "parent",
+      "year",
+    );
+    await processStripeEvent(
+      bindings.DB,
+      {
+        id: "evt_old_payment_failed",
+        type: "invoice.payment_failed",
+        data: {
+          object: {
+            id: "in_old_failed",
+            customer: "cus_trial",
+            subscription: "sub_old",
+          },
+        },
+      } as unknown as Stripe.Event,
+      testEnv(),
+    );
+
+    await expect(
+      bindings.DB.prepare(
+        "SELECT plan, status, stripe_subscription_id FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .first(),
+    ).resolves.toEqual({
+      plan: "parent",
+      status: "active",
+      stripe_subscription_id: "sub_new",
+    });
+  });
+
+  it("keeps a replacement subscription effective after canceling and resubscribing", async () => {
+    await processSubscription("evt_old_canceled", "canceled", "sub_old");
+    await processSubscription(
+      "evt_new_after_cancel",
+      "active",
+      "sub_new",
+      "parent",
+      "year",
+    );
+
+    await expect(
+      bindings.DB.prepare(
+        "SELECT plan, status, billing_interval, stripe_subscription_id FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .first(),
+    ).resolves.toEqual({
+      plan: "parent",
+      status: "active",
+      billing_interval: "year",
+      stripe_subscription_id: "sub_new",
+    });
+  });
+
+  it("ignores late callbacks from the canceled subscription after resubscribe", async () => {
+    await processSubscription("evt_old_initial_cancel", "canceled", "sub_old");
+    await processSubscription(
+      "evt_new_current",
+      "active",
+      "sub_new",
+      "parent",
+      "year",
+    );
+    await processSubscription("evt_old_late_cancel", "canceled", "sub_old");
+
+    await expect(
+      bindings.DB.prepare(
+        "SELECT plan, status, stripe_subscription_id FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .first(),
+    ).resolves.toEqual({
+      plan: "parent",
+      status: "active",
+      stripe_subscription_id: "sub_new",
+    });
   });
 
   it("does not grant Pro for an unconfigured Stripe price", async () => {

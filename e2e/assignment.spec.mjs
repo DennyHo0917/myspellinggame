@@ -1162,9 +1162,7 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
       page.getByRole("button", { name: "Add learner" }),
     ).toBeVisible();
     await expect(
-      page
-        .locator("#learners")
-        .getByRole("link", { name: "Progress", exact: true }),
+      page.locator("#learners").getByRole("link", { name: /View progress/ }),
     ).toBeVisible();
     await expect(page.getByRole("heading", { name: "Children" })).toHaveCount(
       0,
@@ -1179,7 +1177,6 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
       .locator('.workspace-sidebar-link[data-section="progress"]')
       .click();
     await expect(page.getByText("because · 2", { exact: true })).toBeVisible();
-    await page.getByRole("tab", { name: "Mastery" }).click();
     await expect(page.getByText("Mastered 3", { exact: true })).toBeVisible();
     await expect(page.getByText("Learning 1", { exact: true })).toBeVisible();
     await expect(
@@ -1208,10 +1205,10 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
   await expect(
     page
       .locator(".locked-feature-plan")
-      .getByRole("button", { name: "Upgrade to Parent · $4.99/month" }),
+      .getByRole("button", { name: "Choose Teacher · $9.99/month" }),
   ).toHaveCount(1);
   await expect(page.locator(".locked-feature-plan")).toContainText(
-    "Parent Plan · $4.99/month",
+    "Teacher Plan · $9.99/month",
   );
 });
 
@@ -1235,6 +1232,99 @@ const limitWords = (count) =>
     } while (value >= 0);
     return `limitword${suffix}`;
   }).join("\n");
+
+const photoFile = {
+  name: "words.png",
+  mimeType: "image/png",
+  buffer: Buffer.from("not-a-real-image"),
+};
+
+async function openPaidPhotoImport(page) {
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        plan: "parent",
+        user: { id: "teacher-a", name: "Teacher A" },
+      }),
+    }),
+  );
+  await page.goto("/");
+  await page.locator("#custom-word-list").fill("existing\nwords");
+}
+
+test("photo OCR retries after its first script load fails", async ({
+  page,
+}) => {
+  let loads = 0;
+  await page.route("**/tesseract.min.js", (route) => {
+    loads += 1;
+    if (loads === 1) return route.abort("failed");
+    return route.fulfill({
+      contentType: "application/javascript",
+      body: `window.Tesseract = { recognize: async () => ({ data: { text: "apple banana" } }) };`,
+    });
+  });
+  await openPaidPhotoImport(page);
+
+  await page.locator("#photo-import-input").setInputFiles(photoFile);
+  await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
+  await expect(page.locator("#custom-word-list")).toHaveValue(
+    "existing\nwords",
+  );
+
+  await page.getByRole("button", { name: "Try again" }).click();
+  await expect(page.locator("#photo-import-review-words")).toHaveValue(
+    "apple\nbanana",
+  );
+  expect(loads).toBe(2);
+  await expect(page.locator('script[src*="tesseract.min.js"]')).toHaveCount(1);
+});
+
+test("concurrent photo imports reuse one Tesseract load", async ({ page }) => {
+  let loads = 0;
+  await page.route("**/tesseract.min.js", async (route) => {
+    loads += 1;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    await route.fulfill({
+      contentType: "application/javascript",
+      body: `window.__ocrRuns = 0; window.Tesseract = { recognize: async () => { window.__ocrRuns += 1; return { data: { text: "apple" } }; } };`,
+    });
+  });
+  await openPaidPhotoImport(page);
+
+  const input = page.locator("#photo-import-input");
+  await input.setInputFiles(photoFile);
+  await input.setInputFiles(photoFile);
+  await expect(page.locator("#photo-import-review-words")).toHaveValue("apple");
+  await expect.poll(() => page.evaluate(() => window.__ocrRuns)).toBe(2);
+  expect(loads).toBe(1);
+});
+
+test("photo OCR recognition failure preserves words and can retry without reloading", async ({
+  page,
+}) => {
+  let loads = 0;
+  await page.route("**/tesseract.min.js", (route) => {
+    loads += 1;
+    return route.fulfill({
+      contentType: "application/javascript",
+      body: `window.__ocrRuns = 0; window.Tesseract = { recognize: async () => { window.__ocrRuns += 1; if (window.__ocrRuns === 1) throw new Error("recognition_failed"); return { data: { text: "friend" } }; } };`,
+    });
+  });
+  await openPaidPhotoImport(page);
+
+  await page.locator("#photo-import-input").setInputFiles(photoFile);
+  await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
+  await expect(page.locator("#custom-word-list")).toHaveValue(
+    "existing\nwords",
+  );
+  await page.getByRole("button", { name: "Try again" }).click();
+  await expect(page.locator("#photo-import-review-words")).toHaveValue(
+    "friend",
+  );
+  expect(loads).toBe(1);
+});
 
 test("practice advises signed-in plans after 20 words and preserves hard limits", async ({
   page,
@@ -2701,7 +2791,7 @@ test("Teacher plan starts Checkout with its plan and interval", async ({
   ]);
 });
 
-test("failed automatic Checkout stays retryable on the teacher page", async ({
+test("saved checkout choice requires confirmation and stays retryable", async ({
   page,
 }) => {
   let checkoutCalls = 0;
@@ -2753,11 +2843,17 @@ test("failed automatic Checkout stays retryable on the teacher page", async ({
     sessionStorage.setItem("pendingCheckoutPlan", "parent"),
   );
   await page.goto("/workspace?lang=en");
+  await expect(page.getByText("Parent Plan · $49.99/year")).toBeVisible();
+  expect(checkoutCalls).toBe(0);
+  await page
+    .getByRole("button", { name: "Continue to secure checkout" })
+    .click();
   await expect(
     page.getByText(
       "We couldn’t open Stripe Checkout. Your selected plan is still saved.",
     ),
   ).toBeVisible();
+  await expect(page.getByText("Parent Plan · $49.99/year")).toBeVisible();
   expect(
     await page.evaluate(() =>
       sessionStorage.getItem("pendingCheckoutInterval"),

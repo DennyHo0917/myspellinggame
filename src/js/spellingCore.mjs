@@ -22,23 +22,45 @@ export const ANONYMOUS_WORD_LIMIT = 20;
 
 export function analyzeWords(text) {
   const tokens = String(text || "")
+    .replace(/[\u2018\u2019\u02bc]/g, "'")
     .toLowerCase()
-    .split(/[^a-z'-]+/)
+    .split(/[\s,]+/)
     .map((word) => word.trim())
     .filter(Boolean);
+  const validShape = (word) => /^[a-z]+(?:['-][a-z]+)*$/.test(word);
+  const tooShort = [
+    ...new Set(
+      tokens.filter(
+        (word) => validShape(word) && word.length === 1 && !/[ai]/.test(word),
+      ),
+    ),
+  ];
+  const tooLong = [
+    ...new Set(tokens.filter((word) => validShape(word) && word.length > 24)),
+  ];
+  const invalid = [...new Set(tokens.filter((word) => !validShape(word)))];
+  const accepted = tokens.filter(
+    (word) =>
+      validShape(word) &&
+      word.length <= 24 &&
+      (word.length > 1 || /[ai]/.test(word)),
+  );
   const duplicates = [
-    ...new Set(tokens.filter((word, index) => tokens.indexOf(word) !== index)),
+    ...new Set(
+      accepted.filter((word, index) => accepted.indexOf(word) !== index),
+    ),
   ];
-  const tooShort = [...new Set(tokens.filter((word) => word.length <= 1))];
-  const tooLong = [...new Set(tokens.filter((word) => word.length > 24))];
-  const words = [
-    ...new Set(tokens.filter((word) => word.length > 1 && word.length <= 24)),
-  ];
-  return { words, duplicates, tooShort, tooLong };
+  const words = [...new Set(accepted)];
+  return { words, duplicates, tooShort, tooLong, invalid };
 }
 
 export function parseWords(text) {
-  return analyzeWords(text).words;
+  const analysis = analyzeWords(text);
+  return analysis.tooShort.length ||
+    analysis.tooLong.length ||
+    analysis.invalid.length
+    ? []
+    : analysis.words;
 }
 
 export function configuredWords(text, fallback = SAMPLE_WORDS) {
@@ -48,6 +70,7 @@ export function configuredWords(text, fallback = SAMPLE_WORDS) {
 
 export function normalizeAnswer(answer) {
   return String(answer || "")
+    .replace(/[\u2018\u2019\u02bc]/g, "'")
     .trim()
     .toLowerCase();
 }

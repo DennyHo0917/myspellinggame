@@ -70,6 +70,10 @@ type ChangePlanOptions = {
   releaseSchedule?: (id: string) => Promise<Stripe.SubscriptionSchedule>;
 };
 
+type StripeEventOptions = {
+  retrieveSubscription?: (id: string) => Promise<Stripe.Subscription>;
+};
+
 const STRIPE_LOCALE_PATHS = {
   en: "",
   es: "/es",
@@ -249,8 +253,11 @@ async function upsertPaymentOrder(db: D1Database, order: PaymentOrder) {
          created_at, updated_at
        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(id) DO UPDATE SET
-         status = CASE WHEN payment_orders.status IN ('paid', 'canceled')
-                       THEN payment_orders.status ELSE excluded.status END,
+         status = CASE
+           WHEN payment_orders.status IN ('paid', 'canceled') THEN payment_orders.status
+           WHEN payment_orders.status IN ('failed', 'expired')
+             AND excluded.status IN ('pending', 'completed') THEN payment_orders.status
+           ELSE excluded.status END,
          stripe_customer_id = COALESCE(excluded.stripe_customer_id, payment_orders.stripe_customer_id),
          stripe_subscription_id = COALESCE(excluded.stripe_subscription_id, payment_orders.stripe_subscription_id),
          amount_total = COALESCE(excluded.amount_total, payment_orders.amount_total),
@@ -325,13 +332,11 @@ async function recordCheckoutOrder(
   );
   if (!context) return;
   const status =
-    session.payment_status === "paid"
-      ? "paid"
-      : session.status === "complete"
-        ? "completed"
-        : session.status === "expired"
-          ? "expired"
-          : "pending";
+    session.status === "complete"
+      ? "completed"
+      : session.status === "expired"
+        ? "expired"
+        : "pending";
   await upsertPaymentOrder(db, {
     id: session.id,
     userId,
@@ -346,7 +351,7 @@ async function recordCheckoutOrder(
   });
 }
 
-async function recordPlanChangeInvoice(
+async function recordInvoice(
   db: D1Database,
   invoice: Stripe.Invoice,
   env: StripeEnv,
@@ -358,7 +363,7 @@ async function recordPlanChangeInvoice(
   },
   eventStatus?: "pending" | "paid" | "failed",
 ) {
-  if (!explicit && invoice.billing_reason !== "subscription_update") return;
+  if (invoice.livemode === false) return;
   const dynamicInvoice = invoice as unknown as {
     subscription?: unknown;
     parent?: { subscription_details?: { subscription?: unknown } };
@@ -367,6 +372,7 @@ async function recordPlanChangeInvoice(
     dynamicInvoice.subscription ??
       dynamicInvoice.parent?.subscription_details?.subscription,
   );
+  if (!subscriptionId && !explicit) return;
   const customerId = objectId(invoice.customer);
   const userId =
     explicit?.userId ||
@@ -410,7 +416,7 @@ async function recordPlanChangeInvoice(
     priceId: priceId || checkoutPrice(env, context.plan, context.interval),
     customerId,
     subscriptionId,
-    amountTotal: invoice.amount_due ?? invoice.amount_paid ?? null,
+    amountTotal: invoice.amount_paid ?? null,
     currency: invoice.currency ?? null,
     createdAt: unixToIso(invoice.created) ?? new Date().toISOString(),
   });
@@ -587,7 +593,7 @@ export async function createCheckout(
       {
         mode: "subscription",
         line_items: [{ price, quantity: 1 }],
-        success_url: `${origin}/workspace?lang=${locale}&checkout=success&interval=${interval}&plan=${plan}`,
+        success_url: `${origin}/workspace?lang=${locale}&checkout=success&interval=${interval}&plan=${plan}&checkout_session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${origin}${STRIPE_LOCALE_PATHS[locale]}/pricing?checkout=cancelled`,
         client_reference_id: user.id,
         customer: subscription?.stripe_customer_id || undefined,
@@ -877,7 +883,7 @@ export async function changeSubscriptionPlan(
   if (!invoice && typeof updated.latest_invoice === "string")
     invoice = await retrieveInvoice(updated.latest_invoice);
   if (invoice)
-    await recordPlanChangeInvoice(db, invoice, env, {
+    await recordInvoice(db, invoice, env, {
       userId,
       plan,
       interval,
@@ -891,6 +897,11 @@ export async function changeSubscriptionPlan(
       "Stripe could not open the prorated payment page.",
     );
   }
+  if (invoice?.status === "paid") {
+    const returnUrl = new URL(successUrl);
+    returnUrl.searchParams.set("transaction_id", invoice.id);
+    return { url: returnUrl.toString() };
+  }
   return { url: successUrl };
 }
 
@@ -898,6 +909,7 @@ async function applySubscription(
   db: D1Database,
   subscription: Stripe.Subscription,
   env: StripeEnv,
+  options: StripeEventOptions = {},
 ) {
   const ownerUserId = await ownerFromStripeObject(db, subscription);
   if (!ownerUserId) return;
@@ -909,17 +921,33 @@ async function applySubscription(
     (subscription.status === "active" || subscription.status === "trialing");
   const existing = await db
     .prepare(
-      `SELECT s.plan, s.status, u.workspace_type FROM user u
+      `SELECT s.plan, s.status, s.stripe_subscription_id, u.workspace_type FROM user u
        LEFT JOIN subscriptions s ON s.user_id = u.id WHERE u.id = ?`,
     )
     .bind(ownerUserId)
     .first<{
       plan: string | null;
       status: string | null;
+      stripe_subscription_id: string | null;
       workspace_type: string | null;
     }>();
   const wasActive =
     existing?.status === "active" || existing?.status === "trialing";
+  let replacedSubscriptionId: string | null = null;
+  if (
+    existing?.stripe_subscription_id &&
+    existing.stripe_subscription_id !== subscription.id
+  ) {
+    const retrieveSubscription =
+      options.retrieveSubscription ??
+      ((id) => stripe(env).subscriptions.retrieve(id));
+    const current = await retrieveSubscription(existing.stripe_subscription_id);
+    const incoming = subscription.created
+      ? subscription
+      : await retrieveSubscription(subscription.id);
+    if (incoming.created <= current.created) return;
+    replacedSubscriptionId = existing.stripe_subscription_id;
+  }
   const plan =
     active && configuredPlan === "parent"
       ? "parent"
@@ -947,7 +975,10 @@ async function applySubscription(
          stripe_price_id = excluded.stripe_price_id,
          current_period_end = excluded.current_period_end,
          cancel_at_period_end = excluded.cancel_at_period_end,
-         updated_at = excluded.updated_at`,
+         updated_at = excluded.updated_at
+       WHERE subscriptions.stripe_subscription_id IS NULL
+          OR subscriptions.stripe_subscription_id = excluded.stripe_subscription_id
+          OR subscriptions.stripe_subscription_id = ?`,
     )
     .bind(
       ownerUserId,
@@ -960,6 +991,7 @@ async function applySubscription(
       subscriptionPeriodEnd(subscription),
       subscription.cancel_at_period_end ? 1 : 0,
       now,
+      replacedSubscriptionId,
     )
     .run();
   if (active && !wasActive) {
@@ -997,11 +1029,7 @@ async function applyCheckout(
       : metadataPlan === "teacher"
         ? "teacher"
         : "legacy";
-  await updateOrderFromSession(
-    db,
-    session,
-    session.payment_status === "paid" ? "paid" : "completed",
-  );
+  await updateOrderFromSession(db, session, "completed");
   await db
     .prepare(
       `INSERT INTO subscriptions (
@@ -1048,8 +1076,7 @@ async function applyInvoiceStatus(
     dynamicInvoice.subscription ??
       dynamicInvoice.parent?.subscription_details?.subscription,
   );
-  const customerId = objectId(invoice.customer);
-  if (!subscriptionId && !customerId) return;
+  if (!subscriptionId) return;
   await db
     .prepare(
       `UPDATE subscriptions SET status = ?,
@@ -1061,7 +1088,7 @@ async function applyInvoiceStatus(
               WHEN (SELECT workspace_type FROM user WHERE id = subscriptions.user_id) = 'teacher'
               THEN 'teacher' ELSE 'parent' END
          ELSE 'free' END,
-       updated_at = ? WHERE stripe_subscription_id = ? OR stripe_customer_id = ?`,
+       updated_at = ? WHERE stripe_subscription_id = ?`,
     )
     .bind(
       status,
@@ -1076,7 +1103,6 @@ async function applyInvoiceStatus(
       env.STRIPE_PRICE_YEARLY,
       new Date().toISOString(),
       subscriptionId,
-      customerId,
     )
     .run();
   await db
@@ -1085,9 +1111,7 @@ async function applyInvoiceStatus(
        currency = COALESCE(?, currency), updated_at = ?
        WHERE id = (
          SELECT id FROM payment_orders
-         WHERE status IN ('pending', 'completed')
-           AND (stripe_subscription_id = ? OR stripe_customer_id = ?)
-         ORDER BY created_at DESC LIMIT 1
+         WHERE id = ? AND status IN ('pending', 'completed')
        )`,
     )
     .bind(
@@ -1095,8 +1119,7 @@ async function applyInvoiceStatus(
       invoice.amount_paid ?? null,
       invoice.currency ?? null,
       new Date().toISOString(),
-      subscriptionId,
-      customerId,
+      invoice.id,
     )
     .run();
 }
@@ -1105,6 +1128,7 @@ export async function applyStripeEvent(
   db: D1Database,
   event: Stripe.Event,
   env: StripeEnv,
+  options: StripeEventOptions = {},
 ) {
   switch (event.type) {
     case "checkout.session.completed":
@@ -1154,7 +1178,7 @@ export async function applyStripeEvent(
       await updateOrderFromSession(
         db,
         event.data.object as Stripe.Checkout.Session,
-        "paid",
+        "completed",
       );
       await clearCheckoutLock(db, event.data.object as Stripe.Checkout.Session);
       break;
@@ -1165,10 +1189,11 @@ export async function applyStripeEvent(
         db,
         event.data.object as Stripe.Subscription,
         env,
+        options,
       );
       break;
     case "invoice.created":
-      await recordPlanChangeInvoice(
+      await recordInvoice(
         db,
         event.data.object as Stripe.Invoice,
         env,
@@ -1176,8 +1201,9 @@ export async function applyStripeEvent(
         "pending",
       );
       break;
+    case "invoice.paid":
     case "invoice.payment_succeeded":
-      await recordPlanChangeInvoice(
+      await recordInvoice(
         db,
         event.data.object as Stripe.Invoice,
         env,
@@ -1193,7 +1219,7 @@ export async function applyStripeEvent(
       );
       break;
     case "invoice.payment_failed":
-      await recordPlanChangeInvoice(
+      await recordInvoice(
         db,
         event.data.object as Stripe.Invoice,
         env,
@@ -1219,6 +1245,7 @@ export async function processStripeEvent(
   db: D1Database,
   event: Stripe.Event,
   env: StripeEnv,
+  options: StripeEventOptions = {},
 ) {
   const now = new Date();
   await db
@@ -1239,7 +1266,7 @@ export async function processStripeEvent(
     .run();
   if (!claim.meta.changes) return false;
   try {
-    await applyStripeEvent(db, event, env);
+    await applyStripeEvent(db, event, env, options);
     await db
       .prepare(
         "UPDATE stripe_events SET processed_at = ?, processing_at = NULL WHERE event_id = ?",

@@ -2,6 +2,7 @@ import { gameState } from "./gameState.js";
 import { getPageLocale, t } from "./pageLocale.js";
 import {
   ANONYMOUS_WORD_LIMIT,
+  analyzeWords,
   customTypingRoundComplete,
   parseWords,
   SAMPLE_EXAMPLE_SENTENCES,
@@ -36,14 +37,26 @@ let copyToastTimer;
 
 export { parseWords };
 
-function parentUpgradeLink(feature) {
+function contextualUpgradePlan(account) {
+  if (account?.workspaceType === "family") return "parent";
+  if (account?.workspaceType === "teacher") return "teacher";
+  return null;
+}
+
+function upgradeLink(feature, plan, { wholeClass = false } = {}) {
   const link = document.createElement("a");
   link.className = "button-link button-secondary contextual-paywall-cta";
   link.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
-  link.textContent = t("upgradeParentMonthly");
+  link.textContent = t(
+    wholeClass
+      ? "wholeClassTeacherMonthly"
+      : plan === "parent"
+        ? "upgradeParentMonthly"
+        : "upgradeTeacherMonthly",
+  );
   link.addEventListener("click", () => {
     try {
-      sessionStorage.setItem("pendingCheckoutPlan", "parent");
+      sessionStorage.setItem("pendingCheckoutPlan", plan);
       sessionStorage.setItem("pendingCheckoutInterval", "month");
       sessionStorage.setItem("pendingCheckoutLocale", getPageLocale());
       sessionStorage.setItem(PENDING_UPGRADE_FEATURE_KEY, feature);
@@ -57,17 +70,28 @@ function appendContextualPaywall(
   notice,
   feature,
   value,
-  { freeCta = false } = {},
+  { account = accountState, freeCta = false } = {},
 ) {
+  const plan = contextualUpgradePlan(account);
   const benefit = document.createElement("span");
   benefit.className = "contextual-paywall-benefit";
   benefit.textContent = value;
   const price = document.createElement("strong");
   price.className = "contextual-paywall-price";
-  price.textContent = t("parentPlanMonthly");
+  price.textContent = plan
+    ? t(plan === "parent" ? "parentPlanMonthly" : "teacherPlanMonthly")
+    : t("chooseUpgradePlan");
   const actions = document.createElement("span");
   actions.className = "contextual-paywall-actions";
-  actions.append(parentUpgradeLink(feature));
+  if (plan === "teacher") actions.append(upgradeLink(feature, "teacher"));
+  else {
+    actions.append(upgradeLink(feature, "parent"));
+    actions.append(
+      upgradeLink(feature, "teacher", {
+        wholeClass: plan === "parent",
+      }),
+    );
+  }
   if (freeCta) {
     const free = document.createElement("a");
     free.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
@@ -85,7 +109,7 @@ function sentenceTextarea() {
   return document.getElementById("custom-example-sentences");
 }
 
-function photoImportNotice() {
+function photoImportNotice(account = accountState) {
   const field = textarea()?.closest(".word-entry-field");
   if (!field) return;
   field.querySelector(".photo-import-notice, .photo-import-review")?.remove();
@@ -93,7 +117,9 @@ function photoImportNotice() {
   notice.className =
     "photo-import-notice sentence-library-notice contextual-paywall";
   notice.setAttribute("role", "status");
-  appendContextualPaywall(notice, "photo_import", t("photoImportValue"));
+  appendContextualPaywall(notice, "photo_import", t("photoImportValue"), {
+    account,
+  });
   field.append(notice);
 }
 
@@ -111,23 +137,44 @@ function photoImportStatus(message) {
 
 function loadTesseract() {
   if (!tesseractPromise) {
-    tesseractPromise = new Promise((resolve, reject) => {
-      if (window.Tesseract) {
+    const script = document.createElement("script");
+    const loading = new Promise((resolve, reject) => {
+      if (typeof window.Tesseract?.recognize === "function") {
         resolve(window.Tesseract);
         return;
       }
-      const script = document.createElement("script");
       script.src =
         "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
-      script.onload = () =>
-        window.Tesseract
-          ? resolve(window.Tesseract)
-          : reject(new Error("tesseract_unavailable"));
+      script.onload = () => {
+        script.onload = null;
+        script.onerror = null;
+        if (typeof window.Tesseract?.recognize === "function")
+          resolve(window.Tesseract);
+        else reject(new Error("tesseract_unavailable"));
+      };
       script.onerror = () => reject(new Error("tesseract_unavailable"));
       document.head.append(script);
     });
+    tesseractPromise = loading.catch((error) => {
+      script.onload = null;
+      script.onerror = null;
+      script.remove();
+      tesseractPromise = undefined;
+      throw error;
+    });
   }
   return tesseractPromise;
+}
+
+function showPhotoImportRetry(file) {
+  const notice = photoImportStatus(t("photoImportError"));
+  if (!notice) return;
+  const retry = document.createElement("button");
+  retry.type = "button";
+  retry.className = "auto-sentence-btn photo-import-retry";
+  retry.textContent = t("photoImportRetry");
+  retry.addEventListener("click", () => void importWordsFromPhoto(file));
+  notice.append(" ", retry);
 }
 
 function showPhotoImportReview(words) {
@@ -188,7 +235,7 @@ async function importWordsFromPhoto(file) {
     }
     showPhotoImportReview(words);
   } catch {
-    notice.textContent = t("photoImportError");
+    showPhotoImportRetry(file);
   }
 }
 
@@ -242,6 +289,7 @@ function sentenceLibraryNotice(
     message === productMessage("sentenceLibraryRequired", {}, getPageLocale())
       ? t("exampleSentencesValue")
       : message,
+    { account: accountState },
   );
   field.append(notice);
 }
@@ -349,6 +397,7 @@ function showLimitCta(key, account) {
   notice.id = "spelling-limit-cta";
   notice.className = "notice contextual-paywall";
   appendContextualPaywall(notice, "word_limit", t("wordLimitValue"), {
+    account,
     freeCta: !account,
   });
   host.append(notice);
@@ -376,6 +425,15 @@ async function getAccount() {
 }
 
 export async function canStartPractice({ anonymousOnly = false } = {}) {
+  const analysis = currentWordAnalysis();
+  if (
+    analysis.tooShort.length ||
+    analysis.tooLong.length ||
+    analysis.invalid.length
+  ) {
+    status(t("invalidWords"));
+    return false;
+  }
   const words = currentWords();
   if (!words.length) {
     status(t("emptyWords"));
@@ -418,6 +476,10 @@ export async function canStartPractice({ anonymousOnly = false } = {}) {
 
 function currentWords() {
   return parseWords(textarea()?.value || "");
+}
+
+function currentWordAnalysis() {
+  return analyzeWords(textarea()?.value || "");
 }
 
 function currentExampleSentences(words = currentWords()) {
@@ -519,10 +581,20 @@ export function initSpellingMode() {
   const easyToggle = document.getElementById("easy-mode-toggle");
   if (easyToggle) easyToggle.checked = localStorage.getItem(EASY_KEY) === "1";
 
-  status(t("wordsReady", { count: currentWords().length }));
+  const updateWordStatus = () => {
+    const analysis = currentWordAnalysis();
+    status(
+      analysis.tooShort.length ||
+        analysis.tooLong.length ||
+        analysis.invalid.length
+        ? t("invalidWords")
+        : t("wordsReady", { count: analysis.words.length }),
+    );
+  };
+  updateWordStatus();
   void updateLongListAdvice();
   input.addEventListener("input", () => {
-    status(t("wordsReady", { count: currentWords().length }));
+    updateWordStatus();
     void updateLongListAdvice();
   });
   syncModeUI();

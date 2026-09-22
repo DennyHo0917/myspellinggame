@@ -5,6 +5,7 @@ import {
   trackEvent,
   trackLockedFeature,
   trackLockedFeatureError,
+  trackPurchase,
   trackUsageLimit,
 } from "./analytics.mjs";
 import {
@@ -20,7 +21,6 @@ import { analyzeWords } from "./spellingCore.mjs";
 const root = document.getElementById("product-app");
 const locale = productLocale();
 const copy = productMessages(locale);
-const PURCHASE_RECORDED_KEY = "teacherPurchaseRecorded";
 const AUTH_PENDING_KEY = "teacherOAuthPending";
 const AUTH_PROVIDER_KEY = "teacherOAuthProvider";
 const CHECKOUT_RETRY_REQUIRED_KEY = "pendingCheckoutRetryRequired";
@@ -127,6 +127,16 @@ function isTeacherPlan(me) {
 
 function isParentPlan(me) {
   return me.plan === "parent";
+}
+
+function contextualUpgradePlan() {
+  if (workspaceState?.me?.workspaceType === "family") return "parent";
+  if (workspaceState?.me?.workspaceType === "teacher") return "teacher";
+  return null;
+}
+
+function upgradePrice(plan, interval = "month") {
+  return copy[`${plan}Upgrade${interval === "year" ? "Yearly" : ""}Price`];
 }
 
 function workspaceLearnerLabel(me) {
@@ -303,6 +313,7 @@ function attachWordLimit(form, me, wordsSelector, { locked = false } = {}) {
       messages.push(m("shortWords", { words: analysis.tooShort.join(", ") }));
     if (analysis.tooLong.length)
       messages.push(m("longWords", { words: analysis.tooLong.join(", ") }));
+    if (analysis.invalid.length) messages.push(m("invalidWords"));
     if (overLimit) messages.push(m("currentWordLimit", { limit }));
     const invalid = !locked && messages.length > 0;
     count.textContent = `${analysis.words.length} / ${limit}`;
@@ -840,26 +851,49 @@ function statusElement(parent) {
 }
 
 function upgradeLink(ctaLocation, direct = false) {
-  const link = document.createElement(direct ? "button" : "a");
-  link.className = direct ? "button-secondary pro" : "button-link pro";
-  if (direct) link.type = "button";
-  else link.href = productPagePath("pricing", locale);
-  link.textContent = direct ? copy.upgradeParentMonthly : copy.upgrade;
-  link.addEventListener("click", async () => {
-    trackEvent("upgrade_cta_clicked", { cta_location: ctaLocation });
-    if (!direct) return;
-    link.disabled = true;
-    try {
-      sessionStorage.setItem(PENDING_UPGRADE_FEATURE_KEY, ctaLocation);
-    } catch {}
-    try {
-      await startCheckout("month", "parent");
-    } catch (error) {
-      showCheckoutRetry("month", "parent", error);
-      link.disabled = false;
-    }
-  });
-  return link;
+  if (!direct) {
+    const link = document.createElement("a");
+    link.className = "button-link pro";
+    link.href = productPagePath("pricing", locale);
+    link.textContent = copy.upgrade;
+    link.addEventListener("click", () =>
+      trackEvent("upgrade_cta_clicked", { cta_location: ctaLocation }),
+    );
+    return link;
+  }
+  const controls = document.createElement("span");
+  controls.className = "contextual-paywall-actions";
+  const recommendedPlan = contextualUpgradePlan();
+  const plans =
+    recommendedPlan === "teacher" ? ["teacher"] : ["parent", "teacher"];
+  for (const plan of plans) {
+    const button = document.createElement("button");
+    button.className = "button-secondary pro";
+    button.type = "button";
+    button.textContent =
+      plan === "teacher" && recommendedPlan === "parent"
+        ? copy.wholeClassTeacherMonthly
+        : copy[
+            plan === "parent" ? "upgradeParentMonthly" : "upgradeTeacherMonthly"
+          ];
+    button.addEventListener("click", async () => {
+      trackEvent("upgrade_cta_clicked", { cta_location: ctaLocation });
+      for (const control of controls.querySelectorAll("button"))
+        control.disabled = true;
+      try {
+        sessionStorage.setItem(PENDING_UPGRADE_FEATURE_KEY, ctaLocation);
+      } catch {}
+      try {
+        await startCheckout("month", plan);
+      } catch (error) {
+        showCheckoutRetry("month", plan, error);
+        for (const control of controls.querySelectorAll("button"))
+          control.disabled = false;
+      }
+    });
+    controls.append(button);
+  }
+  return controls;
 }
 
 function showLockedFeaturePlan(host, message, ctaLocation) {
@@ -872,7 +906,8 @@ function showLockedFeaturePlan(host, message, ctaLocation) {
   text.textContent = message;
   const price = document.createElement("strong");
   price.className = "contextual-paywall-price";
-  price.textContent = copy.parentUpgradePrice;
+  const plan = contextualUpgradePlan();
+  price.textContent = plan ? upgradePrice(plan) : copy.chooseUpgradePlan;
   const feature = {
     sentence_library: "example_sentences",
     smart_review: "smart_review",
@@ -945,19 +980,22 @@ async function renderLogin() {
   card.id = "teacher-sign-in";
   card.className = "product-card auth-card";
   const title = document.createElement("h1");
-  let pendingUpgrade = false;
+  let pendingPlan = null;
   try {
-    pendingUpgrade =
-      sessionStorage.getItem("pendingCheckoutPlan") === "parent" &&
+    const plan = sessionStorage.getItem("pendingCheckoutPlan");
+    if (
+      ["parent", "teacher"].includes(plan) &&
       ["month", "year"].includes(
         sessionStorage.getItem("pendingCheckoutInterval"),
-      );
+      )
+    )
+      pendingPlan = plan;
   } catch {}
-  title.textContent = pendingUpgrade
-    ? copy.pendingUpgradeTitle
+  title.textContent = pendingPlan
+    ? m("pendingUpgradeTitle", { plan: checkoutPlanLabel(pendingPlan) })
     : copy.signInTitle;
   const text = document.createElement("p");
-  text.textContent = pendingUpgrade ? copy.pendingUpgradeCopy : copy.signInCopy;
+  text.textContent = pendingPlan ? copy.pendingUpgradeCopy : copy.signInCopy;
   const benefitTitle = document.createElement("h2");
   benefitTitle.textContent = copy.workspaceBenefitTitle;
   const benefitText = document.createElement("p");
@@ -2470,7 +2508,6 @@ async function startCheckout(interval, plan = "teacher") {
       sessionStorage.removeItem("pendingCheckoutInterval");
       sessionStorage.removeItem(CHECKOUT_RETRY_REQUIRED_KEY);
       sessionStorage.removeItem(PENDING_UPGRADE_FEATURE_KEY);
-      sessionStorage.removeItem(PURCHASE_RECORDED_KEY);
     } catch {}
     location.href = checkout.url;
   } catch (error) {
@@ -2495,6 +2532,9 @@ function showCheckoutRetry(interval, plan, error) {
   notice.setAttribute("role", "alert");
   const message = document.createElement("p");
   message.textContent = copy.checkoutRetry;
+  const price = document.createElement("strong");
+  price.className = "contextual-paywall-price";
+  price.textContent = upgradePrice(plan, interval);
   const status = document.createElement("p");
   status.className = "status error";
   status.textContent = error?.message || "";
@@ -2516,7 +2556,35 @@ function showCheckoutRetry(interval, plan, error) {
       retry.disabled = false;
     }
   });
-  notice.append(message, retry, status);
+  notice.append(message, price, retry, status);
+  main.prepend(notice);
+}
+
+function showPendingCheckoutConfirmation(interval, plan) {
+  const main = root.querySelector(".product-main");
+  if (!main) return;
+  main.querySelector(".pending-checkout-notice")?.remove();
+  const notice = document.createElement("section");
+  notice.className = "notice checkout-retry-notice pending-checkout-notice";
+  const message = document.createElement("p");
+  message.textContent = copy.pendingCheckoutReview;
+  const price = document.createElement("strong");
+  price.className = "contextual-paywall-price";
+  price.textContent = upgradePrice(plan, interval);
+  const proceed = document.createElement("button");
+  proceed.type = "button";
+  proceed.className = "button-secondary";
+  proceed.textContent = copy.continueCheckout;
+  proceed.addEventListener("click", async () => {
+    proceed.disabled = true;
+    try {
+      await startCheckout(interval, plan);
+    } catch (error) {
+      notice.remove();
+      showCheckoutRetry(interval, plan, error);
+    }
+  });
+  notice.append(message, price, proceed);
   main.prepend(notice);
 }
 
@@ -3523,38 +3591,16 @@ async function pollForPlan(plan) {
   return null;
 }
 
-function recordPurchase(me) {
-  let shouldRecord = false;
-  try {
-    const pendingLocale = sessionStorage.getItem(PENDING_CHECKOUT_LOCALE_KEY);
-    shouldRecord =
-      PRODUCT_LOCALES.some(([value]) => value === pendingLocale) &&
-      sessionStorage.getItem(PURCHASE_RECORDED_KEY) !== "1";
-    if (shouldRecord) sessionStorage.setItem(PURCHASE_RECORDED_KEY, "1");
-  } catch {}
-  if (!shouldRecord || me.subscriptionStatus !== "active") return;
-  const billingInterval = me.billingInterval === "year" ? "year" : "month";
-  trackEvent("subscription_started", {
-    plan: me.plan,
-    billing_interval: billingInterval,
-  });
-  trackEvent("purchase", {
-    plan: me.plan,
-    billing_interval: billingInterval,
-    value:
-      me.plan === "parent"
-        ? billingInterval === "year"
-          ? 49.99
-          : 4.99
-        : me.plan === "teacher"
-          ? billingInterval === "year"
-            ? 99.99
-            : 9.99
-          : billingInterval === "year"
-            ? 49.99
-            : 5.99,
-    currency: "USD",
-  });
+async function recordPurchase() {
+  const params = new URLSearchParams(location.search);
+  const transactionId = params.get("transaction_id");
+  const checkoutSessionId = params.get("checkout_session_id");
+  if (!transactionId && !checkoutSessionId) return;
+  const query = new URLSearchParams();
+  if (transactionId) query.set("transaction_id", transactionId);
+  if (checkoutSessionId) query.set("checkout_session_id", checkoutSessionId);
+  const { purchase } = await api(`/api/billing/purchase?${query}`);
+  if (purchase) trackPurchase(purchase);
 }
 
 function clearCheckoutParam() {
@@ -3563,6 +3609,8 @@ function clearCheckoutParam() {
   url.searchParams.delete("checkout");
   url.searchParams.delete("interval");
   url.searchParams.delete("plan");
+  url.searchParams.delete("transaction_id");
+  url.searchParams.delete("checkout_session_id");
   history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
   try {
     sessionStorage.removeItem(PENDING_CHECKOUT_LOCALE_KEY);
@@ -3600,7 +3648,7 @@ async function renderTeacherRoute(me) {
 }
 
 async function finishPlanActivation(me) {
-  recordPurchase(me);
+  await recordPurchase().catch(() => null);
   clearCheckoutParam();
   await renderTeacherRoute(me);
   const main = root.querySelector(".product-main");
@@ -3687,10 +3735,15 @@ async function init() {
           provider,
           workspace_type:
             me.workspaceType ||
-            (me.plan === "parent" ||
-            sessionStorage.getItem("pendingCheckoutPlan") === "parent"
+            (me.plan === "parent"
               ? "family"
-              : "teacher"),
+              : me.plan === "teacher"
+                ? "teacher"
+                : sessionStorage.getItem("pendingCheckoutPlan") === "parent"
+                  ? "family"
+                  : sessionStorage.getItem("pendingCheckoutPlan") === "teacher"
+                    ? "teacher"
+                    : "unknown"),
         });
       }
       sessionStorage.removeItem(AUTH_PENDING_KEY);
@@ -3720,34 +3773,16 @@ async function init() {
   workspaceState = { me };
   bindWorkspaceNavigation();
   let pendingInterval = null;
-  let pendingPlan = "teacher";
-  let pendingCheckoutError = null;
+  let pendingPlan = null;
   let checkoutRetryRequired = false;
   try {
     pendingInterval = sessionStorage.getItem("pendingCheckoutInterval");
-    pendingPlan =
-      sessionStorage.getItem("pendingCheckoutPlan") === "parent"
-        ? "parent"
-        : "teacher";
+    const storedPlan = sessionStorage.getItem("pendingCheckoutPlan");
+    if (storedPlan === "parent" || storedPlan === "teacher")
+      pendingPlan = storedPlan;
     checkoutRetryRequired =
       sessionStorage.getItem(CHECKOUT_RETRY_REQUIRED_KEY) === "1";
   } catch {}
-  if (
-    (pendingInterval === "month" || pendingInterval === "year") &&
-    !checkoutRetryRequired
-  ) {
-    try {
-      await startCheckout(pendingInterval, pendingPlan);
-      return;
-    } catch (error) {
-      pendingCheckoutError = error;
-    }
-  } else if (
-    (pendingInterval === "month" || pendingInterval === "year") &&
-    checkoutRetryRequired
-  ) {
-    pendingCheckoutError = null;
-  }
   const params = new URLSearchParams(location.search);
   if (params.get("checkout") === "success") {
     const requestedPlan = params.get("plan");
@@ -3771,8 +3806,14 @@ async function init() {
   } else {
     await renderTeacherRoute(me);
   }
-  if (pendingCheckoutError || checkoutRetryRequired)
-    showCheckoutRetry(pendingInterval, pendingPlan, pendingCheckoutError);
+  if (
+    pendingPlan &&
+    (pendingInterval === "month" || pendingInterval === "year")
+  ) {
+    if (checkoutRetryRequired)
+      showCheckoutRetry(pendingInterval, pendingPlan, null);
+    else showPendingCheckoutConfirmation(pendingInterval, pendingPlan);
+  }
 }
 
 init();

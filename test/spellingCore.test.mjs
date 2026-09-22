@@ -208,12 +208,21 @@ test("word parsing keeps values above the plan limit for explicit validation", (
   assert.equal(parseWords(words.join("\n")).length, 81);
 });
 
-test("word analysis counts unique valid words and reports ignored entries", () => {
-  const result = analyzeWords("Apple\napple\na\n" + "x".repeat(25));
-  assert.deepEqual(result.words, ["apple"]);
+test("word analysis accepts a and I and reports invalid entries", () => {
+  const result = analyzeWords(
+    "Apple\napple\na\nI\nx\nbad.word\n" + "z".repeat(25),
+  );
+  assert.deepEqual(result.words, ["apple", "a", "i"]);
   assert.deepEqual(result.duplicates, ["apple"]);
-  assert.deepEqual(result.tooShort, ["a"]);
-  assert.deepEqual(result.tooLong, ["x".repeat(25)]);
+  assert.deepEqual(result.tooShort, ["x"]);
+  assert.deepEqual(result.tooLong, ["z".repeat(25)]);
+  assert.deepEqual(result.invalid, ["bad.word"]);
+  assert.deepEqual(parseWords("apple bad.word"), []);
+});
+
+test("word parsing normalizes curly apostrophes without splitting words", () => {
+  assert.deepEqual(parseWords("a I don’t we’re"), ["a", "i", "don't", "we're"]);
+  assert.equal(normalizeAnswer(" DON’T "), "don't");
 });
 
 test("answer comparison ignores surrounding whitespace and case", () => {

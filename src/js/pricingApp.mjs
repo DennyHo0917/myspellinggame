@@ -20,6 +20,10 @@ const subscriptionMessage = subscriptionStatus?.querySelector(
 const renewButton = subscriptionStatus?.querySelector(
   "[data-renew-subscription]",
 );
+let currentAccount = null;
+let billingRequestPending = false;
+for (const choice of planChoices)
+  choice.dataset.selectPlanLabel = choice.textContent;
 const accountPromise = fetch("/api/me", { credentials: "same-origin" })
   .then((response) => (response.ok ? response.json() : null))
   .catch(() => null);
@@ -92,6 +96,62 @@ function selectInterval(interval) {
       String(option.dataset.planOption === interval),
     );
   for (const price of planPrices) price.textContent = price.dataset[interval];
+  syncPlanControls();
+}
+
+function selectedInterval() {
+  return document.querySelector('[data-plan-option][aria-pressed="true"]')
+    ?.dataset.planOption;
+}
+
+function syncPlanControls() {
+  const interval = selectedInterval();
+  for (const option of planOptions) option.disabled = billingRequestPending;
+  for (const choice of planChoices) {
+    const current =
+      currentAccount?.plan === choice.dataset.planChoice &&
+      currentAccount?.billingInterval === interval;
+    choice.disabled = billingRequestPending || current;
+    choice.textContent = current
+      ? choice.dataset.currentPlanLabel
+      : choice.dataset.selectPlanLabel;
+    choice.classList.toggle("current-plan-cta", current);
+    const card = choice.closest("[data-plan-card]");
+    card?.classList.toggle("current-plan", current);
+    if (current) card?.setAttribute("aria-current", "true");
+    else card?.removeAttribute("aria-current");
+  }
+}
+
+function confirmPlanChange(me, plan, interval) {
+  const targetCard = document.querySelector(`[data-plan-card="${plan}"]`);
+  const targetPrice =
+    targetCard?.querySelector("[data-plan-price]")?.textContent;
+  const currentPlan = copy[`${me.plan}Plan`] || me.plan;
+  const targetPlan = copy[`${plan}Plan`] || plan;
+  const currentInterval = document.querySelector(
+    `[data-plan-option="${me.billingInterval}"]`,
+  )?.textContent;
+  const targetInterval = document.querySelector(
+    `[data-plan-option="${interval}"]`,
+  )?.textContent;
+  const scheduled = me.plan === "teacher" && plan === "parent";
+  return confirm(
+    productMessage(
+      scheduled ? "planChangeScheduledConfirm" : "planChangeImmediateConfirm",
+      {
+        currentPlan,
+        currentInterval,
+        targetPlan,
+        targetInterval,
+        price: targetPrice,
+        date:
+          formatSubscriptionDate(me.currentPeriodEnd) ||
+          productMessage("nextRenewal", {}, locale),
+      },
+      locale,
+    ),
+  );
 }
 
 function selectPlan(plan) {
@@ -149,16 +209,28 @@ for (const option of planOptions)
 for (const choice of planChoices)
   choice.addEventListener("click", async () => {
     const plan = choice.dataset.planChoice;
-    selectPlan(plan);
-    if (!["parent", "teacher"].includes(plan) || choice.disabled) return;
+    if (
+      !["parent", "teacher"].includes(plan) ||
+      choice.disabled ||
+      billingRequestPending
+    )
+      return;
+    billingRequestPending = true;
+    syncPlanControls();
     const me = await accountPromise;
-    if (me?.plan === plan) return;
     const changingPlan = ["parent", "teacher"].includes(me?.plan);
-    const interval = document.querySelector(
-      '[data-plan-option][aria-pressed="true"]',
-    )?.dataset.planOption;
+    const interval = selectedInterval();
+    if (me?.plan === plan && me?.billingInterval === interval) {
+      billingRequestPending = false;
+      syncPlanControls();
+      return;
+    }
+    if (changingPlan && !confirmPlanChange(me, plan, interval)) {
+      billingRequestPending = false;
+      syncPlanControls();
+      return;
+    }
     const label = choice.textContent;
-    choice.disabled = true;
     choice.textContent = productMessage("loading", {}, locale);
     try {
       if (!changingPlan) {
@@ -201,8 +273,8 @@ for (const choice of planChoices)
           ),
         );
         selectPlan(me.plan);
-        choice.textContent = label;
-        choice.disabled = false;
+        billingRequestPending = false;
+        syncPlanControls();
         return;
       }
       if (!response.ok || !data.url) {
@@ -236,13 +308,15 @@ for (const choice of planChoices)
         error_code: error.code || "checkout_unavailable",
       });
       choice.textContent = label;
-      choice.disabled = false;
+      billingRequestPending = false;
+      syncPlanControls();
       showCheckoutRetry(choice, error);
     }
   });
 
 accountPromise
   .then((me) => {
+    currentAccount = me;
     const endDate = formatSubscriptionDate(me?.currentPeriodEnd);
     if (subscriptionStatus && ["parent", "teacher"].includes(me?.plan)) {
       const planLabel = copy[`${me.plan}Plan`] || me.plan;
@@ -266,21 +340,19 @@ accountPromise
       }
       subscriptionStatus.hidden = false;
     }
-    const current = document.querySelector(`[data-plan-cta="${me?.plan}"]`);
-    if (!current) return;
-    const currentCard = document.querySelector(`[data-plan-card="${me.plan}"]`);
-    currentCard?.classList.add("current-plan");
-    currentCard?.setAttribute("aria-current", "true");
-    current.textContent = current.dataset.currentPlanLabel;
-    current.classList.add("current-plan-cta");
-    if (current instanceof HTMLAnchorElement) {
-      current.removeAttribute("href");
-      current.setAttribute("aria-disabled", "true");
-    } else {
-      current.disabled = true;
-    }
     if (me.billingInterval === "month" || me.billingInterval === "year")
       selectInterval(me.billingInterval);
+    else syncPlanControls();
+    const current = document.querySelector(`[data-plan-cta="${me?.plan}"]`);
+    if (current && me.plan === "free") {
+      const currentCard = document.querySelector('[data-plan-card="free"]');
+      currentCard?.classList.add("current-plan");
+      currentCard?.setAttribute("aria-current", "true");
+      current.textContent = current.dataset.currentPlanLabel;
+      current.classList.add("current-plan-cta");
+      current.removeAttribute("href");
+      current.setAttribute("aria-disabled", "true");
+    }
     if (["parent", "teacher"].includes(me.plan) && freeChoice) {
       freeChoice.textContent = productMessage("manageBilling", {}, locale);
       freeChoice.addEventListener("click", (event) => {

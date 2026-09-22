@@ -76,6 +76,11 @@ const PACKS = {
     subscriptionExpires: "{plan} active through {date}",
     downgradeScheduled:
       "{currentPlan} remains active through {date}. {targetPlan} starts at your next renewal.",
+    planChangeImmediateConfirm:
+      "Change from {currentPlan} ({currentInterval}) to {targetPlan} ({targetInterval}) now? Stripe will credit unused time, prorate the new price, and charge any amount due immediately. {price} is the full renewal price; today’s charge may differ.",
+    planChangeScheduledConfirm:
+      "Schedule {targetPlan} ({targetInterval}) for {date}? {currentPlan} stays active until then. There is no charge or proration now; {price} will be charged when the new period starts.",
+    nextRenewal: "your next renewal",
     upgrade: "View Plans",
     newTitle: "Create a spelling assignment",
     assignmentTitle: "Assignment title",
@@ -86,7 +91,7 @@ const PACKS = {
     longListAdvice:
       "Longer lists can increase memory load. Consider a shorter practice or split these words across multiple assignments.",
     duplicateWords: "Repeated words: {words}.",
-    shortWords: "Words must be at least 2 characters: {words}.",
+    shortWords: "Only a and I are valid one-letter words: {words}.",
     longWords: "Words must be 24 characters or fewer: {words}.",
     currentWordLimit: "This list exceeds the {limit}-word limit.",
     exampleSentences: "Example sentences (optional)",
@@ -193,10 +198,19 @@ const PACKS = {
       "We couldn’t open Stripe Checkout. Your selected plan is still saved.",
     retryCheckout: "Try checkout again",
     parentUpgradePrice: "Parent Plan · $4.99/month",
+    teacherUpgradePrice: "Teacher Plan · $9.99/month",
+    parentUpgradeYearlyPrice: "Parent Plan · $49.99/year",
+    teacherUpgradeYearlyPrice: "Teacher Plan · $99.99/year",
     upgradeParentMonthly: "Upgrade to Parent · $4.99/month",
-    pendingUpgradeTitle: "Finish your Parent Plan upgrade",
+    upgradeTeacherMonthly: "Choose Teacher · $9.99/month",
+    chooseUpgradePlan: "Choose the setting that fits:",
+    wholeClassTeacherMonthly: "For a whole class? View Teacher · $9.99/month",
+    pendingUpgradeTitle: "Continue with {plan}",
     pendingUpgradeCopy:
-      "Sign in once and we’ll continue straight to secure checkout. Your selected feature is saved.",
+      "Sign in to keep your selection. You decide when to open secure checkout.",
+    pendingCheckoutReview:
+      "Your saved choice is shown below. Checkout opens only after you continue.",
+    continueCheckout: "Continue to secure checkout",
     activatingPro: "Activating your plan…",
     activatingPlan: "Activating your {plan}…",
     activationDelayed:
@@ -206,7 +220,8 @@ const PACKS = {
     planActive: "{plan} is active.",
     checkAgain: "Check again",
     invalidTitle: "Use an assignment title with 1–80 characters.",
-    invalidWords: "Use 1–80 words, each 2–24 characters long.",
+    invalidWords:
+      "Use valid English words of 1–24 characters. Apostrophes and hyphens must be inside a word; only a and I may be one letter.",
     wordLimit:
       "Free accounts support up to 25 words per list. Paid plans support up to 40.",
     invalidExampleSentence:
@@ -441,6 +456,11 @@ const PACKS = {
     subscriptionExpires: "{plan} activo hasta el {date}",
     downgradeScheduled:
       "{currentPlan} seguirá activo hasta el {date}. {targetPlan} comenzará en la próxima renovación.",
+    planChangeImmediateConfirm:
+      "¿Cambiar ahora de {currentPlan} ({currentInterval}) a {targetPlan} ({targetInterval})? Stripe abonará el tiempo no utilizado, prorrateará el nuevo precio y cobrará ahora cualquier importe pendiente. {price} es el precio completo de renovación; el cargo de hoy puede ser distinto.",
+    planChangeScheduledConfirm:
+      "¿Programar {targetPlan} ({targetInterval}) para el {date}? {currentPlan} seguirá activo hasta entonces. Ahora no habrá ningún cargo ni prorrateo; se cobrarán {price} al comenzar el nuevo periodo.",
+    nextRenewal: "la próxima renovación",
     upgrade: "Ver planes",
     newTitle: "Crear una tarea de spelling",
     assignmentTitle: "Título de la tarea",
@@ -451,7 +471,7 @@ const PACKS = {
     longListAdvice:
       "Las listas largas pueden aumentar la carga de memoria. Prueba sesiones más cortas o reparte las palabras en varias tareas.",
     duplicateWords: "Palabras repetidas: {words}.",
-    shortWords: "Las palabras deben tener al menos 2 caracteres: {words}.",
+    shortWords: "Solo a e I son palabras válidas de una letra: {words}.",
     longWords: "Las palabras deben tener como máximo 24 caracteres: {words}.",
     currentWordLimit: "Esta lista supera el límite de {limit} palabras.",
     exampleSentences: "Frases de ejemplo (opcional)",
@@ -559,10 +579,20 @@ const PACKS = {
       "No pudimos abrir el pago seguro. El plan que elegiste sigue guardado.",
     retryCheckout: "Reintentar el pago",
     parentUpgradePrice: "Plan para familias · $4.99/mes",
+    teacherUpgradePrice: "Plan para docentes · $9.99/mes",
+    parentUpgradeYearlyPrice: "Plan para familias · $49.99/año",
+    teacherUpgradeYearlyPrice: "Plan para docentes · $99.99/año",
     upgradeParentMonthly: "Mejorar al plan familiar · $4.99/mes",
-    pendingUpgradeTitle: "Termina de activar el plan familiar",
+    upgradeTeacherMonthly: "Elegir el plan docente · $9.99/mes",
+    chooseUpgradePlan: "Elige el uso que corresponda:",
+    wholeClassTeacherMonthly:
+      "¿Para toda una clase? Ver plan docente · $9.99/mes",
+    pendingUpgradeTitle: "Continuar con {plan}",
     pendingUpgradeCopy:
-      "Inicia sesión una vez y continuaremos directamente al pago seguro. La función elegida está guardada.",
+      "Inicia sesión para conservar tu elección. Tú decides cuándo abrir el pago seguro.",
+    pendingCheckoutReview:
+      "Tu elección guardada aparece abajo. El pago solo se abrirá cuando continúes.",
+    continueCheckout: "Continuar al pago seguro",
     activatingPro: "Activando tu plan…",
     activatingPlan: "Activando {plan}…",
     activationDelayed:
@@ -572,7 +602,8 @@ const PACKS = {
     planActive: "{plan} está activo.",
     checkAgain: "Comprobar de nuevo",
     invalidTitle: "Usa un título de entre 1 y 80 caracteres.",
-    invalidWords: "Usa entre 1 y 80 palabras, de 2 a 24 caracteres cada una.",
+    invalidWords:
+      "Usa palabras válidas en inglés de 1 a 24 caracteres. Los apóstrofos y guiones deben ir dentro de la palabra; solo a e I pueden tener una letra.",
     wordLimit:
       "Las cuentas gratuitas admiten hasta 25 palabras por lista. Los planes de pago admiten hasta 40.",
     invalidExampleSentence:
@@ -807,6 +838,11 @@ const PACKS = {
     subscriptionExpires: "{plan} ativo até {date}",
     downgradeScheduled:
       "{currentPlan} continuará ativo até {date}. {targetPlan} começará na próxima renovação.",
+    planChangeImmediateConfirm:
+      "Alterar agora de {currentPlan} ({currentInterval}) para {targetPlan} ({targetInterval})? A Stripe creditará o período não utilizado, fará o cálculo proporcional do novo preço e cobrará imediatamente qualquer valor devido. {price} é o preço integral da renovação; a cobrança de hoje pode ser diferente.",
+    planChangeScheduledConfirm:
+      "Agendar {targetPlan} ({targetInterval}) para {date}? {currentPlan} continuará ativo até lá. Não haverá cobrança nem cálculo proporcional agora; {price} será cobrado no início do novo período.",
+    nextRenewal: "a próxima renovação",
     upgrade: "Ver planos",
     newTitle: "Criar tarefa de spelling",
     assignmentTitle: "Título da tarefa",
@@ -817,7 +853,7 @@ const PACKS = {
     longListAdvice:
       "Listas longas podem aumentar a carga de memorização. Faça práticas mais curtas ou divida as palavras em várias tarefas.",
     duplicateWords: "Palavras repetidas: {words}.",
-    shortWords: "As palavras devem ter pelo menos 2 caracteres: {words}.",
+    shortWords: "Apenas a e I são palavras válidas de uma letra: {words}.",
     longWords: "As palavras devem ter no máximo 24 caracteres: {words}.",
     currentWordLimit: "Esta lista excede o limite de {limit} palavras.",
     exampleSentences: "Frases de exemplo (opcional)",
@@ -925,10 +961,20 @@ const PACKS = {
       "Não foi possível abrir o checkout. O plano escolhido continua salvo.",
     retryCheckout: "Tentar o checkout novamente",
     parentUpgradePrice: "Plano para Pais · US$ 4,99/mês",
+    teacherUpgradePrice: "Plano para Professores · US$ 9,99/mês",
+    parentUpgradeYearlyPrice: "Plano para Pais · US$ 49,99/ano",
+    teacherUpgradeYearlyPrice: "Plano para Professores · US$ 99,99/ano",
     upgradeParentMonthly: "Assinar Plano para Pais · US$ 4,99/mês",
-    pendingUpgradeTitle: "Conclua o upgrade para o Plano para Pais",
+    upgradeTeacherMonthly: "Escolher Plano para Professores · US$ 9,99/mês",
+    chooseUpgradePlan: "Escolha como você vai usar:",
+    wholeClassTeacherMonthly:
+      "Para uma turma inteira? Ver Professores · US$ 9,99/mês",
+    pendingUpgradeTitle: "Continuar com {plan}",
     pendingUpgradeCopy:
-      "Entre uma vez e seguiremos direto para o checkout seguro. O recurso escolhido está salvo.",
+      "Entre para manter sua escolha. Você decide quando abrir o checkout seguro.",
+    pendingCheckoutReview:
+      "Sua escolha salva aparece abaixo. O checkout só abrirá depois que você continuar.",
+    continueCheckout: "Continuar para o checkout seguro",
     activatingPro: "Ativando seu plano…",
     activatingPlan: "Ativando {plan}…",
     activationDelayed:
@@ -938,7 +984,8 @@ const PACKS = {
     planActive: "{plan} está ativo.",
     checkAgain: "Verificar novamente",
     invalidTitle: "Use um título com 1 a 80 caracteres.",
-    invalidWords: "Use de 1 a 80 palavras, cada uma com 2 a 24 caracteres.",
+    invalidWords:
+      "Use palavras válidas em inglês com 1 a 24 caracteres. Apóstrofos e hífens devem ficar dentro da palavra; apenas a e I podem ter uma letra.",
     wordLimit:
       "As contas grátis aceitam até 25 palavras por lista. Os planos pagos aceitam até 40.",
     invalidExampleSentence:
@@ -1171,6 +1218,11 @@ const PACKS = {
     subscriptionExpires: "{plan} actif jusqu’au {date}",
     downgradeScheduled:
       "{currentPlan} reste actif jusqu’au {date}. {targetPlan} commencera au prochain renouvellement.",
+    planChangeImmediateConfirm:
+      "Passer maintenant de {currentPlan} ({currentInterval}) à {targetPlan} ({targetInterval}) ? Stripe créditera la période non utilisée, calculera le nouveau tarif au prorata et prélèvera immédiatement tout montant dû. {price} est le tarif de renouvellement complet ; le prélèvement du jour peut différer.",
+    planChangeScheduledConfirm:
+      "Programmer {targetPlan} ({targetInterval}) pour le {date} ? {currentPlan} restera actif jusque-là. Aucun prélèvement ni prorata maintenant ; {price} sera prélevé au début de la nouvelle période.",
+    nextRenewal: "votre prochain renouvellement",
     upgrade: "Voir les offres",
     newTitle: "Créer un devoir d’orthographe",
     assignmentTitle: "Titre du devoir",
@@ -1181,7 +1233,7 @@ const PACKS = {
     longListAdvice:
       "Les longues listes peuvent alourdir la mémorisation. Privilégiez des séances plus courtes ou répartissez les mots entre plusieurs devoirs.",
     duplicateWords: "Mots répétés : {words}.",
-    shortWords: "Les mots doivent comporter au moins 2 caractères : {words}.",
+    shortWords: "Seuls a et I sont des mots valides d’une lettre : {words}.",
     longWords: "Les mots doivent comporter au plus 24 caractères : {words}.",
     currentWordLimit: "Cette liste dépasse la limite de {limit} mots.",
     exampleSentences: "Phrases d’exemple (facultatif)",
@@ -1291,10 +1343,20 @@ const PACKS = {
       "Impossible d’ouvrir le paiement sécurisé. Votre offre reste enregistrée.",
     retryCheckout: "Réessayer le paiement",
     parentUpgradePrice: "Offre Parents · 4,99 $US/mois",
+    teacherUpgradePrice: "Offre Enseignants · 9,99 $US/mois",
+    parentUpgradeYearlyPrice: "Offre Parents · 49,99 $US/an",
+    teacherUpgradeYearlyPrice: "Offre Enseignants · 99,99 $US/an",
     upgradeParentMonthly: "Choisir l’offre Parents · 4,99 $US/mois",
-    pendingUpgradeTitle: "Terminez l’activation de l’offre Parents",
+    upgradeTeacherMonthly: "Choisir l’offre Enseignants · 9,99 $US/mois",
+    chooseUpgradePlan: "Choisissez l’usage qui vous correspond :",
+    wholeClassTeacherMonthly:
+      "Pour toute une classe ? Voir Enseignants · 9,99 $US/mois",
+    pendingUpgradeTitle: "Continuer avec {plan}",
     pendingUpgradeCopy:
-      "Connectez-vous une fois et nous continuerons directement vers le paiement sécurisé. La fonctionnalité choisie est conservée.",
+      "Connectez-vous pour conserver votre choix. Vous décidez quand ouvrir le paiement sécurisé.",
+    pendingCheckoutReview:
+      "Votre choix enregistré apparaît ci-dessous. Le paiement ne s’ouvre qu’après votre confirmation.",
+    continueCheckout: "Continuer vers le paiement sécurisé",
     activatingPro: "Activation de votre offre…",
     activatingPlan: "Activation de {plan}…",
     activationDelayed:
@@ -1304,7 +1366,8 @@ const PACKS = {
     planActive: "{plan} est active.",
     checkAgain: "Vérifier à nouveau",
     invalidTitle: "Utilisez un titre de 1 à 80 caractères.",
-    invalidWords: "Utilisez 1 à 80 mots de 2 à 24 caractères chacun.",
+    invalidWords:
+      "Utilisez des mots anglais valides de 1 à 24 caractères. Les apostrophes et traits d’union doivent être internes ; seuls a et I peuvent ne comporter qu’une lettre.",
     wordLimit:
       "Les comptes gratuits acceptent jusqu’à 25 mots par liste. Les offres payantes vont jusqu’à 40.",
     invalidExampleSentence:
@@ -1539,6 +1602,11 @@ const PACKS = {
     subscriptionExpires: "{plan} aktif sampai {date}",
     downgradeScheduled:
       "{currentPlan} tetap aktif sampai {date}. {targetPlan} dimulai pada perpanjangan berikutnya.",
+    planChangeImmediateConfirm:
+      "Ubah sekarang dari {currentPlan} ({currentInterval}) ke {targetPlan} ({targetInterval})? Stripe akan mengkreditkan waktu yang belum terpakai, menghitung harga baru secara proporsional, dan langsung menagih jumlah yang harus dibayar. {price} adalah harga perpanjangan penuh; tagihan hari ini dapat berbeda.",
+    planChangeScheduledConfirm:
+      "Jadwalkan {targetPlan} ({targetInterval}) pada {date}? {currentPlan} tetap aktif sampai saat itu. Tidak ada tagihan atau perhitungan proporsional sekarang; {price} akan ditagih saat periode baru dimulai.",
+    nextRenewal: "perpanjangan berikutnya",
     upgrade: "Lihat paket",
     newTitle: "Buat tugas spelling",
     assignmentTitle: "Judul tugas",
@@ -1549,7 +1617,7 @@ const PACKS = {
     longListAdvice:
       "Daftar yang panjang dapat menambah beban ingatan. Coba latihan yang lebih singkat atau bagi kata ke beberapa tugas.",
     duplicateWords: "Kata yang berulang: {words}.",
-    shortWords: "Kata harus terdiri dari sedikitnya 2 karakter: {words}.",
+    shortWords: "Hanya a dan I yang valid sebagai kata satu huruf: {words}.",
     longWords: "Kata harus terdiri dari paling banyak 24 karakter: {words}.",
     currentWordLimit: "Daftar ini melebihi batas {limit} kata.",
     exampleSentences: "Kalimat contoh (opsional)",
@@ -1656,10 +1724,20 @@ const PACKS = {
       "Checkout belum dapat dibuka. Paket yang dipilih tetap tersimpan.",
     retryCheckout: "Coba checkout lagi",
     parentUpgradePrice: "Paket Orang Tua · US$4,99/bulan",
+    teacherUpgradePrice: "Paket Guru · US$9,99/bulan",
+    parentUpgradeYearlyPrice: "Paket Orang Tua · US$49,99/tahun",
+    teacherUpgradeYearlyPrice: "Paket Guru · US$99,99/tahun",
     upgradeParentMonthly: "Upgrade Paket Orang Tua · US$4,99/bulan",
-    pendingUpgradeTitle: "Selesaikan upgrade Paket Orang Tua",
+    upgradeTeacherMonthly: "Pilih Paket Guru · US$9,99/bulan",
+    chooseUpgradePlan: "Pilih penggunaan yang sesuai:",
+    wholeClassTeacherMonthly:
+      "Untuk seluruh kelas? Lihat Paket Guru · US$9,99/bulan",
+    pendingUpgradeTitle: "Lanjutkan dengan {plan}",
     pendingUpgradeCopy:
-      "Masuk sekali dan kami akan langsung melanjutkan ke checkout aman. Fitur pilihan Anda tetap tersimpan.",
+      "Masuk untuk menyimpan pilihan Anda. Anda menentukan kapan membuka checkout aman.",
+    pendingCheckoutReview:
+      "Pilihan tersimpan Anda ditampilkan di bawah. Checkout hanya dibuka setelah Anda melanjutkan.",
+    continueCheckout: "Lanjut ke checkout aman",
     activatingPro: "Mengaktifkan paket Anda…",
     activatingPlan: "Mengaktifkan {plan}…",
     activationDelayed: "Checkout selesai. Aktivasi paket masih diproses.",
@@ -1667,7 +1745,8 @@ const PACKS = {
     planActive: "{plan} aktif.",
     checkAgain: "Periksa lagi",
     invalidTitle: "Gunakan judul sepanjang 1–80 karakter.",
-    invalidWords: "Gunakan 1–80 kata, masing-masing sepanjang 2–24 karakter.",
+    invalidWords:
+      "Gunakan kata bahasa Inggris yang valid sepanjang 1–24 karakter. Apostrof dan tanda hubung harus berada di tengah kata; hanya a dan I yang boleh terdiri dari satu huruf.",
     wordLimit:
       "Akun Gratis mendukung hingga 25 kata per daftar. Paket berbayar mendukung hingga 40 kata.",
     invalidExampleSentence:
@@ -1887,6 +1966,11 @@ const PACKS = {
     subscriptionExpires: "{plan} 有效期至 {date}",
     downgradeScheduled:
       "{currentPlan} 将继续有效至 {date}，下次续费时自动切换为{targetPlan}。",
+    planChangeImmediateConfirm:
+      "现在从{currentPlan}（{currentInterval}）切换到{targetPlan}（{targetInterval}）吗？Stripe 会抵扣未使用时长、按比例计算新价格，并立即收取应付差额。{price} 是完整续费价格，今日实收金额可能不同。",
+    planChangeScheduledConfirm:
+      "在 {date} 切换到{targetPlan}（{targetInterval}）吗？届时之前仍可使用{currentPlan}。现在不会收费或折算；新周期开始时将收取 {price}。",
+    nextRenewal: "下次续费日",
     upgrade: "查看方案",
     newTitle: "创建拼写作业",
     assignmentTitle: "作业标题",
@@ -1896,7 +1980,7 @@ const PACKS = {
     longListAdvice:
       "词表较长时，记忆负担可能增加。建议缩短单次练习，或拆分成多份作业。",
     duplicateWords: "重复单词：{words}。",
-    shortWords: "单词至少需要 2 个字符：{words}。",
+    shortWords: "单字母词仅支持 a 和 I：{words}。",
     longWords: "单词不能超过 24 个字符：{words}。",
     currentWordLimit: "这份词表超过了 {limit} 个单词的上限。",
     exampleSentences: "例句（可选）",
@@ -1997,10 +2081,17 @@ const PACKS = {
     checkoutRetry: "暂时无法打开 Stripe 结账页，你选择的方案仍已保留。",
     retryCheckout: "重新尝试结账",
     parentUpgradePrice: "家长方案 · US$4.99/月",
+    teacherUpgradePrice: "教师方案 · US$9.99/月",
+    parentUpgradeYearlyPrice: "家长方案 · US$49.99/年",
+    teacherUpgradeYearlyPrice: "教师方案 · US$99.99/年",
     upgradeParentMonthly: "升级家长方案 · US$4.99/月",
-    pendingUpgradeTitle: "继续完成家长方案升级",
-    pendingUpgradeCopy:
-      "登录一次即可直接继续安全结账，你刚才选择的功能会保留。",
+    upgradeTeacherMonthly: "选择教师方案 · US$9.99/月",
+    chooseUpgradePlan: "请选择使用场景：",
+    wholeClassTeacherMonthly: "用于整个班级？查看教师方案 · US$9.99/月",
+    pendingUpgradeTitle: "继续选择{plan}",
+    pendingUpgradeCopy: "登录后会保留你的选择，由你确认后再打开安全结账。",
+    pendingCheckoutReview: "已保留以下选择；只有点击继续后才会打开结账页。",
+    continueCheckout: "继续前往安全结账",
     activatingPro: "正在激活方案…",
     activatingPlan: "正在激活{plan}…",
     activationDelayed: "结账已完成，方案仍在激活中。",
@@ -2008,7 +2099,8 @@ const PACKS = {
     planActive: "{plan}已激活。",
     checkAgain: "再次检查",
     invalidTitle: "作业标题需为 1～80 个字符。",
-    invalidWords: "请输入 1～80 个单词，每个单词 2～24 个字符。",
+    invalidWords:
+      "请输入 1～24 个字符的有效英语单词。撇号和连字符只能出现在单词内部；单字母词仅支持 a 和 I。",
     wordLimit: "免费账号每份词表最多支持 25 个单词。付费方案最多支持 40 个。",
     invalidExampleSentence: "例句长度不能超过 300 个字符。",
     invalidDeadline: "请选择未来一年内的截止时间。",

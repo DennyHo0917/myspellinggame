@@ -619,6 +619,64 @@ async function adminOrders(env: Env, url: URL) {
   };
 }
 
+async function verifiedPurchase(
+  db: D1Database,
+  userId: string,
+  transactionId: string | null,
+  checkoutSessionId: string | null,
+) {
+  const columns = `i.id, i.plan, i.billing_interval, i.amount_total, i.currency`;
+  const row = transactionId
+    ? await db
+        .prepare(
+          `SELECT ${columns} FROM payment_orders i
+           WHERE i.id = ? AND i.user_id = ? AND i.status = 'paid'
+             AND substr(i.id, 1, 3) = 'in_'
+             AND i.amount_total IS NOT NULL AND i.currency IS NOT NULL`,
+        )
+        .bind(transactionId, userId)
+        .first<{
+          id: string;
+          plan: "parent" | "teacher";
+          billing_interval: "month" | "year";
+          amount_total: number;
+          currency: string;
+        }>()
+    : checkoutSessionId
+      ? await db
+          .prepare(
+            `SELECT ${columns} FROM payment_orders c
+             JOIN payment_orders i
+               ON i.user_id = c.user_id
+              AND i.stripe_subscription_id = c.stripe_subscription_id
+              AND i.status = 'paid'
+              AND substr(i.id, 1, 3) = 'in_'
+              AND i.created_at >= c.created_at
+             WHERE c.id = ? AND c.user_id = ?
+               AND substr(c.id, 1, 3) = 'cs_'
+               AND i.amount_total IS NOT NULL AND i.currency IS NOT NULL
+             ORDER BY i.created_at ASC LIMIT 1`,
+          )
+          .bind(checkoutSessionId, userId)
+          .first<{
+            id: string;
+            plan: "parent" | "teacher";
+            billing_interval: "month" | "year";
+            amount_total: number;
+            currency: string;
+          }>()
+      : null;
+  return row
+    ? {
+        transactionId: row.id,
+        plan: row.plan,
+        billingInterval: row.billing_interval,
+        amountTotal: row.amount_total,
+        currency: row.currency,
+      }
+    : null;
+}
+
 async function adminSetPlan(env: Env, request: Request, userId: string) {
   requireSameOrigin(request);
   const body = await readJson(request);
@@ -2745,6 +2803,30 @@ export async function handleRequest(
       user.id,
     );
     return exportCsv(env.DB, assignment, await getPlan(env, user.id));
+  }
+
+  if (url.pathname === "/api/billing/purchase" && method === "GET") {
+    const user = await requireTeacher(env, request, getSession);
+    const transactionId = url.searchParams.get("transaction_id");
+    const checkoutSessionId = url.searchParams.get("checkout_session_id");
+    const validId = /^(?:in|cs)_[A-Za-z0-9_]{1,252}$/;
+    if (
+      (transactionId && !validId.test(transactionId)) ||
+      (checkoutSessionId && !validId.test(checkoutSessionId))
+    )
+      throw new HttpError(
+        400,
+        "invalid_transaction",
+        "The transaction reference is invalid.",
+      );
+    return json({
+      purchase: await verifiedPurchase(
+        env.DB,
+        user.id,
+        transactionId,
+        checkoutSessionId,
+      ),
+    });
   }
 
   if (url.pathname === "/api/billing/checkout" && method === "POST") {

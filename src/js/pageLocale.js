@@ -11,6 +11,8 @@ const MESSAGES = {
   en: {
     wordsReady: "{count} words ready",
     emptyWords: "Add at least one spelling word before starting.",
+    invalidWords:
+      "Enter valid English words only. Apostrophes and hyphens must be inside a word; only a and I may be one letter.",
     photoImport: "Import from photo",
     photoImportRequired:
       "Photo import is included in Parent and Teacher Plans.",
@@ -20,7 +22,11 @@ const MESSAGES = {
       "Fill matching example sentences instantly, then edit them before practice.",
     wordLimitValue: "Keep the whole list together with up to 40 words.",
     parentPlanMonthly: "Parent Plan · $4.99/month",
+    teacherPlanMonthly: "Teacher Plan · $9.99/month",
     upgradeParentMonthly: "Upgrade to Parent · $4.99/month",
+    upgradeTeacherMonthly: "Choose Teacher · $9.99/month",
+    chooseUpgradePlan: "Choose the setting that fits:",
+    wholeClassTeacherMonthly: "For a whole class? View Teacher · $9.99/month",
     continueFree25: "Continue free with 25 words",
     photoImportSignIn: "Sign in",
     photoImportPlans: "View plans",
@@ -32,6 +38,7 @@ const MESSAGES = {
     photoImportCancel: "Cancel",
     photoImportNoWords: "No spelling words found. Try a clearer photo.",
     photoImportError: "We couldn’t read that image. Please try again.",
+    photoImportRetry: "Try again",
     sampleLoaded: "{count} sample words loaded",
     wordsInRound: "{count} words in this round",
     anonymousWordLimit:
@@ -103,6 +110,8 @@ const MESSAGES = {
   es: {
     wordsReady: "{count} palabras listas",
     emptyWords: "Añade al menos una palabra de ortografía antes de empezar.",
+    invalidWords:
+      "Escribe solo palabras válidas en inglés. Los apóstrofos y guiones deben ir dentro de la palabra; solo a e I pueden tener una letra.",
     photoImport: "Importar desde una foto",
     photoImportRequired:
       "La importación desde fotos está incluida en los planes para familias y docentes.",
@@ -112,7 +121,12 @@ const MESSAGES = {
       "Completa frases de ejemplo al instante y edítalas antes de practicar.",
     wordLimitValue: "Mantén la lista completa con hasta 40 palabras.",
     parentPlanMonthly: "Plan para familias · $4.99/mes",
+    teacherPlanMonthly: "Plan para docentes · $9.99/mes",
     upgradeParentMonthly: "Mejorar al plan familiar · $4.99/mes",
+    upgradeTeacherMonthly: "Elegir el plan docente · $9.99/mes",
+    chooseUpgradePlan: "Elige el uso que corresponda:",
+    wholeClassTeacherMonthly:
+      "¿Para toda una clase? Ver plan docente · $9.99/mes",
     continueFree25: "Continuar gratis con 25 palabras",
     photoImportSignIn: "Iniciar sesión",
     photoImportPlans: "Ver planes",
@@ -125,6 +139,7 @@ const MESSAGES = {
     photoImportNoWords:
       "No se encontraron palabras. Prueba con una foto más clara.",
     photoImportError: "No se pudo leer la imagen. Inténtalo de nuevo.",
+    photoImportRetry: "Intentar de nuevo",
     sampleLoaded: "{count} palabras de ejemplo cargadas",
     wordsInRound: "{count} palabras en esta ronda",
     anonymousWordLimit:
@@ -198,6 +213,8 @@ const MESSAGES = {
     wordsReady: "{count} palavras prontas",
     emptyWords:
       "Adicione pelo menos uma palavra de ortografia antes de começar.",
+    invalidWords:
+      "Digite apenas palavras válidas em inglês. Apóstrofos e hífens devem ficar dentro da palavra; apenas a e I podem ter uma letra.",
     photoImport: "Importar de uma foto",
     photoImportRequired:
       "A importação por foto está incluída nos planos para Pais e Professores.",
@@ -207,7 +224,12 @@ const MESSAGES = {
       "Preencha frases de exemplo na hora e edite antes da prática.",
     wordLimitValue: "Mantenha a lista completa com até 40 palavras.",
     parentPlanMonthly: "Plano para Pais · US$ 4,99/mês",
+    teacherPlanMonthly: "Plano para Professores · US$ 9,99/mês",
     upgradeParentMonthly: "Assinar Plano para Pais · US$ 4,99/mês",
+    upgradeTeacherMonthly: "Escolher Plano para Professores · US$ 9,99/mês",
+    chooseUpgradePlan: "Escolha como você vai usar:",
+    wholeClassTeacherMonthly:
+      "Para uma turma inteira? Ver Professores · US$ 9,99/mês",
     continueFree25: "Continuar grátis com 25 palavras",
     photoImportSignIn: "Entrar",
     photoImportPlans: "Ver planos",
@@ -220,6 +242,7 @@ const MESSAGES = {
     photoImportNoWords:
       "Nenhuma palavra foi encontrada. Tente uma foto mais nítida.",
     photoImportError: "Não foi possível ler a imagem. Tente novamente.",
+    photoImportRetry: "Tentar novamente",
     sampleLoaded: "{count} palavras de exemplo carregadas",
     wordsInRound: "{count} palavras nesta rodada",
     anonymousWordLimit:
@@ -293,6 +316,8 @@ const MESSAGES = {
   fr: {
     wordsReady: "{count} mots prêts",
     emptyWords: "Ajoutez au moins un mot d’orthographe avant de commencer.",
+    invalidWords:
+      "Saisissez uniquement des mots anglais valides. Les apostrophes et traits d’union doivent être internes ; seuls a et I peuvent ne comporter qu’une lettre.",
     photoImport: "Importer depuis une photo",
     photoImportRequired:
       "L’importation par photo est incluse dans les offres Parents et Enseignants.",
@@ -302,7 +327,12 @@ const MESSAGES = {
       "Ajoutez instantanément des phrases d’exemple, puis modifiez-les avant l’exercice.",
     wordLimitValue: "Gardez toute la liste ensemble, jusqu’à 40 mots.",
     parentPlanMonthly: "Offre Parents · 4,99 $US/mois",
+    teacherPlanMonthly: "Offre Enseignants · 9,99 $US/mois",
     upgradeParentMonthly: "Choisir l’offre Parents · 4,99 $US/mois",
+    upgradeTeacherMonthly: "Choisir l’offre Enseignants · 9,99 $US/mois",
+    chooseUpgradePlan: "Choisissez l’usage qui vous correspond :",
+    wholeClassTeacherMonthly:
+      "Pour toute une classe ? Voir Enseignants · 9,99 $US/mois",
     continueFree25: "Continuer gratuitement avec 25 mots",
     photoImportSignIn: "Se connecter",
     photoImportPlans: "Voir les offres",
@@ -314,6 +344,7 @@ const MESSAGES = {
     photoImportCancel: "Annuler",
     photoImportNoWords: "Aucun mot trouvé. Essayez une photo plus nette.",
     photoImportError: "Impossible de lire cette image. Réessayez.",
+    photoImportRetry: "Réessayer",
     sampleLoaded: "{count} mots d’exemple chargés",
     wordsInRound: "{count} mots dans cette partie",
     anonymousWordLimit:
@@ -386,6 +417,8 @@ const MESSAGES = {
   id: {
     wordsReady: "{count} kata siap",
     emptyWords: "Tambahkan setidaknya satu kata ejaan sebelum memulai.",
+    invalidWords:
+      "Masukkan hanya kata bahasa Inggris yang valid. Apostrof dan tanda hubung harus berada di tengah kata; hanya a dan I yang boleh terdiri dari satu huruf.",
     photoImport: "Impor dari foto",
     photoImportRequired: "Impor foto tersedia dalam Paket Orang Tua dan Guru.",
     photoImportValue:
@@ -394,7 +427,12 @@ const MESSAGES = {
       "Isi kalimat contoh seketika, lalu edit sebelum mulai latihan.",
     wordLimitValue: "Pertahankan seluruh daftar hingga 40 kata.",
     parentPlanMonthly: "Paket Orang Tua · US$4,99/bulan",
+    teacherPlanMonthly: "Paket Guru · US$9,99/bulan",
     upgradeParentMonthly: "Upgrade Paket Orang Tua · US$4,99/bulan",
+    upgradeTeacherMonthly: "Pilih Paket Guru · US$9,99/bulan",
+    chooseUpgradePlan: "Pilih penggunaan yang sesuai:",
+    wholeClassTeacherMonthly:
+      "Untuk seluruh kelas? Lihat Paket Guru · US$9,99/bulan",
     continueFree25: "Lanjut gratis dengan 25 kata",
     photoImportSignIn: "Masuk",
     photoImportPlans: "Lihat paket",
@@ -407,6 +445,7 @@ const MESSAGES = {
     photoImportNoWords:
       "Tidak ada kata yang ditemukan. Coba foto yang lebih jelas.",
     photoImportError: "Gambar tidak dapat dibaca. Coba lagi.",
+    photoImportRetry: "Coba lagi",
     sampleLoaded: "{count} contoh kata dimuat",
     wordsInRound: "{count} kata di ronde ini",
     anonymousWordLimit:
@@ -478,13 +517,19 @@ const MESSAGES = {
   zh: {
     wordsReady: "已准备 {count} 个单词",
     emptyWords: "开始前请至少添加一个单词。",
+    invalidWords:
+      "请输入有效的英语单词。撇号和连字符只能出现在单词内部；单字母词仅支持 a 和 I。",
     photoImport: "拍照导入",
     photoImportRequired: "拍照导入包含在家长方案和教师方案中。",
     photoImportValue: "拍下学校词表，几秒内转成可编辑的拼写单词。",
     exampleSentencesValue: "自动匹配例句，练习前仍可自由修改。",
     wordLimitValue: "整份词表一次练完，最多支持 40 个单词。",
     parentPlanMonthly: "家长方案 · US$4.99/月",
+    teacherPlanMonthly: "教师方案 · US$9.99/月",
     upgradeParentMonthly: "升级家长方案 · US$4.99/月",
+    upgradeTeacherMonthly: "选择教师方案 · US$9.99/月",
+    chooseUpgradePlan: "请选择使用场景：",
+    wholeClassTeacherMonthly: "用于整个班级？查看教师方案 · US$9.99/月",
     continueFree25: "免费登录，继续使用 25 个单词",
     photoImportSignIn: "登录",
     photoImportPlans: "查看方案",
@@ -495,6 +540,7 @@ const MESSAGES = {
     photoImportCancel: "取消",
     photoImportNoWords: "没有识别到单词，请换一张更清晰的照片。",
     photoImportError: "图片识别失败，请重试。",
+    photoImportRetry: "重新识别",
     sampleLoaded: "已载入 {count} 个示例单词",
     wordsInRound: "本轮 {count} 个单词",
     anonymousWordLimit:

@@ -128,6 +128,9 @@ test("every product locale keeps the brand and has a distinct student-limit mess
     assert.ok(copy.longListAdvice);
     for (const key of [
       "plansAndBilling",
+      "planChangeImmediateConfirm",
+      "planChangeScheduledConfirm",
+      "nextRenewal",
       "selectAtLeastOneLearner",
       "duplicateWords",
       "shortWords",
@@ -294,6 +297,27 @@ test("subscription management actions are localized", () => {
   assert.equal(productMessages("en").resumeSubscription, "Resume subscription");
   assert.equal(productMessages("zh").manageSubscription, "管理订阅");
   assert.equal(productMessages("zh").resumeSubscription, "恢复订阅");
+});
+
+test("contextual upgrade choices and checkout confirmation are localized", () => {
+  const keys = [
+    "parentUpgradePrice",
+    "teacherUpgradePrice",
+    "parentUpgradeYearlyPrice",
+    "teacherUpgradeYearlyPrice",
+    "upgradeParentMonthly",
+    "upgradeTeacherMonthly",
+    "chooseUpgradePlan",
+    "wholeClassTeacherMonthly",
+    "pendingUpgradeTitle",
+    "pendingUpgradeCopy",
+    "pendingCheckoutReview",
+    "continueCheckout",
+  ];
+  for (const [locale] of PRODUCT_LOCALES) {
+    const copy = productMessages(locale);
+    for (const key of keys) assert.ok(copy[key], `${locale}: ${key}`);
+  }
 });
 
 test("dictation speech fallback copy exists in every product locale", () => {

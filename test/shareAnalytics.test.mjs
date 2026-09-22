@@ -10,6 +10,7 @@ import {
   trackCheckoutCancelled,
   trackLockedFeature,
   trackLockedFeatureError,
+  trackPurchase,
   trackUsageLimit,
 } from "../src/js/analytics.mjs";
 import { launcherUrl } from "../src/js/landingLauncher.mjs";
@@ -96,6 +97,12 @@ test("landing launchers preserve the selected mode and autostart", () => {
   assert.equal(state.entryPage, "/fr/");
 });
 
+test("landing launchers accept normalized apostrophes and reject malformed words", () => {
+  const url = new URL(launcherUrl("/", "a I don’t we’re", "dictation"));
+  assert.equal(readShareState(url).words, "a,i,don't,we're");
+  assert.equal(launcherUrl("/", "apple bad.word", "dictation"), null);
+});
+
 test("GA page location strips query strings and fragments", () => {
   assert.equal(
     cleanPageLocation(
@@ -164,12 +171,14 @@ test("commercial funnel analytics keep their dimensions and omit PII", () => {
       billing_interval: "month",
       value: 9.99,
       currency: "USD",
+      transaction_id: "in_verified",
     }),
     {
       plan: "teacher",
       billing_interval: "month",
       value: 9.99,
       currency: "USD",
+      transaction_id: "in_verified",
     },
   );
   assert.deepEqual(
@@ -275,7 +284,7 @@ test("Typing Chase analytics keep only aggregate gameplay fields", () => {
   );
 });
 
-test("teacher analytics omit student, assignment, and Stripe identifiers", () => {
+test("teacher analytics omit private fields and keep only the purchase transaction ID", () => {
   const privateValues = {
     nickname: "Student 01",
     word: "because",
@@ -383,12 +392,14 @@ test("teacher analytics omit student, assignment, and Stripe identifiers", () =>
       billing_interval: "year",
       value: 49.99,
       currency: "USD",
+      transaction_id: "in_upgrade",
     }),
     {
       plan: "teacher",
       billing_interval: "year",
       value: 49.99,
       currency: "USD",
+      transaction_id: "in_upgrade",
     },
   );
   assert.deepEqual(
@@ -519,5 +530,52 @@ test("return visits are emitted at most once per session", () => {
     delete globalThis.window;
     delete globalThis.localStorage;
     delete globalThis.sessionStorage;
+  }
+});
+
+test("purchases use verified transaction values and dedupe by transaction ID", () => {
+  const stored = new Map();
+  const events = [];
+  globalThis.window = { gtag: (...args) => events.push(args) };
+  globalThis.localStorage = {
+    getItem: (key) => stored.get(key) || null,
+    setItem: (key, value) => stored.set(key, value),
+  };
+  try {
+    assert.equal(
+      trackPurchase({
+        plan: "teacher",
+        billingInterval: "month",
+        amountTotal: 999,
+        currency: "usd",
+      }),
+      false,
+    );
+    const purchase = {
+      transactionId: "in_discounted",
+      plan: "teacher",
+      billingInterval: "month",
+      amountTotal: 399,
+      currency: "eur",
+      email: "private@example.test",
+    };
+    assert.equal(trackPurchase(purchase), true);
+    assert.equal(trackPurchase(purchase), false);
+    assert.deepEqual(events, [
+      [
+        "event",
+        "purchase",
+        {
+          plan: "teacher",
+          billing_interval: "month",
+          value: 3.99,
+          currency: "EUR",
+          transaction_id: "in_discounted",
+        },
+      ],
+    ]);
+  } finally {
+    delete globalThis.window;
+    delete globalThis.localStorage;
   }
 });

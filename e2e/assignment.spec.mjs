@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { PLAN_LIMITS } from "../src/worker/domain.ts";
+import { productMessages } from "../src/js/productLocale.mjs";
 
 const publicId = "abcdefghijklmnopqrstuvwx";
 const words = [
@@ -3125,9 +3126,7 @@ test("mobile conversion pages keep their key actions usable", async ({
   await expect(
     page.getByRole("link", { name: "Create free account" }),
   ).toHaveAttribute("href", "/workspace?lang=en#teacher-sign-in");
-  await expect(
-    page.getByText("Unlimited tracked submissions").first(),
-  ).toBeVisible();
+  await expect(page.getByText("Unlimited full results").first()).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Monthly plan", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
@@ -3148,7 +3147,7 @@ test("mobile conversion pages keep their key actions usable", async ({
   await expectNoHorizontalOverflow();
 });
 
-test("Free workspace warns before the submission limit and paid plans do not", async ({
+test("Free workspace explains result viewing and paid plans remain unlimited", async ({
   page,
 }) => {
   let plan = "free";
@@ -3175,6 +3174,7 @@ test("Free workspace warns before the submission limit and paid plans do not", a
         limits: PLAN_LIMITS[plan],
         activeAssignments: 0,
         monthlyAttempts,
+        lockedResultCount: Math.max(0, monthlyAttempts - 8),
         savedLists: 0,
         learnerProfiles: 0,
       },
@@ -3199,9 +3199,11 @@ test("Free workspace warns before the submission limit and paid plans do not", a
   ).toHaveAttribute("href", "/pricing");
   const warning = page.locator(".submission-limit-notice");
   await expect(warning).toContainText(
-    "You're close to the Free Plan monthly limit",
+    "Free opens the first 8 completed results per account each month",
   );
-  await expect(warning).toContainText("6 of 8 student submissions");
+  await expect(warning).toContainText(
+    "Students can still submit and see feedback",
+  );
   await expect(
     warning.getByRole("link", { name: "View Plans" }),
   ).toHaveAttribute("href", "/pricing");
@@ -3214,12 +3216,15 @@ test("Free workspace warns before the submission limit and paid plans do not", a
   await expect(page.locator(".pricing-grid .pricing-card")).toHaveCount(3);
   await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
 
-  monthlyAttempts = 8;
+  monthlyAttempts = 9;
   await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.locator(".submission-limit-notice")).toContainText(
-    "You've reached the Free Plan monthly limit of 8 student submissions",
+    "Full result viewing has reached 8 this month",
   );
 
+  await expect(page.locator(".submission-limit-notice")).toContainText(
+    "1 results to unlock",
+  );
   plan = "teacher";
   monthlyAttempts = 100;
   await page.reload({ waitUntil: "domcontentloaded" });
@@ -3721,7 +3726,7 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
     page.getByRole("heading", { name: "Recent assignments" }),
   ).toBeVisible();
   await expect(page.getByText("0 of 3 active assignments")).toBeVisible();
-  await expect(page.getByText("Unlimited monthly submissions")).toBeVisible();
+  await expect(page.getByText("Unlimited full results")).toBeVisible();
   await expect(page.getByText("0 of 5 child profiles")).toBeVisible();
   await expect(page.getByText(/Class URL:/)).toHaveCount(0);
 
@@ -4903,3 +4908,54 @@ test("mobile workspace drawer opens, closes, navigates, and does not overflow", 
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(await page.evaluate(() => window.innerWidth));
 });
+
+for (const [lang, path] of [
+  ["en", ""],
+  ["es", "/es"],
+  ["pt-BR", "/pt-br"],
+  ["fr", "/fr"],
+  ["id", "/id"],
+  ["zh", "/zh"],
+]) {
+  test(`result viewing notice appears before publishing in ${lang}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.route("**/api/me", (route) =>
+      route.fulfill({
+        json: { user: { id: "teacher-a", name: "Teacher A" }, plan: "free" },
+      }),
+    );
+    await page.route("**/api/assignments", (route) =>
+      route.fulfill({ json: { assignments: [], learners: [] } }),
+    );
+    await page.goto(`/workspace/assignments/new?lang=${lang}`);
+    await expect(
+      page.getByText(productMessages(lang).resultViewLimit, { exact: true }),
+    ).toBeVisible();
+    const beforeButton = await page
+      .locator(".assignment-submit-actions")
+      .evaluate((element) => element.previousElementSibling.textContent);
+    expect(beforeButton).toBe(productMessages(lang).resultViewLimit);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    ).toBe(true);
+  });
+  test(`result viewing pricing notice fits mobile in ${lang}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`${path}/pricing?lang=${lang}`);
+    await expect(
+      page.locator(".notice").filter({ hasText: "UTC" }),
+    ).toBeVisible();
+    await expect(page.locator('[data-plan-card="free"]')).toContainText("8");
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    ).toBe(true);
+  });
+}

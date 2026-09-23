@@ -817,13 +817,18 @@ function historyCutoff(plan: Plan, now = new Date()) {
   return addDays(now.toISOString(), -PLAN_LIMITS[plan].historyDays);
 }
 
+// Visibility is assigned once in the submission transaction, never by query order.
+function visibleResult(plan: Plan, alias = "at") {
+  return `${alias}.retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')${plan === "free" ? ` AND ${alias}.free_result_visible = 1` : ""}`;
+}
+
 async function usage(
   db: D1Database,
   userId: string,
   plan: Plan,
   now = new Date(),
 ) {
-  const [active, monthly, savedLists, learners] = await Promise.all([
+  const [active, monthly, savedLists, learners, locked] = await Promise.all([
     db
       .prepare(
         `SELECT COUNT(*) AS count FROM assignments
@@ -850,8 +855,19 @@ async function usage(
       )
       .bind(userId)
       .first<{ count: number }>(),
+    db
+      .prepare(
+        `SELECT COUNT(*) AS count FROM attempts at
+      JOIN assignments a ON a.id = at.assignment_id
+      WHERE a.owner_user_id = ? AND at.status = 'completed'
+      AND at.free_result_visible = 0 AND at.completed_at >= ?
+      AND at.retention_expires_at > ?`,
+      )
+      .bind(userId, historyCutoff(plan, now), now.toISOString())
+      .first<{ count: number }>(),
   ]);
   return {
+    lockedResultCount: plan === "free" ? Number(locked?.count ?? 0) : 0,
     plan,
     limits: PLAN_LIMITS[plan],
     activeAssignments: Number(active?.count ?? 0),
@@ -884,6 +900,10 @@ async function listAssignments(
     .prepare(
       `SELECT a.id, a.public_id, a.title, a.mode, a.status, a.max_attempts,
               a.created_at, a.expires_at,
+              (SELECT COUNT(*) FROM attempts locked WHERE locked.assignment_id = a.id
+               AND locked.status = 'completed' AND locked.completed_at >= ?
+               AND locked.retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+               AND locked.free_result_visible = 0 AND ${plan === "free" ? 1 : 0}) AS locked_result_count,
               COUNT(CASE WHEN at.status = 'completed' THEN 1 END) AS attempt_count,
               COUNT(DISTINCT at.nickname_key) AS student_count,
               COALESCE(ROUND(AVG(CASE WHEN at.status = 'completed' THEN at.accuracy END)), 0) AS average_accuracy,
@@ -891,12 +911,12 @@ async function listAssignments(
                JOIN learners l ON l.id = al.learner_id
                WHERE al.assignment_id = a.id) AS assigned_learner_names
        FROM assignments a
-       LEFT JOIN attempts at ON at.assignment_id = a.id AND at.completed_at >= ?
+       LEFT JOIN attempts at ON at.assignment_id = a.id AND at.completed_at >= ? AND ${visibleResult(plan)}
        WHERE a.owner_user_id = ?
        GROUP BY a.id
        ORDER BY a.created_at DESC`,
     )
-    .bind(historyCutoff(plan), ownerUserId)
+    .bind(historyCutoff(plan), historyCutoff(plan), ownerUserId)
     .all();
   return result.results;
 }
@@ -907,6 +927,14 @@ async function assignmentDetail(
   plan: Plan,
 ) {
   const cutoff = historyCutoff(plan);
+  const locked = await db
+    .prepare(
+      `SELECT COUNT(*) AS count FROM attempts at WHERE assignment_id = ?
+     AND status = 'completed' AND completed_at >= ? AND free_result_visible = 0
+     AND retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+    )
+    .bind(assignment.id, cutoff)
+    .first<{ count: number }>();
   const [wordRows, attemptRows, average, assignedLearners, attemptExists] =
     await Promise.all([
       db
@@ -923,7 +951,7 @@ async function assignmentDetail(
          FROM attempts at
          LEFT JOIN attempt_items ai ON ai.attempt_id = at.id
          LEFT JOIN assignment_words aw ON aw.id = ai.word_id
-         WHERE at.assignment_id = ? AND at.completed_at >= ?
+         WHERE at.assignment_id = ? AND at.completed_at >= ? AND ${visibleResult(plan)}
          GROUP BY at.id
          ORDER BY at.completed_at DESC`,
         )
@@ -934,7 +962,7 @@ async function assignmentDetail(
           `SELECT COUNT(CASE WHEN status = 'completed' THEN 1 END) AS attempts,
                 COUNT(DISTINCT nickname_key) AS students,
                 COALESCE(ROUND(AVG(CASE WHEN status = 'completed' THEN accuracy END)), 0) AS average_accuracy
-         FROM attempts WHERE assignment_id = ? AND completed_at >= ?`,
+         FROM attempts at WHERE assignment_id = ? AND completed_at >= ? AND ${visibleResult(plan)}`,
         )
         .bind(assignment.id, cutoff)
         .first<Record<string, number>>(),
@@ -962,7 +990,7 @@ async function assignmentDetail(
            FROM attempt_items ai
            JOIN attempts at ON at.id = ai.attempt_id
            JOIN assignment_words aw ON aw.id = ai.word_id
-           WHERE at.assignment_id = ? AND at.completed_at >= ?
+           WHERE at.assignment_id = ? AND at.completed_at >= ? AND ${visibleResult(plan)}
              AND at.status = 'completed' AND ai.is_correct = 0
            GROUP BY aw.id ORDER BY misses DESC, aw.position LIMIT 10`,
         )
@@ -972,6 +1000,7 @@ async function assignmentDetail(
   }
   return {
     ...assignment,
+    lockedResultCount: plan === "free" ? Number(locked?.count ?? 0) : 0,
     words: wordRows.results,
     attempts: attemptRows.results.map((attempt) => ({
       ...attempt,
@@ -1157,7 +1186,7 @@ async function listLearners(db: D1Database, ownerUserId: string, plan: Plan) {
               MAX(at.completed_at) AS last_practiced_at
        FROM learners l
        LEFT JOIN attempts at ON at.learner_id = l.id AND at.status = 'completed'
-         AND at.completed_at >= ?
+         AND at.completed_at >= ? AND ${visibleResult(plan)}
        LEFT JOIN attempt_items ai ON ai.attempt_id = at.id
        WHERE l.owner_user_id = ?
        GROUP BY l.id
@@ -1292,7 +1321,7 @@ async function learnerMastery(db: D1Database, learner: LearnerRow, plan: Plan) {
     db
       .prepare(
         `SELECT COUNT(*) AS count, MAX(completed_at) AS last_practiced_at
-         FROM attempts WHERE learner_id = ? AND status = 'completed' AND completed_at >= ?`,
+         FROM attempts at WHERE learner_id = ? AND status = 'completed' AND completed_at >= ? AND ${visibleResult(plan)}`,
       )
       .bind(learner.id, cutoff)
       .first<{ count: number; last_practiced_at: string | null }>(),
@@ -1305,7 +1334,7 @@ async function learnerMastery(db: D1Database, learner: LearnerRow, plan: Plan) {
          JOIN attempt_items ai ON ai.attempt_id = at.id
          JOIN assignment_words aw ON aw.id = ai.word_id
          WHERE at.learner_id = ? AND a.owner_user_id = ?
-           AND at.status = 'completed' AND at.completed_at >= ?
+           AND at.status = 'completed' AND at.completed_at >= ? AND ${visibleResult(plan)}
          ORDER BY at.completed_at, at.rowid, aw.position`,
       )
       .bind(learner.id, learner.owner_user_id, cutoff)
@@ -1449,7 +1478,7 @@ async function workspaceProgress(
        JOIN attempt_items ai ON ai.attempt_id = at.id
        JOIN assignment_words aw ON aw.id = ai.word_id
        WHERE at.learner_id IN (${placeholders}) AND a.owner_user_id = ?
-         AND at.status = 'completed' AND at.completed_at >= ?
+         AND at.status = 'completed' AND at.completed_at >= ? AND ${visibleResult(plan)}
        ORDER BY at.learner_id, at.completed_at, at.rowid, aw.position`,
     )
     .bind(
@@ -1546,7 +1575,7 @@ async function assignmentReview(
        JOIN attempts at ON at.id = ai.attempt_id
        JOIN assignment_words aw ON aw.id = ai.word_id
        WHERE at.assignment_id = ? AND at.status = 'completed'
-         AND ai.is_correct = 0 AND at.completed_at >= ?
+         AND ai.is_correct = 0 AND at.completed_at >= ? AND ${visibleResult(plan)}
        GROUP BY lower(aw.word)
        ORDER BY last_missed_at DESC, misses DESC LIMIT 10`,
     )
@@ -1993,22 +2022,6 @@ async function startAttempt(env: Env, request: Request, publicId: string) {
       "This nickname has used all allowed attempts.",
     );
 
-  const plan = await getPlan(env, assignment.owner_user_id);
-  const monthlyLimit = PLAN_LIMITS[plan].monthlyAttempts;
-  if (monthlyLimit !== null) {
-    const monthlyCount = await env.DB.prepare(
-      `SELECT COUNT(*) AS count FROM monthly_submission_usage
-       WHERE user_id = ? AND month_key = ?`,
-    )
-      .bind(assignment.owner_user_id, monthStart())
-      .first<{ count: number }>();
-    if (Number(monthlyCount?.count ?? 0) >= monthlyLimit)
-      throw new HttpError(
-        403,
-        "monthly_submission_limit",
-        "The teacher’s monthly submission limit has been reached.",
-      );
-  }
   if (attemptId) {
     await recordLifecycleEvent(
       env.DB,
@@ -2061,9 +2074,6 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
   const completedAt = now.toISOString();
   const retentionExpiresAt = addDays(completedAt, limits.retentionDays);
   const monthKey = monthStart(now);
-  const monthlyLimit = completed
-    ? (limits.monthlyAttempts ?? 2_147_483_647)
-    : 2_147_483_647;
   const statements = [
     ...(completed
       ? []
@@ -2081,24 +2091,21 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       `INSERT OR IGNORE INTO attempts (
             id, assignment_id, nickname, nickname_key, attempt_number, score,
             correct_count, incorrect_count, accuracy, duration_seconds,
-            completed_at, retention_expires_at, status, learner_id
+            completed_at, retention_expires_at, status, learner_id, free_result_visible
           )
          SELECT ?, a.id, ?, ?,
            CASE WHEN ? = 1 THEN
              (SELECT COALESCE(MAX(x.attempt_number), 0) + 1 FROM attempts x
               WHERE x.assignment_id = a.id AND x.nickname_key = ? AND x.status = 'completed')
            END,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?
+            ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            (? = 1 OR (SELECT COUNT(*) FROM monthly_submission_usage mu
+              WHERE mu.user_id = a.owner_user_id AND mu.month_key = ?) < ?)
          FROM assignments a
          WHERE a.public_id = ? AND a.status = 'published' AND a.expires_at > ?
            AND (? = 0 OR (SELECT COUNT(*) FROM attempts x
                           WHERE x.assignment_id = a.id AND x.nickname_key = ?
-                            AND x.status = 'completed') < a.max_attempts)
-           AND (
-             ? = 0
-             OR (SELECT COUNT(*) FROM monthly_submission_usage mu
-                 WHERE mu.user_id = a.owner_user_id AND mu.month_key = ?) < ?
-           )`,
+                            AND x.status = 'completed') < a.max_attempts)`,
     ).bind(
       attemptId,
       nickname,
@@ -2114,13 +2121,13 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       retentionExpiresAt,
       completed ? "completed" : "incomplete",
       learner?.id ?? null,
+      !completed || plan !== "free" ? 1 : 0,
+      monthKey,
+      PLAN_LIMITS.free.monthlyAttempts,
       publicId,
       completedAt,
       completed ? 1 : 0,
       nicknameKey,
-      completed ? 1 : 0,
-      monthKey,
-      monthlyLimit,
     ),
     ...result.items.map((item) =>
       env.DB.prepare(
@@ -2168,18 +2175,6 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       403,
       "attempt_limit",
       "This nickname has used all allowed attempts.",
-    );
-  }
-  const currentUsage = await usage(env.DB, assignment.owner_user_id, plan, now);
-  if (
-    completed &&
-    limits.monthlyAttempts !== null &&
-    currentUsage.monthlyAttempts >= limits.monthlyAttempts
-  ) {
-    throw new HttpError(
-      403,
-      "monthly_submission_limit",
-      "The teacher’s monthly submission limit has been reached.",
     );
   }
   throw new HttpError(

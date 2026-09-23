@@ -44,12 +44,15 @@ const PACKS = {
     parentPlan: "Parent Plan",
     teacherPlan: "Teacher Plan",
     activeUsage: "{used} of {limit} active assignments",
-    submissionUsage: "{used} of {limit} submissions this month",
+    lockedResults: "{count} results to unlock",
+    resultViewLimit:
+      "Free opens the first 8 completed results per account each calendar month (UTC). Further results are saved and students still see feedback. Upgrade to view them within the 14-day retention period.",
+    submissionUsage: "{used}/{limit} full results this month",
     submissionLimitWarning:
-      "You're close to the Free Plan monthly limit. {used} of {limit} student submissions used this month. View plans for unlimited student submissions.",
+      "Free opens the first {limit} completed results per account each month. Students can still submit and see feedback. Upgrade to view additional results before they expire.",
     submissionLimitReached:
-      "You've reached the Free Plan monthly limit of {limit} student submissions. New assignment results cannot be saved until your monthly limit resets. View plans for unlimited student submissions.",
-    unlimited: "Unlimited monthly submissions",
+      "Full result viewing has reached {limit} this month. Submissions and student feedback continue. Upgrade to unlock retained results.",
+    unlimited: "Unlimited full results",
     studentUsage: "{used} student nicknames stored",
     noAssignments: "No assignments yet. Create one to share with students.",
     recentAssignments: "Recent assignments",
@@ -423,12 +426,15 @@ const PACKS = {
     parentPlan: "Plan para familias",
     teacherPlan: "Plan para docentes",
     activeUsage: "{used} de {limit} tareas activas",
-    submissionUsage: "{used} de {limit} entregas este mes",
+    lockedResults: "{count} resultados por desbloquear",
+    resultViewLimit:
+      "Gratis permite ver los primeros 8 resultados completados por cuenta cada mes natural (UTC). Los demás se guardan y el alumnado sigue viendo sus comentarios. Mejora el plan para consultarlos durante los 14 días de conservación.",
+    submissionUsage: "{used}/{limit} resultados completos este mes",
     submissionLimitWarning:
-      "Te estás acercando al límite mensual del Plan Gratis. Este mes se han usado {used} de {limit} entregas de estudiantes. Consulta los planes para obtener entregas ilimitadas.",
+      "Gratis permite ver los primeros {limit} resultados completos de la cuenta cada mes. El alumnado puede seguir enviando tareas y viendo sus comentarios. Mejora el plan para consultar los demás antes de que caduquen.",
     submissionLimitReached:
-      "Has alcanzado el límite mensual del Plan Gratis de {limit} entregas de estudiantes. No se podrán guardar nuevos resultados hasta que se restablezca el límite mensual. Consulta los planes para obtener entregas ilimitadas.",
-    unlimited: "Entregas mensuales ilimitadas",
+      "Ya se han abierto los {limit} resultados de este mes. Las entregas y los comentarios para el alumnado continúan. Mejora el plan para desbloquear los resultados conservados.",
+    unlimited: "Resultados completos sin límite",
     studentUsage: "{used} apodos guardados",
     noAssignments:
       "Todavía no hay tareas. Crea una para compartirla con estudiantes.",
@@ -805,12 +811,15 @@ const PACKS = {
     parentPlan: "Plano para Pais",
     teacherPlan: "Plano para Professores",
     activeUsage: "{used} de {limit} tarefas ativas",
-    submissionUsage: "{used} de {limit} envios neste mês",
+    lockedResults: "{count} resultados para desbloquear",
+    resultViewLimit:
+      "O plano Grátis libera os primeiros 8 resultados concluídos por conta a cada mês civil (UTC). Os demais são salvos e os alunos continuam vendo o feedback. Mude de plano para consultá-los dentro dos 14 dias de armazenamento.",
+    submissionUsage: "{used}/{limit} resultados completos neste mês",
     submissionLimitWarning:
-      "Você está perto do limite mensal do Plano Grátis. Foram usados {used} de {limit} envios de alunos neste mês. Veja os planos para ter envios ilimitados.",
+      "O plano Grátis libera os primeiros {limit} resultados concluídos da conta a cada mês. Alunos continuam enviando atividades e vendo o feedback. Mude de plano para consultar os demais antes que expirem.",
     submissionLimitReached:
-      "Você atingiu o limite mensal do Plano Grátis de {limit} envios de alunos. Novos resultados não poderão ser salvos até a renovação do limite mensal. Veja os planos para ter envios ilimitados.",
-    unlimited: "Envios mensais ilimitados",
+      "Os {limit} resultados deste mês já foram liberados. Os envios e o feedback dos alunos continuam. Mude de plano para desbloquear os resultados ainda armazenados.",
+    unlimited: "Resultados completos sem limite",
     studentUsage: "{used} apelidos armazenados",
     noAssignments:
       "Ainda não há tarefas. Crie uma para compartilhar com alunos.",
@@ -1185,12 +1194,15 @@ const PACKS = {
     parentPlan: "Offre Parents",
     teacherPlan: "Offre Enseignants",
     activeUsage: "{used} devoirs actifs sur {limit}",
-    submissionUsage: "{used} remises sur {limit} ce mois-ci",
+    lockedResults: "{count} résultats à déverrouiller",
+    resultViewLimit:
+      "Le forfait Gratuit ouvre les 8 premiers résultats terminés par compte chaque mois civil (UTC). Les suivants sont enregistrés et les élèves voient toujours leurs commentaires. Changez de forfait pour les consulter pendant les 14 jours de conservation.",
+    submissionUsage: "{used}/{limit} résultats complets ce mois-ci",
     submissionLimitWarning:
-      "Vous approchez de la limite mensuelle de l’offre gratuite. {used} remises d’élèves sur {limit} ont été utilisées ce mois-ci. Consultez les offres pour des remises illimitées.",
+      "Le forfait Gratuit ouvre les {limit} premiers résultats terminés du compte chaque mois. Les élèves peuvent toujours envoyer leur travail et consulter leurs commentaires. Changez de forfait pour voir les autres avant leur expiration.",
     submissionLimitReached:
-      "Vous avez atteint la limite mensuelle de l’offre gratuite de {limit} remises d’élèves. Les nouveaux résultats ne pourront pas être enregistrés avant la réinitialisation mensuelle. Consultez les offres pour des remises illimitées.",
-    unlimited: "Remises mensuelles illimitées",
+      "Les {limit} résultats de ce mois sont déjà ouverts. Les envois et les commentaires des élèves restent disponibles. Changez de forfait pour déverrouiller les résultats encore conservés.",
+    unlimited: "Résultats complets illimités",
     studentUsage: "{used} pseudonymes conservés",
     noAssignments:
       "Aucun devoir pour le moment. Créez-en un à partager avec les élèves.",
@@ -1570,12 +1582,15 @@ const PACKS = {
     parentPlan: "Paket Orang Tua",
     teacherPlan: "Paket Guru",
     activeUsage: "{used} dari {limit} tugas aktif",
-    submissionUsage: "{used} dari {limit} kiriman bulan ini",
+    lockedResults: "{count} hasil belum terbuka",
+    resultViewLimit:
+      "Paket Gratis membuka 8 hasil selesai pertama per akun setiap bulan kalender (UTC). Hasil berikutnya tetap disimpan dan siswa tetap melihat umpan balik. Upgrade untuk melihatnya selama masa penyimpanan 14 hari.",
+    submissionUsage: "{used}/{limit} hasil lengkap bulan ini",
     submissionLimitWarning:
-      "Anda hampir mencapai batas bulanan Paket Gratis. {used} dari {limit} kiriman siswa sudah digunakan bulan ini. Lihat paket untuk kiriman siswa tanpa batas.",
+      "Paket Gratis membuka {limit} hasil selesai pertama per akun setiap bulan. Siswa tetap dapat mengirim tugas dan melihat umpan balik. Upgrade untuk melihat hasil lainnya sebelum kedaluwarsa.",
     submissionLimitReached:
-      "Anda telah mencapai batas bulanan Paket Gratis sebanyak {limit} kiriman siswa. Hasil tugas baru tidak dapat disimpan sampai batas bulanan direset. Lihat paket untuk kiriman siswa tanpa batas.",
-    unlimited: "Kiriman bulanan tanpa batas",
+      "Kuota {limit} hasil lengkap bulan ini telah terpakai. Pengiriman tugas dan umpan balik siswa tetap tersedia. Upgrade untuk membuka hasil yang masih tersimpan.",
+    unlimited: "Hasil lengkap tanpa batas",
     studentUsage: "{used} nama panggilan tersimpan",
     noAssignments: "Belum ada tugas. Buat tugas untuk dibagikan kepada siswa.",
     recentAssignments: "Tugas terbaru",
@@ -1935,12 +1950,15 @@ const PACKS = {
     parentPlan: "家长方案",
     teacherPlan: "教师方案",
     activeUsage: "活跃作业 {used}/{limit}",
-    submissionUsage: "本月提交 {used}/{limit}",
+    lockedResults: "{count} 份结果待解锁",
+    resultViewLimit:
+      "免费版每个账号每个自然月（UTC）开放前 8 份完成结果。超额结果仍会保存，学生仍可查看本人反馈；升级可在 14 天保留期内解锁查看。",
+    submissionUsage: "本月完整结果 {used}/{limit}",
     submissionLimitWarning:
-      "即将达到免费方案的每月额度。本月已使用 {used}/{limit} 次学生提交。查看方案可获得不限量的学生提交。",
+      "免费版每个账号每月开放前 {limit} 份完成结果。学生仍可提交并查看反馈；升级可在保留期内查看更多结果。",
     submissionLimitReached:
-      "已达到免费方案每月 {limit} 次学生提交的额度。在每月额度重置前，新的作业结果将无法保存。查看方案可获得不限量的学生提交。",
-    unlimited: "本月提交不限量",
+      "本月已开放 {limit} 份完整结果。后续提交仍正常保存，学生仍可查看反馈；升级即可解锁保留期内的结果。",
+    unlimited: "完整结果不限量",
     studentUsage: "已保存 {used} 个学生昵称",
     noAssignments: "还没有作业。创建一份后即可分享给学生。",
     recentAssignments: "最近作业",

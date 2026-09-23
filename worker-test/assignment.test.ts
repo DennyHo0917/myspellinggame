@@ -945,25 +945,240 @@ describe("teacher authorization and quotas", () => {
     );
   });
 
-  it("enforces the free monthly submission limit on the server", async () => {
+  it("saves the ninth result and feedback but filters owner details and statistics", async () => {
     const created = await createAssignment();
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
-    const now = new Date().toISOString();
-    const statements = Array.from({ length: 7 }, () =>
-      bindings.DB.prepare(
-        `INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at)
-         VALUES (?, ?, ?, ?)`,
-      ).bind(crypto.randomUUID(), teacherA.id, monthStart(), now),
+    for (let i = 0; i < 7; i++) {
+      expect(
+        (await submit(publicId, assignment.words, { nickname: `Student ${i}` }))
+          .status,
+      ).toBe(201);
+    }
+    const eighth = await submit(publicId, assignment.words, {
+      nickname: "Eighth",
+    });
+    const eighthResult = (await eighth.json()) as { id: string };
+    const attemptId = crypto.randomUUID();
+    const ninth = await submit(publicId, assignment.words, {
+      attemptId,
+      nickname: "Hidden",
+      answers: ["wrong", "wrong"],
+    });
+    expect(ninth.status).toBe(201);
+    expect(await ninth.json()).toMatchObject({
+      id: attemptId,
+      accuracy: 0,
+      missedWords: ["apple", "banana"],
+    });
+    const retry = await submit(publicId, assignment.words, {
+      attemptId,
+      nickname: "Hidden",
+    });
+    expect(await retry.json()).toMatchObject({ id: attemptId, accuracy: 0 });
+    for (const query of ["", "?page=2&sort=accuracy&order=asc"]) {
+      const detail = (await (
+        await call(`/api/assignments/${created.body.id}${query}`)
+      ).json()) as {
+        attempts: { id: string }[];
+        summary: unknown;
+        lockedResultCount: number;
+      };
+      expect(detail.attempts).toHaveLength(8);
+      expect(detail.attempts.some((row) => row.id === attemptId)).toBe(false);
+      expect(detail.summary).toMatchObject({
+        attempts: 8,
+        averageAccuracy: 100,
+      });
+      expect(detail.lockedResultCount).toBe(1);
+    }
+    const listing = await (await call("/api/assignments")).json();
+    expect(JSON.stringify(listing)).not.toContain("Hidden");
+    expect(JSON.stringify(listing)).toContain('"locked_result_count":1');
+    expect(JSON.stringify(listing)).toContain('"average_accuracy":100');
+    await call(
+      `/api/assignments/${created.body.id}/attempts/${eighthResult.id}`,
+      { method: "DELETE" },
     );
-    await bindings.DB.batch(statements);
+    await submit(publicId, assignment.words, { nickname: "After deletion" });
+    const afterDelete = (await (
+      await call(`/api/assignments/${created.body.id}`)
+    ).json()) as { attempts: unknown[]; lockedResultCount: number };
+    expect(afterDelete.attempts).toHaveLength(7);
+    expect(afterDelete.lockedResultCount).toBe(2);
+    await insertSubscription({ plan: "parent", status: "active" });
+    const unlocked = (await (
+      await call(`/api/assignments/${created.body.id}`)
+    ).json()) as { attempts: unknown[]; lockedResultCount: number };
+    expect(unlocked.attempts).toHaveLength(9);
+    expect(unlocked.lockedResultCount).toBe(0);
+    await bindings.DB.prepare(
+      "UPDATE attempts SET retention_expires_at = '2000-01-01T00:00:00.000Z' WHERE id = ?",
+    )
+      .bind(attemptId)
+      .run();
+    const expired = (await (
+      await call(`/api/assignments/${created.body.id}`)
+    ).json()) as { attempts: unknown[] };
+    expect(expired.attempts).toHaveLength(8);
+  });
 
-    expect((await submit(publicId, assignment.words)).status).toBe(201);
-    const limited = await submit(publicId, assignment.words);
-    expect(limited.status).toBe(403);
-    expect(((await limited.json()) as Record<string, unknown>).error).toBe(
-      "monthly_submission_limit",
+  it("uses one account allowance across assignments and filters learner summaries and progress", async () => {
+    const learner = await createLearner("Learner");
+    const learnerPublicId = String(learner.body.public_id);
+    const first = await createAssignment();
+    const firstWords = await publicWords(
+      String(first.body.publicId),
+      learnerPublicId,
     );
+    await bindings.DB.batch(
+      Array.from({ length: 7 }, () =>
+        bindings.DB.prepare(
+          "INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at) VALUES (?, ?, ?, ?)",
+        ).bind(
+          crypto.randomUUID(),
+          teacherA.id,
+          monthStart(),
+          new Date().toISOString(),
+        ),
+      ),
+    );
+    expect(
+      (
+        await submit(String(first.body.publicId), firstWords.words, {
+          learnerPublicId,
+        })
+      ).status,
+    ).toBe(201);
+    await call(`/api/assignments/${first.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: "closed" }),
+    });
+    const second = await createAssignment();
+    const secondWords = await publicWords(
+      String(second.body.publicId),
+      learnerPublicId,
+    );
+    expect(
+      (
+        await submit(String(second.body.publicId), secondWords.words, {
+          learnerPublicId,
+          answers: ["wrong", "wrong"],
+        })
+      ).status,
+    ).toBe(201);
+    const learnerDetail = await (
+      await call(`/api/learners/${learner.body.id}`)
+    ).json();
+    expect(learnerDetail).toMatchObject({
+      summary: { completedAttempts: 1, accuracy: 100, needsReview: 0 },
+    });
+    const learners = await (await call("/api/learners")).json();
+    expect(learners).toMatchObject({
+      learners: [{ completed_attempts: 1, accuracy: 100 }],
+    });
+    const workspace = await (
+      await call("/api/assignments", {
+        headers: { "x-workspace-review-counts": "1" },
+      })
+    ).json();
+    expect(workspace).toMatchObject({
+      usage: { monthlyAttempts: 9, lockedResultCount: 1 },
+      learners: [{ needs_review_count: 0, missed_words: [] }],
+      missedWords: [],
+    });
+    // Deleting the entire earlier assignment cannot free a viewing slot.
+    await call(`/api/assignments/${first.body.id}`, { method: "DELETE" });
+    await submit(String(second.body.publicId), secondWords.words, {
+      learnerPublicId,
+    });
+    const locked = await (
+      await call(`/api/assignments/${second.body.id}`)
+    ).json();
+    expect(locked).toMatchObject({ attempts: [], lockedResultCount: 2 });
+    const other = await createAssignment(teacherB);
+    const otherWords = await publicWords(String(other.body.publicId));
+    await submit(String(other.body.publicId), otherWords.words);
+    expect(
+      await (
+        await call(`/api/assignments/${other.body.id}`, {}, teacherB)
+      ).json(),
+    ).toMatchObject({ summary: { attempts: 1 }, lockedResultCount: 0 });
+    await insertSubscription({ plan: "teacher", status: "active" });
+    expect(
+      await (await call(`/api/learners/${learner.body.id}`)).json(),
+    ).toMatchObject({ summary: { completedAttempts: 2, accuracy: 50 } });
+  });
+
+  it("atomically allocates the last free result under concurrent submissions and retries", async () => {
+    const created = await createAssignment();
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    await bindings.DB.batch(
+      Array.from({ length: 7 }, () =>
+        bindings.DB.prepare(
+          "INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at) VALUES (?, ?, ?, ?)",
+        ).bind(
+          crypto.randomUUID(),
+          teacherA.id,
+          monthStart(),
+          new Date().toISOString(),
+        ),
+      ),
+    );
+    const ids = [crypto.randomUUID(), crypto.randomUUID()];
+    const responses = await Promise.all(
+      ids.flatMap((attemptId, i) =>
+        [0, 1].map(() =>
+          submit(publicId, assignment.words, {
+            attemptId,
+            nickname: `Concurrent ${i}`,
+          }),
+        ),
+      ),
+    );
+    expect(responses.map((row) => row.status)).toEqual([201, 201, 201, 201]);
+    const detail = (await (
+      await call(`/api/assignments/${created.body.id}`)
+    ).json()) as { attempts: unknown[]; lockedResultCount: number };
+    expect(detail.attempts).toHaveLength(1);
+    expect(detail.lockedResultCount).toBe(1);
+    expect(
+      await bindings.DB.prepare(
+        "SELECT COUNT(*) AS count FROM monthly_submission_usage",
+      ).first(),
+    ).toEqual({ count: 9 });
+  });
+
+  it("starts a new monthly allowance without reopening locked older results or locking legacy results", async () => {
+    const created = await createAssignment();
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    for (let i = 0; i < 9; i++)
+      await submit(publicId, assignment.words, { nickname: `Student ${i}` });
+    // Simulate previous month's immutable usage ledger while results remain retained.
+    await bindings.DB.prepare(
+      "UPDATE monthly_submission_usage SET month_key = '2000-01-01T00:00:00.000Z'",
+    ).run();
+    await submit(publicId, assignment.words, { nickname: "New month" });
+    let detail = (await (
+      await call(`/api/assignments/${created.body.id}`)
+    ).json()) as { attempts: unknown[]; lockedResultCount: number };
+    expect(detail.attempts).toHaveLength(9);
+    expect(detail.lockedResultCount).toBe(1);
+    // Old worker inserts omit the new column; migration default preserves access.
+    await bindings.DB.prepare(
+      `INSERT INTO attempts
+      (id, assignment_id, nickname, nickname_key, attempt_number, score, correct_count, incorrect_count, accuracy, duration_seconds, completed_at, retention_expires_at, status)
+      SELECT ?, assignment_id, 'Legacy', 'legacy', 1, score, correct_count, incorrect_count, accuracy, duration_seconds, completed_at, retention_expires_at, status FROM attempts LIMIT 1`,
+    )
+      .bind(crypto.randomUUID())
+      .run();
+    detail = (await (
+      await call(`/api/assignments/${created.body.id}`)
+    ).json()) as typeof detail;
+    expect(detail.attempts).toHaveLength(10);
+    expect(detail.lockedResultCount).toBe(1);
   });
 
   it.each(["parent", "teacher"] as const)(
@@ -2313,7 +2528,7 @@ describe("today's review state", () => {
 });
 
 describe("assignment attempts", () => {
-  it("checks attempt and monthly limits before starting public work", async () => {
+  it("checks personal attempt limits but allows starting beyond the monthly viewing limit", async () => {
     const attemptLimited = await createAssignment(teacherA, {
       maxAttempts: 1,
     });
@@ -2351,13 +2566,10 @@ describe("assignment attempts", () => {
     const monthlyLimitResponse = await start(
       String(monthlyLimited.body.publicId),
     );
-    expect(monthlyLimitResponse.status).toBe(403);
-    expect(
-      ((await monthlyLimitResponse.json()) as { error: string }).error,
-    ).toBe("monthly_submission_limit");
+    expect(monthlyLimitResponse.status).toBe(200);
   });
 
-  it("checks the monthly limit again when submitting after a successful start", async () => {
+  it("saves work when the viewing allowance fills after a successful start", async () => {
     const created = await createAssignment();
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
@@ -2393,7 +2605,7 @@ describe("assignment attempts", () => {
           nickname: "Reserved student",
         })
       ).status,
-    ).toBe(403);
+    ).toBe(201);
   });
 
   it.each(["parent", "teacher"] as const)(

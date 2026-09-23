@@ -70,7 +70,6 @@ const ERROR_KEYS = {
   assignment_closed: "assignmentClosed",
   assignment_expired: "assignmentExpired",
   attempt_limit: "attemptLimit",
-  monthly_submission_limit: "teacherLimit",
   invalid_nickname: "invalidNickname",
   active_assignment_limit: "activeLimit",
   billing_not_configured: "billingUnavailable",
@@ -1086,7 +1085,7 @@ function usageCards(data, me, needsReviewCount) {
       data.limits.monthlyAttempts === null
         ? copy.unlimited
         : m("submissionUsage", {
-            used: data.monthlyAttempts,
+            used: Math.min(data.monthlyAttempts, data.limits.monthlyAttempts),
             limit: data.limits.monthlyAttempts,
           }),
       "",
@@ -1116,10 +1115,19 @@ function usageCards(data, me, needsReviewCount) {
   return grid;
 }
 
+function lockedResultsNotice(count) {
+  const notice = document.createElement("div");
+  notice.className = "notice";
+  const message = document.createElement("p");
+  message.textContent = m("lockedResults", { count });
+  notice.append(message, upgradeLink("locked_results"));
+  return notice;
+}
+
 function submissionLimitNotice(data) {
   const { monthlyAttempts: used, limits } = data;
   const limit = limits.monthlyAttempts;
-  if (limit === null || used < 6) return null;
+  if (limit === null) return null;
   const reached = used >= limit;
   const notice = document.createElement("div");
   notice.className = "notice submission-limit-notice";
@@ -1128,6 +1136,9 @@ function submissionLimitNotice(data) {
     reached ? "submissionLimitReached" : "submissionLimitWarning",
     { used, limit },
   );
+  if (data.lockedResultCount) {
+    message.textContent += ` ${m("lockedResults", { count: data.lockedResultCount })}`;
+  }
   notice.append(
     message,
     upgradeLink(
@@ -2081,6 +2092,8 @@ function renderAssignmentsCard(
       }
       titleRow.append(title, state);
       body.append(titleRow, badges);
+      if (assignment.locked_result_count)
+        body.append(lockedResultsNotice(assignment.locked_result_count));
       const link = document.createElement("a");
       link.className = "button-link button-secondary";
       link.href = `/workspace/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`;
@@ -2640,6 +2653,7 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
         <fieldset class="assignment-mode-field"><legend>${copy.mode}</legend><div class="radio-row assignment-mode-options"><label class="assignment-mode-option"><input type="radio" name="mode" value="dictation"><span class="assignment-mode-icon" aria-hidden="true">◉</span><span>${copy.dictation}</span><span class="assignment-target-check" aria-hidden="true">✓</span></label><label class="assignment-mode-option"><input type="radio" name="mode" value="typing"><span class="assignment-mode-icon" aria-hidden="true">⌨</span><span>${copy.typing}</span><span class="assignment-target-check" aria-hidden="true">✓</span></label></div></fieldset>
         <fieldset id="assignment-learners-field"><legend>${m("assignTo")}</legend><div class="radio-row assignment-target-options"><label class="assignment-target-option" data-target-option="all"><input type="radio" name="learnerTarget" value="all"><span class="assignment-target-icon" aria-hidden="true">◉</span><span class="assignment-target-copy"><strong>${m(me.plan === "free" ? "allLearners" : isParentPlan(me) ? "allChildren" : "allStudents")}</strong><small>${m("allLearnersHelp")}</small></span><span class="assignment-target-check" aria-hidden="true">✓</span></label><label class="assignment-target-option" data-target-option="selected"><input type="radio" name="learnerTarget" value="selected"><span class="assignment-target-icon" aria-hidden="true">☷</span><span class="assignment-target-copy"><strong>${m(me.plan === "free" ? "freeSelectedLearners" : isParentPlan(me) ? "selectedChildren" : "selectedStudents")}</strong><small>${m("selectedLearnersHelp")}</small></span><span class="assignment-target-check" aria-hidden="true">✓</span></label><label class="assignment-target-option" data-target-option="anyone"><input type="radio" name="learnerTarget" value="anyone" checked><span class="assignment-target-icon" aria-hidden="true">↗</span><span class="assignment-target-copy"><strong>${m("linkOnly")}</strong><small>${m("linkOnlyHelp")}</small></span><span class="assignment-target-check" aria-hidden="true">✓</span></label></div><div id="assignment-learner-list"></div></fieldset>
         <div class="assignment-settings-fields"><div class="field"><label for="assignment-deadline">${copy.deadline}</label><input id="assignment-deadline" type="datetime-local" required></div><div class="field"><label for="assignment-max">${copy.maxAttempts}</label><select id="assignment-max">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<option>${n}</option>`).join("")}</select></div></div>
+        ${me.plan === "free" ? `<p class="notice">${copy.resultViewLimit}</p>` : ""}
         <div class="actions assignment-submit-actions"><button type="submit">${editing ? copy.saveChanges : copy.publish}</button></div>
       </aside>
     </div>`;
@@ -3154,6 +3168,8 @@ async function renderDetail(me, id) {
     statCard(copy.summarySubmissions, data.summary.attempts),
   );
   summary.append(summaryTitle, grid);
+  if (data.lockedResultCount)
+    summary.append(lockedResultsNotice(data.lockedResultCount));
   main.append(summary);
   const hasMissedWords = data.attempts.some(
     (attempt) => attempt.missed_words?.length,

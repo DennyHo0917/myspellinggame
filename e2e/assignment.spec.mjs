@@ -559,7 +559,9 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
   await expect(page.getByLabel("Alice")).toBeChecked();
   await page.getByLabel("Assignment title").fill("Alice's spelling assignment");
   await page.getByLabel("Spelling words").fill("apple\nbanana");
-  await page.getByLabel("Typing").check();
+  await page
+    .locator('input[name="mode"][value="typing"]')
+    .check({ force: true });
   await page.getByRole("button", { name: "Create and publish" }).click();
   await expect(page).toHaveURL(
     `/workspace/assignments/${assignmentId}?lang=en`,
@@ -875,7 +877,9 @@ test("assignment edit form prefills fields and submits a combined patch", async 
   await expect(page.getByLabel("Selected students")).toBeChecked();
   await expect(page.getByLabel("Alice")).toBeChecked();
   await page.getByLabel("Assignment title").fill("Updated assignment");
-  await page.getByLabel("Typing").check();
+  await page
+    .locator('input[name="mode"][value="typing"]')
+    .check({ force: true });
   await page.getByLabel("Maximum attempts per nickname").selectOption("5");
   await page.getByRole("button", { name: "Save changes" }).click();
   await expect(page).toHaveURL(
@@ -897,7 +901,9 @@ test("assignment edit form prefills fields and submits a combined patch", async 
     "student attempts",
   );
   await page.getByLabel("Assignment title").fill("Metadata only");
-  await page.getByLabel("Link sharing only").check();
+  await page
+    .locator('input[name="learnerTarget"][value="anyone"]')
+    .check({ force: true });
   await page.getByRole("button", { name: "Save changes" }).click();
   await expect(page).toHaveURL(
     `/workspace/assignments/${assignmentId}?lang=en`,
@@ -2693,7 +2699,9 @@ test("Google sign-in returns to a prefilled new teacher assignment", async ({
   await expect(page.getByLabel("Spelling words")).toHaveValue(
     "because\nfriend",
   );
-  await expect(page.getByLabel("Typing", { exact: true })).toBeChecked();
+  await expect(
+    page.locator('input[name="mode"][value="typing"]'),
+  ).toBeChecked();
   expect(
     await page.evaluate(() =>
       JSON.parse(sessionStorage.getItem("authEventsBeforeNavigation") || "[]")
@@ -2890,6 +2898,281 @@ test("saved checkout choice requires confirmation and stays retryable", async ({
     { plan: "parent", billing_interval: "year" },
     { plan: "parent", billing_interval: "year" },
   ]);
+});
+
+test("new assignment survives checkout retry and restores after activation", async ({
+  page,
+}) => {
+  const learnerId = "77777777-7777-4777-8777-777777777777";
+  const assignmentId = "66666666-6666-4666-8666-666666666666";
+  let plan = "free";
+  let checkoutCalls = 0;
+  let createCalls = 0;
+  let meCalls = 0;
+  await page.route("**/api/me", (route) => {
+    meCalls += 1;
+    return route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "teacher-a", name: "Teacher A" },
+        plan,
+      }),
+    });
+  });
+  await page.route("**/api/assignments", async (route) => {
+    if (route.request().method() === "POST") {
+      createCalls += 1;
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ id: assignmentId }),
+      });
+      return;
+    }
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        assignments: [],
+        learners: [{ id: learnerId, name: "Alice", archived: 0 }],
+      }),
+    });
+  });
+  await page.route("**/api/billing/checkout", async (route) => {
+    checkoutCalls += 1;
+    if (checkoutCalls === 1) {
+      await route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "internal_error" }),
+      });
+      return;
+    }
+    plan = "teacher";
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        url: "/workspace?lang=en&checkout=success&plan=teacher",
+      }),
+    });
+  });
+  await page.route(`**/api/assignments/${assignmentId}`, (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        id: assignmentId,
+        title: "Checkout draft",
+        mode: "typing",
+        words: [],
+        assignedLearners: [],
+        summary: { students: 0, attempts: 0, averageAccuracy: 0 },
+        attempts: [],
+        missedWordStats: [],
+      }),
+    }),
+  );
+
+  await page.goto("/workspace/assignments/new?lang=en");
+  await page.getByLabel("Assignment title").fill("Checkout draft");
+  await page.getByLabel("Spelling words").fill(limitWords(26));
+  await page
+    .getByLabel("Example sentences (optional)")
+    .fill("First sentence.\nSecond sentence.");
+  await page.locator('input[name="mode"][value="typing"]').check({
+    force: true,
+  });
+  await page.getByLabel("Deadline").fill("2030-01-02T12:00");
+  await page.getByLabel("Maximum attempts per nickname").selectOption("5");
+  await page
+    .locator('input[name="learnerTarget"][value="selected"]')
+    .check({ force: true });
+  await page.locator(".learner-picker-summary").click();
+  await page.locator(".learner-picker-option", { hasText: "Alice" }).click();
+  await page.getByRole("button", { name: /Choose Teacher/ }).click();
+  await expect(
+    page.getByRole("button", { name: "Try checkout again" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Try checkout again" }).click();
+
+  await expect(page).toHaveURL(/\/workspace\/assignments\/new\?lang=en$/);
+  await expect(page.getByLabel("Assignment title")).toHaveValue(
+    "Checkout draft",
+  );
+  await expect(page.getByLabel("Spelling words")).toHaveValue(limitWords(26));
+  await expect(page.getByLabel("Example sentences (optional)")).toHaveValue(
+    "First sentence.\nSecond sentence.",
+  );
+  await expect(
+    page.locator('input[name="mode"][value="typing"]'),
+  ).toBeChecked();
+  await expect(page.getByLabel("Deadline")).toHaveValue("2030-01-02T12:00");
+  await expect(page.getByLabel("Maximum attempts per nickname")).toHaveValue(
+    "5",
+  );
+  await expect(
+    page.locator('input[name="learnerTarget"][value="selected"]'),
+  ).toBeChecked();
+  await expect(page.getByLabel("Alice")).toBeChecked();
+  expect(createCalls).toBe(0);
+  expect(checkoutCalls).toBe(2);
+  expect(meCalls).toBeGreaterThanOrEqual(2);
+
+  await page
+    .locator('.assignment-submit-actions button[type="submit"]')
+    .click();
+  await expect(page).toHaveURL(
+    `/workspace/assignments/${assignmentId}?lang=en`,
+  );
+  expect(createCalls).toBe(1);
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem(
+        "mySpellingWorkspaceDraft:teacher-a:assignment:new",
+      ),
+    ),
+  ).toBeNull();
+});
+
+test("saved-list edit returns after checkout cancellation without overwriting newer data", async ({
+  page,
+}) => {
+  const listId = "99999999-9999-4999-8999-999999999999";
+  let listTitle = "Original list";
+  let patchCalls = 0;
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "teacher-a", name: "Teacher A" },
+        plan: "free",
+      }),
+    }),
+  );
+  await page.route("**/api/assignments", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        assignments: [],
+        learners: [],
+        savedLists: [
+          {
+            id: listId,
+            title: listTitle,
+            words: ["apple", "banana"],
+            word_details: [],
+          },
+        ],
+      }),
+    }),
+  );
+  await page.route(`**/api/saved-lists/${listId}`, (route) => {
+    patchCalls += 1;
+    return route.fulfill({ contentType: "application/json", body: "{}" });
+  });
+  await page.route("**/api/billing/checkout", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ url: "/pricing?checkout=cancelled" }),
+    }),
+  );
+  await page.route("**/api/billing/checkout/cancel", (route) =>
+    route.fulfill({ status: 204 }),
+  );
+
+  await page.goto("/workspace/saved-lists?lang=en");
+  await page
+    .locator(".saved-list-row")
+    .getByRole("button", { name: "Edit" })
+    .click();
+  await page.getByLabel("List title").fill("Draft list");
+  await page.getByLabel("Spelling words").fill(limitWords(26));
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        JSON.parse(
+          sessionStorage.getItem("mySpellingWorkspaceDraftResume") || "null",
+        ),
+      ),
+    )
+    .toMatchObject({
+      userId: "teacher-a",
+      kind: "saved-list",
+      objectId: listId,
+      path: "/workspace/saved-lists?lang=en",
+    });
+  await page.getByRole("button", { name: /Choose Teacher/ }).click();
+  await page.waitForURL(/\/pricing\?checkout=cancelled$/);
+  await expect(page).toHaveURL(/\/workspace\/saved-lists\?lang=en$/);
+  await expect(page.getByLabel("List title")).toHaveValue("Draft list");
+  await expect(page.getByLabel("Spelling words")).toHaveValue(limitWords(26));
+  expect(patchCalls).toBe(0);
+
+  listTitle = "Changed on server";
+  await page.reload();
+  await expect(page.getByLabel("List title")).toHaveValue("Changed on server");
+  await page.getByRole("button", { name: "Cancel" }).click();
+  expect(
+    await page.evaluate(
+      (id) =>
+        sessionStorage.getItem(
+          `mySpellingWorkspaceDraft:teacher-a:saved-list:${id}`,
+        ),
+      listId,
+    ),
+  ).toBeNull();
+});
+
+test("workspace drafts stay isolated when accounts switch", async ({
+  page,
+}) => {
+  let userId = "teacher-a";
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: userId, name: userId },
+        plan: "free",
+      }),
+    }),
+  );
+  await mockWorkspaceRoster(page);
+
+  await page.goto("/workspace/assignments/new?lang=en");
+  await page.getByLabel("Assignment title").fill("Account A draft");
+  userId = "teacher-b";
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace/assignments/new?lang=en", {
+    waitUntil: "domcontentloaded",
+  });
+  await expect(page.getByLabel("Assignment title")).toHaveValue("");
+  userId = "teacher-a";
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.goto("/workspace/assignments/new?lang=en", {
+    waitUntil: "domcontentloaded",
+  });
+  await expect(page.getByLabel("Assignment title")).toHaveValue(
+    "Account A draft",
+  );
+});
+
+test("checkout cancellation rejects an external draft return URL", async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    sessionStorage.setItem(
+      "mySpellingWorkspaceDraftResume",
+      JSON.stringify({
+        userId: "teacher-a",
+        kind: "assignment",
+        objectId: "new",
+        path: "https://example.test/collect?student=Alice",
+      }),
+    ),
+  );
+  await page.route("**/api/billing/checkout/cancel", (route) =>
+    route.fulfill({ status: 204 }),
+  );
+
+  await page.goto("/pricing?checkout=cancelled");
+  await expect(page).toHaveURL(/\/pricing\?checkout=cancelled$/);
 });
 
 for (const path of ["/", "/es/", "/pt-br/", "/fr/", "/id/", "/zh/"]) {
@@ -3229,6 +3512,201 @@ test("Free workspace explains result viewing and paid plans remain unlimited", a
   monthlyAttempts = 100;
   await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.locator(".submission-limit-notice")).toHaveCount(0);
+});
+
+test("workspace refreshes new results without replacing good data or unsaved forms", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.__workspaceNow = Date.now();
+    Date.now = () => window.__workspaceNow;
+    window.__advanceWorkspaceTime = (milliseconds) => {
+      window.__workspaceNow += milliseconds;
+    };
+    window.__showWorkspacePage = () => {
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        get: () => "visible",
+      });
+      document.dispatchEvent(new Event("visibilitychange"));
+    };
+  });
+  const assignmentId = "45454545-4545-4454-8454-454545454545";
+  const learnerId = "56565656-5656-4565-8565-565656565656";
+  const expiresAt = new Date(Date.now() + 86_400_000).toISOString();
+  let attempts = 0;
+  let workspaceRequests = 0;
+  let meRequests = 0;
+  let failNextWorkspaceRequest = false;
+  let requestGate = null;
+  let releaseRequest = null;
+  let plan = "teacher";
+  const json = (route, body, status = 200) =>
+    route.fulfill({
+      status,
+      contentType: "application/json",
+      body: JSON.stringify(body),
+    });
+  const workspaceData = () => ({
+    assignments: [
+      {
+        id: assignmentId,
+        title: "Live results",
+        status: "published",
+        expires_at: expiresAt,
+        student_count: attempts ? 1 : 0,
+        attempt_count: attempts,
+        average_accuracy: attempts ? 100 : 0,
+        assigned_learner_names: "Alice",
+      },
+    ],
+    savedLists: [],
+    learners: [
+      {
+        id: learnerId,
+        name: "Alice",
+        archived: 0,
+        completed_attempts: attempts,
+        accuracy: attempts ? 100 : 0,
+        needs_review_count: 0,
+        mastery: { mastered: attempts ? 1 : 0, learning: 0, needsReview: 0 },
+        missed_words: [],
+      },
+    ],
+    missedWords: [],
+    usage: {
+      limits: PLAN_LIMITS[plan],
+      activeAssignments: 1,
+      monthlyAttempts: attempts,
+      savedLists: 0,
+      learnerProfiles: 1,
+    },
+  });
+  await page.route("**/api/me", (route) => {
+    meRequests += 1;
+    return json(route, {
+      user: { id: "teacher-a", name: "Teacher A", email: "a@example.test" },
+      plan,
+    });
+  });
+  await page.route("**/api/assignments", async (route) => {
+    workspaceRequests += 1;
+    if (failNextWorkspaceRequest) {
+      failNextWorkspaceRequest = false;
+      return json(
+        route,
+        { error: "temporary_error", message: "Temporary failure" },
+        503,
+      );
+    }
+    const gate = requestGate;
+    requestGate = null;
+    if (gate) await gate;
+    return json(route, workspaceData());
+  });
+  await page.route(`**/api/assignments/${assignmentId}`, (route) =>
+    json(route, {
+      id: assignmentId,
+      public_id: publicId,
+      title: "Live results",
+      mode: "typing",
+      status: "published",
+      words,
+      assignedLearners: [],
+      summary: {
+        students: attempts ? 1 : 0,
+        attempts,
+        averageAccuracy: attempts ? 100 : 0,
+      },
+      attempts: Array.from({ length: attempts }, (_, index) => ({
+        id: `${String(index + 1).padStart(8, "0")}-0000-4000-8000-000000000000`,
+        nickname: "Alice",
+        attempt_number: index + 1,
+        status: "completed",
+        correct_count: 2,
+        incorrect_count: 0,
+        accuracy: 100,
+        missed_words: [],
+        duration_seconds: 10,
+        completed_at: new Date().toISOString(),
+      })),
+      missedWordStats: [],
+    }),
+  );
+
+  await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("0 submissions", { exact: true })).toBeVisible();
+
+  // A student submits while the teacher tab is away. Returning after the TTL refreshes it.
+  attempts = 1;
+  await page.evaluate(() => {
+    window.__advanceWorkspaceTime(16_000);
+    window.__showWorkspacePage();
+  });
+  await expect(page.getByText("1 submissions", { exact: true })).toBeVisible();
+  expect(meRequests).toBeGreaterThan(1);
+
+  // Two fast menu changes share the same in-flight workspace request.
+  await page.evaluate(() => window.__advanceWorkspaceTime(16_000));
+  requestGate = new Promise((resolve) => {
+    releaseRequest = resolve;
+  });
+  const beforeSwitchRequests = workspaceRequests;
+  await page
+    .locator('.workspace-sidebar-link[data-section="assignments"]')
+    .click();
+  await page
+    .locator('.workspace-sidebar-link[data-section="learners"]')
+    .click();
+  releaseRequest();
+  await expect(page.getByRole("heading", { name: "Students" })).toBeVisible();
+  await expect.poll(() => workspaceRequests).toBe(beforeSwitchRequests + 1);
+
+  // A failed manual refresh leaves the current successful data in place.
+  failNextWorkspaceRequest = true;
+  await page.getByRole("button", { name: "Refresh results" }).click();
+  await expect(page.getByText("Alice", { exact: true }).first()).toBeVisible();
+  await expect(
+    page.getByText(
+      "Results could not be refreshed. Current data is still shown.",
+    ),
+  ).toBeVisible();
+
+  // Manual refresh updates the assignment list, detail, and progress views.
+  attempts = 2;
+  await page
+    .locator('.workspace-sidebar-link[data-section="assignments"]')
+    .click();
+  await page.getByRole("button", { name: "Refresh results" }).click();
+  await expect(page.getByText("2 submissions", { exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "View results" }).click();
+  await expect(page.locator("tbody tr")).toHaveCount(2);
+  attempts = 3;
+  await page.getByRole("button", { name: "Refresh results" }).click();
+  await expect(page.locator("tbody tr")).toHaveCount(3);
+  await page
+    .locator('.workspace-sidebar-link[data-section="progress"]')
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Refresh results" }),
+  ).toBeVisible();
+
+  // Account entitlement changes invalidate cached data, while forms stay untouched.
+  plan = "parent";
+  await page
+    .locator('.workspace-sidebar-link[data-section="overview"]')
+    .click();
+  await page.getByRole("button", { name: "Refresh results" }).click();
+  await expect(page.getByText("Parent Plan", { exact: true })).toBeVisible();
+  await page.goto("/workspace/assignments/new?lang=en");
+  await page.getByLabel("Assignment title").fill("Unsaved title");
+  await page.evaluate(() => {
+    window.__advanceWorkspaceTime(16_000);
+    window.__showWorkspacePage();
+  });
+  await expect(page.getByLabel("Assignment title")).toHaveValue(
+    "Unsaved title",
+  );
 });
 
 test("new assignment validates Free word-count boundaries before submit", async ({

@@ -21,6 +21,9 @@ const PACKS = {
     language: "Language",
     loading: "Loading…",
     retry: "Try again",
+    refreshResults: "Refresh results",
+    refreshFailed:
+      "Results could not be refreshed. Current data is still shown.",
     cancel: "Cancel",
     backToDashboard: "Back to workspace",
     signIn: "Continue with Google",
@@ -402,6 +405,9 @@ const PACKS = {
     language: "Idioma",
     loading: "Cargando…",
     retry: "Intentar de nuevo",
+    refreshResults: "Actualizar resultados",
+    refreshFailed:
+      "No se pudieron actualizar los resultados. Los datos actuales siguen visibles.",
     cancel: "Cancelar",
     backToDashboard: "Volver al espacio de trabajo",
     signIn: "Continuar con Google",
@@ -788,6 +794,9 @@ const PACKS = {
     language: "Idioma",
     loading: "Carregando…",
     retry: "Tentar novamente",
+    refreshResults: "Atualizar resultados",
+    refreshFailed:
+      "Não foi possível atualizar os resultados. Os dados atuais continuam visíveis.",
     cancel: "Cancelar",
     backToDashboard: "Voltar ao espaço de trabalho",
     signIn: "Continuar com Google",
@@ -1171,6 +1180,9 @@ const PACKS = {
     language: "Langue",
     loading: "Chargement…",
     retry: "Réessayer",
+    refreshResults: "Actualiser les résultats",
+    refreshFailed:
+      "Impossible d’actualiser les résultats. Les données actuelles restent affichées.",
     cancel: "Annuler",
     backToDashboard: "Retour à l’espace de travail",
     signIn: "Continuer avec Google",
@@ -1558,6 +1570,9 @@ const PACKS = {
     language: "Bahasa",
     loading: "Memuat…",
     retry: "Coba lagi",
+    refreshResults: "Perbarui hasil",
+    refreshFailed:
+      "Hasil tidak dapat diperbarui. Data saat ini tetap ditampilkan.",
     cancel: "Batal",
     backToDashboard: "Kembali ke ruang kerja",
     signIn: "Lanjutkan dengan Google",
@@ -1929,6 +1944,8 @@ const PACKS = {
     language: "语言",
     loading: "正在加载…",
     retry: "重试",
+    refreshResults: "刷新结果",
+    refreshFailed: "无法刷新结果，当前数据仍会保留。",
     cancel: "取消",
     backToDashboard: "返回工作台",
     signIn: "使用 Google 继续",

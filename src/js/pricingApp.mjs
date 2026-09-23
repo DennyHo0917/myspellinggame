@@ -51,10 +51,26 @@ function showCheckoutRetry(choice, error) {
 }
 
 let checkoutCanceled = false;
+let canceledWorkspaceReturn = null;
 try {
   checkoutCanceled =
     new URLSearchParams(location.search).get("checkout") === "cancelled";
   if (checkoutCanceled) {
+    try {
+      const resume = JSON.parse(
+        sessionStorage.getItem("mySpellingWorkspaceDraftResume") || "null",
+      );
+      const returnUrl = new URL(resume?.path || "", location.origin);
+      if (
+        returnUrl.origin === location.origin &&
+        (returnUrl.pathname === "/workspace/assignments/new" ||
+          returnUrl.pathname === "/workspace/saved-lists" ||
+          /^\/workspace\/assignments\/[0-9a-f-]{36}\/edit$/i.test(
+            returnUrl.pathname,
+          ))
+      )
+        canceledWorkspaceReturn = `${returnUrl.pathname}?lang=${encodeURIComponent(normalizeProductLocale(returnUrl.searchParams.get("lang")))}`;
+    } catch {}
     const canceledCheckoutPlan = ["parent", "teacher"].includes(
       sessionStorage.getItem("pendingCheckoutPlan"),
     )
@@ -74,11 +90,14 @@ try {
   }
 } catch {}
 
-if (checkoutCanceled)
+if (checkoutCanceled) {
   void fetch("/api/billing/checkout/cancel", {
     method: "POST",
     credentials: "same-origin",
+    keepalive: true,
   }).catch(() => null);
+  if (canceledWorkspaceReturn) location.replace(canceledWorkspaceReturn);
+}
 
 if (pricingGrid && "IntersectionObserver" in window) {
   const observer = new IntersectionObserver((entries) => {

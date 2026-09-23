@@ -27,7 +27,10 @@ const CHECKOUT_RETRY_REQUIRED_KEY = "pendingCheckoutRetryRequired";
 const PENDING_UPGRADE_FEATURE_KEY = "pendingUpgradeFeature";
 const PENDING_TYPING_CHASE_KEY = "pendingTypingChase";
 const PENDING_TYPING_CHASE_LOCALE_KEY = "pendingTypingChaseLocale";
+const WORKSPACE_DRAFT_PREFIX = "mySpellingWorkspaceDraft:";
+const WORKSPACE_DRAFT_RESUME_KEY = "mySpellingWorkspaceDraftResume";
 const ACTIVATION_POLL_ATTEMPTS = 10;
+const WORKSPACE_CACHE_TTL_MS = 15_000;
 const SIGNUP_INTENTS = {
   copy_track: "track_shared_practice",
   assign_homework: "create_assignment",
@@ -45,14 +48,107 @@ const workspaceCache = {
   data: null,
   promise: null,
   reviewCounts: false,
+  requestedReviewCounts: false,
+  updatedAt: 0,
+  requestId: 0,
+  identity: null,
+  identityPromise: null,
 };
+const workspaceDetailCache = new Map();
 let workspaceNavigationBound = false;
+let workspaceRenderId = 0;
+let activeWorkspaceDraft = null;
 document.documentElement.lang = locale;
 document.title = copy.dashboardTitle;
 
 function m(key, vars) {
   return productMessage(key, vars, locale);
 }
+
+function safeWorkspaceReturnPath(value) {
+  try {
+    const url = new URL(value, location.origin);
+    if (url.origin !== location.origin) return null;
+    if (
+      url.pathname !== "/workspace/assignments/new" &&
+      url.pathname !== "/workspace/saved-lists" &&
+      !/^\/workspace\/assignments\/[0-9a-f-]{36}\/edit$/i.test(url.pathname)
+    )
+      return null;
+    const requestedLang = url.searchParams.get("lang");
+    const lang = PRODUCT_LOCALES.some(([value]) => value === requestedLang)
+      ? requestedLang
+      : locale;
+    return `${url.pathname}?lang=${encodeURIComponent(lang)}`;
+  } catch {
+    return null;
+  }
+}
+
+function workspaceDraftKey(me, kind, objectId = "new") {
+  return `${WORKSPACE_DRAFT_PREFIX}${me.user.id}:${kind}:${objectId}`;
+}
+
+function readWorkspaceDraft(me, kind, objectId = "new") {
+  try {
+    return JSON.parse(
+      sessionStorage.getItem(workspaceDraftKey(me, kind, objectId)) || "null",
+    );
+  } catch {
+    return null;
+  }
+}
+
+function writeWorkspaceDraft(me, kind, objectId, path, draft) {
+  try {
+    sessionStorage.setItem(
+      workspaceDraftKey(me, kind, objectId),
+      JSON.stringify(draft),
+    );
+    sessionStorage.setItem(
+      WORKSPACE_DRAFT_RESUME_KEY,
+      JSON.stringify({ userId: me.user.id, kind, objectId, path }),
+    );
+  } catch {}
+}
+
+function clearWorkspaceDraft(me, kind, objectId = "new") {
+  try {
+    sessionStorage.removeItem(workspaceDraftKey(me, kind, objectId));
+    const resume = JSON.parse(
+      sessionStorage.getItem(WORKSPACE_DRAFT_RESUME_KEY) || "null",
+    );
+    if (
+      resume?.userId === me.user.id &&
+      resume.kind === kind &&
+      resume.objectId === objectId
+    )
+      sessionStorage.removeItem(WORKSPACE_DRAFT_RESUME_KEY);
+  } catch {}
+  if (
+    activeWorkspaceDraft?.kind === kind &&
+    activeWorkspaceDraft?.objectId === objectId
+  )
+    activeWorkspaceDraft = null;
+}
+
+function resumableWorkspaceDraft(me) {
+  try {
+    const resume = JSON.parse(
+      sessionStorage.getItem(WORKSPACE_DRAFT_RESUME_KEY) || "null",
+    );
+    if (resume?.userId !== me.user.id) return null;
+    const path = safeWorkspaceReturnPath(resume.path);
+    return path ? { ...resume, path } : null;
+  } catch {
+    return null;
+  }
+}
+
+function prepareWorkspaceDraftReturn() {
+  activeWorkspaceDraft?.save();
+}
+window.addEventListener("pagehide", prepareWorkspaceDraftReturn);
 function date(value) {
   return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
@@ -484,6 +580,8 @@ function nav({ workspace = false, me = null } = {}) {
 }
 
 async function signOut() {
+  invalidateWorkspaceCache();
+  workspaceCache.identity = null;
   await api("/api/auth/sign-out", { method: "POST", body: "{}" }).catch(
     () => null,
   );
@@ -613,7 +711,30 @@ function updateWorkspaceActive(section = workspaceRoute()) {
 
 function invalidateWorkspaceCache() {
   workspaceCache.data = null;
+  workspaceCache.promise = null;
   workspaceCache.reviewCounts = false;
+  workspaceCache.requestedReviewCounts = false;
+  workspaceCache.updatedAt = 0;
+  workspaceCache.requestId += 1;
+  workspaceDetailCache.clear();
+}
+
+function workspaceIdentity(me) {
+  return me?.user?.id
+    ? `${me.user.id}:${me.plan}:${me.subscriptionStatus || ""}`
+    : null;
+}
+
+function updateWorkspaceIdentity(me) {
+  const identity = workspaceIdentity(me);
+  if (workspaceCache.identity && workspaceCache.identity !== identity)
+    invalidateWorkspaceCache();
+  workspaceCache.identity = identity;
+  workspaceState = me ? { me } : null;
+}
+
+function cacheIsFresh(updatedAt) {
+  return Date.now() - updatedAt < WORKSPACE_CACHE_TTL_MS;
 }
 
 async function refreshWorkspace(me) {
@@ -621,45 +742,151 @@ async function refreshWorkspace(me) {
   return renderDashboard(me, { force: true });
 }
 
+async function loadWorkspaceDetail(path, { force = false } = {}) {
+  let entry = workspaceDetailCache.get(path);
+  if (!entry) {
+    entry = { data: null, promise: null, updatedAt: 0, requestId: 0 };
+    workspaceDetailCache.set(path, entry);
+  }
+  if (!force && entry.data && cacheIsFresh(entry.updatedAt)) return entry.data;
+  if (entry.promise) return entry.promise;
+  const requestId = ++entry.requestId;
+  entry.promise = api(path)
+    .then((data) => {
+      if (entry.requestId === requestId) {
+        entry.data = data;
+        entry.updatedAt = Date.now();
+        workspaceCache.updatedAt = 0;
+      }
+      return data;
+    })
+    .finally(() => {
+      if (entry.requestId === requestId) entry.promise = null;
+    });
+  return entry.promise;
+}
+
 async function loadWorkspaceData(section, { force = false } = {}) {
   const needsReviewCounts = section === "overview" || section === "progress";
   if (
     !force &&
     workspaceCache.data &&
+    cacheIsFresh(workspaceCache.updatedAt) &&
     (!needsReviewCounts || workspaceCache.reviewCounts)
   )
     return workspaceCache.data;
-  if (!force && workspaceCache.promise) {
+  if (
+    workspaceCache.promise &&
+    (!needsReviewCounts || workspaceCache.requestedReviewCounts)
+  )
+    return workspaceCache.promise;
+  if (workspaceCache.promise) {
     await workspaceCache.promise;
-    return loadWorkspaceData(section);
+    return loadWorkspaceData(section, { force });
   }
+  const requestId = ++workspaceCache.requestId;
+  workspaceCache.requestedReviewCounts = needsReviewCounts;
   workspaceCache.promise = api("/api/assignments", {
     headers: needsReviewCounts
       ? { "x-workspace-review-counts": "1" }
       : undefined,
   })
     .then((data) => {
-      workspaceCache.data = data;
-      workspaceCache.reviewCounts = needsReviewCounts;
+      if (workspaceCache.requestId === requestId) {
+        workspaceCache.data = data;
+        workspaceCache.reviewCounts = needsReviewCounts;
+        workspaceCache.updatedAt = Date.now();
+        for (const entry of workspaceDetailCache.values()) entry.updatedAt = 0;
+      }
       return data;
     })
     .finally(() => {
-      workspaceCache.promise = null;
+      if (workspaceCache.requestId === requestId) {
+        workspaceCache.promise = null;
+        workspaceCache.requestedReviewCounts = false;
+      }
     });
   return workspaceCache.promise;
 }
 
 function revalidateWorkspaceData(me, section) {
+  const needsReviewCounts = ["overview", "progress"].includes(section);
   if (
-    !["overview", "progress"].includes(section) ||
-    workspaceCache.reviewCounts
+    cacheIsFresh(workspaceCache.updatedAt) &&
+    (!needsReviewCounts || workspaceCache.reviewCounts)
   )
     return;
-  loadWorkspaceData(section)
+  loadWorkspaceData(section, { force: true })
     .then(() => {
       if (workspaceRoute() === section) renderDashboard(me);
     })
     .catch(() => null);
+}
+
+function showRefreshError() {
+  root.querySelector(".workspace-refresh-error")?.remove();
+  const notice = document.createElement("p");
+  notice.className = "status error workspace-refresh-error";
+  notice.setAttribute("role", "alert");
+  notice.textContent = copy.refreshFailed;
+  root.querySelector(".teacher-main")?.prepend(notice);
+}
+
+async function currentWorkspaceUser() {
+  if (workspaceCache.identityPromise) return workspaceCache.identityPromise;
+  workspaceCache.identityPromise = api("/api/me")
+    .then((me) => {
+      updateWorkspaceIdentity(me);
+      return me;
+    })
+    .finally(() => {
+      workspaceCache.identityPromise = null;
+    });
+  return workspaceCache.identityPromise;
+}
+
+async function refreshCurrentWorkspace({ manual = false } = {}) {
+  if (!workspaceState?.me || document.visibilityState === "hidden") return;
+  const detailPath = location.pathname.match(
+    /^\/workspace\/(?:assignments|learners)\/[0-9a-f-]{36}$/i,
+  )
+    ? `/api${location.pathname.slice("/workspace".length)}`
+    : null;
+  const detailEntry = detailPath ? workspaceDetailCache.get(detailPath) : null;
+  if (
+    !manual &&
+    cacheIsFresh(
+      detailPath ? detailEntry?.updatedAt || 0 : workspaceCache.updatedAt,
+    )
+  )
+    return;
+  try {
+    const me = await currentWorkspaceUser();
+    const detail = location.pathname.match(
+      /^\/workspace\/assignments\/([0-9a-f-]{36})$/i,
+    );
+    const learner = location.pathname.match(
+      /^\/workspace\/learners\/([0-9a-f-]{36})$/i,
+    );
+    if (detail) await renderDetail(me, detail[1], { force: true });
+    else if (learner) await renderLearner(me, learner[1], { force: true });
+    else if (workspaceRoute()) await renderDashboard(me, { force: true });
+  } catch (error) {
+    showRefreshError(error);
+  }
+}
+
+function refreshResultsButton() {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "button-secondary workspace-refresh-results";
+  button.textContent = copy.refreshResults;
+  button.addEventListener("click", async () => {
+    button.disabled = true;
+    await refreshCurrentWorkspace({ manual: true });
+    if (button.isConnected) button.disabled = false;
+  });
+  return button;
 }
 
 async function navigateWorkspace(section, { replace = false } = {}) {
@@ -681,8 +908,10 @@ function bindWorkspaceNavigation() {
     else renderTeacherRoute(workspaceState.me);
   });
   window.addEventListener("pageshow", (event) => {
-    if (event.persisted && workspaceState?.me && workspaceRoute())
-      refreshWorkspace(workspaceState.me);
+    if (event.persisted) refreshCurrentWorkspace();
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") refreshCurrentWorkspace();
   });
 }
 
@@ -690,7 +919,10 @@ function shell(me = null, activeSection = "overview") {
   document.body.classList.toggle("workspace-page", Boolean(me));
   if (me) {
     const existing = root.querySelector(".workspace-shell");
-    if (existing) {
+    if (
+      existing &&
+      existing.dataset.workspaceIdentity === workspaceIdentity(me)
+    ) {
       const main = existing.querySelector(".teacher-main");
       updateWorkspaceActive(workspaceRoute() || activeSection);
       return main;
@@ -699,6 +931,7 @@ function shell(me = null, activeSection = "overview") {
   root.replaceChildren();
   const wrapper = document.createElement("div");
   wrapper.className = `product-shell${me ? " workspace-shell" : ""}`;
+  if (me) wrapper.dataset.workspaceIdentity = workspaceIdentity(me);
   wrapper.append(nav({ workspace: Boolean(me), me }));
   if (!me) {
     const main = document.createElement("main");
@@ -855,9 +1088,10 @@ function upgradeLink(ctaLocation, direct = false) {
     link.className = "button-link pro";
     link.href = productPagePath("pricing", locale);
     link.textContent = copy.upgrade;
-    link.addEventListener("click", () =>
-      trackEvent("upgrade_cta_clicked", { cta_location: ctaLocation }),
-    );
+    link.addEventListener("click", () => {
+      prepareWorkspaceDraftReturn();
+      trackEvent("upgrade_cta_clicked", { cta_location: ctaLocation });
+    });
     return link;
   }
   const controls = document.createElement("span");
@@ -937,15 +1171,33 @@ function saveAssignmentDraft(words, title = "", exampleSentences = "") {
     sessionStorage.setItem("mySpellingTeacherDraftTitle", title.slice(0, 80));
     sessionStorage.setItem("mySpellingTeacherDraftMode", "dictation");
   } catch {}
+  const me = workspaceState?.me;
+  if (me?.user?.id) {
+    const path = `/workspace/assignments/new?lang=${encodeURIComponent(locale)}`;
+    writeWorkspaceDraft(me, "assignment", "new", path, {
+      baseline: null,
+      values: {
+        title: title.slice(0, 80),
+        words: words
+          .map((word) => (typeof word === "string" ? word : word.word))
+          .join("\n"),
+        exampleSentences:
+          typeof exampleSentences === "string"
+            ? exampleSentences
+            : exampleSentences.map((sentence) => sentence || "").join("\n"),
+        mode: "dictation",
+      },
+    });
+  }
   setAssignmentEntryPoint("workspace");
   location.href = `/workspace/assignments/new?lang=${encodeURIComponent(locale)}`;
 }
 
 function teacherCallbackURL() {
-  const pathname = /^\/workspace(?:\/|$)/.test(location.pathname)
-    ? location.pathname
-    : "/workspace";
-  return `${pathname}?lang=${encodeURIComponent(locale)}`;
+  return (
+    safeWorkspaceReturnPath(location.href) ||
+    `/workspace?lang=${encodeURIComponent(locale)}`
+  );
 }
 
 function teacherNewUserCallbackURL() {
@@ -1339,6 +1591,15 @@ function renderSavedLists(me, savedLists) {
     locale === "zh" ? "← 返回已保存词表" : "← " + copy.freeSavedLists;
   let mode = "list";
   let editingList = null;
+  const resume = resumableWorkspaceDraft(me);
+  if (resume?.kind === "saved-list") {
+    if (resume.objectId === "new") mode = "new";
+    else {
+      editingList =
+        savedLists.find((list) => list.id === resume.objectId) || null;
+      if (editingList) mode = "edit";
+    }
+  }
   const render = () => {
     section.replaceChildren();
     if (mode === "list") {
@@ -1513,6 +1774,42 @@ function renderSavedLists(me, savedLists) {
         .map((word) => word.example_sentence || "")
         .join("\n");
     }
+    const draftObjectId = editingList?.id || "new";
+    const draftPath = `/workspace/saved-lists?lang=${encodeURIComponent(locale)}`;
+    const baseline = {
+      title: form.querySelector("#saved-list-title").value,
+      words: form.querySelector("#saved-list-words").value,
+      exampleSentences: form.querySelector("#saved-list-sentences").value,
+    };
+    const storedDraft = readWorkspaceDraft(me, "saved-list", draftObjectId);
+    if (
+      storedDraft?.values &&
+      (!editingList ||
+        JSON.stringify(storedDraft.baseline) === JSON.stringify(baseline))
+    ) {
+      form.querySelector("#saved-list-title").value =
+        storedDraft.values.title || "";
+      form.querySelector("#saved-list-words").value =
+        storedDraft.values.words || "";
+      form.querySelector("#saved-list-sentences").value =
+        storedDraft.values.exampleSentences || "";
+    }
+    const saveDraft = () =>
+      writeWorkspaceDraft(me, "saved-list", draftObjectId, draftPath, {
+        baseline: editingList ? baseline : null,
+        values: {
+          title: form.querySelector("#saved-list-title").value,
+          words: form.querySelector("#saved-list-words").value,
+          exampleSentences: form.querySelector("#saved-list-sentences").value,
+        },
+      });
+    activeWorkspaceDraft = {
+      kind: "saved-list",
+      objectId: draftObjectId,
+      save: saveDraft,
+    };
+    form.addEventListener("input", saveDraft);
+    form.addEventListener("change", saveDraft);
     attachSentenceLibraryControls(
       form,
       me,
@@ -1521,6 +1818,7 @@ function renderSavedLists(me, savedLists) {
     );
     attachWordLimit(form, me, "#saved-list-words");
     form.querySelector(".saved-list-cancel").addEventListener("click", () => {
+      clearWorkspaceDraft(me, "saved-list", draftObjectId);
       mode = "list";
       editingList = null;
       render();
@@ -1545,6 +1843,7 @@ function renderSavedLists(me, savedLists) {
             body: JSON.stringify(payload),
           },
         );
+        clearWorkspaceDraft(me, "saved-list", draftObjectId);
         if (!editingList) trackEvent("saved_list_created");
         await refreshWorkspace(me);
       } catch (error) {
@@ -2407,6 +2706,7 @@ async function renderProgressCenter(me, data, main = shell(me, "progress")) {
 }
 
 async function renderDashboard(me, { force = false } = {}) {
+  const renderId = ++workspaceRenderId;
   const params = new URLSearchParams(location.search);
   const section = workspaceSection(
     workspaceRoute() ||
@@ -2428,15 +2728,24 @@ async function renderDashboard(me, { force = false } = {}) {
     try {
       data = await loadWorkspaceData(section, { force });
     } catch (error) {
-      if (workspaceRoute() !== section) return;
+      if (workspaceRoute() !== section || renderId !== workspaceRenderId)
+        return;
+      if (workspaceCache.data) {
+        loading.remove();
+        showRefreshError();
+        return;
+      }
       loading.className = "workspace-loading workspace-inline-loading error";
       loading.textContent = error.message;
       return;
     }
-    if (workspaceRoute() !== section) return;
+    if (workspaceRoute() !== section || renderId !== workspaceRenderId) return;
     main.replaceChildren();
   }
+  if (renderId !== workspaceRenderId) return;
   if (data && !force) main.replaceChildren();
+  main.append(refreshResultsButton());
+  revalidateWorkspaceData(me, section);
   if (section === "savedLists") {
     main.append(renderSavedLists(me, data.savedLists || []));
     return;
@@ -2447,7 +2756,6 @@ async function renderDashboard(me, { force = false } = {}) {
   }
   if (section === "progress") {
     await renderProgressCenter(me, data, main);
-    revalidateWorkspaceData(me, section);
     return;
   }
   if (section === "assignments") {
@@ -2492,10 +2800,10 @@ async function renderDashboard(me, { force = false } = {}) {
     }),
     renderProgressCard(data.learners || [], { recentOnly: true }),
   );
-  revalidateWorkspaceData(me, section);
 }
 
 async function startCheckout(interval, plan = "teacher") {
+  prepareWorkspaceDraftReturn();
   try {
     sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
     sessionStorage.setItem("pendingCheckoutPlan", plan);
@@ -2603,6 +2911,10 @@ function showPendingCheckoutConfirmation(interval, plan) {
 
 async function renderAssignmentForm(me, { assignment = null } = {}) {
   const editing = Boolean(assignment);
+  const draftObjectId = assignment?.id || "new";
+  const draftPath = editing
+    ? `/workspace/assignments/${assignment.id}/edit?lang=${encodeURIComponent(locale)}`
+    : `/workspace/assignments/new?lang=${encodeURIComponent(locale)}`;
   const main = shell(me, "assignments");
   const card = document.createElement("section");
   card.className = "product-card assignment-form-card";
@@ -2632,7 +2944,8 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
     assignment?.words?.map((word) => word.example_sentence || "").join("\n") ||
     "";
   let draftMode = assignment?.mode || "dictation";
-  if (!editing) {
+  const storedDraft = readWorkspaceDraft(me, "assignment", draftObjectId);
+  if (!editing && !storedDraft) {
     try {
       draftWords = sessionStorage.getItem("mySpellingTeacherDraftWords") || "";
       draftTitle = sessionStorage.getItem("mySpellingTeacherDraftTitle") || "";
@@ -2859,6 +3172,72 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
     .toISOString()
     .slice(0, 16);
   form.querySelector("#assignment-deadline").value = local;
+  const assignmentValues = () => ({
+    title: form.querySelector("#assignment-title").value,
+    words: form.querySelector("#assignment-words").value,
+    exampleSentences: form.querySelector("#assignment-sentences").value,
+    mode:
+      form.querySelector('input[name="mode"]:checked')?.value || "dictation",
+    deadline: form.querySelector("#assignment-deadline").value,
+    maxAttempts: form.querySelector("#assignment-max").value,
+    learnerTarget: form.querySelector('input[name="learnerTarget"]:checked')
+      ?.value,
+    learnerIds: [...form.querySelectorAll('input[name="learnerId"]:checked')]
+      .map((input) => input.value)
+      .sort(),
+  });
+  const baseline = assignmentValues();
+  if (
+    storedDraft?.values &&
+    (!editing ||
+      JSON.stringify(storedDraft.baseline) === JSON.stringify(baseline))
+  ) {
+    const values = storedDraft.values;
+    for (const [selector, value] of [
+      ["#assignment-title", values.title],
+      ["#assignment-words", values.words],
+      ["#assignment-sentences", values.exampleSentences],
+      ["#assignment-deadline", values.deadline],
+      ["#assignment-max", values.maxAttempts],
+    ]) {
+      const control = form.querySelector(selector);
+      if (control && value != null && !control.disabled) control.value = value;
+    }
+    const modeControl = form.querySelector(
+      `input[name="mode"][value="${values.mode === "typing" ? "typing" : "dictation"}"]`,
+    );
+    if (modeControl && !modeControl.disabled) modeControl.checked = true;
+    const learnerTarget = ["all", "selected", "anyone"].includes(
+      values.learnerTarget,
+    )
+      ? values.learnerTarget
+      : "anyone";
+    const targetControl = form.querySelector(
+      `input[name="learnerTarget"][value="${learnerTarget}"]`,
+    );
+    if (targetControl) targetControl.checked = true;
+    const selectedIds = new Set(values.learnerIds || []);
+    form.querySelectorAll('input[name="learnerId"]').forEach((input) => {
+      input.checked = selectedIds.has(input.value);
+    });
+    form.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+  const saveDraft = () =>
+    writeWorkspaceDraft(me, "assignment", draftObjectId, draftPath, {
+      baseline: editing ? baseline : null,
+      values: assignmentValues(),
+    });
+  activeWorkspaceDraft = {
+    kind: "assignment",
+    objectId: draftObjectId,
+    save: saveDraft,
+  };
+  form.addEventListener("input", saveDraft);
+  form.addEventListener("change", saveDraft);
+  if (editing)
+    backLink.addEventListener("click", () =>
+      clearWorkspaceDraft(me, "assignment", draftObjectId),
+    );
   const status = statusElement(
     form.querySelector(".assignment-submit-actions"),
   );
@@ -2916,6 +3295,7 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
           body: JSON.stringify(body),
         },
       );
+      clearWorkspaceDraft(me, "assignment", draftObjectId);
       if (editing) {
         location.href = `/workspace/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`;
         return;
@@ -2973,9 +3353,16 @@ function statCard(label, value) {
   return card;
 }
 
-async function renderDetail(me, id) {
-  const data = await api(`/api/assignments/${id}`);
+async function renderDetail(me, id, { force = false } = {}) {
+  const renderId = ++workspaceRenderId;
+  const data = await loadWorkspaceDetail(`/api/assignments/${id}`, { force });
+  if (
+    renderId !== workspaceRenderId ||
+    location.pathname !== `/workspace/assignments/${id}`
+  )
+    return;
   const main = shell(me, "assignments");
+  main.replaceChildren();
   const card = document.createElement("section");
   card.className = "product-card";
   const heading = document.createElement("h1");
@@ -2993,7 +3380,10 @@ async function renderDetail(me, id) {
   backLink.className = "button-link button-secondary";
   backLink.href = `/workspace/assignments?lang=${encodeURIComponent(locale)}`;
   backLink.textContent = copy.backToDashboard;
-  headingRow.append(titleRow, backLink);
+  const headingActions = document.createElement("div");
+  headingActions.className = "actions compact-actions";
+  headingActions.append(refreshResultsButton(), backLink);
+  headingRow.append(titleRow, headingActions);
   const linkLabel = document.createElement("h2");
   linkLabel.textContent =
     me.plan === "free" || isParentPlan(me)
@@ -3290,7 +3680,7 @@ async function renderDetail(me, id) {
           await api(`/api/assignments/${id}/attempts/${attempt.id}`, {
             method: "DELETE",
           });
-          await renderDetail(me, id);
+          await renderDetail(me, id, { force: true });
         } catch {
           for (const button of deleteButtons) button.disabled = false;
           const notice = document.createElement("p");
@@ -3335,10 +3725,17 @@ async function renderDetail(me, id) {
   }
 }
 
-async function renderLearner(me, id) {
-  const data = await api(`/api/learners/${id}`);
+async function renderLearner(me, id, { force = false } = {}) {
+  const renderId = ++workspaceRenderId;
+  const data = await loadWorkspaceDetail(`/api/learners/${id}`, { force });
+  if (
+    renderId !== workspaceRenderId ||
+    location.pathname !== `/workspace/learners/${id}`
+  )
+    return;
   const reviewData = data.todaysReview || { count: 0, words: null };
   const main = shell(me, "progress");
+  main.replaceChildren();
   const card = document.createElement("section");
   card.className = "product-card";
   const headingRow = document.createElement("div");
@@ -3363,6 +3760,7 @@ async function renderLearner(me, id) {
   back.textContent = copy.backToDashboard;
   const headingActions = document.createElement("div");
   headingActions.className = "actions compact-actions";
+  headingActions.append(refreshResultsButton());
   if (data.learner.public_id) {
     const learnerLink = `${location.origin}/l/${data.learner.public_id}?lang=${encodeURIComponent(locale)}`;
     const copyLearnerLink = document.createElement("button");
@@ -3635,7 +4033,8 @@ function clearCheckoutParam() {
 }
 
 async function renderTeacherRoute(me) {
-  workspaceState = { me };
+  activeWorkspaceDraft = null;
+  updateWorkspaceIdentity(me);
   bindWorkspaceNavigation();
   const detail = location.pathname.match(
     /^\/workspace\/assignments\/([0-9a-f-]{36})$/i,
@@ -3666,6 +4065,8 @@ async function renderTeacherRoute(me) {
 async function finishPlanActivation(me) {
   await recordPurchase().catch(() => null);
   clearCheckoutParam();
+  const resume = resumableWorkspaceDraft(me);
+  if (resume?.path) history.replaceState({}, "", resume.path);
   await renderTeacherRoute(me);
   const main = root.querySelector(".product-main");
   if (main) {
@@ -3786,8 +4187,15 @@ async function init() {
       sessionStorage.removeItem(PENDING_TYPING_CHASE_LOCALE_KEY);
     } catch {}
   }
-  workspaceState = { me };
+  updateWorkspaceIdentity(me);
   bindWorkspaceNavigation();
+  const resume = resumableWorkspaceDraft(me);
+  if (
+    resume?.path &&
+    location.pathname === "/workspace" &&
+    new URLSearchParams(location.search).get("checkout") !== "success"
+  )
+    history.replaceState({}, "", resume.path);
   let pendingInterval = null;
   let pendingPlan = null;
   let checkoutRetryRequired = false;

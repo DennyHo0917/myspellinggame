@@ -1,5 +1,6 @@
 import "./gameState.js";
 import { getPageLocale } from "./pageLocale.js";
+import { accountAvatar } from "./accountAvatar.mjs";
 import {
   captureAdultAcquisition,
   clearAdultAcquisition,
@@ -35,10 +36,9 @@ async function syncHomeAccount() {
     userMenu.className = "workspace-user-menu";
     const toggle = document.createElement("summary");
     toggle.className = "workspace-user-toggle";
-    toggle.innerHTML = `<span class="workspace-user-avatar" aria-hidden="true"></span><span></span>`;
-    toggle.querySelector(".workspace-user-avatar").textContent =
-      user.name.trim().charAt(0).toUpperCase() || "?";
-    toggle.querySelector("span:last-child").textContent = user.name;
+    const userName = document.createElement("span");
+    userName.textContent = user.name;
+    toggle.append(accountAvatar(user), userName);
     const menu = document.createElement("div");
     menu.className = "workspace-user-dropdown";
     menu.setAttribute("role", "menu");

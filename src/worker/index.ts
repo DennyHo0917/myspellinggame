@@ -2701,7 +2701,12 @@ async function handleBusinessRequest(
           )
         : null;
     return json({
-      user: { id: user.id, name: user.name, email: user.email },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        image: user.image ?? null,
+      },
       billingInterval: subscription?.billing_interval || null,
       subscriptionStatus: subscription?.status || null,
       currentPeriodEnd: subscription?.current_period_end || null,

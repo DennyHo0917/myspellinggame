@@ -28,6 +28,7 @@ import {
   clearAdultAcquisition,
 } from "./adultAcquisition.mjs";
 import { assignmentShareURL, classroomShareURL } from "./assignmentSharing.mjs";
+import { accountAvatar } from "./accountAvatar.mjs";
 import { analyzeWords } from "./spellingCore.mjs";
 
 const root = document.getElementById("product-app");
@@ -547,10 +548,7 @@ function nav({ workspace = false, me = null } = {}) {
   userToggle.setAttribute("aria-haspopup", "menu");
   userToggle.setAttribute("aria-expanded", "false");
   userToggle.setAttribute("aria-label", me.user.name);
-  const avatar = document.createElement("span");
-  avatar.className = "workspace-user-avatar";
-  avatar.setAttribute("aria-hidden", "true");
-  avatar.textContent = me.user.name.trim().charAt(0).toUpperCase() || "?";
+  const avatar = accountAvatar(me.user);
   const userName = document.createElement("span");
   userName.className = "workspace-user-name";
   userName.textContent = me.user.name;

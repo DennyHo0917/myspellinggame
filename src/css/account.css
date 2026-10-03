@@ -33,10 +33,18 @@
   display: inline-grid;
   width: 30px;
   height: 30px;
+  flex-shrink: 0;
+  overflow: hidden;
   place-items: center;
   border-radius: 50%;
   background: var(--brand, var(--primary));
   color: #fff;
+}
+
+.workspace-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .home-account-link::after {

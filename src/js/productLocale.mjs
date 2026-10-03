@@ -49,7 +49,7 @@ const PACKS = {
     activeUsage: "{used} of {limit} active assignments",
     lockedResults: "{count} results to unlock",
     resultViewLimit:
-      "Free opens the first 8 completed results per account each calendar month (UTC). Further results are saved and students still see feedback. Upgrade to view them within the 14-day retention period.",
+      "Free opens the first 4 completed results per account each calendar month (UTC). Further results are saved and students still see feedback. Upgrade to view them within the 14-day retention period.",
     submissionUsage: "{used}/{limit} full results this month",
     submissionLimitWarning:
       "Free opens the first {limit} completed results per account each month. Students can still submit and see feedback. Upgrade to view additional results before they expire.",
@@ -434,7 +434,7 @@ const PACKS = {
     activeUsage: "{used} de {limit} tareas activas",
     lockedResults: "{count} resultados por desbloquear",
     resultViewLimit:
-      "Gratis permite ver los primeros 8 resultados completados por cuenta cada mes natural (UTC). Los demás se guardan y el alumnado sigue viendo sus comentarios. Mejora el plan para consultarlos durante los 14 días de conservación.",
+      "Gratis permite ver los primeros 4 resultados completados por cuenta cada mes natural (UTC). Los demás se guardan y el alumnado sigue viendo sus comentarios. Mejora el plan para consultarlos durante los 14 días de conservación.",
     submissionUsage: "{used}/{limit} resultados completos este mes",
     submissionLimitWarning:
       "Gratis permite ver los primeros {limit} resultados completos de la cuenta cada mes. El alumnado puede seguir enviando tareas y viendo sus comentarios. Mejora el plan para consultar los demás antes de que caduquen.",
@@ -822,7 +822,7 @@ const PACKS = {
     activeUsage: "{used} de {limit} tarefas ativas",
     lockedResults: "{count} resultados para desbloquear",
     resultViewLimit:
-      "O plano Grátis libera os primeiros 8 resultados concluídos por conta a cada mês civil (UTC). Os demais são salvos e os alunos continuam vendo o feedback. Mude de plano para consultá-los dentro dos 14 dias de armazenamento.",
+      "O plano Grátis libera os primeiros 4 resultados concluídos por conta a cada mês civil (UTC). Os demais são salvos e os alunos continuam vendo o feedback. Mude de plano para consultá-los dentro dos 14 dias de armazenamento.",
     submissionUsage: "{used}/{limit} resultados completos neste mês",
     submissionLimitWarning:
       "O plano Grátis libera os primeiros {limit} resultados concluídos da conta a cada mês. Alunos continuam enviando atividades e vendo o feedback. Mude de plano para consultar os demais antes que expirem.",
@@ -1208,7 +1208,7 @@ const PACKS = {
     activeUsage: "{used} devoirs actifs sur {limit}",
     lockedResults: "{count} résultats à déverrouiller",
     resultViewLimit:
-      "Le forfait Gratuit ouvre les 8 premiers résultats terminés par compte chaque mois civil (UTC). Les suivants sont enregistrés et les élèves voient toujours leurs commentaires. Changez de forfait pour les consulter pendant les 14 jours de conservation.",
+      "Le forfait Gratuit ouvre les 4 premiers résultats terminés par compte chaque mois civil (UTC). Les suivants sont enregistrés et les élèves voient toujours leurs commentaires. Changez de forfait pour les consulter pendant les 14 jours de conservation.",
     submissionUsage: "{used}/{limit} résultats complets ce mois-ci",
     submissionLimitWarning:
       "Le forfait Gratuit ouvre les {limit} premiers résultats terminés du compte chaque mois. Les élèves peuvent toujours envoyer leur travail et consulter leurs commentaires. Changez de forfait pour voir les autres avant leur expiration.",
@@ -1599,7 +1599,7 @@ const PACKS = {
     activeUsage: "{used} dari {limit} tugas aktif",
     lockedResults: "{count} hasil belum terbuka",
     resultViewLimit:
-      "Paket Gratis membuka 8 hasil selesai pertama per akun setiap bulan kalender (UTC). Hasil berikutnya tetap disimpan dan siswa tetap melihat umpan balik. Upgrade untuk melihatnya selama masa penyimpanan 14 hari.",
+      "Paket Gratis membuka 4 hasil selesai pertama per akun setiap bulan kalender (UTC). Hasil berikutnya tetap disimpan dan siswa tetap melihat umpan balik. Upgrade untuk melihatnya selama masa penyimpanan 14 hari.",
     submissionUsage: "{used}/{limit} hasil lengkap bulan ini",
     submissionLimitWarning:
       "Paket Gratis membuka {limit} hasil selesai pertama per akun setiap bulan. Siswa tetap dapat mengirim tugas dan melihat umpan balik. Upgrade untuk melihat hasil lainnya sebelum kedaluwarsa.",
@@ -1969,7 +1969,7 @@ const PACKS = {
     activeUsage: "活跃作业 {used}/{limit}",
     lockedResults: "{count} 份结果待解锁",
     resultViewLimit:
-      "免费版每个账号每个自然月（UTC）开放前 8 份完成结果。超额结果仍会保存，学生仍可查看本人反馈；升级可在 14 天保留期内解锁查看。",
+      "免费版每个账号每个自然月（UTC）开放前 4 份完成结果。超额结果仍会保存，学生仍可查看本人反馈；升级可在 14 天保留期内解锁查看。",
     submissionUsage: "本月完整结果 {used}/{limit}",
     submissionLimitWarning:
       "免费版每个账号每月开放前 {limit} 份完成结果。学生仍可提交并查看反馈；升级可在保留期内查看更多结果。",
@@ -2500,6 +2500,8 @@ export function productLocale() {
 const CLASSROOM_COPY = {
   en: {
     shareClassroom: "Share to Google Classroom",
+    classroomTeacherRequired:
+      "Google Classroom sharing requires the Teacher Plan.",
     classroomBody: "Practice this spelling assignment. Open the link to begin.",
     classroomOpened: "Classroom opened. Finish sharing there.",
     classroomIndividualOnly:
@@ -2514,6 +2516,8 @@ const CLASSROOM_COPY = {
   },
   es: {
     shareClassroom: "Compartir en Google Classroom",
+    classroomTeacherRequired:
+      "Para compartir en Google Classroom necesitas el Plan para docentes.",
     classroomBody:
       "Practica la ortografía con esta tarea. Abre el enlace para empezar.",
     classroomOpened: "Classroom abierto. Completa allí la publicación.",
@@ -2530,6 +2534,8 @@ const CLASSROOM_COPY = {
   },
   "pt-BR": {
     shareClassroom: "Compartilhar no Google Classroom",
+    classroomTeacherRequired:
+      "O compartilhamento no Google Classroom está disponível no Plano para Professores.",
     classroomBody:
       "Pratique a ortografia nesta atividade. Abra o link para começar.",
     classroomOpened: "Classroom aberto. Conclua o compartilhamento lá.",
@@ -2545,6 +2551,8 @@ const CLASSROOM_COPY = {
   },
   fr: {
     shareClassroom: "Partager sur Google Classroom",
+    classroomTeacherRequired:
+      "Le partage sur Google Classroom nécessite l’offre Enseignants.",
     classroomBody:
       "Entraîne-toi à l’orthographe avec ce devoir. Ouvre le lien pour commencer.",
     classroomOpened: "Classroom ouvert. Termine le partage sur place.",
@@ -2561,6 +2569,8 @@ const CLASSROOM_COPY = {
   },
   id: {
     shareClassroom: "Bagikan ke Google Classroom",
+    classroomTeacherRequired:
+      "Berbagi ke Google Classroom tersedia pada Paket Guru.",
     classroomBody: "Latih ejaan melalui tugas ini. Buka tautan untuk mulai.",
     classroomOpened: "Classroom terbuka. Selesaikan pembagian di sana.",
     classroomIndividualOnly:
@@ -2575,6 +2585,7 @@ const CLASSROOM_COPY = {
   },
   zh: {
     shareClassroom: "分享到 Google Classroom",
+    classroomTeacherRequired: "Google Classroom 分享仅限教师方案。",
     classroomBody: "完成这份拼写作业。打开链接即可开始练习。",
     classroomOpened: "已打开 Classroom，请在那里完成分享。",
     classroomIndividualOnly:

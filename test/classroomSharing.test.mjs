@@ -97,6 +97,7 @@ test("Classroom and safe PIN copy is complete in all six languages", () => {
   for (const [locale] of PRODUCT_LOCALES)
     for (const key of [
       "shareClassroom",
+      "classroomTeacherRequired",
       "classroomBody",
       "classroomOpened",
       "classroomIndividualOnly",

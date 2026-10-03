@@ -7,7 +7,7 @@
     <meta name="referrer" content="strict-origin" />
     <title>MySpellingGame 管理后台</title>
     <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="stylesheet" href="/src/css/product.css?v=admin3" />
+    <link rel="stylesheet" href="/src/css/product.css?v=admin4" />
   </head>
   <body class="product-page">
     <div class="product-shell">
@@ -127,6 +127,16 @@
                 aria-controls="admin-orders-panel"
               >
                 订单
+              </button>
+              <button
+                class="admin-tab"
+                id="admin-subscriptions-tab"
+                type="button"
+                role="tab"
+                aria-selected="false"
+                aria-controls="admin-subscriptions-panel"
+              >
+                订阅用户
               </button>
             </div>
 
@@ -268,6 +278,96 @@
                 </button>
               </div>
             </div>
+            <div
+              class="admin-tab-panel"
+              id="admin-subscriptions-panel"
+              role="tabpanel"
+              aria-labelledby="admin-subscriptions-tab"
+              hidden
+            >
+              <form class="admin-toolbar" id="admin-subscription-search">
+                <div class="field admin-search-field">
+                  <label for="admin-subscription-query">搜索订阅用户</label>
+                  <input
+                    id="admin-subscription-query"
+                    name="q"
+                    type="search"
+                    maxlength="200"
+                    placeholder="姓名 / 邮箱 / 用户 ID"
+                  />
+                </div>
+                <div class="field">
+                  <label for="admin-subscription-plan-filter">方案</label>
+                  <select id="admin-subscription-plan-filter" name="plan">
+                    <option value="">全部方案</option>
+                    <option value="free">免费方案</option>
+                    <option value="parent">家长方案</option>
+                    <option value="teacher">教师方案</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="admin-subscription-provider-filter"
+                    >登录方式</label
+                  >
+                  <select
+                    id="admin-subscription-provider-filter"
+                    name="provider"
+                  >
+                    <option value="">全部方式</option>
+                    <option value="google">Google</option>
+                    <option value="microsoft">Microsoft</option>
+                  </select>
+                </div>
+                <button type="submit">筛选</button>
+              </form>
+              <p
+                class="status"
+                id="admin-subscriptions-status"
+                role="status"
+              ></p>
+              <div
+                class="table-wrap admin-table-wrap admin-subscriptions-table"
+              >
+                <table>
+                  <caption>
+                    时间：北京时间（UTC+8）
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th>姓名</th>
+                      <th>邮箱</th>
+                      <th>登录方式</th>
+                      <th>当前方案</th>
+                      <th>最后使用时间</th>
+                      <th>注册时间</th>
+                      <th>订阅时间</th>
+                      <th>到期时间</th>
+                      <th>订阅状态</th>
+                      <th>是否取消续费</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-subscriptions"></tbody>
+                </table>
+              </div>
+              <div class="admin-pagination">
+                <button
+                  class="button-secondary"
+                  id="admin-subscriptions-previous"
+                  type="button"
+                >
+                  上一页
+                </button>
+                <span id="admin-subscriptions-page"></span>
+                <button
+                  class="button-secondary"
+                  id="admin-subscriptions-next"
+                  type="button"
+                >
+                  下一页
+                </button>
+              </div>
+            </div>
           </section>
         </div>
 
@@ -403,6 +503,6 @@
         </p>
       </footer>
     </div>
-    <script type="module" src="/src/js/adminApp.mjs?v=admin4"></script>
+    <script type="module" src="/src/js/adminApp.mjs?v=admin5"></script>
   </body>
 </html>

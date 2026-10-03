@@ -12,7 +12,7 @@ const PAID_PLAN_LIMITS = {
 export const PLAN_LIMITS = {
   free: {
     activeAssignments: 1,
-    monthlyAttempts: 8,
+    monthlyAttempts: 4,
     savedLists: 1,
     learnerProfiles: 1,
     historyDays: 14,
@@ -24,14 +24,14 @@ export const PLAN_LIMITS = {
   },
   parent: {
     ...PAID_PLAN_LIMITS,
-    activeAssignments: 3,
+    activeAssignments: 5,
     learnerProfiles: 5,
     csvExport: false,
     missedWordStats: false,
   },
   teacher: {
     ...PAID_PLAN_LIMITS,
-    activeAssignments: 5,
+    activeAssignments: 10,
     learnerProfiles: 40,
   },
 } as const;

@@ -3440,7 +3440,7 @@ test("Free workspace explains result viewing and paid plans remain unlimited", a
   page,
 }) => {
   let plan = "free";
-  let monthlyAttempts = 6;
+  let monthlyAttempts = 3;
   const json = (route, body, status = 200) =>
     route.fulfill({
       status,
@@ -3463,7 +3463,10 @@ test("Free workspace explains result viewing and paid plans remain unlimited", a
         limits: PLAN_LIMITS[plan],
         activeAssignments: 0,
         monthlyAttempts,
-        lockedResultCount: Math.max(0, monthlyAttempts - 8),
+        lockedResultCount: Math.max(
+          0,
+          monthlyAttempts - PLAN_LIMITS.free.monthlyAttempts,
+        ),
         savedLists: 0,
         learnerProfiles: 0,
       },
@@ -3488,7 +3491,7 @@ test("Free workspace explains result viewing and paid plans remain unlimited", a
   ).toHaveAttribute("href", "/pricing");
   const warning = page.locator(".submission-limit-notice");
   await expect(warning).toContainText(
-    "Free opens the first 8 completed results per account each month",
+    "Free opens the first 4 completed results per account each month",
   );
   await expect(warning).toContainText(
     "Students can still submit and see feedback",
@@ -3505,10 +3508,10 @@ test("Free workspace explains result viewing and paid plans remain unlimited", a
   await expect(page.locator(".pricing-grid .pricing-card")).toHaveCount(3);
   await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
 
-  monthlyAttempts = 9;
+  monthlyAttempts = 5;
   await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.locator(".submission-limit-notice")).toContainText(
-    "Full result viewing has reached 8 this month",
+    "Full result viewing has reached 4 this month",
   );
 
   await expect(page.locator(".submission-limit-notice")).toContainText(
@@ -4221,7 +4224,7 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
   await expect(
     page.getByRole("heading", { name: "Recent assignments" }),
   ).toBeVisible();
-  await expect(page.getByText("0 of 3 active assignments")).toBeVisible();
+  await expect(page.getByText("0 of 5 active assignments")).toBeVisible();
   await expect(page.getByText("Unlimited full results")).toBeVisible();
   await expect(page.getByText("0 of 5 child profiles")).toBeVisible();
   await expect(page.getByText(/Class URL:/)).toHaveCount(0);
@@ -5465,11 +5468,14 @@ for (const [lang, path] of [
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
+    await page.addInitScript((locale) => {
+      localStorage.setItem("mySpellingGameManualLocale", locale);
+    }, lang);
     await page.goto(`${path}/pricing?lang=${lang}`);
     await expect(
       page.locator(".notice").filter({ hasText: "UTC" }),
     ).toBeVisible();
-    await expect(page.locator('[data-plan-card="free"]')).toContainText("8");
+    await expect(page.locator('[data-plan-card="free"]')).toContainText("4");
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= window.innerWidth,

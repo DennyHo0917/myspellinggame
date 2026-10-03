@@ -1035,6 +1035,27 @@ body.product-page:not(.workspace-page) .product-nav {
   min-width: 980px;
 }
 
+.admin-subscriptions-table table {
+  min-width: 1180px;
+  font-size: 0.84rem;
+}
+
+.admin-subscriptions-table :is(th, td) {
+  white-space: nowrap;
+}
+
+.admin-subscriptions-table caption {
+  padding: 8px 12px;
+  text-align: left;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.admin-date-cell small {
+  display: block;
+  color: var(--muted);
+}
+
 .admin-table-wrap {
   border: 1px solid var(--line);
   border-radius: 8px;

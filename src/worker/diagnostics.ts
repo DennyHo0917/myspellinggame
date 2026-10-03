@@ -12,6 +12,7 @@ export const DIAGNOSTIC_CODES = new Set([
   "invalid_join",
   "sign_in_required",
   "class_share_unavailable",
+  "classroom_teacher_required",
   "rate_limited",
   "invalid_origin",
   "attempt_limit",

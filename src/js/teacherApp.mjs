@@ -174,6 +174,7 @@ function duration(seconds) {
 }
 
 const ERROR_KEYS = {
+  classroom_teacher_required: "classroomTeacherRequired",
   sign_in_required: "signInRequired",
   assignment_not_found: "assignmentNotFound",
   assignment_closed: "assignmentClosed",
@@ -3742,8 +3743,10 @@ async function renderDetail(me, id, { force = false } = {}) {
       );
     }
   });
-  if (studentUrl) actions.append(copyButton, classroom);
-  else sharingStatus.textContent = copy.classroomIndividualOnly;
+  if (studentUrl) {
+    actions.append(copyButton);
+    if (isTeacherPlan(me)) actions.append(classroom);
+  } else sharingStatus.textContent = copy.classroomIndividualOnly;
   actions.append(edit, saveList, toggle);
   if (isTeacherPlan(me)) {
     const exportLink = document.createElement("a");

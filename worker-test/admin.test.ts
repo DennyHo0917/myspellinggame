@@ -141,6 +141,11 @@ describe("admin dashboard", () => {
     expect((await call("/api/admin/stats", null)).status).toBe(401);
     expect((await call("/api/admin/stats", member)).status).toBe(403);
     expect((await call("/api/admin/stats")).status).toBe(200);
+    expect((await call("/api/admin/subscriptions", null)).status).toBe(401);
+    expect((await call("/api/admin/subscriptions", member)).status).toBe(403);
+    expect(
+      (await call("/api/admin/subscriptions", admin, testEnv(), "POST")).status,
+    ).toBe(405);
     expect(
       (
         await call(
@@ -335,6 +340,163 @@ describe("admin dashboard", () => {
       });
     },
   );
+
+  it("lists subscription holders including canceled subscriptions, but not manual grants", async () => {
+    const startedAt = "2026-09-01T00:00:00.000Z";
+    const periodEnd = new Date(Date.now() + 86_400_000).toISOString();
+    await insertAccount(member.id, "google");
+    await insertAccount(member.id, "microsoft");
+    await insertSubscription(
+      member.id,
+      "active",
+      "month",
+      periodEnd,
+      "price_parent_monthly",
+    );
+    await bindings.DB.prepare(
+      `UPDATE subscriptions SET stripe_subscription_id = 'sub_member',
+       started_at = ?, cancel_at = ? WHERE user_id = ?`,
+    )
+      .bind(startedAt, periodEnd, member.id)
+      .run();
+    await bindings.DB.prepare(
+      "UPDATE user SET admin_plan = 'teacher' WHERE id = ?",
+    )
+      .bind(admin.id)
+      .run();
+    const manualTrial = {
+      id: "manual-trial",
+      name: "Trial",
+      email: "trial@example.test",
+    };
+    await insertUser(manualTrial);
+    await insertSubscription(
+      manualTrial.id,
+      "trialing",
+      "month",
+      periodEnd,
+      "price_teacher_monthly",
+    );
+    const canceled = {
+      id: "canceled",
+      name: "Canceled",
+      email: "canceled@example.test",
+    };
+    await insertUser(canceled);
+    await insertSubscription(
+      canceled.id,
+      "canceled",
+      "month",
+      periodEnd,
+      "price_parent_monthly",
+    );
+    await bindings.DB.prepare(
+      `UPDATE subscriptions SET stripe_subscription_id = 'sub_canceled',
+       started_at = '2026-08-01T00:00:00.000Z', ended_at = '2026-09-01T01:00:00.000Z'
+       WHERE user_id = ?`,
+    )
+      .bind(canceled.id)
+      .run();
+    const response = await call("/api/admin/subscriptions");
+    expect(await response.json()).toMatchObject({
+      total: 2,
+      users: [
+        {
+          id: member.id,
+          plan: "parent",
+          subscriptionStatus: "active",
+          subscriptionStartedAt: startedAt,
+          currentPeriodEnd: periodEnd,
+          cancelAt: periodEnd,
+          cancelAtPeriodEnd: false,
+          endedAt: null,
+        },
+        {
+          id: canceled.id,
+          plan: "free",
+          subscriptionStatus: "canceled",
+          endedAt: "2026-09-01T01:00:00.000Z",
+        },
+      ],
+    });
+    expect(
+      await (
+        await call("/api/admin/subscriptions?plan=parent&provider=microsoft")
+      ).json(),
+    ).toMatchObject({ total: 1, users: [{ id: member.id }] });
+    expect(
+      await (
+        await call("/api/admin/subscriptions?plan=free&q=canceled")
+      ).json(),
+    ).toMatchObject({ total: 1, users: [{ id: canceled.id }] });
+    expect(
+      await (await call("/api/admin/subscriptions?q=admin")).json(),
+    ).toMatchObject({ total: 0, users: [] });
+    expect((await call("/api/admin/subscriptions?page=0")).status).toBe(400);
+    expect((await call("/api/admin/subscriptions?plan=invalid")).status).toBe(
+      400,
+    );
+    expect(
+      (await call("/api/admin/subscriptions?provider=invalid")).status,
+    ).toBe(400);
+  });
+
+  it("paginates subscribers with all base user columns and no sensitive billing identifiers", async () => {
+    const periodEnd = new Date(Date.now() + 86_400_000).toISOString();
+    for (let index = 0; index < 52; index += 1) {
+      const id = `subscriber-${String(index).padStart(2, "0")}`;
+      await insertUser({
+        id,
+        name: `Subscriber ${index}`,
+        email: `${id}@example.test`,
+      });
+      await insertSubscription(
+        id,
+        "active",
+        "month",
+        periodEnd,
+        "price_parent_monthly",
+      );
+      await bindings.DB.prepare(
+        "UPDATE subscriptions SET stripe_subscription_id = ? WHERE user_id = ?",
+      )
+        .bind(`sub_${index}`, id)
+        .run();
+    }
+    const first = (await (
+      await call("/api/admin/subscriptions?page=1")
+    ).json()) as {
+      total: number;
+      pageSize: number;
+      users: Array<Record<string, unknown>>;
+    };
+    expect(first.total).toBe(52);
+    expect(first.pageSize).toBe(50);
+    expect(first.users).toHaveLength(50);
+    for (const field of [
+      "id",
+      "name",
+      "email",
+      "loginProvider",
+      "plan",
+      "lastActiveAt",
+      "createdAt",
+    ])
+      expect(first.users[0]).toHaveProperty(field);
+    expect(first.users[0].subscriptionStartedAt).toBeNull();
+    expect(JSON.stringify(first)).not.toMatch(
+      /stripe_customer_id|stripe_subscription_id|accessToken/,
+    );
+    const second = (await (
+      await call("/api/admin/subscriptions?page=2")
+    ).json()) as { users: Array<{ id: string }> };
+    expect(second.users).toHaveLength(2);
+    expect(
+      second.users.every(
+        (user) => !first.users.some((previous) => previous.id === user.id),
+      ),
+    ).toBe(true);
+  });
 
   it("lets only the admin assign and clear a user's effective plan", async () => {
     expect(

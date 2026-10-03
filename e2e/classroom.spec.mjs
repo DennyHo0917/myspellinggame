@@ -130,10 +130,8 @@ test("copy uses common link and Classroom returning/repeated clicks never claims
     await new Promise((resolve) => setTimeout(resolve, 120));
     await json(r, { path: `/a/${publicId}` });
   });
-  const copy = await workspace(page, { plan: "free" });
-  await page
-    .getByRole("button", { name: copy.freeCopyLink, exact: true })
-    .click();
+  const copy = await workspace(page, { plan: "teacher" });
+  await page.getByRole("button", { name: copy.copyLink, exact: true }).click();
   await expect
     .poll(() => page.evaluate(() => window.__clipboard))
     .toContain("channel=copy_link");
@@ -180,6 +178,45 @@ test("blocked popup has safe fallback and stale unauthorized sharing shows error
     copy.signInRequired,
   );
 });
+for (const locale of ["en", "es", "pt-BR", "fr", "id", "zh"]) {
+  for (const plan of ["free", "parent"]) {
+    test(`${locale} ${plan} open work keeps copying without Classroom sharing`, async ({
+      page,
+    }) => {
+      const clicks = [];
+      await page.route(`**/api/assignments/${id}/share`, (r) => {
+        clicks.push(r.request().postDataJSON());
+        return json(r, { path: `/a/${publicId}` });
+      });
+      const copy = await workspace(page, { plan, locale });
+      await expect(
+        page.getByRole("button", { name: copy.shareClassroom }),
+      ).toHaveCount(0);
+      await page
+        .getByRole("button", { name: copy.freeCopyLink, exact: true })
+        .click();
+      await expect
+        .poll(() => page.evaluate(() => window.__clipboard))
+        .toContain("channel=copy_link");
+      expect(clicks.map((click) => click.channel)).toEqual(["copy_link"]);
+    });
+  }
+  test(`${locale} stale Teacher access reports Classroom restriction naturally`, async ({
+    page,
+  }) => {
+    await page.route(`**/api/assignments/${id}/share`, (r) =>
+      json(r, { error: "classroom_teacher_required" }, 403),
+    );
+    const copy = await workspace(page, { locale });
+    await page.getByRole("button", { name: copy.shareClassroom }).click();
+    await expect(
+      page
+        .getByRole("status")
+        .filter({ hasText: copy.classroomTeacherRequired }),
+    ).toBeVisible();
+    expect(await page.evaluate(() => window.__popup.closed)).toBe(true);
+  });
+}
 for (const plan of ["free", "parent"])
   test(`${plan} assigned work keeps individual links and hides class-wide sharing`, async ({
     page,

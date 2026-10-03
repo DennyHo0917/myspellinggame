@@ -88,7 +88,7 @@ For local webhook testing, run Stripe CLI forwarding to `http://localhost:5173/a
 
 ## Google Classroom sharing (local v1)
 
-Assignment details, including the screen reached after creation, offer Share to Google Classroom beside Copy link. This uses the official `https://classroom.google.com/share` flow with URL, title, body and assignment type. It does not request Classroom OAuth or access rosters/grades. A share click means an attempt to open the Google dialog, never confirmed publication.
+Teacher Plan assignment details, including the screen reached after creation, offer Share to Google Classroom beside Copy link. Free and Parent plans keep ordinary link copying; the server rejects their `google_classroom` sharing requests. This uses the official `https://classroom.google.com/share` flow with URL, title, body and assignment type. It does not request Classroom OAuth or access rosters/grades. A share click means an attempt to open the Google dialog, never confirmed publication.
 
 Link-only assignments share `/a/:publicId`. Teacher assignments with selected learners share `/join/:classPublicId?assignment=:publicId`; each learner enters their own existing PIN and the server verifies class ownership and assignment membership before returning the existing learner identity. Legacy generic links recover through the same PIN entry. Other plans keep individual links and cannot use class-wide PIN sharing for selected learners. Closed/expired work cannot be shared or entered.
 

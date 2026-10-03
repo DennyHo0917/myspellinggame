@@ -983,8 +983,8 @@ async function applySubscription(
       `INSERT INTO subscriptions (
          user_id, plan, status, billing_interval, stripe_customer_id,
          stripe_subscription_id, stripe_price_id, current_period_end,
-         cancel_at_period_end, updated_at
-       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         cancel_at_period_end, updated_at, started_at, cancel_at, ended_at
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(user_id) DO UPDATE SET
          plan = excluded.plan,
          status = excluded.status,
@@ -994,6 +994,9 @@ async function applySubscription(
          stripe_price_id = excluded.stripe_price_id,
          current_period_end = excluded.current_period_end,
          cancel_at_period_end = excluded.cancel_at_period_end,
+         started_at = excluded.started_at,
+         cancel_at = excluded.cancel_at,
+         ended_at = excluded.ended_at,
          updated_at = excluded.updated_at
        WHERE subscriptions.stripe_subscription_id IS NULL
           OR subscriptions.stripe_subscription_id = excluded.stripe_subscription_id
@@ -1010,6 +1013,9 @@ async function applySubscription(
       subscriptionPeriodEnd(subscription),
       subscription.cancel_at_period_end ? 1 : 0,
       now,
+      unixToIso(subscription.start_date ?? subscription.created),
+      unixToIso(subscription.cancel_at),
+      unixToIso(subscription.ended_at),
       replacedSubscriptionId,
     )
     .run();
@@ -1062,6 +1068,9 @@ async function applyCheckout(
          stripe_customer_id = COALESCE(excluded.stripe_customer_id, subscriptions.stripe_customer_id),
          stripe_subscription_id = COALESCE(excluded.stripe_subscription_id, subscriptions.stripe_subscription_id),
          stripe_price_id = COALESCE(excluded.stripe_price_id, subscriptions.stripe_price_id),
+         started_at = CASE WHEN COALESCE(excluded.stripe_subscription_id, subscriptions.stripe_subscription_id) = subscriptions.stripe_subscription_id THEN subscriptions.started_at END,
+         cancel_at = CASE WHEN COALESCE(excluded.stripe_subscription_id, subscriptions.stripe_subscription_id) = subscriptions.stripe_subscription_id THEN subscriptions.cancel_at END,
+         ended_at = CASE WHEN COALESCE(excluded.stripe_subscription_id, subscriptions.stripe_subscription_id) = subscriptions.stripe_subscription_id THEN subscriptions.ended_at END,
          updated_at = excluded.updated_at`,
     )
     .bind(

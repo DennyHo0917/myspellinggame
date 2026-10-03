@@ -98,13 +98,13 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Free forever",
     resultViewNote:
-      "Free opens the first 8 completed results per account each calendar month (UTC). Further results are saved and students still see feedback. Upgrade to view them within the 14-day retention period.",
+      "Free opens the first 4 completed results per account each calendar month (UTC). Further results are saved and students still see feedback. Upgrade to view them within the 14-day retention period.",
     freeItems: [
       "Up to 25 words per assignment",
       "1 active assignment",
       "1 saved list",
       "1 learner",
-      "First 8 full results per account / month",
+      "First 4 full results per account / month",
       "14-day progress history",
       "Smart Review not included",
     ],
@@ -114,7 +114,7 @@ const copy = {
     parentItems: [
       "Up to 40 words per assignment",
       "Up to 5 children",
-      "3 active assignments",
+      "5 active assignments",
       "Unlimited full results",
       "Unlimited saved lists",
       "365-day progress history",
@@ -129,7 +129,7 @@ const copy = {
     teacherItems: [
       "Up to 40 words per assignment",
       "Up to 40 students",
-      "5 active assignments",
+      "10 active assignments",
       "Unlimited full results",
       "Unlimited saved lists",
       "365-day progress history",
@@ -165,13 +165,13 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Gratis para siempre",
     resultViewNote:
-      "Gratis permite ver los primeros 8 resultados completados por cuenta cada mes natural (UTC). Los demás se guardan y el alumnado sigue viendo sus comentarios. Mejora el plan para consultarlos durante los 14 días de conservación.",
+      "Gratis permite ver los primeros 4 resultados completados por cuenta cada mes natural (UTC). Los demás se guardan y el alumnado sigue viendo sus comentarios. Mejora el plan para consultarlos durante los 14 días de conservación.",
     freeItems: [
       "Hasta 25 palabras por tarea",
       "1 tarea activa",
       "1 lista guardada",
       "1 estudiante",
-      "Primeros 8 resultados completos por cuenta al mes",
+      "Primeros 4 resultados completos por cuenta al mes",
       "14 días de historial de progreso",
       "Sin repaso inteligente",
     ],
@@ -181,7 +181,7 @@ const copy = {
     parentItems: [
       "Hasta 40 palabras por tarea",
       "Hasta 5 hijos",
-      "3 tareas activas",
+      "5 tareas activas",
       "Resultados completos ilimitados",
       "Listas guardadas ilimitadas",
       "365 días de historial de progreso",
@@ -196,7 +196,7 @@ const copy = {
     teacherItems: [
       "Hasta 40 palabras por tarea",
       "Hasta 40 estudiantes",
-      "5 tareas activas",
+      "10 tareas activas",
       "Resultados completos ilimitados",
       "Listas guardadas ilimitadas",
       "365 días de historial de progreso",
@@ -232,13 +232,13 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Grátis para sempre",
     resultViewNote:
-      "O plano Grátis libera os primeiros 8 resultados concluídos por conta a cada mês civil (UTC). Os demais são salvos e os alunos continuam vendo o feedback. Mude de plano para consultá-los dentro dos 14 dias de armazenamento.",
+      "O plano Grátis libera os primeiros 4 resultados concluídos por conta a cada mês civil (UTC). Os demais são salvos e os alunos continuam vendo o feedback. Mude de plano para consultá-los dentro dos 14 dias de armazenamento.",
     freeItems: [
       "Até 25 palavras por tarefa",
       "1 tarefa ativa",
       "1 lista salva",
       "1 aluno",
-      "Primeiros 8 resultados completos por conta/mês",
+      "Primeiros 4 resultados completos por conta/mês",
       "14 dias de histórico de progresso",
       "Sem revisão inteligente",
     ],
@@ -248,7 +248,7 @@ const copy = {
     parentItems: [
       "Até 40 palavras por tarefa",
       "Até 5 filhos",
-      "3 tarefas ativas",
+      "5 tarefas ativas",
       "Resultados completos ilimitados",
       "Listas salvas ilimitadas",
       "365 dias de histórico de progresso",
@@ -263,7 +263,7 @@ const copy = {
     teacherItems: [
       "Até 40 palavras por tarefa",
       "Até 40 alunos",
-      "5 tarefas ativas",
+      "10 tarefas ativas",
       "Resultados completos ilimitados",
       "Listas salvas ilimitadas",
       "365 dias de histórico de progresso",
@@ -299,13 +299,13 @@ const copy = {
     freePrice: "0 $",
     freeBilling: "Gratuit pour toujours",
     resultViewNote:
-      "Le forfait Gratuit ouvre les 8 premiers résultats terminés par compte chaque mois civil (UTC). Les suivants sont enregistrés et les élèves voient toujours leurs commentaires. Changez de forfait pour les consulter pendant les 14 jours de conservation.",
+      "Le forfait Gratuit ouvre les 4 premiers résultats terminés par compte chaque mois civil (UTC). Les suivants sont enregistrés et les élèves voient toujours leurs commentaires. Changez de forfait pour les consulter pendant les 14 jours de conservation.",
     freeItems: [
       "Jusqu’à 25 mots par devoir",
       "1 devoir actif",
       "1 liste enregistrée",
       "1 élève",
-      "8 premiers résultats complets par compte et par mois",
+      "4 premiers résultats complets par compte et par mois",
       "14 jours d’historique de progression",
       "Sans révision intelligente",
     ],
@@ -315,7 +315,7 @@ const copy = {
     parentItems: [
       "Jusqu’à 40 mots par devoir",
       "Jusqu’à 5 enfants",
-      "3 devoirs actifs",
+      "5 devoirs actifs",
       "Résultats complets illimités",
       "Listes enregistrées illimitées",
       "365 jours d’historique de progression",
@@ -330,7 +330,7 @@ const copy = {
     teacherItems: [
       "Jusqu’à 40 mots par devoir",
       "Jusqu’à 40 élèves",
-      "5 devoirs actifs",
+      "10 devoirs actifs",
       "Résultats complets illimités",
       "Listes enregistrées illimitées",
       "365 jours d’historique de progression",
@@ -366,13 +366,13 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Gratis selamanya",
     resultViewNote:
-      "Paket Gratis membuka 8 hasil selesai pertama per akun setiap bulan kalender (UTC). Hasil berikutnya tetap disimpan dan siswa tetap melihat umpan balik. Upgrade untuk melihatnya selama masa penyimpanan 14 hari.",
+      "Paket Gratis membuka 4 hasil selesai pertama per akun setiap bulan kalender (UTC). Hasil berikutnya tetap disimpan dan siswa tetap melihat umpan balik. Upgrade untuk melihatnya selama masa penyimpanan 14 hari.",
     freeItems: [
       "Hingga 25 kata per tugas",
       "1 tugas aktif",
       "1 daftar tersimpan",
       "1 siswa",
-      "8 hasil lengkap pertama per akun/bulan",
+      "4 hasil lengkap pertama per akun/bulan",
       "Riwayat perkembangan 14 hari",
       "Tanpa Ulasan Pintar",
     ],
@@ -382,7 +382,7 @@ const copy = {
     parentItems: [
       "Hingga 40 kata per tugas",
       "Hingga 5 anak",
-      "3 tugas aktif",
+      "5 tugas aktif",
       "Hasil lengkap tanpa batas",
       "Daftar tersimpan tanpa batas",
       "Riwayat perkembangan 365 hari",
@@ -397,7 +397,7 @@ const copy = {
     teacherItems: [
       "Hingga 40 kata per tugas",
       "Hingga 40 siswa",
-      "5 tugas aktif",
+      "10 tugas aktif",
       "Hasil lengkap tanpa batas",
       "Daftar tersimpan tanpa batas",
       "Riwayat perkembangan 365 hari",
@@ -432,13 +432,13 @@ const copy = {
     freePrice: "$0",
     freeBilling: "永久免费",
     resultViewNote:
-      "免费版每个账号每个自然月（UTC）开放前 8 份完成结果。超额结果仍会保存，学生仍可查看本人反馈；升级可在 14 天保留期内解锁查看。",
+      "免费版每个账号每个自然月（UTC）开放前 4 份完成结果。超额结果仍会保存，学生仍可查看本人反馈；升级可在 14 天保留期内解锁查看。",
     freeItems: [
       "每份作业最多 25 个单词",
       "最多 1 个活跃作业",
       "保存 1 个词表",
       "创建 1 个学习者档案",
-      "每账号每月前 8 份完整结果",
+      "每账号每月前 4 份完整结果",
       "查看 14 天学习记录",
       "不含智能复习",
     ],
@@ -448,7 +448,7 @@ const copy = {
     parentItems: [
       "每份作业最多 40 个单词",
       "最多 5 个孩子",
-      "最多 3 个活跃作业",
+      "最多 5 个活跃作业",
       "完整结果不限量",
       "保存词表不限量",
       "查看 365 天学习记录",
@@ -463,7 +463,7 @@ const copy = {
     teacherItems: [
       "每份作业最多 40 个单词",
       "最多 40 个学生",
-      "最多 5 个活跃作业",
+      "最多 10 个活跃作业",
       "完整结果不限量",
       "保存词表不限量",
       "查看 365 天学习记录",
@@ -503,8 +503,6 @@ function escape(value) {
 for (const locale of locales) {
   const c = copy[locale.code];
   const classroom = classroomCopy[locale.code];
-  c.freeItems.push(classroom.openLinkFeature);
-  c.parentItems.push(classroom.openLinkFeature);
   c.teacherItems.push(classroom.openLinkFeature, classroom.teacherFeature);
 }
 

@@ -34,7 +34,7 @@ My Spelling Game has four access levels: **Anonymous Practice → Free Workspace
 Free Workspace requires a parent or teacher account. It supports up to 30 words per list and includes:
 
 - 1 active assignment
-- 8 tracked student submissions per month
+- First 4 full results per account per calendar month (UTC); further submissions are saved
 - 1 saved list
 - 1 student profile
 - 14 days of progress and mastery history
@@ -45,7 +45,7 @@ Smart Review, Today’s Review, Photo Import, and automatic example sentences ar
 
 Parent Plan requires a parent account and supports up to 40 words per list. It includes:
 
-- Up to 3 active assignments
+- Up to 5 active assignments
 - Unlimited tracked submissions and saved lists
 - Up to 5 child profiles
 - 365-day progress and mastery history
@@ -55,7 +55,7 @@ Parent Plan requires a parent account and supports up to 40 words per list. It i
 
 Teacher Plan requires a teacher account and supports up to 40 words per list. It includes the Parent Plan paid capabilities, plus:
 
-- Up to 5 active assignments
+- Up to 10 active assignments
 - Up to 40 student profiles
 - Class Join and Student PINs
 - CSV Export

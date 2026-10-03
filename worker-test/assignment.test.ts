@@ -415,7 +415,7 @@ describe("teacher authorization and quotas", () => {
   it("keeps the Free, Parent, and Teacher limits centralized", () => {
     expect(PLAN_LIMITS.free).toEqual({
       activeAssignments: 1,
-      monthlyAttempts: 8,
+      monthlyAttempts: 4,
       savedLists: 1,
       learnerProfiles: 1,
       historyDays: 14,
@@ -435,14 +435,14 @@ describe("teacher authorization and quotas", () => {
     };
     expect(PLAN_LIMITS.parent).toEqual({
       ...paidLimits,
-      activeAssignments: 3,
+      activeAssignments: 5,
       learnerProfiles: 5,
       csvExport: false,
       missedWordStats: false,
     });
     expect(PLAN_LIMITS.teacher).toEqual({
       ...paidLimits,
-      activeAssignments: 5,
+      activeAssignments: 10,
       learnerProfiles: 40,
       csvExport: true,
       missedWordStats: true,
@@ -684,8 +684,8 @@ describe("teacher authorization and quotas", () => {
   });
 
   it.each([
-    ["parent", 3],
-    ["teacher", 5],
+    ["parent", 5],
+    ["teacher", 10],
   ] as const)(
     "enforces the %s active-assignment limit",
     async (plan, limit) => {
@@ -945,28 +945,28 @@ describe("teacher authorization and quotas", () => {
     );
   });
 
-  it("saves the ninth result and feedback but filters owner details and statistics", async () => {
+  it("saves the fifth result and feedback but filters owner details and statistics", async () => {
     const created = await createAssignment();
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 3; i++) {
       expect(
         (await submit(publicId, assignment.words, { nickname: `Student ${i}` }))
           .status,
       ).toBe(201);
     }
-    const eighth = await submit(publicId, assignment.words, {
-      nickname: "Eighth",
+    const fourth = await submit(publicId, assignment.words, {
+      nickname: "Fourth",
     });
-    const eighthResult = (await eighth.json()) as { id: string };
+    const fourthResult = (await fourth.json()) as { id: string };
     const attemptId = crypto.randomUUID();
-    const ninth = await submit(publicId, assignment.words, {
+    const fifth = await submit(publicId, assignment.words, {
       attemptId,
       nickname: "Hidden",
       answers: ["wrong", "wrong"],
     });
-    expect(ninth.status).toBe(201);
-    expect(await ninth.json()).toMatchObject({
+    expect(fifth.status).toBe(201);
+    expect(await fifth.json()).toMatchObject({
       id: attemptId,
       accuracy: 0,
       missedWords: ["apple", "banana"],
@@ -984,10 +984,10 @@ describe("teacher authorization and quotas", () => {
         summary: unknown;
         lockedResultCount: number;
       };
-      expect(detail.attempts).toHaveLength(8);
+      expect(detail.attempts).toHaveLength(4);
       expect(detail.attempts.some((row) => row.id === attemptId)).toBe(false);
       expect(detail.summary).toMatchObject({
-        attempts: 8,
+        attempts: 4,
         averageAccuracy: 100,
       });
       expect(detail.lockedResultCount).toBe(1);
@@ -997,20 +997,20 @@ describe("teacher authorization and quotas", () => {
     expect(JSON.stringify(listing)).toContain('"locked_result_count":1');
     expect(JSON.stringify(listing)).toContain('"average_accuracy":100');
     await call(
-      `/api/assignments/${created.body.id}/attempts/${eighthResult.id}`,
+      `/api/assignments/${created.body.id}/attempts/${fourthResult.id}`,
       { method: "DELETE" },
     );
     await submit(publicId, assignment.words, { nickname: "After deletion" });
     const afterDelete = (await (
       await call(`/api/assignments/${created.body.id}`)
     ).json()) as { attempts: unknown[]; lockedResultCount: number };
-    expect(afterDelete.attempts).toHaveLength(7);
+    expect(afterDelete.attempts).toHaveLength(3);
     expect(afterDelete.lockedResultCount).toBe(2);
     await insertSubscription({ plan: "parent", status: "active" });
     const unlocked = (await (
       await call(`/api/assignments/${created.body.id}`)
     ).json()) as { attempts: unknown[]; lockedResultCount: number };
-    expect(unlocked.attempts).toHaveLength(9);
+    expect(unlocked.attempts).toHaveLength(5);
     expect(unlocked.lockedResultCount).toBe(0);
     await bindings.DB.prepare(
       "UPDATE attempts SET retention_expires_at = '2000-01-01T00:00:00.000Z' WHERE id = ?",
@@ -1020,7 +1020,7 @@ describe("teacher authorization and quotas", () => {
     const expired = (await (
       await call(`/api/assignments/${created.body.id}`)
     ).json()) as { attempts: unknown[] };
-    expect(expired.attempts).toHaveLength(8);
+    expect(expired.attempts).toHaveLength(4);
   });
 
   it("uses one account allowance across assignments and filters learner summaries and progress", async () => {
@@ -1032,7 +1032,7 @@ describe("teacher authorization and quotas", () => {
       learnerPublicId,
     );
     await bindings.DB.batch(
-      Array.from({ length: 7 }, () =>
+      Array.from({ length: 3 }, () =>
         bindings.DB.prepare(
           "INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at) VALUES (?, ?, ?, ?)",
         ).bind(
@@ -1083,7 +1083,7 @@ describe("teacher authorization and quotas", () => {
       })
     ).json();
     expect(workspace).toMatchObject({
-      usage: { monthlyAttempts: 9, lockedResultCount: 1 },
+      usage: { monthlyAttempts: 5, lockedResultCount: 1 },
       learners: [{ needs_review_count: 0, missed_words: [] }],
       missedWords: [],
     });
@@ -1115,7 +1115,7 @@ describe("teacher authorization and quotas", () => {
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
     await bindings.DB.batch(
-      Array.from({ length: 7 }, () =>
+      Array.from({ length: 3 }, () =>
         bindings.DB.prepare(
           "INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at) VALUES (?, ?, ?, ?)",
         ).bind(
@@ -1147,14 +1147,14 @@ describe("teacher authorization and quotas", () => {
       await bindings.DB.prepare(
         "SELECT COUNT(*) AS count FROM monthly_submission_usage",
       ).first(),
-    ).toEqual({ count: 9 });
+    ).toEqual({ count: 5 });
   });
 
   it("starts a new monthly allowance without reopening locked older results or locking legacy results", async () => {
     const created = await createAssignment();
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
-    for (let i = 0; i < 9; i++)
+    for (let i = 0; i < 5; i++)
       await submit(publicId, assignment.words, { nickname: `Student ${i}` });
     // Simulate previous month's immutable usage ledger while results remain retained.
     await bindings.DB.prepare(
@@ -1164,7 +1164,7 @@ describe("teacher authorization and quotas", () => {
     let detail = (await (
       await call(`/api/assignments/${created.body.id}`)
     ).json()) as { attempts: unknown[]; lockedResultCount: number };
-    expect(detail.attempts).toHaveLength(9);
+    expect(detail.attempts).toHaveLength(5);
     expect(detail.lockedResultCount).toBe(1);
     // Old worker inserts omit the new column; migration default preserves access.
     await bindings.DB.prepare(
@@ -1177,7 +1177,7 @@ describe("teacher authorization and quotas", () => {
     detail = (await (
       await call(`/api/assignments/${created.body.id}`)
     ).json()) as typeof detail;
-    expect(detail.attempts).toHaveLength(10);
+    expect(detail.attempts).toHaveLength(6);
     expect(detail.lockedResultCount).toBe(1);
   });
 
@@ -4432,6 +4432,95 @@ describe("Stripe event processing", () => {
     });
   });
 
+  it("stores the original subscription start and explicit scheduled cancellation, and clears it on resumption", async () => {
+    const event = subscriptionEvent(
+      "evt_scheduled_cancel",
+      "active",
+    ) as Stripe.CustomerSubscriptionUpdatedEvent;
+    const subscription = event.data.object as Stripe.Subscription;
+    subscription.start_date = 1790719245;
+    subscription.cancel_at = 1793311245;
+    subscription.cancel_at_period_end = false;
+    subscription.ended_at = null;
+    await processStripeEvent(bindings.DB, event, testEnv());
+    const details = () =>
+      bindings.DB.prepare(
+        "SELECT started_at, cancel_at, ended_at, cancel_at_period_end FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .first();
+    expect(await details()).toEqual({
+      started_at: "2026-09-29T22:00:45.000Z",
+      cancel_at: "2026-10-29T22:00:45.000Z",
+      ended_at: null,
+      cancel_at_period_end: 0,
+    });
+    subscription.cancel_at = null;
+    await processStripeEvent(
+      bindings.DB,
+      { ...event, id: "evt_resume" },
+      testEnv(),
+    );
+    expect(await details()).toMatchObject({
+      cancel_at: null,
+      cancel_at_period_end: 0,
+    });
+    subscription.status = "canceled";
+    subscription.ended_at = 1790805645;
+    await processStripeEvent(
+      bindings.DB,
+      {
+        ...event,
+        id: "evt_ended",
+        type: "customer.subscription.deleted",
+      },
+      testEnv(),
+    );
+    expect(await details()).toMatchObject({
+      started_at: "2026-09-29T22:00:45.000Z",
+      ended_at: "2026-09-30T22:00:45.000Z",
+    });
+  });
+
+  it("preserves dates for a matching Checkout and clears them when the subscription changes", async () => {
+    await processSubscription("evt_checkout_existing", "active", "sub_test");
+    await bindings.DB.prepare(
+      `UPDATE subscriptions SET started_at = '2026-09-01T00:00:00.000Z',
+       cancel_at = '2026-10-01T00:00:00.000Z', ended_at = '2026-10-01T00:00:00.000Z'
+       WHERE user_id = ?`,
+    )
+      .bind(teacherA.id)
+      .run();
+    await processStripeEvent(
+      bindings.DB,
+      checkoutEvent("cs_matching", "checkout.session.completed"),
+      testEnv(),
+    );
+    const dates = () =>
+      bindings.DB.prepare(
+        "SELECT started_at, cancel_at, ended_at FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .first();
+    expect(await dates()).toEqual({
+      started_at: "2026-09-01T00:00:00.000Z",
+      cancel_at: "2026-10-01T00:00:00.000Z",
+      ended_at: "2026-10-01T00:00:00.000Z",
+    });
+    const replacement = checkoutEvent(
+      "cs_replacement",
+      "checkout.session.completed",
+    );
+    (replacement.data.object as Stripe.Checkout.Session).subscription =
+      "sub_new";
+    await processStripeEvent(bindings.DB, replacement, testEnv());
+    expect(await dates()).toEqual({
+      started_at: null,
+      cancel_at: null,
+      ended_at: null,
+    });
+  });
+
   it("counts first-purchase revenue once by invoice ID", async () => {
     await processSubscription("evt_first_subscription", "active", "sub_trial");
     await processStripeEvent(
@@ -5332,7 +5421,7 @@ describe("Classroom sharing and safe assignment entry", () => {
     const identity = (await me.json()) as { classPublicId: string };
     return { child, work, classId: identity.classPublicId };
   }
-  it("shares link-only work for every current assignment-creating plan and deduplicates request retries", async () => {
+  it("copies link-only work for every current assignment-creating plan and deduplicates request retries", async () => {
     const { body: work } = await createAssignment();
     const path = `/api/assignments/${work.id}/share`;
     for (const plan of ["free", "parent", "teacher"] as const) {
@@ -5344,7 +5433,7 @@ describe("Classroom sharing and safe assignment entry", () => {
         path,
         post({
           clickId,
-          channel: "google_classroom",
+          channel: "copy_link",
           url: "https://evil.test/?pin=1234",
         }),
       );
@@ -5357,8 +5446,48 @@ describe("Classroom sharing and safe assignment entry", () => {
     expect(rows.results).toHaveLength(1);
     expect(JSON.parse(rows.results[0].properties_json)).toEqual({
       assignment_id: work.id,
-      channel: "google_classroom",
+      channel: "copy_link",
     });
+  });
+  it.each(["free", "parent"] as const)(
+    "rejects Classroom sharing of open work for %s without recording a share",
+    async (plan) => {
+      if (plan === "parent")
+        await insertSubscription({ plan, status: "active" });
+      const { body: work } = await createAssignment();
+      const response = await call(
+        `/api/assignments/${work.id}/share`,
+        post({ clickId, channel: "google_classroom" }),
+      );
+      expect(response.status).toBe(403);
+      expect(await response.json()).toMatchObject({
+        error: "classroom_teacher_required",
+      });
+      expect(
+        await bindings.DB.prepare(
+          "SELECT COUNT(*) AS count FROM lifecycle_events WHERE event_name = 'assignment_share_clicked'",
+        ).first("count"),
+      ).toBe(0);
+    },
+  );
+  it("lets Teacher share open work to Classroom and deduplicates retries", async () => {
+    await insertSubscription({ plan: "teacher", status: "active" });
+    const { body: work } = await createAssignment();
+    for (let retry = 0; retry < 2; retry++) {
+      const response = await call(
+        `/api/assignments/${work.id}/share`,
+        post({ clickId, channel: "google_classroom" }),
+      );
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({ path: `/a/${work.publicId}` });
+    }
+    const rows = await bindings.DB.prepare(
+      "SELECT properties_json FROM lifecycle_events WHERE event_name = 'assignment_share_clicked'",
+    ).all<{ properties_json: string }>();
+    expect(rows.results).toHaveLength(1);
+    expect(JSON.parse(rows.results[0].properties_json).channel).toBe(
+      "google_classroom",
+    );
   });
   it("uses a class PIN path and safely repairs old generic links", async () => {
     const { work, child, classId } = await assigned();
@@ -5795,7 +5924,7 @@ describe("individual copy remains distinct from class sharing", () => {
           body: JSON.stringify({ ...body, channel: "google_classroom" }),
         })
       ).status,
-    ).toBe(400);
+    ).toBe(403);
     expect(
       (
         await call(path, {

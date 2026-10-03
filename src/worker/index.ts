@@ -419,7 +419,7 @@ async function adminStats(env: Env, now = new Date()) {
   };
 }
 
-async function adminUsers(env: Env, url: URL) {
+async function adminUsers(env: Env, url: URL, subscribedOnly = false) {
   const rawPage = url.searchParams.get("page") ?? "1";
   if (
     !/^\d+$/.test(rawPage) ||
@@ -447,6 +447,10 @@ async function adminUsers(env: Env, url: URL) {
   const search = `%${query.toLowerCase()}%`;
   const conditions: string[] = [];
   const filters: unknown[] = [];
+  if (subscribedOnly)
+    conditions.push(
+      "stripe_subscription_id IS NOT NULL AND stripe_subscription_id != ''",
+    );
   if (query) {
     conditions.push(
       "(lower(email) LIKE ? OR lower(name) LIKE ? OR lower(id) LIKE ?)",
@@ -471,7 +475,8 @@ async function adminUsers(env: Env, url: URL) {
             FROM account a WHERE a.userId = u.id) AS loginProvider,
            u.workspace_type, u.admin_plan, u.admin_plan_updated_at,
            s.plan, s.status, s.billing_interval, s.current_period_end,
-           s.stripe_price_id,
+           s.stripe_price_id, s.stripe_subscription_id, s.started_at,
+           s.cancel_at_period_end, s.cancel_at, s.ended_at,
            CASE
              WHEN u.admin_plan IN ('parent', 'teacher') THEN u.admin_plan
              WHEN s.status IN ('active', 'trialing')
@@ -505,7 +510,7 @@ async function adminUsers(env: Env, url: URL) {
   const rows = await env.DB.prepare(
     `${userQuery}
      SELECT * FROM admin_users ${where}
-     ORDER BY createdAt DESC LIMIT ? OFFSET ?`,
+     ORDER BY ${subscribedOnly ? "COALESCE(started_at, createdAt)" : "createdAt"} DESC, id LIMIT ? OFFSET ?`,
   )
     .bind(...planBindings, ...filters, pageSize, (page - 1) * pageSize)
     .all<{
@@ -523,6 +528,10 @@ async function adminUsers(env: Env, url: URL) {
       billing_interval: "month" | "year" | null;
       current_period_end: string | null;
       stripe_price_id: string | null;
+      started_at: string | null;
+      cancel_at_period_end: number | null;
+      cancel_at: string | null;
+      ended_at: string | null;
       effective_plan: Plan;
     }>();
   return {
@@ -537,6 +546,10 @@ async function adminUsers(env: Env, url: URL) {
       subscriptionStatus: row.status,
       billingInterval: row.billing_interval,
       currentPeriodEnd: row.current_period_end,
+      subscriptionStartedAt: row.started_at,
+      cancelAtPeriodEnd: Boolean(row.cancel_at_period_end),
+      cancelAt: row.cancel_at,
+      endedAt: row.ended_at,
       createdAt: row.createdAt,
       lastActiveAt: row.last_active_at,
     })),
@@ -2395,6 +2408,8 @@ async function handleBusinessRequest(
       return json(await adminStats(env));
     if (url.pathname === "/api/admin/users" && method === "GET")
       return json(await adminUsers(env, url));
+    if (url.pathname === "/api/admin/subscriptions" && method === "GET")
+      return json(await adminUsers(env, url, true));
     if (url.pathname === "/api/admin/orders" && method === "GET")
       return json(await adminOrders(env, url));
     const planMatch = url.pathname.match(
@@ -2420,6 +2435,7 @@ async function handleBusinessRequest(
       [
         "/api/admin/stats",
         "/api/admin/users",
+        "/api/admin/subscriptions",
         "/api/admin/orders",
         "/api/admin/diagnostics",
       ].includes(url.pathname)
@@ -2938,6 +2954,12 @@ async function handleBusinessRequest(
       );
     const plan = await getPlan(env, user.id);
     const individual = body.audience === "individual";
+    if (body.channel === "google_classroom" && plan !== "teacher")
+      throw new HttpError(
+        403,
+        "classroom_teacher_required",
+        "Google Classroom sharing requires the Teacher Plan.",
+      );
     if (body.audience !== undefined && !individual)
       throw new HttpError(
         400,

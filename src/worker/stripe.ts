@@ -11,6 +11,10 @@ export interface StripeEnv {
   STRIPE_PARENT_PRICE_YEARLY: string;
   STRIPE_TEACHER_PRICE_MONTHLY: string;
   STRIPE_TEACHER_PRICE_YEARLY: string;
+  STRIPE_CHECKOUT_PARENT_PRICE_MONTHLY?: string;
+  STRIPE_CHECKOUT_PARENT_PRICE_YEARLY?: string;
+  STRIPE_CHECKOUT_TEACHER_PRICE_MONTHLY?: string;
+  STRIPE_CHECKOUT_TEACHER_PRICE_YEARLY?: string;
 }
 
 const CHECKOUT_SESSION_DURATION_SECONDS = 35 * 60;
@@ -100,39 +104,54 @@ function checkoutPrice(
 ) {
   if (plan === "parent")
     return interval === "month"
-      ? env.STRIPE_PARENT_PRICE_MONTHLY
-      : env.STRIPE_PARENT_PRICE_YEARLY;
+      ? env.STRIPE_CHECKOUT_PARENT_PRICE_MONTHLY ||
+          env.STRIPE_PARENT_PRICE_MONTHLY
+      : env.STRIPE_CHECKOUT_PARENT_PRICE_YEARLY ||
+          env.STRIPE_PARENT_PRICE_YEARLY;
   if (plan === "teacher")
     return interval === "month"
-      ? env.STRIPE_TEACHER_PRICE_MONTHLY
-      : env.STRIPE_TEACHER_PRICE_YEARLY;
+      ? env.STRIPE_CHECKOUT_TEACHER_PRICE_MONTHLY ||
+          env.STRIPE_TEACHER_PRICE_MONTHLY
+      : env.STRIPE_CHECKOUT_TEACHER_PRICE_YEARLY ||
+          env.STRIPE_TEACHER_PRICE_YEARLY;
   return interval === "month"
     ? env.STRIPE_PRICE_MONTHLY
     : env.STRIPE_PRICE_YEARLY;
 }
 
+// Checkout can use new prices while existing subscriptions keep their paid access.
+export function subscriptionPriceIds(env: StripeEnv) {
+  return {
+    parent: [
+      env.STRIPE_PARENT_PRICE_MONTHLY || "",
+      env.STRIPE_PARENT_PRICE_YEARLY || "",
+      env.STRIPE_CHECKOUT_PARENT_PRICE_MONTHLY || "",
+      env.STRIPE_CHECKOUT_PARENT_PRICE_YEARLY || "",
+    ],
+    teacher: [
+      env.STRIPE_TEACHER_PRICE_MONTHLY || "",
+      env.STRIPE_TEACHER_PRICE_YEARLY || "",
+      env.STRIPE_CHECKOUT_TEACHER_PRICE_MONTHLY || "",
+      env.STRIPE_CHECKOUT_TEACHER_PRICE_YEARLY || "",
+    ],
+    legacy: [env.STRIPE_PRICE_MONTHLY || "", env.STRIPE_PRICE_YEARLY || ""],
+  };
+}
+
 function configuredPricePlan(priceId: string, env: StripeEnv) {
-  if (
-    priceId === env.STRIPE_PARENT_PRICE_MONTHLY ||
-    priceId === env.STRIPE_PARENT_PRICE_YEARLY
-  )
-    return "parent";
-  if (
-    priceId === env.STRIPE_TEACHER_PRICE_MONTHLY ||
-    priceId === env.STRIPE_TEACHER_PRICE_YEARLY
-  )
-    return "teacher";
-  if (
-    priceId === env.STRIPE_PRICE_MONTHLY ||
-    priceId === env.STRIPE_PRICE_YEARLY
-  )
-    return "legacy";
+  if (!priceId) return null;
+  const prices = subscriptionPriceIds(env);
+  if (prices.parent.includes(priceId)) return "parent";
+  if (prices.teacher.includes(priceId)) return "teacher";
+  if (prices.legacy.includes(priceId)) return "legacy";
   return null;
 }
 
 function configuredPriceInterval(priceId: string, env: StripeEnv) {
   return priceId === env.STRIPE_PARENT_PRICE_YEARLY ||
     priceId === env.STRIPE_TEACHER_PRICE_YEARLY ||
+    priceId === env.STRIPE_CHECKOUT_PARENT_PRICE_YEARLY ||
+    priceId === env.STRIPE_CHECKOUT_TEACHER_PRICE_YEARLY ||
     priceId === env.STRIPE_PRICE_YEARLY
     ? "year"
     : "month";
@@ -1077,12 +1096,13 @@ async function applyInvoiceStatus(
       dynamicInvoice.parent?.subscription_details?.subscription,
   );
   if (!subscriptionId) return;
+  const prices = subscriptionPriceIds(env);
   await db
     .prepare(
       `UPDATE subscriptions SET status = ?,
        plan = CASE
-         WHEN ? = 'active' AND stripe_price_id IN (?, ?) THEN 'parent'
-         WHEN ? = 'active' AND stripe_price_id IN (?, ?) THEN 'teacher'
+         WHEN ? = 'active' AND stripe_price_id IN (?, ?, ?, ?) THEN 'parent'
+         WHEN ? = 'active' AND stripe_price_id IN (?, ?, ?, ?) THEN 'teacher'
          WHEN ? = 'active' AND stripe_price_id IN (?, ?) THEN
          CASE WHEN plan IN ('parent', 'teacher') THEN plan
               WHEN (SELECT workspace_type FROM user WHERE id = subscriptions.user_id) = 'teacher'
@@ -1093,14 +1113,11 @@ async function applyInvoiceStatus(
     .bind(
       status,
       status,
-      env.STRIPE_PARENT_PRICE_MONTHLY || "",
-      env.STRIPE_PARENT_PRICE_YEARLY || "",
+      ...prices.parent,
       status,
-      env.STRIPE_TEACHER_PRICE_MONTHLY || "",
-      env.STRIPE_TEACHER_PRICE_YEARLY || "",
+      ...prices.teacher,
       status,
-      env.STRIPE_PRICE_MONTHLY,
-      env.STRIPE_PRICE_YEARLY,
+      ...prices.legacy,
       new Date().toISOString(),
       subscriptionId,
     )

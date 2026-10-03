@@ -3063,6 +3063,41 @@ describe("Stripe checkout", () => {
   });
 
   it.each([
+    ["parent", "month"],
+    ["parent", "year"],
+    ["teacher", "month"],
+    ["teacher", "year"],
+  ] as const)(
+    "uses the new %s %s price for Checkout",
+    async (plan, interval) => {
+      const priceId = `price_${plan}_new_${interval}`;
+      const env = testEnv({
+        STRIPE_CHECKOUT_PARENT_PRICE_MONTHLY: "price_parent_new_month",
+        STRIPE_CHECKOUT_PARENT_PRICE_YEARLY: "price_parent_new_year",
+        STRIPE_CHECKOUT_TEACHER_PRICE_MONTHLY: "price_teacher_new_month",
+        STRIPE_CHECKOUT_TEACHER_PRICE_YEARLY: "price_teacher_new_year",
+      });
+      await createCheckout(
+        env,
+        bindings.DB,
+        teacherA,
+        interval,
+        "https://example.test",
+        {
+          now,
+          plan,
+          createSession: async (params) => {
+            expect(params.line_items).toEqual([
+              { price: priceId, quantity: 1 },
+            ]);
+            return createSession(params);
+          },
+        },
+      );
+    },
+  );
+
+  it.each([
     ["month", "price_teacher_monthly"],
     ["year", "price_teacher_yearly"],
   ] as const)(
@@ -4727,6 +4762,58 @@ describe("Stripe event processing", () => {
         stripe_price_id:
           interval === "year" ? "price_parent_yearly" : "price_parent_monthly",
       });
+    },
+  );
+
+  it.each([
+    ["parent", "month"],
+    ["parent", "year"],
+    ["teacher", "month"],
+    ["teacher", "year"],
+  ] as const)(
+    "preserves old and new %s %s access after repricing",
+    async (plan, interval) => {
+      const env = testEnv({
+        STRIPE_CHECKOUT_PARENT_PRICE_MONTHLY: "price_parent_new_monthly",
+        STRIPE_CHECKOUT_PARENT_PRICE_YEARLY: "price_parent_new_yearly",
+        STRIPE_CHECKOUT_TEACHER_PRICE_MONTHLY: "price_teacher_new_monthly",
+        STRIPE_CHECKOUT_TEACHER_PRICE_YEARLY: "price_teacher_new_yearly",
+      });
+      for (const version of ["old", "new"]) {
+        const priceId = `price_${plan}_${version === "new" ? "new_" : ""}${interval === "year" ? "yearly" : "monthly"}`;
+        const event = subscriptionEvent(
+          `evt_${version}`,
+          "active",
+          interval,
+          plan,
+        );
+        const sub = event.data.object as Stripe.Subscription;
+        sub.items.data[0].price.id = priceId;
+        await processStripeEvent(bindings.DB, event, env);
+        await processStripeEvent(
+          bindings.DB,
+          {
+            id: `evt_invoice_${version}`,
+            type: "invoice.payment_succeeded",
+            data: {
+              object: {
+                id: `in_${version}`,
+                amount_paid: 799,
+                currency: "usd",
+                subscription: sub.id,
+                customer: "cus_trial",
+                billing_reason: "subscription_cycle",
+              },
+            },
+          } as unknown as Stripe.Event,
+          env,
+        );
+        const response = await call("/api/me", {}, teacherA, env);
+        expect(await response.json()).toMatchObject({
+          plan,
+          billingInterval: interval,
+        });
+      }
     },
   );
 

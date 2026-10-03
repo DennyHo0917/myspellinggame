@@ -177,6 +177,144 @@ export function buildWelcomeEmail(acceptLanguage?: string | null) {
   };
 }
 
+const PRICE_CHANGE_COPY = {
+  en: {
+    subject: "Your Parent Plan price changes at your next renewal",
+    greeting: "Hi,",
+    change:
+      "Your My Spelling Game Parent Plan will change from US$4.99 to US$7.99 per month at your next renewal.",
+    end: "Your current paid period ends on {date}. The new monthly price takes effect at that time.",
+    billing:
+      "There is no extra charge for your current period. Your subscription will renew automatically using your existing payment method; you do not need to subscribe again.",
+    cancel:
+      "To avoid the next charge, cancel before the renewal time above. Sign in to the pricing page and open subscription management.",
+    manage: "Manage subscription",
+    thanks:
+      "Thank you for using My Spelling Game. For questions, reply to this email.",
+  },
+  es: {
+    subject: "El precio de tu plan familiar cambiará en la próxima renovación",
+    greeting: "Hola:",
+    change:
+      "Tu plan para familias de My Spelling Game pasará de 4,99 a 7,99 USD al mes en la próxima renovación.",
+    end: "El periodo que ya has pagado termina el {date}. A partir de ese momento se aplicará el nuevo precio mensual.",
+    billing:
+      "No habrá ningún cargo adicional por el periodo actual. La suscripción se renovará automáticamente con tu método de pago habitual; no necesitas volver a suscribirte.",
+    cancel:
+      "Si no quieres renovar, cancela antes de la fecha y hora indicadas. Inicia sesión en la página de precios y abre la gestión de tu suscripción.",
+    manage: "Gestionar suscripción",
+    thanks:
+      "Gracias por usar My Spelling Game. Si tienes alguna pregunta, responde a este correo.",
+  },
+  "pt-BR": {
+    subject: "O preço do seu Plano para Pais muda na próxima renovação",
+    greeting: "Olá,",
+    change:
+      "Na próxima renovação, seu Plano para Pais do My Spelling Game passará de US$ 4,99 para US$ 7,99 por mês.",
+    end: "O período já pago termina em {date}. O novo preço mensal entra em vigor nesse momento.",
+    billing:
+      "Não haverá cobrança extra pelo período atual. A assinatura será renovada automaticamente com a forma de pagamento que você já usa; não é preciso assinar novamente.",
+    cancel:
+      "Para evitar a próxima cobrança, cancele antes da data e do horário acima. Entre na página de preços e abra o gerenciamento da assinatura.",
+    manage: "Gerenciar assinatura",
+    thanks:
+      "Obrigado por usar o My Spelling Game. Se tiver dúvidas, responda a este e-mail.",
+  },
+  fr: {
+    subject:
+      "Le tarif de votre offre Parents change au prochain renouvellement",
+    greeting: "Bonjour,",
+    change:
+      "Au prochain renouvellement, votre offre Parents My Spelling Game passera de 4,99 à 7,99 USD par mois.",
+    end: "Votre période déjà payée se termine le {date}. Le nouveau tarif mensuel s'appliquera à partir de ce moment.",
+    billing:
+      "Aucun supplément ne sera facturé pour la période en cours. Votre abonnement sera renouvelé automatiquement avec votre moyen de paiement actuel, sans nouvelle souscription.",
+    cancel:
+      "Pour éviter le prochain prélèvement, résiliez avant la date et l'heure indiquées. Connectez-vous à la page des tarifs et ouvrez la gestion de votre abonnement.",
+    manage: "Gérer l'abonnement",
+    thanks:
+      "Merci d'utiliser My Spelling Game. Pour toute question, répondez à cet e-mail.",
+  },
+  id: {
+    subject: "Harga Paket Orang Tua berubah pada perpanjangan berikutnya",
+    greeting: "Halo,",
+    change:
+      "Pada perpanjangan berikutnya, harga Paket Orang Tua My Spelling Game Anda akan berubah dari US$4,99 menjadi US$7,99 per bulan.",
+    end: "Periode yang sudah Anda bayar berakhir pada {date}. Harga bulanan baru berlaku mulai saat itu.",
+    billing:
+      "Tidak ada biaya tambahan untuk periode saat ini. Langganan akan diperpanjang otomatis dengan metode pembayaran yang sudah Anda gunakan; Anda tidak perlu berlangganan ulang.",
+    cancel:
+      "Jika tidak ingin dikenakan biaya berikutnya, batalkan sebelum tanggal dan waktu di atas. Masuk ke halaman harga lalu buka pengelolaan langganan.",
+    manage: "Kelola langganan",
+    thanks:
+      "Terima kasih telah menggunakan My Spelling Game. Jika ada pertanyaan, balas email ini.",
+  },
+  "zh-CN": {
+    subject: "家长方案将在下次续费时调整价格",
+    greeting: "你好，",
+    change:
+      "你的 My Spelling Game 家长方案将在下次续费时，从每月 US$4.99 调整为每月 US$7.99。",
+    end: "当前已付费周期将于 {date} 到期，新月费从该时间起生效。",
+    billing:
+      "本期不会补收差价。订阅将使用你原有的付款方式自动续费，无需重新订阅。",
+    cancel:
+      "如果不希望继续续费，请在上述时间前取消订阅。登录定价页后，打开订阅管理即可取消。",
+    manage: "管理订阅",
+    thanks: "感谢你使用 My Spelling Game。如有疑问，请回复这封邮件。",
+  },
+} as const;
+
+export function buildPriceChangeEmail(
+  periodEnd: string,
+  acceptLanguage?: string | null,
+) {
+  const locale = resolveWelcomeLocale(acceptLanguage);
+  const copy = PRICE_CHANGE_COPY[locale];
+  const date = new Date(periodEnd);
+  if (!Number.isFinite(date.getTime())) throw new Error("Invalid renewal date");
+  const formattedDate =
+    new Intl.DateTimeFormat(locale, {
+      dateStyle: "long",
+      timeStyle: "medium",
+      timeZone: "UTC",
+      hourCycle: "h23",
+    }).format(date) + " (UTC)";
+  const paragraphs = [
+    copy.greeting,
+    copy.change,
+    copy.end.replace("{date}", formattedDate),
+    copy.billing,
+    copy.cancel,
+    copy.thanks,
+  ];
+  const prefix =
+    locale === "en"
+      ? ""
+      : locale === "zh-CN"
+        ? "/zh"
+        : `/${locale.toLowerCase()}`;
+  const url = `https://myspellinggame.com${prefix}/pricing`;
+  const escape = (value: string) =>
+    value.replace(
+      /[&<>"']/g,
+      (char) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[char]!,
+    );
+  return {
+    from: FROM,
+    reply_to: "dennyho0917@hotmail.com",
+    subject: copy.subject,
+    text: `${paragraphs.join("\n\n")}\n\n${copy.manage}: ${url}\n\nMy Spelling Game`,
+    html: `<!doctype html><html lang="${locale}"><body style="margin:0;padding:24px;background:#f5f7fa;font-family:Arial,sans-serif;color:#1f2937"><div style="max-width:600px;margin:0 auto;padding:28px;background:white;border:1px solid #e5e7eb;border-radius:8px"><img src="${LOGO_URL}" width="40" height="40" alt=""><h1 style="font-size:22px;line-height:1.4">${escape(copy.subject)}</h1>${paragraphs.map((paragraph) => `<p style="font-size:16px;line-height:1.6">${escape(paragraph)}</p>`).join("")}<p><a href="${url}" style="color:#2563eb">${escape(copy.manage)}</a></p><p>My Spelling Game</p></div></body></html>`,
+  };
+}
+
 type EmailFetch = (url: string, init: RequestInit) => Promise<Response>;
 
 export async function sendWelcomeEmail(

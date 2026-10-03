@@ -1216,10 +1216,10 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
   await expect(
     page
       .locator(".locked-feature-plan")
-      .getByRole("button", { name: "Choose Teacher · $9.99/month" }),
+      .getByRole("button", { name: "Choose Teacher · $14.99/month" }),
   ).toHaveCount(1);
   await expect(page.locator(".locked-feature-plan")).toContainText(
-    "Teacher Plan · $9.99/month",
+    "Teacher Plan · $14.99/month",
   );
 });
 
@@ -1419,7 +1419,7 @@ test("practice advises signed-in plans after 20 words and preserves hard limits"
   await expect(
     page
       .locator("#spelling-limit-cta")
-      .getByRole("link", { name: "Upgrade to Parent · $4.99/month" }),
+      .getByRole("link", { name: "Upgrade to Parent · $7.99/month" }),
   ).toHaveAttribute("href", "/workspace?lang=en#teacher-sign-in");
 
   account.plan = "parent";
@@ -1452,10 +1452,10 @@ test("practice advises signed-in plans after 20 words and preserves hard limits"
 for (const [locale, label, advice] of [
   [
     "es",
-    "Mejorar al plan familiar · $4.99/mes",
+    "Mejorar al plan familiar · $7.99/mes",
     "Las listas largas pueden aumentar",
   ],
-  ["zh", "升级家长方案 · US$4.99/月", "词表较长时，记忆负担可能增加"],
+  ["zh", "升级家长方案 · US$7.99/月", "词表较长时，记忆负担可能增加"],
 ]) {
   test(`${locale} Free word-limit upgrade stays in the active locale`, async ({
     page,
@@ -2858,7 +2858,7 @@ test("saved checkout choice requires confirmation and stays retryable", async ({
     sessionStorage.setItem("pendingCheckoutPlan", "parent"),
   );
   await page.goto("/workspace?lang=en");
-  await expect(page.getByText("Parent Plan · $49.99/year")).toBeVisible();
+  await expect(page.getByText("Parent Plan · $79.90/year")).toBeVisible();
   expect(checkoutCalls).toBe(0);
   await page
     .getByRole("button", { name: "Continue to secure checkout" })
@@ -2868,7 +2868,7 @@ test("saved checkout choice requires confirmation and stays retryable", async ({
       "We couldn’t open Stripe Checkout. Your selected plan is still saved.",
     ),
   ).toBeVisible();
-  await expect(page.getByText("Parent Plan · $49.99/year")).toBeVisible();
+  await expect(page.getByText("Parent Plan · $79.90/year")).toBeVisible();
   expect(
     await page.evaluate(() =>
       sessionStorage.getItem("pendingCheckoutInterval"),
@@ -3420,8 +3420,8 @@ test("mobile conversion pages keep their key actions usable", async ({
     page.getByRole("button", { name: "Monthly plan", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("button", { name: "Yearly plan", exact: true }).click();
-  await expect(page.getByText("$49.99 / year")).toBeVisible();
-  await expect(page.getByText("$99.99 / year")).toBeVisible();
+  await expect(page.getByText("$79.90 / year")).toBeVisible();
+  await expect(page.getByText("$149.90 / year")).toBeVisible();
   await expectNoHorizontalOverflow();
 
   await page.goto("/workspace?lang=en");

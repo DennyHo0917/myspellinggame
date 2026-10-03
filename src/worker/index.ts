@@ -36,6 +36,7 @@ import {
   createCheckout,
   createPortal,
   hasActiveSubscription,
+  subscriptionPriceIds,
   verifyAndProcessWebhook,
   type StripeEnv,
 } from "./stripe";
@@ -475,10 +476,10 @@ async function adminUsers(env: Env, url: URL) {
              WHEN u.admin_plan IN ('parent', 'teacher') THEN u.admin_plan
              WHEN s.status IN ('active', 'trialing')
               AND (s.current_period_end IS NULL OR s.current_period_end > ?)
-              AND s.stripe_price_id IN (?, ?, ?, ?, ?, ?)
+              AND s.stripe_price_id IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
              THEN CASE
-               WHEN s.stripe_price_id IN (?, ?) THEN 'parent'
-               WHEN s.stripe_price_id IN (?, ?) THEN 'teacher'
+               WHEN s.stripe_price_id IN (?, ?, ?, ?) THEN 'parent'
+               WHEN s.stripe_price_id IN (?, ?, ?, ?) THEN 'teacher'
                WHEN s.plan IN ('parent', 'teacher') THEN s.plan
                WHEN u.workspace_type = 'family' THEN 'parent'
                ELSE 'teacher'
@@ -487,18 +488,14 @@ async function adminUsers(env: Env, url: URL) {
            END AS effective_plan
     FROM user u LEFT JOIN subscriptions s ON s.user_id = u.id
   )`;
+  const prices = subscriptionPriceIds(env);
   const planBindings = [
     now,
-    env.STRIPE_PARENT_PRICE_MONTHLY || "",
-    env.STRIPE_PARENT_PRICE_YEARLY || "",
-    env.STRIPE_TEACHER_PRICE_MONTHLY || "",
-    env.STRIPE_TEACHER_PRICE_YEARLY || "",
-    env.STRIPE_PRICE_MONTHLY || "",
-    env.STRIPE_PRICE_YEARLY || "",
-    env.STRIPE_PARENT_PRICE_MONTHLY || "",
-    env.STRIPE_PARENT_PRICE_YEARLY || "",
-    env.STRIPE_TEACHER_PRICE_MONTHLY || "",
-    env.STRIPE_TEACHER_PRICE_YEARLY || "",
+    ...prices.parent,
+    ...prices.teacher,
+    ...prices.legacy,
+    ...prices.parent,
+    ...prices.teacher,
   ];
   const count = await env.DB.prepare(
     `${userQuery} SELECT COUNT(*) AS count FROM admin_users ${where}`,

@@ -2905,7 +2905,7 @@ body.assignment-page {
 }
 
 .pricing-card .price {
-  font-size: clamp(2rem, 4vw, 2.7rem);
+  font-size: 2rem;
 }
 
 .assignment-player {

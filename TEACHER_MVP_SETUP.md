@@ -55,10 +55,10 @@ Set `RESEND_API_KEY` as a Cloudflare secret. The first time Better Auth creates 
 
 1. Create one recurring monthly Price at USD 5.99 and one recurring yearly Price at USD 49.99.
 2. Set their IDs as `STRIPE_PRICE_MONTHLY` and `STRIPE_PRICE_YEARLY`.
-3. Create one recurring monthly Parent Price at USD 4.99 and one recurring yearly Parent Price at USD 49.99.
-4. Set their IDs as `STRIPE_PARENT_PRICE_MONTHLY` and `STRIPE_PARENT_PRICE_YEARLY`.
-5. Create one recurring monthly Teacher Price at USD 9.99 and one recurring yearly Teacher Price at USD 99.99.
-6. Set their IDs as `STRIPE_TEACHER_PRICE_MONTHLY` and `STRIPE_TEACHER_PRICE_YEARLY`.
+3. Parent checkout uses USD 7.99/month and USD 79.90/year.
+4. Configure these new Price IDs as `STRIPE_CHECKOUT_PARENT_PRICE_MONTHLY` and `STRIPE_CHECKOUT_PARENT_PRICE_YEARLY` (the live IDs are in `wrangler.json`). Keep the original Parent IDs in `STRIPE_PARENT_PRICE_MONTHLY` and `STRIPE_PARENT_PRICE_YEARLY` so existing subscriptions remain recognized.
+5. Teacher checkout uses USD 14.99/month and USD 149.90/year.
+6. Configure these new Price IDs as `STRIPE_CHECKOUT_TEACHER_PRICE_MONTHLY` and `STRIPE_CHECKOUT_TEACHER_PRICE_YEARLY`. Keep the original Teacher IDs in `STRIPE_TEACHER_PRICE_MONTHLY` and `STRIPE_TEACHER_PRICE_YEARLY` for existing subscriptions. In a test environment, override all four `STRIPE_CHECKOUT_*` variables with test-mode Price IDs.
 7. Enable and configure the Stripe Customer Portal for subscription management.
 8. Create a webhook endpoint at `https://myspellinggame.com/api/stripe/webhook` for:
    - `checkout.session.completed`
@@ -73,7 +73,7 @@ Set `RESEND_API_KEY` as a Cloudflare secret. The first time Better Auth creates 
    - `invoice.payment_failed`
 9. Store the API key and webhook signing secret as `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` Cloudflare secrets.
 
-Confirm that the Customer Portal allows switching between the Parent and Teacher products and subscription cancellation, and verify the Parent Prices remain USD 4.99/month and USD 49.99/year and the Teacher Prices remain USD 9.99/month and USD 99.99/year. Keep the legacy Prices configured for existing subscriptions.
+Confirm that the Customer Portal allows switching between the Parent and Teacher products and subscription cancellation, and configure its available prices to match the new checkout prices. Preserve all original Price IDs for subscription recognition. Existing subscriptions do not change automatically: to apply the new monthly price at the next renewal, update the existing subscription item with `proration_behavior=none` and keep the billing cycle unchanged. Verify the renewal time and upcoming invoice before sending a price-change notice.
 
 For local webhook testing, run Stripe CLI forwarding to `http://localhost:5173/api/stripe/webhook` and use its temporary `whsec_...` value only in `.dev.vars`.
 

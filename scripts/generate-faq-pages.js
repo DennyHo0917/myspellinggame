@@ -257,7 +257,8 @@ const locales = {
     teacher: "工作台",
     title: "常见问题 | My Spelling Game",
     heading: "常见问题",
-    intro: "集中说明单词表、练习模式、分享链接、账号、作业、拍照导入、自动例句和学习报告。",
+    intro:
+      "集中说明单词表、练习模式、分享链接、账号、作业、拍照导入、自动例句和学习报告。",
     questions: [
       [
         "可以使用自己的单词吗？",
@@ -670,9 +671,27 @@ const footerLinks = {
 };
 const footerSecondaryLinks = {
   en: ["Pricing", "FAQ", "Privacy", "About", "Contact"],
-  es: ["Precios", "Preguntas frecuentes", "Privacidad", "Acerca de", "Contacto"],
-  "pt-br": ["Preços", "Perguntas frequentes", "Privacidade", "Sobre", "Contato"],
-  fr: ["Tarifs", "Questions fréquentes", "Confidentialité", "À propos", "Contact"],
+  es: [
+    "Precios",
+    "Preguntas frecuentes",
+    "Privacidad",
+    "Acerca de",
+    "Contacto",
+  ],
+  "pt-br": [
+    "Preços",
+    "Perguntas frequentes",
+    "Privacidade",
+    "Sobre",
+    "Contato",
+  ],
+  fr: [
+    "Tarifs",
+    "Questions fréquentes",
+    "Confidentialité",
+    "À propos",
+    "Contact",
+  ],
   id: ["Harga", "Pertanyaan umum", "Privasi", "Tentang", "Kontak"],
   zh: ["价格", "常见问题", "隐私", "关于", "联系"],
 };

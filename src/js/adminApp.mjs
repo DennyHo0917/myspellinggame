@@ -72,6 +72,7 @@ async function api(path, options = {}) {
 }
 
 function show(element) {
+  $("admin-diagnostics").hidden = element !== dashboard;
   for (const item of [statusCard, loginCard, deniedCard, dashboard])
     item.hidden = item !== element;
   if (element !== dashboard && drawer.open) drawer.close();
@@ -356,6 +357,7 @@ async function openUserDrawer(user) {
 async function loadDashboard() {
   const stats = await api("/api/admin/stats");
   show(dashboard);
+  $("admin-diagnostics").hidden = false;
   signOut.hidden = false;
   renderStats(stats);
   await loadUsers();
@@ -531,4 +533,56 @@ loadDashboard().catch((error) => {
   if (error.status === 401) show(loginCard);
   else if (error.status === 403) show(deniedCard);
   else statusCard.querySelector(".status").textContent = error.message;
+});
+
+$("admin-diagnostic-search").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const status = $("admin-diagnostic-status");
+  status.textContent = "正在加载诊断…";
+  try {
+    const trace = $("admin-diagnostic-trace").value.trim();
+    const data = await api(
+      `/api/admin/diagnostics${trace ? `?trace=${encodeURIComponent(trace)}` : ""}`,
+    );
+    const render = (id, rows, fields) => {
+      const body = $(id);
+      body.replaceChildren();
+      for (const row of rows) {
+        const tr = document.createElement("tr");
+        for (const field of fields)
+          tr.append(
+            textCell(
+              field === "source"
+                ? row[field] === "server"
+                  ? "服务端确认"
+                  : "浏览器报告"
+                : (row[field] ?? "—"),
+            ),
+          );
+        body.append(tr);
+      }
+    };
+    render("admin-diagnostic-summary", data.summary, [
+      "source",
+      "event_name",
+      "error_code",
+      "http_status",
+      "release_version",
+      "count",
+      "last_seen",
+    ]);
+    render("admin-diagnostic-recent", data.recent, [
+      "occurred_at",
+      "trace_id",
+      "source",
+      "event_name",
+      "route_template",
+      "error_code",
+      "http_status",
+      "release_version",
+    ]);
+    status.textContent = `仅包含最近 ${data.retentionDays} 天；事件与原因使用固定代码，不含学生身份或原始错误文本。`;
+  } catch {
+    status.textContent = "诊断暂不可用，业务操作不受影响。";
+  }
 });

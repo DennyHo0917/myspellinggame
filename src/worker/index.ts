@@ -44,7 +44,18 @@ import {
   recordLifecycleEvent,
   signupIntentForSource,
 } from "./lifecycle";
+import { adultAcquisition, distributionChannel } from "./attribution";
 import { randomChasePassage } from "./chase";
+import {
+  diagnosticAllowed,
+  diagnosticContext,
+  diagnosticOperation,
+  verifiedClientContext,
+  clientDiagnostic,
+  recordDiagnostic,
+  diagnosticSummary,
+  pruneDiagnostics,
+} from "./diagnostics";
 
 interface RateLimiter {
   limit(input: { key: string }): Promise<{ success: boolean }>;
@@ -1016,6 +1027,7 @@ async function assignmentDetail(
     missedWordStats: missedWords,
     assignedLearners: assignedLearners.results,
     hasAttempts: Boolean(attemptExists),
+    sharePath: await assignmentSharePath(db, assignment, plan),
   };
 }
 
@@ -1969,6 +1981,45 @@ async function publicAssignment(
   return { ...assignment, words: words.results, learner };
 }
 
+// A class-wide URL must never contain a learner bearer identity.
+async function assignmentSharePath(
+  db: D1Database,
+  assignment: AssignmentRow,
+  plan: Plan,
+) {
+  const bound = await db
+    .prepare(
+      "SELECT 1 FROM assignment_learners WHERE assignment_id = ? LIMIT 1",
+    )
+    .bind(assignment.id)
+    .first();
+  if (!bound) return `/a/${assignment.public_id}`;
+  if (plan !== "teacher") return null;
+  const classId = await ensureTeacherJoinIdentity(db, assignment.owner_user_id);
+  return `/join/${classId}?assignment=${assignment.public_id}`;
+}
+
+async function attemptChannel(
+  db: D1Database,
+  ownerId: string,
+  attemptId: string,
+  fallback: unknown,
+) {
+  try {
+    const started = await db
+      .prepare(
+        "SELECT properties_json FROM lifecycle_events WHERE user_id = ? AND event_name = 'assignment_started' AND event_key = ?",
+      )
+      .bind(ownerId, `attempt:${attemptId}`)
+      .first<{ properties_json: string }>();
+    if (started)
+      return distributionChannel(JSON.parse(started.properties_json).channel);
+  } catch {
+    // Metrics failures cannot block a saved result.
+  }
+  return distributionChannel(fallback);
+}
+
 async function loadAttemptResult(
   db: D1Database,
   attemptId: string,
@@ -2031,6 +2082,7 @@ async function startAttempt(env: Env, request: Request, publicId: string) {
         assignment_id: assignment.id,
         attempt_id: attemptId,
         learner_id: assignment.learner?.id ?? null,
+        channel: distributionChannel(body.channel),
       },
       `attempt:${attemptId}`,
     );
@@ -2156,6 +2208,12 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
         attempt_id: attemptId,
         learner_id: learner?.id ?? null,
         accuracy: saved.status === "completed" ? saved.accuracy : null,
+        channel: await attemptChannel(
+          env.DB,
+          assignment.owner_user_id,
+          attemptId,
+          body.channel,
+        ),
       },
       `attempt:${attemptId}`,
     );
@@ -2258,7 +2316,7 @@ async function serveShell(
   return new Response(response.body, { status: response.status, headers });
 }
 
-export async function handleRequest(
+async function handleBusinessRequest(
   request: Request,
   env: Env,
   overrides: HandlerOverrides = {},
@@ -2309,8 +2367,33 @@ export async function handleRequest(
     });
   }
 
+  if (url.pathname === "/api/diagnostics/context" && method === "POST") {
+    requireSameOrigin(request);
+    const allowed = await env.SUBMIT_LIMITER.limit({
+      key: `diagnostic-context:${request.headers.get("CF-Connecting-IP") || "unknown"}`,
+    });
+    if (!allowed.success) return json({}, 429);
+    return json((await diagnosticContext(request, env)) || {});
+  }
+  if (url.pathname === "/api/diagnostics/events" && method === "POST") {
+    requireSameOrigin(request);
+    if (!diagnosticAllowed(request)) return json({ ok: true });
+    const allowed = await env.SUBMIT_LIMITER.limit({
+      key: `diagnostic-report:${request.headers.get("CF-Connecting-IP") || "unknown"}`,
+    });
+    if (!allowed.success)
+      throw new HttpError(429, "rate_limited", "Too many diagnostic reports.");
+    const context = await verifiedClientContext(request, env);
+    const body = await readJson(request, 1024);
+    await recordDiagnostic(env, clientDiagnostic(body, context.trace), request);
+    return json({ ok: true });
+  }
   if (url.pathname.startsWith("/api/admin/")) {
     const admin = await requireAdmin(env, request, getSession);
+    if (url.pathname === "/api/admin/diagnostics" && method === "GET")
+      return json(
+        await diagnosticSummary(env.DB, url.searchParams.get("trace")),
+      );
     if (url.pathname === "/api/admin/stats" && method === "GET")
       return json(await adminStats(env));
     if (url.pathname === "/api/admin/users" && method === "GET")
@@ -2337,9 +2420,12 @@ export async function handleRequest(
     if (
       planMatch ||
       userMatch ||
-      ["/api/admin/stats", "/api/admin/users", "/api/admin/orders"].includes(
-        url.pathname,
-      )
+      [
+        "/api/admin/stats",
+        "/api/admin/users",
+        "/api/admin/orders",
+        "/api/admin/diagnostics",
+      ].includes(url.pathname)
     )
       throw new HttpError(405, "method_not_allowed", "不支持此请求方式。");
     throw new HttpError(404, "admin_not_found", "未找到该管理接口。");
@@ -2352,11 +2438,34 @@ export async function handleRequest(
     const learnerPublicId = url.searchParams.has("learner")
       ? (url.searchParams.get("learner") ?? "")
       : undefined;
-    const assignment = await publicAssignment(
-      env.DB,
-      publicMatch[1],
-      learnerPublicId,
-    );
+    let assignment;
+    try {
+      assignment = await publicAssignment(
+        env.DB,
+        publicMatch[1],
+        learnerPublicId,
+      );
+    } catch (error) {
+      if (error instanceof HttpError && error.code === "learner_required") {
+        const target = await env.DB.prepare(
+          "SELECT * FROM assignments WHERE public_id = ?",
+        )
+          .bind(publicMatch[1])
+          .first<AssignmentRow>();
+        const joinPath = target
+          ? await assignmentSharePath(
+              env.DB,
+              target,
+              await getPlan(env, target.owner_user_id),
+            )
+          : null;
+        return json(
+          { error: "learner_required", ...(joinPath ? { joinPath } : {}) },
+          403,
+        );
+      }
+      throw error;
+    }
     return json({
       title: assignment.title,
       mode: assignment.mode,
@@ -2372,6 +2481,41 @@ export async function handleRequest(
           }
         : {}),
     });
+  }
+  const entryMatch = url.pathname.match(
+    /^\/api\/public\/assignments\/([A-Za-z0-9_-]{24})\/entry$/,
+  );
+  if (entryMatch && method === "POST") {
+    requireSameOrigin(request);
+    const body = await readJson(request, 4096);
+    const entryId = validateAttemptId(body.entryId);
+    const allowed = await env.SUBMIT_LIMITER.limit({
+      key: `entry:${entryMatch[1]}:${request.headers.get("CF-Connecting-IP") || "unknown"}`,
+    });
+    if (!allowed.success)
+      throw new HttpError(
+        429,
+        "rate_limited",
+        "Too many requests. Try again shortly.",
+      );
+    const assignment = await publicAssignment(
+      env.DB,
+      entryMatch[1],
+      Object.hasOwn(body, "learnerPublicId")
+        ? String(body.learnerPublicId)
+        : undefined,
+    );
+    await recordLifecycleEvent(
+      env.DB,
+      assignment.owner_user_id,
+      "assignment_entry",
+      {
+        assignment_id: assignment.id,
+        channel: distributionChannel(body.channel),
+      },
+      `entry:${entryId}`,
+    );
+    return json({ ok: true });
   }
   const startMatch = url.pathname.match(
     /^\/api\/public\/assignments\/([A-Za-z0-9_-]{24})\/start$/,
@@ -2484,6 +2628,34 @@ export async function handleRequest(
       .first<{ public_id: string; owner_user_id: string }>();
     if (!learner || (await getPlan(env, learner.owner_user_id)) !== "teacher")
       throw new HttpError(401, "invalid_join", "The PIN is invalid.");
+    if (Object.hasOwn(body, "assignmentPublicId")) {
+      if (
+        typeof body.assignmentPublicId !== "string" ||
+        !/^[A-Za-z0-9_-]{24}$/.test(body.assignmentPublicId)
+      )
+        throw new HttpError(
+          404,
+          "assignment_not_found",
+          "Assignment not found.",
+        );
+      // Validate assignment membership before releasing any identity token.
+      const assignment = await publicAssignment(
+        env.DB,
+        body.assignmentPublicId,
+        learner.public_id,
+      );
+      const bound = await env.DB.prepare(
+        "SELECT 1 FROM assignment_learners WHERE assignment_id = ? AND learner_id = ?",
+      )
+        .bind(assignment.id, assignment.learner!.id)
+        .first();
+      if (assignment.owner_user_id !== learner.owner_user_id || !bound)
+        throw new HttpError(404, "learner_not_found", "Learner not found.");
+      return json({
+        learnerPublicId: learner.public_id,
+        assignmentPublicId: assignment.public_id,
+      });
+    }
     return json({ learnerPublicId: learner.public_id });
   }
 
@@ -2545,6 +2717,25 @@ export async function handleRequest(
     return json({
       passage: randomChasePassage(),
     });
+  }
+
+  if (url.pathname === "/api/lifecycle/acquisition" && method === "POST") {
+    requireSameOrigin(request);
+    const user = await requireTeacher(env, request, getSession);
+    const body = await readJson(request, 4096);
+    if (
+      request.headers.get("DNT") === "1" ||
+      request.headers.get("Sec-GPC") === "1"
+    )
+      return json({ ok: true });
+    await recordLifecycleEvent(
+      env.DB,
+      user.id,
+      "adult_acquisition_captured",
+      adultAcquisition(body),
+      "first_external_touch",
+    );
+    return json({ ok: true });
   }
 
   if (url.pathname === "/api/lifecycle/signup" && method === "POST") {
@@ -2719,6 +2910,85 @@ export async function handleRequest(
       requireSameOrigin(request);
       return json(await createAssignment(env, request, user.id), 201);
     }
+  }
+
+  const shareMatch = url.pathname.match(
+    /^\/api\/assignments\/([0-9a-f-]{36})\/share$/i,
+  );
+  if (shareMatch && method === "POST") {
+    requireSameOrigin(request);
+    const user = await requireTeacher(env, request, getSession);
+    const assignment = await getOwnedAssignment(env.DB, shareMatch[1], user.id);
+    const body = await readJson(request, 4096);
+    if (body.channel !== "copy_link" && body.channel !== "google_classroom")
+      throw new HttpError(
+        400,
+        "invalid_share_channel",
+        "Invalid sharing channel.",
+      );
+    const clickId = validateAttemptId(body.clickId);
+    const allowed = await env.CREATE_LIMITER.limit({ key: `share:${user.id}` });
+    if (!allowed.success)
+      throw new HttpError(
+        429,
+        "rate_limited",
+        "Too many requests. Try again shortly.",
+      );
+    const plan = await getPlan(env, user.id);
+    const individual = body.audience === "individual";
+    if (body.audience !== undefined && !individual)
+      throw new HttpError(
+        400,
+        "invalid_share_channel",
+        "Invalid sharing audience.",
+      );
+    if (individual && body.channel !== "copy_link")
+      throw new HttpError(
+        400,
+        "invalid_share_channel",
+        "Individual identity links cannot be shared to Classroom.",
+      );
+    if (individual) {
+      const learner = await env.DB.prepare(
+        "SELECT public_id FROM learners WHERE id = ? AND owner_user_id = ? AND archived = 0",
+      )
+        .bind(String(body.learnerId), user.id)
+        .first<{ public_id: string }>();
+      if (!learner)
+        throw new HttpError(404, "learner_not_found", "Learner not found.");
+      await publicAssignment(env.DB, assignment.public_id, learner.public_id);
+    }
+    // Individual copy telemetry never returns a learner bearer token.
+    const path = individual
+      ? null
+      : await assignmentSharePath(env.DB, assignment, plan);
+    if (!individual && !path)
+      throw new HttpError(
+        403,
+        "class_share_unavailable",
+        "Share individual student links instead.",
+      );
+    // Check status even for assigned work, without bypassing identity requirements.
+    if (assignment.status !== "published")
+      throw new HttpError(
+        410,
+        "assignment_closed",
+        "This assignment is closed.",
+      );
+    if (assignment.expires_at <= new Date().toISOString())
+      throw new HttpError(
+        410,
+        "assignment_expired",
+        "This assignment has expired.",
+      );
+    await recordLifecycleEvent(
+      env.DB,
+      user.id,
+      "assignment_share_clicked",
+      { assignment_id: assignment.id, channel: body.channel },
+      `click:${clickId}`,
+    );
+    return json({ path });
   }
 
   const assignmentReviewMatch = url.pathname.match(
@@ -2930,7 +3200,129 @@ export async function handleRequest(
   return env.ASSETS.fetch(request);
 }
 
+const diagnosticErrors = new WeakMap<
+  object,
+  { trace: string; ticket: string }
+>();
+
+// Observe only Classroom workflow APIs. Billing and auth requests keep their existing path.
+export async function handleRequest(
+  request: Request,
+  env: Env,
+  overrides: HandlerOverrides = {},
+  execution?: Pick<ExecutionContext, "waitUntil">,
+) {
+  const path = new URL(request.url).pathname;
+  const operation = diagnosticOperation(path);
+  if (!operation || !diagnosticAllowed(request))
+    return handleBusinessRequest(request, env, overrides);
+  let context;
+  try {
+    context = await diagnosticContext(request, env);
+  } catch {
+    context = null;
+  }
+  const observation = (status: number, code: string) => {
+    if (!context) return;
+    const savedContext = context;
+    const task = (async () => {
+      try {
+        let owner: string | null = null;
+        let assignment: string | null = null;
+        const publicId = path.match(
+          /^\/api\/public\/assignments\/([A-Za-z0-9_-]{24})/,
+        )?.[1];
+        const assignmentId = path.match(
+          /^\/api\/assignments\/([0-9a-f-]{36})\/share$/i,
+        )?.[1];
+        if (publicId || assignmentId) {
+          const row = await env.DB.prepare(
+            publicId
+              ? "SELECT id,owner_user_id FROM assignments WHERE public_id=?"
+              : "SELECT id,owner_user_id FROM assignments WHERE id=?",
+          )
+            .bind(publicId || assignmentId)
+            .first<{ id: string; owner_user_id: string }>();
+          owner = row?.owner_user_id || null;
+          assignment = row?.id || null;
+        } else {
+          const classId = path.match(
+            /^\/api\/public\/join\/([A-Za-z0-9_-]{8,24})$/,
+          )?.[1];
+          if (classId) {
+            const row = await env.DB.prepare(
+              "SELECT id FROM user WHERE class_public_id=?",
+            )
+              .bind(classId)
+              .first<{ id: string }>();
+            owner = row?.id || null;
+          }
+        }
+        const provided = request.headers.get("X-Diagnostic-Event") || "";
+        await recordDiagnostic(
+          env,
+          {
+            eventId: /^[a-f0-9]{24}$/.test(provided)
+              ? provided
+              : crypto.randomUUID().replaceAll("-", "").slice(0, 24),
+            trace: savedContext.trace,
+            source: "server",
+            event: operation.event,
+            route: operation.route,
+            code,
+            status,
+            owner,
+            assignment,
+          },
+          request,
+        );
+      } catch {
+        /* Optional diagnostics cannot affect the response. */
+      }
+    })();
+    if (execution) {
+      try {
+        execution.waitUntil(task);
+      } catch {
+        /* diagnostic scheduling is optional */
+      }
+    }
+    return task;
+  };
+  try {
+    const response = await handleBusinessRequest(request, env, overrides);
+    let code = "ok";
+    if (!response.ok) {
+      try {
+        code =
+          ((await response.clone().json()) as { error?: string }).error ||
+          "other_error";
+      } catch {
+        code = "other_error";
+      }
+    }
+    const task = observation(response.status, code);
+    if (!execution) await task;
+    if (context) {
+      const headers = new Headers(response.headers);
+      headers.set("X-Diagnostic-Id", context.trace);
+      headers.set("X-Diagnostic-Ticket", context.ticket);
+      return new Response(response.body, { status: response.status, headers });
+    }
+    return response;
+  } catch (error) {
+    const task = observation(
+      error instanceof HttpError ? error.status : 500,
+      error instanceof HttpError ? error.code : "internal_error",
+    );
+    if (!execution) await task;
+    if (error instanceof Error && context) diagnosticErrors.set(error, context);
+    throw error;
+  }
+}
+
 export async function scheduled(_controller: ScheduledController, env: Env) {
+  await pruneDiagnostics(env.DB);
   const now = new Date();
   const staleAssignments = new Date(
     now.getTime() - 366 * 86_400_000,
@@ -2955,14 +3347,23 @@ export async function scheduled(_controller: ScheduledController, env: Env) {
 }
 
 export default {
-  async fetch(request: Request, env: Env) {
+  async fetch(request: Request, env: Env, execution: ExecutionContext) {
     try {
-      return await handleRequest(request, env);
+      return await handleRequest(request, env, {}, execution);
     } catch (error) {
+      const receipt =
+        error instanceof Error ? diagnosticErrors.get(error) : null;
+      const diagnosticHeaders: Record<string, string> = receipt
+        ? {
+            "X-Diagnostic-Id": receipt.trace,
+            "X-Diagnostic-Ticket": receipt.ticket,
+          }
+        : {};
       if (error instanceof HttpError)
         return json(
           { error: error.code, message: error.message },
           error.status,
+          diagnosticHeaders,
         );
       return json(
         {
@@ -2970,6 +3371,7 @@ export default {
           message: "Something went wrong. Please try again.",
         },
         500,
+        diagnosticHeaders,
       );
     }
   },

@@ -1,3 +1,5 @@
+import { captureAdultAcquisition } from "./adultAcquisition.mjs";
+
 const VISIT_KEY = "mySpellingGameVisitHistory";
 const SESSION_KEY = "mySpellingGameReturnVisitSent";
 const ASSIGNMENT_ENTRY_POINT_KEY = "mySpellingAssignmentEntryPoint";
@@ -261,6 +263,7 @@ export function initReturnVisit(now = Date.now()) {
 }
 
 if (typeof window !== "undefined") {
+  captureAdultAcquisition();
   window.MySpellingAnalytics = {
     cleanPageLocation,
     sanitizeEventParams,

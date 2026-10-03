@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures.mjs";
 import { PLAN_LIMITS } from "../src/worker/domain.ts";
 import { productMessages } from "../src/js/productLocale.mjs";
 
@@ -1020,7 +1020,7 @@ test("new assignment validates learner selection before submitting", async ({
 
   await page.goto("/workspace/assignments/new?lang=en");
   await expect(page.getByLabel("Link sharing only")).toBeChecked();
-  await page.getByLabel("Selected students").check();
+  await page.locator('[data-target-option="selected"]').click();
   await expect(page.locator(".assignment-learners-error")).toHaveText(
     "Select at least one learner.",
   );
@@ -1030,7 +1030,11 @@ test("new assignment validates learner selection before submitting", async ({
   await page.getByLabel("Assignment title").fill("Learner validation");
   await page.getByLabel("Spelling words").fill("apple");
   expect(postCount).toBe(0);
-  await page.getByLabel("Alice").check();
+  await page.locator(".learner-picker-summary").click();
+  await page
+    .locator(".learner-picker-option")
+    .filter({ hasText: "Alice" })
+    .click();
   await expect(page.locator(".assignment-learners-error")).toBeHidden();
   await expect(
     page.getByRole("button", { name: "Create and publish" }),
@@ -2468,6 +2472,7 @@ test("assignment recovery after a long suspension submits active duration only",
   await page.goto(`/a/${publicId}?lang=en`);
   await page.getByLabel("Nickname").fill("Student 01");
   await page.getByRole("button", { name: "Start assignment" }).click();
+  await expect(page.locator(".answer-form input")).toBeVisible();
   await page.evaluate(() => {
     const key = "mySpellingAssignment:abcdefghijklmnopqrstuvwx";
     const saved = JSON.parse(sessionStorage.getItem(key));
@@ -2572,6 +2577,7 @@ test("a student can return to the start during consecutive assignments", async (
   await page.getByLabel("Nickname").fill("Student 01");
   for (let round = 0; round < 2; round += 1) {
     await page.getByRole("button", { name: "Start assignment" }).click();
+    await expect(page.locator(".answer-form input")).toBeVisible();
     if (round === 0) {
       await page.evaluate(() => {
         const key = "mySpellingAssignment:abcdefghijklmnopqrstuvwx";
@@ -3765,19 +3771,23 @@ test("new assignment validates Free word-count boundaries before submit", async 
   await expect(page.locator(".word-limit-upgrade")).toBeVisible();
   await expect(page.locator(".word-limit-upgrade")).toHaveCount(1);
 
-  await wordsInput.fill(`Apple\napple\na\n${"x".repeat(25)}`);
-  await expect(page.locator(".word-count")).toHaveText("1 / 25");
+  await wordsInput.fill(`Apple\napple\na\nb\n${"x".repeat(25)}`);
+  await expect(page.locator(".word-count")).toHaveText("2 / 25");
   await expect(page.locator(".word-list-error")).toContainText(
     "Repeated words: apple",
   );
   await expect(page.locator(".word-list-error")).toContainText(
-    "at least 2 characters: a",
+    "Only a and I are valid one-letter words: b",
   );
   await expect(page.locator(".word-list-error")).toContainText(
     "24 characters or fewer",
   );
   await expect(page.locator(".word-limit-upgrade")).toBeHidden();
   await expect(submit).toBeDisabled();
+
+  await wordsInput.fill("a\ni\napple");
+  await expect(page.locator(".word-count")).toHaveText("3 / 25");
+  await expect(wordsInput).toHaveAttribute("aria-invalid", "false");
 
   await page.getByLabel("Assignment title").fill("Week two");
   await wordsInput.fill("apple\nbanana");
@@ -5246,10 +5256,22 @@ test("desktop workspace sidebar collapses and restores", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("paid workspace billing sidebar opens pricing and allows plan changes", async ({
+test("paid workspace billing sidebar marks current interval and opens billing portal", async ({
   page,
 }) => {
   await mockWorkspaceShell(page, "parent");
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "owner-a", name: "Owner A", email: "a@example.test" },
+        plan: "parent",
+        billingInterval: "month",
+        subscriptionStatus: "active",
+        currentPeriodEnd: new Date(Date.now() + 30 * 86400000).toISOString(),
+      }),
+    }),
+  );
   let portalBody;
   await page.route("**/api/billing/portal", (route) => {
     portalBody = route.request().postDataJSON();
@@ -5280,7 +5302,17 @@ test("paid workspace billing sidebar opens pricing and allows plan changes", asy
   await expect(page.locator('[data-plan-card="parent"]')).toContainText(
     "Current plan",
   );
-  await page.getByRole("button", { name: "Select Teacher Plan" }).click();
+  await page.locator('[data-plan-option="year"]').click();
+  await expect(page.locator('[data-plan-card="parent"]')).not.toHaveAttribute(
+    "aria-current",
+    "true",
+  );
+  await page.locator('[data-plan-option="month"]').click();
+  await expect(page.locator('[data-plan-card="parent"]')).toHaveAttribute(
+    "aria-current",
+    "true",
+  );
+  await page.getByRole("link", { name: "Manage billing", exact: true }).click();
   await expect(page).toHaveURL(/\/pricing\?from=portal$/);
   expect(portalBody).toEqual({ locale: "en" });
 });

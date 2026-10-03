@@ -2497,9 +2497,101 @@ export function productLocale() {
   );
 }
 
+const CLASSROOM_COPY = {
+  en: {
+    shareClassroom: "Share to Google Classroom",
+    classroomBody: "Practice this spelling assignment. Open the link to begin.",
+    classroomOpened: "Classroom opened. Finish sharing there.",
+    classroomIndividualOnly:
+      "Share individual student links. Class PIN sharing requires Teacher.",
+    invalidPin: "That PIN is incorrect. Try again.",
+    assignmentUnavailable: "This assignment is not available for your PIN.",
+    copyClassLink: "Copy class link",
+    classroomPinBody:
+      "Open this spelling assignment and enter your own class PIN to begin.",
+    copyManually: "Copy manually",
+    clipboardHelp: "Select and copy this link, or try Copy manually.",
+  },
+  es: {
+    shareClassroom: "Compartir en Google Classroom",
+    classroomBody:
+      "Practica la ortografía con esta tarea. Abre el enlace para empezar.",
+    classroomOpened: "Classroom abierto. Completa allí la publicación.",
+    classroomIndividualOnly:
+      "Comparte los enlaces individuales. El acceso con PIN de clase requiere Teacher.",
+    invalidPin: "El PIN no es correcto. Inténtalo de nuevo.",
+    assignmentUnavailable: "Esta tarea no está disponible para tu PIN.",
+    copyClassLink: "Copiar enlace de clase",
+    classroomPinBody:
+      "Abre esta tarea de ortografía e introduce tu PIN de clase para empezar.",
+    copyManually: "Copiar manualmente",
+    clipboardHelp:
+      "Selecciona y copia el enlace, o prueba «Copiar manualmente».",
+  },
+  "pt-BR": {
+    shareClassroom: "Compartilhar no Google Classroom",
+    classroomBody:
+      "Pratique a ortografia nesta atividade. Abra o link para começar.",
+    classroomOpened: "Classroom aberto. Conclua o compartilhamento lá.",
+    classroomIndividualOnly:
+      "Compartilhe os links individuais. O acesso por PIN da turma requer Teacher.",
+    invalidPin: "PIN incorreto. Tente novamente.",
+    assignmentUnavailable: "Esta atividade não está disponível para seu PIN.",
+    copyClassLink: "Copiar link da turma",
+    classroomPinBody:
+      "Abra esta atividade de ortografia e digite seu próprio PIN da turma para começar.",
+    copyManually: "Copiar manualmente",
+    clipboardHelp: "Selecione e copie o link ou tente «Copiar manualmente».",
+  },
+  fr: {
+    shareClassroom: "Partager sur Google Classroom",
+    classroomBody:
+      "Entraîne-toi à l’orthographe avec ce devoir. Ouvre le lien pour commencer.",
+    classroomOpened: "Classroom ouvert. Termine le partage sur place.",
+    classroomIndividualOnly:
+      "Partagez les liens individuels. L’accès par code de classe nécessite Teacher.",
+    invalidPin: "Ce code est incorrect. Réessaie.",
+    assignmentUnavailable: "Ce devoir n’est pas accessible avec ton code.",
+    copyClassLink: "Copier le lien de classe",
+    classroomPinBody:
+      "Ouvre ce devoir d’orthographe et saisis ton propre code de classe pour commencer.",
+    copyManually: "Copier manuellement",
+    clipboardHelp:
+      "Sélectionne et copie ce lien, ou essaie « Copier manuellement ».",
+  },
+  id: {
+    shareClassroom: "Bagikan ke Google Classroom",
+    classroomBody: "Latih ejaan melalui tugas ini. Buka tautan untuk mulai.",
+    classroomOpened: "Classroom terbuka. Selesaikan pembagian di sana.",
+    classroomIndividualOnly:
+      "Bagikan tautan tiap siswa. Akses PIN kelas memerlukan Teacher.",
+    invalidPin: "PIN salah. Coba lagi.",
+    assignmentUnavailable: "Tugas ini tidak tersedia untuk PIN kamu.",
+    copyClassLink: "Salin tautan kelas",
+    classroomPinBody:
+      "Buka tugas ejaan ini dan masukkan PIN kelas milikmu untuk mulai.",
+    copyManually: "Salin manual",
+    clipboardHelp: "Pilih dan salin tautan ini, atau coba Salin manual.",
+  },
+  zh: {
+    shareClassroom: "分享到 Google Classroom",
+    classroomBody: "完成这份拼写作业。打开链接即可开始练习。",
+    classroomOpened: "已打开 Classroom，请在那里完成分享。",
+    classroomIndividualOnly:
+      "请分享各学生的个人链接。班级 PIN 分享需 Teacher 套餐。",
+    invalidPin: "PIN 不正确，请重试。",
+    assignmentUnavailable: "此 PIN 无权访问这份作业。",
+    copyClassLink: "复制班级链接",
+    classroomPinBody: "打开这份拼写作业，输入你本人的班级 PIN 即可开始。",
+    copyManually: "手动复制",
+    clipboardHelp: "请选择并复制此链接，或点击“手动复制”重试。",
+  },
+};
+
 export function productMessages(locale = productLocale()) {
   return {
     ...(PACKS[locale] || PACKS.en),
+    ...(CLASSROOM_COPY[locale] || CLASSROOM_COPY.en),
     ...(SENTENCE_LIBRARY_COPY[locale] || SENTENCE_LIBRARY_COPY.en),
     ...(TODAYS_REVIEW_COPY[locale] || TODAYS_REVIEW_COPY.en),
   };

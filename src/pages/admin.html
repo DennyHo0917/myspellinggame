@@ -23,7 +23,9 @@
           <span>My Spelling Game</span>
         </a>
         <div class="product-nav-actions">
-          <a class="button-link button-secondary" href="/workspace">教师工作台</a>
+          <a class="button-link button-secondary" href="/workspace"
+            >教师工作台</a
+          >
           <a class="button-link button-secondary" href="/">首页</a>
           <button class="button-secondary" id="sign-out" type="button" hidden>
             退出登录
@@ -268,6 +270,62 @@
             </div>
           </section>
         </div>
+
+        <section class="product-card" id="admin-diagnostics" hidden>
+          <h2>分享与作业诊断</h2>
+          <p>
+            仅保存最近 7 天的受控事件。浏览器报告未经服务端确认；分享点击不代表
+            Google Classroom 发布成功。
+          </p>
+          <form id="admin-diagnostic-search" class="product-form compact-form">
+            <div class="field">
+              <label for="admin-diagnostic-trace"
+                >诊断关联编号（留空查看汇总）</label
+              >
+              <input
+                id="admin-diagnostic-trace"
+                maxlength="24"
+                pattern="[a-f0-9]{24}"
+                autocomplete="off"
+              />
+            </div>
+            <button type="submit">查询诊断</button>
+          </form>
+          <p class="status" id="admin-diagnostic-status" role="status"></p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>来源</th>
+                  <th>事件</th>
+                  <th>错误码</th>
+                  <th>HTTP 状态</th>
+                  <th>版本</th>
+                  <th>次数</th>
+                  <th>最近时间</th>
+                </tr>
+              </thead>
+              <tbody id="admin-diagnostic-summary"></tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>时间</th>
+                  <th>关联编号</th>
+                  <th>来源</th>
+                  <th>事件</th>
+                  <th>路由</th>
+                  <th>错误码</th>
+                  <th>状态</th>
+                  <th>版本</th>
+                </tr>
+              </thead>
+              <tbody id="admin-diagnostic-recent"></tbody>
+            </table>
+          </div>
+        </section>
 
         <dialog class="admin-drawer" id="admin-user-drawer">
           <div class="admin-drawer-heading">

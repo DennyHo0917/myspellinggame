@@ -85,3 +85,27 @@ For local webhook testing, run Stripe CLI forwarding to `http://localhost:5173/a
 - `npm test`
 - `npm run test:e2e`
 - `npm run build`
+
+## Google Classroom sharing (local v1)
+
+Assignment details, including the screen reached after creation, offer Share to Google Classroom beside Copy link. This uses the official `https://classroom.google.com/share` flow with URL, title, body and assignment type. It does not request Classroom OAuth or access rosters/grades. A share click means an attempt to open the Google dialog, never confirmed publication.
+
+Link-only assignments share `/a/:publicId`. Teacher assignments with selected learners share `/join/:classPublicId?assignment=:publicId`; each learner enters their own existing PIN and the server verifies class ownership and assignment membership before returning the existing learner identity. Legacy generic links recover through the same PIN entry. Other plans keep individual links and cannot use class-wide PIN sharing for selected learners. Closed/expired work cannot be shared or entered.
+
+No new migration, secret or environment variable is required. Existing lifecycle events now include `assignment_share_clicked` (adult owner, assignment, controlled channel), `assignment_entry`, and a `channel` on start/result/abandonment. Channels are `direct`, `copy_link`, `google_classroom`. UUID click/entry keys deduplicate network retries; each intentional new click remains a separate event. Result attribution follows the server-recorded start when available.
+
+`adult_acquisition_captured` retains the adult account's first source/medium/campaign independently of `signup_source` and student distribution. Browser session storage and controlled callback parameters preserve it through OAuth. Sources are direct/google/bing/google_classroom/chatgpt/facebook/instagram/external_other; mediums are organic/referral/social/email/cpc/ai_assistant; campaigns are classroom_launch/teacher_resources/parent_resources. Unknown fields and full URLs are discarded. Student routes do not capture adult acquisition. DNT/GPC and GA disable flags suppress adult capture. Nothing from these new server dimensions is added to GA4's allowlist.
+
+Local checks: `npm ci`, `npm run db:migrate:local`, `npm run dev` (http://127.0.0.1:5173), then lint/typecheck/test/build and Playwright. The shared browser fixture blocks external network calls; Classroom popups and OAuth use test doubles. Real Google login, class selection and publication require separate authorized account testing and are not established by local tests. `npm run build` is a Wrangler dry run; do not run remote migrations or push without separate approval.
+
+## First-party diagnostics
+
+Apply `0023_diagnostics.sql` locally with `npm run db:migrate:local`. A separately authorized production migration must precede eventual release; this implementation does not run any remote migration. Diagnostics storage is optional and failures do not block the app.
+
+Sign in to `/admin` using the existing `ADMIN_EMAIL` account. In 分享与作业诊断 click 查询诊断 for the last seven days' grouped event/reason/status/version counts and latest 50 observations. Paste a 24-hex diagnostic ID to inspect at most 100 records in one browser-session chain. The same authenticated read-only API is `GET /api/admin/diagnostics?trace=<24-hex-id>`; anonymous and ordinary adult accounts cannot access it. A user's local chain ID can be read from `JSON.parse(sessionStorage.getItem('mySpellingDiagnosticContext') || 'null')?.trace` in their own browser, without copying the ticket, URL, PIN or learner identity.
+
+Server observations cover share-link generation, PIN validation, entry GET, practice start and result submission; existing lifecycle share-click/start/result counts retain their original meanings. Client-only reports cover popup blockers, request timeout/network failure, invalid response and the first JS error/unhandled rejection per page. Do not sum lifecycle activity and diagnostic observations as two actions. Browser reports are explicitly unverified and Google selection/publication inside Classroom is unobservable.
+
+Only controlled route templates/reason codes, HTTP status, source, random trace/event IDs, server-resolved adult/assignment IDs, server time and fixed release version are retained. No learner token, PIN, student name/email, full URL/query/referrer, answers, exception message/stack, IP or user agent is saved. DNT/GPC/GA-disable suppress browser reports and the workflow sends an opt-out header for server observations. Signed 24-hour diagnostic tickets, same-origin checks, request size limits, per-IP transient rate limiting, deduplication and database caps protect intake: 20 rows per trace/minute, 100 per trace, 10,000/day, 70,000 retained rows. The existing daily scheduled handler prunes rows older than seven days; queries exclude expired rows even before pruning. Fixed release version is `2026-10-02.classroom-diagnostics-v1` and must be changed in both diagnostic modules for a later instrumented release.
+
+Workflow requests time out after 20 seconds, with existing UI retry handling; diagnostic bootstrap/report requests are capped at three seconds and never awaited by payment, OAuth, loading or assignment submission. Late successful submissions remain safely retryable with the existing attempt ID. Stripe implementation/configuration remains unchanged.

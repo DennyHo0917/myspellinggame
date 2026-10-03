@@ -1,3 +1,8 @@
+import { installDiagnostics, diagnosticFetch } from "./diagnostics.mjs";
+import { distributionChannel } from "./assignmentSharing.mjs";
+const channel = distributionChannel(
+  new URLSearchParams(location.search).get("channel"),
+);
 import { trackEvent, trackUsageLimit } from "./analytics.mjs";
 import {
   PRODUCT_LOCALES,
@@ -37,6 +42,7 @@ let activeSince = 0;
 let currentPrompt = null;
 let leaving = false;
 
+installDiagnostics();
 document.documentElement.lang = locale;
 document.title = copy.brand;
 
@@ -169,7 +175,7 @@ function card(titleText) {
 async function request(path, options = {}) {
   let response;
   try {
-    response = await fetch(path, {
+    response = await diagnosticFetch(path, {
       ...options,
       headers: options.body
         ? { "content-type": "application/json" }
@@ -185,6 +191,7 @@ async function request(path, options = {}) {
     trackUsageLimit(data.error);
     const error = new Error(m(ERROR_KEYS[data.error] || "error"));
     error.code = data.error;
+    error.joinPath = data.joinPath;
     throw error;
   }
   return data;
@@ -243,6 +250,7 @@ function saveProgress() {
   syncActiveDuration();
   saveState({
     attemptId,
+    channel,
     nickname,
     index,
     originalAnswers,
@@ -364,8 +372,8 @@ async function beginAssignment() {
     method: "POST",
     body: JSON.stringify(
       learnerLink
-        ? { learnerPublicId, attemptId: nextAttemptId }
-        : { nickname, attemptId: nextAttemptId },
+        ? { learnerPublicId, attemptId: nextAttemptId, channel }
+        : { nickname, attemptId: nextAttemptId, channel },
     ),
   });
   nickname = assignment.learner?.name || nickname;
@@ -600,6 +608,7 @@ async function leaveAssignment() {
       method: "POST",
       body: JSON.stringify({
         attemptId,
+        channel,
         ...(learnerLink ? { learnerPublicId } : { nickname }),
         answers: originalAnswers,
         durationSeconds: getDurationSeconds(),
@@ -641,6 +650,7 @@ async function saveResult() {
   const durationSeconds = getDurationSeconds();
   const body = JSON.stringify({
     attemptId,
+    channel,
     ...(learnerLink ? { learnerPublicId } : { nickname }),
     answers: originalAnswers,
     durationSeconds,
@@ -731,6 +741,14 @@ async function init() {
     );
     if (learnerLink && !assignment.learner)
       throw new Error(copy.learnerNotFound);
+    request(`/api/public/assignments/${publicId}/entry`, {
+      method: "POST",
+      body: JSON.stringify({
+        entryId: crypto.randomUUID(),
+        channel,
+        ...(learnerLink ? { learnerPublicId } : {}),
+      }),
+    }).catch(() => null);
     trackEvent("assignment_opened", {
       mode: assignment.mode,
       word_count: assignment.words.length,
@@ -746,6 +764,22 @@ async function init() {
     if (learnerLink) nickname = assignment.learner.name;
     renderIntro();
   } catch (error) {
+    if (
+      error.code === "learner_required" &&
+      typeof error.joinPath === "string"
+    ) {
+      const target = new URL(error.joinPath, location.origin);
+      if (
+        target.origin === location.origin &&
+        /^\/join\/[A-Za-z0-9_-]{8,24}$/.test(target.pathname) &&
+        target.searchParams.get("assignment") === publicId
+      ) {
+        target.searchParams.set("lang", locale);
+        target.searchParams.set("channel", channel);
+        location.replace(target.toString());
+        return;
+      }
+    }
     const section = card(error.message);
     const retry = document.createElement("button");
     retry.type = "button";
@@ -756,4 +790,4 @@ async function init() {
 }
 
 init();
-import './lineNumbers.mjs';
+import "./lineNumbers.mjs";

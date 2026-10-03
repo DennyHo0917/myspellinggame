@@ -192,7 +192,7 @@ const locale = {
         ],
         [
           "Analytics",
-          "Google Analytics receives a cleaned page address without query parameters or URL fragments, plus aggregate events such as mode, word count, and result. We do not send word lists or typed answers.",
+          "Google Analytics receives a cleaned page address without query parameters or URL fragments, plus aggregate events such as mode, word count, and result. We do not send word lists or typed answers. We also record limited account activity and assignment sharing channels on our server. An adult’s first visit source, medium and campaign use fixed categories and can be linked to their account after sign-in; no full referring URL is stored. Student names, PINs and identity tokens are not sent to Google Analytics. Sharing clicks do not confirm that a Classroom post was published. Adult source capture respects Do Not Track and Global Privacy Control. First-party troubleshooting records use random diagnostic IDs, fixed error codes and route templates, HTTP status, time and release version, with a seven-day retention limit. They do not include student identities, PINs, tokens, complete URLs, answers or raw exception text.",
         ],
         [
           "Advertising",
@@ -306,7 +306,7 @@ const locale = {
         ],
         [
           "Analítica",
-          "Google Analytics recibe la dirección limpia de la página, sin parámetros ni fragmentos, y datos agregados como el modo, la cantidad de palabras y el resultado. No enviamos listas ni respuestas.",
+          "Google Analytics recibe la dirección limpia de la página, sin parámetros ni fragmentos, y datos agregados como el modo, la cantidad de palabras y el resultado. No enviamos listas ni respuestas. También registramos en nuestro servidor actividad limitada de las cuentas y canales de distribución de tareas. El origen, el medio y la campaña de la primera visita de un adulto se guardan en categorías fijas y pueden vincularse a su cuenta al iniciar sesión; no guardamos la URL completa de procedencia. No enviamos nombres, PIN ni tokens de identidad de alumnos a Google Analytics. Un clic en compartir no confirma la publicación en Classroom. Respetamos Do Not Track y Global Privacy Control al registrar el origen del adulto. Para resolver fallos, conservamos durante siete días identificadores aleatorios, códigos de error y rutas predefinidos, estado HTTP, fecha y versión. Estos registros propios no contienen identidades de alumnos, PIN, tokens, URL completas, respuestas ni texto original de excepciones.",
         ],
         [
           "Publicidad",
@@ -420,7 +420,7 @@ const locale = {
         ],
         [
           "Analytics",
-          "O Google Analytics recebe o endereço limpo da página, sem parâmetros ou fragmentos, e dados agregados como modo, quantidade de palavras e resultado. Não enviamos listas nem respostas.",
+          "O Google Analytics recebe o endereço limpo da página, sem parâmetros ou fragmentos, e dados agregados como modo, quantidade de palavras e resultado. Não enviamos listas nem respostas. Também registramos no servidor atividades limitadas da conta e canais de compartilhamento de tarefas. A origem, o meio e a campanha da primeira visita de um adulto usam categorias fixas e podem ser associados à conta após o login; não armazenamos a URL completa de origem. Nomes, PINs e tokens de identidade dos alunos não são enviados ao Google Analytics. Clicar em compartilhar não confirma uma publicação no Classroom. A coleta da origem do adulto respeita Do Not Track e Global Privacy Control. Para investigar falhas, guardamos por sete dias identificadores aleatórios, códigos de erro e rotas definidos, status HTTP, horário e versão. Esses registros internos não incluem identidades de alunos, PINs, tokens, URLs completas, respostas ou o texto original de exceções.",
         ],
         [
           "Anúncios",
@@ -534,7 +534,7 @@ const locale = {
         ],
         [
           "Mesure d’audience",
-          "Google Analytics reçoit une adresse de page nettoyée, sans paramètres ni fragment, ainsi que des données agrégées comme le mode, le nombre de mots et le résultat. Les listes et réponses ne sont pas envoyées.",
+          "Google Analytics reçoit une adresse de page nettoyée, sans paramètres ni fragment, ainsi que des données agrégées comme le mode, le nombre de mots et le résultat. Les listes et réponses ne sont pas envoyées. Nous enregistrons aussi sur notre serveur certaines activités du compte et les canaux de partage des devoirs. La source, le support et la campagne de la première visite d’un adulte utilisent des catégories fixes et peuvent être associés à son compte après connexion ; l’URL de provenance complète n’est pas conservée. Les noms, codes et jetons d’identité des élèves ne sont pas envoyés à Google Analytics. Un clic de partage ne confirme pas une publication dans Classroom. La collecte de la source des adultes respecte Do Not Track et Global Privacy Control. Pour diagnostiquer les problèmes, nous conservons sept jours des identifiants aléatoires, des codes d’erreur et des modèles de route prédéfinis, le statut HTTP, la date et la version. Ces journaux internes excluent l’identité des élèves, les PIN, les jetons, les URL complètes, les réponses et le texte brut des exceptions.",
         ],
         [
           "Publicité",
@@ -648,7 +648,7 @@ const locale = {
         ],
         [
           "Analytics",
-          "Google Analytics menerima alamat halaman yang sudah dibersihkan tanpa parameter atau fragmen, serta data gabungan seperti mode, jumlah kata, dan hasil. Daftar kata dan jawaban tidak dikirim.",
+          "Google Analytics menerima alamat halaman yang sudah dibersihkan tanpa parameter atau fragmen, serta data gabungan seperti mode, jumlah kata, dan hasil. Daftar kata dan jawaban tidak dikirim. Kami juga mencatat aktivitas akun terbatas dan saluran pembagian tugas di server. Sumber, media, dan kampanye kunjungan pertama orang dewasa memakai kategori tetap dan dapat dikaitkan dengan akun setelah masuk; URL asal lengkap tidak disimpan. Nama, PIN, dan token identitas siswa tidak dikirim ke Google Analytics. Klik berbagi tidak membuktikan tugas telah dipublikasikan di Classroom. Pencatatan sumber orang dewasa menghormati Do Not Track dan Global Privacy Control. Catatan pemecahan masalah internal disimpan selama tujuh hari dan hanya memuat ID acak, kode kesalahan serta pola rute yang ditentukan, status HTTP, waktu, dan versi. Identitas siswa, PIN, token, URL lengkap, jawaban, dan teks asli pengecualian tidak disimpan.",
         ],
         [
           "Iklan",
@@ -759,7 +759,7 @@ const locale = {
         ],
         [
           "访问分析",
-          "Google Analytics 只接收不含查询参数和 URL 片段的页面地址，以及模式、单词数量、成绩等汇总信息。完整单词表和输入答案不会被发送。",
+          "Google Analytics 只接收不含查询参数和 URL 片段的页面地址，以及模式、单词数量、成绩等汇总信息。完整单词表和输入答案不会被发送。 我们也在服务端记录有限的账号活动和作业分享渠道。成人首次访问的来源、媒介和活动使用固定类别，登录后可关联到成人账号；不保存完整来源网址。学生姓名、PIN 和身份令牌不会发送给 Google Analytics。点击分享不代表已成功发布到 Classroom。成人来源记录尊重 Do Not Track 和 Global Privacy Control。第一方故障诊断仅保存随机编号、固定错误码和路由模板、HTTP 状态、时间及版本，保留期限为 7 天，不含学生身份、PIN、令牌、完整网址、答案或原始异常文本。",
         ],
         [
           "广告",

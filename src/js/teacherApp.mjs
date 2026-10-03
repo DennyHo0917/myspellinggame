@@ -1,4 +1,9 @@
 import {
+  installDiagnostics,
+  diagnosticFetch,
+  reportDiagnostic,
+} from "./diagnostics.mjs";
+import {
   clearAssignmentEntryPoint,
   getAssignmentEntryPoint,
   setAssignmentEntryPoint,
@@ -16,6 +21,12 @@ import {
   productMessage,
   productMessages,
 } from "./productLocale.mjs";
+import {
+  acquisitionAllowed,
+  captureAdultAcquisition,
+  acquisitionCallback,
+} from "./adultAcquisition.mjs";
+import { assignmentShareURL, classroomShareURL } from "./assignmentSharing.mjs";
 import { analyzeWords } from "./spellingCore.mjs";
 
 const root = document.getElementById("product-app");
@@ -192,7 +203,10 @@ const ERROR_KEYS = {
 };
 
 async function api(path, options = {}) {
-  const response = await fetch(path, {
+  const transport = /^\/api\/assignments\/[0-9a-f-]{36}\/share$/i.test(path)
+    ? diagnosticFetch
+    : fetch;
+  const response = await transport(path, {
     ...options,
     credentials: "same-origin",
     headers: options.body
@@ -1194,9 +1208,15 @@ function saveAssignmentDraft(words, title = "", exampleSentences = "") {
 }
 
 function teacherCallbackURL() {
-  return (
+  const detailPath = /^\/workspace\/assignments\/[0-9a-f-]{36}$/i.test(
+    location.pathname,
+  )
+    ? `${location.pathname}?lang=${encodeURIComponent(locale)}`
+    : null;
+  return acquisitionCallback(
     safeWorkspaceReturnPath(location.href) ||
-    `/workspace?lang=${encodeURIComponent(locale)}`
+      detailPath ||
+      `/workspace?lang=${encodeURIComponent(locale)}`,
   );
 }
 
@@ -3403,15 +3423,36 @@ async function renderDetail(me, id, { force = false } = {}) {
       : isParentPlan(me)
         ? copy.familyChildLinkCopied
         : copy.copied;
-  const bindCopy = (button, url, successText = copiedText) => {
+  const bindCopy = (button, url, learnerId, successText = copiedText) => {
     button.addEventListener("click", async () => {
-      await navigator.clipboard.writeText(url);
-      button.textContent = successText;
-      button.classList.add("is-success");
-      trackEvent("assignment_link_copied", {
-        mode: data.mode,
-        word_count: data.words.length,
-      });
+      // Individual copy already has an owned detail link: preserve the user gesture.
+      void api(`/api/assignments/${id}/share`, {
+        method: "POST",
+        body: JSON.stringify({
+          channel: "copy_link",
+          audience: "individual",
+          learnerId,
+          clickId: crypto.randomUUID(),
+        }),
+      }).catch(() => null);
+      try {
+        await navigator.clipboard.writeText(url);
+        button.textContent = successText;
+        button.classList.add("is-success");
+        trackEvent("assignment_link_copied", {
+          mode: data.mode,
+          word_count: data.words.length,
+        });
+      } catch {
+        const input = document.createElement("input");
+        input.readOnly = true;
+        input.value = url;
+        input.setAttribute("aria-label", copy.studentLink);
+        sharingStatus.textContent = copy.clipboardHelp;
+        sharingStatus.append(input);
+        input.focus();
+        input.select();
+      }
     });
   };
   if (assignedLearners.length) {
@@ -3427,7 +3468,7 @@ async function renderDetail(me, id, { force = false } = {}) {
       learnerPanel.className = "assignment-student-link";
       const learnerName = document.createElement("strong");
       learnerName.textContent = learner.name;
-      const learnerUrl = `${location.origin}/a/${data.public_id}?learner=${encodeURIComponent(learner.public_id)}&lang=${encodeURIComponent(locale)}`;
+      const learnerUrl = `${location.origin}/a/${data.public_id}?learner=${encodeURIComponent(learner.public_id)}&lang=${encodeURIComponent(locale)}&channel=copy_link`;
       const learnerLink = document.createElement("a");
       learnerLink.href = learnerUrl;
       learnerLink.textContent = learnerUrl;
@@ -3439,7 +3480,7 @@ async function renderDetail(me, id, { force = false } = {}) {
       learnerCopyButton.className = "button-secondary";
       learnerCopyButton.setAttribute("aria-live", "polite");
       learnerCopyButton.textContent = copyText;
-      bindCopy(learnerCopyButton, learnerUrl);
+      bindCopy(learnerCopyButton, learnerUrl, learner.id);
       learnerActions.append(learnerCopyButton);
       learnerPanel.append(learnerName, learnerLink, learnerActions);
       linkPanel.append(learnerPanel);
@@ -3459,12 +3500,27 @@ async function renderDetail(me, id, { force = false } = {}) {
   }
   const actions = document.createElement("div");
   actions.className = "actions";
-  const studentUrl = `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`;
+  const sharePath = Object.hasOwn(data, "sharePath")
+    ? data.sharePath
+    : assignedLearners.length
+      ? me.plan === "teacher" && me.classPublicId
+        ? `/join/${me.classPublicId}?assignment=${data.public_id}`
+        : null
+      : `/a/${data.public_id}`;
+  const studentUrl = assignmentShareURL(
+    sharePath,
+    location.origin,
+    locale,
+    "copy_link",
+  );
   const copyButton = document.createElement("button");
   copyButton.type = "button";
   copyButton.setAttribute("aria-live", "polite");
-  copyButton.textContent =
-    me.plan === "free" || isParentPlan(me) ? copy.freeCopyLink : copy.copyLink;
+  copyButton.textContent = assignedLearners.length
+    ? copy.copyClassLink
+    : me.plan === "free" || isParentPlan(me)
+      ? copy.freeCopyLink
+      : copy.copyLink;
   const toggle = document.createElement("button");
   toggle.type = "button";
   toggle.className = "button-secondary";
@@ -3484,11 +3540,139 @@ async function renderDetail(me, id, { force = false } = {}) {
   edit.addEventListener("click", () => {
     location.href = `/workspace/assignments/${id}/edit?lang=${encodeURIComponent(locale)}`;
   });
-  bindCopy(
-    copyButton,
-    studentUrl,
-    me.plan === "free" || isParentPlan(me) ? copy.freeLinkCopied : copy.copied,
-  );
+  const sharingStatus = document.createElement("p");
+  sharingStatus.className = "status";
+  sharingStatus.setAttribute("role", "status");
+  const active =
+    data.status === "published" &&
+    new Date(data.expires_at).getTime() > Date.now();
+  copyButton.disabled = !studentUrl || !active;
+  copyButton.addEventListener("click", async () => {
+    copyButton.disabled = true;
+    let validatedURL = null;
+    const share = api(`/api/assignments/${id}/share`, {
+      method: "POST",
+      body: JSON.stringify({
+        channel: "copy_link",
+        clickId: crypto.randomUUID(),
+      }),
+    }).then((result) => {
+      validatedURL = assignmentShareURL(
+        result.path,
+        location.origin,
+        locale,
+        "copy_link",
+      );
+      if (!validatedURL) throw new Error(copy.error);
+      return validatedURL;
+    });
+    try {
+      if (
+        typeof ClipboardItem === "function" &&
+        typeof navigator.clipboard?.write === "function"
+      ) {
+        // Invoke the clipboard during the click; Safari accepts delayed validated content.
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            "text/plain": share.then(
+              (url) => new Blob([url], { type: "text/plain" }),
+            ),
+          }),
+        ]);
+      } else {
+        await navigator.clipboard.writeText(await share);
+      }
+      copyButton.textContent = copy.copied;
+      sharingStatus.replaceChildren();
+      trackEvent("assignment_link_copied", {
+        mode: data.mode,
+        word_count: data.words.length,
+      });
+    } catch (error) {
+      // A validated link remains usable when clipboard permissions/user activation expire.
+      await share.catch(() => null);
+      sharingStatus.textContent = validatedURL
+        ? copy.clipboardHelp
+        : error.message;
+      if (validatedURL) {
+        const input = document.createElement("input");
+        input.readOnly = true;
+        input.value = validatedURL;
+        input.setAttribute("aria-label", copy.studentLink);
+        const retry = document.createElement("button");
+        retry.type = "button";
+        retry.className = "button-secondary";
+        retry.textContent = copy.copyManually;
+        retry.addEventListener("click", () => {
+          input.focus();
+          input.select();
+          navigator.clipboard
+            ?.writeText?.(validatedURL)
+            .then(() => {
+              retry.textContent = copy.copied;
+            })
+            .catch(() => input.select());
+        });
+        sharingStatus.append(input, retry);
+        input.focus();
+        input.select();
+      }
+    } finally {
+      copyButton.disabled = !active;
+    }
+  });
+  const classroom = document.createElement("button");
+  classroom.type = "button";
+  classroom.className = "button-secondary";
+  classroom.textContent = copy.shareClassroom;
+  classroom.disabled = !studentUrl || !active;
+  classroom.addEventListener("click", async () => {
+    classroom.disabled = true;
+    // Open synchronously to survive popup blockers; no completion claim or callback.
+    const popup = window.open("about:blank", "_blank");
+    if (popup) popup.opener = null;
+    else reportDiagnostic("popup_blocked");
+    try {
+      const result = await api(`/api/assignments/${id}/share`, {
+        method: "POST",
+        body: JSON.stringify({
+          channel: "google_classroom",
+          clickId: crypto.randomUUID(),
+        }),
+      });
+      const url = assignmentShareURL(
+        result.path,
+        location.origin,
+        locale,
+        "google_classroom",
+      );
+      if (!url) {
+        reportDiagnostic("invalid_response");
+        throw new Error(copy.error);
+      }
+      const share = classroomShareURL(
+        url,
+        data.title,
+        assignedLearners.length ? copy.classroomPinBody : copy.classroomBody,
+      );
+      if (popup && !popup.closed) popup.location.href = share;
+      else {
+        const link = document.createElement("a");
+        link.href = share;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = copy.shareClassroom;
+        sharingStatus.replaceChildren(link);
+      }
+      if (popup && !popup.closed)
+        sharingStatus.textContent = copy.classroomOpened;
+    } catch (error) {
+      popup?.close();
+      sharingStatus.textContent = error.code ? error.message : copy.error;
+    } finally {
+      classroom.disabled = !active;
+    }
+  });
   toggle.addEventListener("click", async () => {
     await api(`/api/assignments/${id}`, {
       method: "PATCH",
@@ -3524,7 +3708,8 @@ async function renderDetail(me, id, { force = false } = {}) {
       );
     }
   });
-  if (!assignedLearners.length) actions.append(copyButton);
+  if (studentUrl) actions.append(copyButton, classroom);
+  else sharingStatus.textContent = copy.classroomIndividualOnly;
   actions.append(edit, saveList, toggle);
   if (isTeacherPlan(me)) {
     const exportLink = document.createElement("a");
@@ -3534,7 +3719,7 @@ async function renderDetail(me, id, { force = false } = {}) {
     actions.append(exportLink);
   }
   actions.append(remove);
-  card.append(headingRow, linkLabel, linkPanel, actions);
+  card.append(headingRow, linkLabel, linkPanel, actions, sharingStatus);
   main.append(card);
   const summary = document.createElement("section");
   summary.className = "product-card";
@@ -4107,6 +4292,7 @@ function showActivationTimeout(plan) {
 }
 
 async function init() {
+  installDiagnostics();
   const loading = document.createElement("p");
   loading.className = "workspace-loading";
   loading.setAttribute("role", "status");
@@ -4120,6 +4306,13 @@ async function init() {
     loading.className = "workspace-loading error";
     loading.textContent = error.message;
     return;
+  }
+  const acquisition = captureAdultAcquisition();
+  if (acquisition && acquisitionAllowed()) {
+    void api("/api/lifecycle/acquisition", {
+      method: "POST",
+      body: JSON.stringify(acquisition),
+    }).catch(() => null);
   }
   const signupParams = new URLSearchParams(location.search);
   if (signupParams.get("signup") === "1") {
@@ -4169,6 +4362,8 @@ async function init() {
       url.searchParams.delete("signup");
       url.searchParams.delete("signup_source");
       url.searchParams.delete("signup_intent");
+      for (const key of ["acq_source", "acq_medium", "acq_campaign"])
+        url.searchParams.delete(key);
       history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
     }
   } catch {}

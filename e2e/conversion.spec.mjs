@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures.mjs";
 import { PLAN_LIMITS } from "../src/worker/domain.ts";
 
 const teacher = {
@@ -77,7 +77,7 @@ test("ordinary teacher routes do not override the stored locale", async ({
   await mockSignedOut(page);
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.evaluate(() =>
-    localStorage.setItem("mySpellingGamePreferredLocale", "es"),
+    localStorage.setItem("mySpellingGameManualLocale", "es"),
   );
 
   await page.goto("/workspace", { waitUntil: "domcontentloaded" });
@@ -811,13 +811,12 @@ test("successful social auth records signup dimensions once", async ({
   });
   await page.goto("/workspace?lang=en");
   await Promise.all([
-    page.waitForURL(/\/workspace\?lang=en$/, { waitUntil: "domcontentloaded" }),
+    page.waitForURL(/signup=1/, { waitUntil: "domcontentloaded" }),
     page.getByRole("button", { name: "Continue with Google" }).click(),
   ]);
-  await page.waitForTimeout(500);
-  expect(await analyticsEvents(page, "sign_up")).toEqual([
-    { provider: "google", workspace_type: "teacher" },
-  ]);
+  await expect
+    .poll(() => analyticsEvents(page, "sign_up").catch(() => null))
+    .toEqual([{ provider: "google", workspace_type: "teacher" }]);
   await expect(page).toHaveURL("/workspace?lang=en");
   await page.reload({ waitUntil: "domcontentloaded" });
   expect(await analyticsEvents(page, "sign_up")).toEqual([]);

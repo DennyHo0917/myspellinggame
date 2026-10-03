@@ -2806,7 +2806,7 @@ describe("assignment attempts", () => {
     ).toBe(3);
   });
 
-  it("rate-limits only by the assignment public ID", async () => {
+  it("rate-limits submissions by assignment public ID independently of optional diagnostics", async () => {
     const created = await createAssignment();
     const publicId = String(created.body.publicId);
     const keys: string[] = [];
@@ -2825,7 +2825,12 @@ describe("assignment attempts", () => {
     );
 
     expect(response.status).toBe(429);
-    expect(keys).toEqual([`submit:${publicId}`]);
+    expect(keys.filter((key) => key.startsWith("submit:"))).toEqual([
+      `submit:${publicId}`,
+    ]);
+    expect(keys.filter((key) => key.startsWith("diagnostic:"))).toEqual([
+      "diagnostic:unknown",
+    ]);
   });
 
   it.each(["dictation", "typing"] as const)(
@@ -5217,5 +5222,500 @@ describe("Stripe event processing", () => {
       .bind(teacherA.id)
       .first<{ plan: string; status: string }>();
     expect(row).toEqual({ plan: "free", status: "active" });
+  });
+});
+
+describe("Classroom sharing and safe assignment entry", () => {
+  const clickId = "12345678-1234-4234-8234-123456789012";
+  const post = (body: Record<string, unknown>) => ({
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+  async function assigned() {
+    await insertSubscription({ plan: "teacher", status: "active" });
+    const { body: child } = await createLearner(
+      "Test learner",
+      teacherA,
+      () => "1234",
+    );
+    const { body: work } = await createAssignment(teacherA, {
+      learnerIds: [child.id],
+    });
+    const me = await call("/api/me");
+    const identity = (await me.json()) as { classPublicId: string };
+    return { child, work, classId: identity.classPublicId };
+  }
+  it("shares link-only work for every current assignment-creating plan and deduplicates request retries", async () => {
+    const { body: work } = await createAssignment();
+    const path = `/api/assignments/${work.id}/share`;
+    for (const plan of ["free", "parent", "teacher"] as const) {
+      if (plan !== "free") {
+        await bindings.DB.prepare("DELETE FROM subscriptions").run();
+        await insertSubscription({ plan, status: "active" });
+      }
+      const response = await call(
+        path,
+        post({
+          clickId,
+          channel: "google_classroom",
+          url: "https://evil.test/?pin=1234",
+        }),
+      );
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({ path: `/a/${work.publicId}` });
+    }
+    const rows = await bindings.DB.prepare(
+      "SELECT properties_json FROM lifecycle_events WHERE event_name = 'assignment_share_clicked'",
+    ).all<{ properties_json: string }>();
+    expect(rows.results).toHaveLength(1);
+    expect(JSON.parse(rows.results[0].properties_json)).toEqual({
+      assignment_id: work.id,
+      channel: "google_classroom",
+    });
+  });
+  it("uses a class PIN path and safely repairs old generic links", async () => {
+    const { work, child, classId } = await assigned();
+    const response = await call(
+      `/api/assignments/${work.id}/share`,
+      post({ clickId, channel: "google_classroom" }),
+    );
+    const value = (await response.json()) as { path: string };
+    expect(value.path).toBe(`/join/${classId}?assignment=${work.publicId}`);
+    expect(value.path).not.toContain(String(child.public_id));
+    const oldLink = await call(
+      `/api/public/assignments/${work.publicId}`,
+      {},
+      null,
+    );
+    expect(oldLink.status).toBe(403);
+    expect(await oldLink.json()).toEqual({
+      error: "learner_required",
+      joinPath: value.path,
+    });
+    const result = await call(
+      `/api/public/join/${classId}`,
+      post({ pin: "1234", assignmentPublicId: work.publicId }),
+      null,
+    );
+    expect(result.status).toBe(200);
+    expect(await result.json()).toEqual({
+      learnerPublicId: child.public_id,
+      assignmentPublicId: work.publicId,
+    });
+  });
+  it("rejects wrong PIN, unassigned learner, another class and archived learner without releasing a token", async () => {
+    const { work, child, classId } = await assigned();
+    const other = await createLearner(
+      "Other test learner",
+      teacherA,
+      () => "5678",
+    );
+    const stranger = await createAssignment(teacherB);
+    for (const body of [
+      { pin: "0000", assignmentPublicId: work.publicId },
+      { pin: "5678", assignmentPublicId: work.publicId },
+      { pin: "1234", assignmentPublicId: stranger.body.publicId },
+      { pin: "1234", assignmentPublicId: "bad" },
+    ]) {
+      const response = await call(
+        `/api/public/join/${classId}`,
+        post(body),
+        null,
+      );
+      expect(response.status).toBeGreaterThanOrEqual(400);
+      expect(await response.text()).not.toContain(String(child.public_id));
+    }
+    expect(other.response.status).toBe(201);
+    await bindings.DB.prepare("UPDATE learners SET archived = 1 WHERE id = ?")
+      .bind(child.id)
+      .run();
+    const response = await call(
+      `/api/public/join/${classId}`,
+      post({ pin: "1234", assignmentPublicId: work.publicId }),
+      null,
+    );
+    expect(response.status).toBe(401);
+  });
+  it.each(["closed", "expired"])(
+    "blocks %s work for sharing, PIN entry, direct entry and start",
+    async (state) => {
+      const { work, child, classId } = await assigned();
+      if (state === "closed")
+        await bindings.DB.prepare(
+          "UPDATE assignments SET status = 'closed' WHERE id = ?",
+        )
+          .bind(work.id)
+          .run();
+      else
+        await bindings.DB.prepare(
+          "UPDATE assignments SET expires_at = '2000-01-01T00:00:00.000Z' WHERE id = ?",
+        )
+          .bind(work.id)
+          .run();
+      for (const [path, body, actor] of [
+        [
+          `/api/assignments/${work.id}/share`,
+          { clickId, channel: "google_classroom" },
+          teacherA,
+        ],
+        [
+          `/api/public/join/${classId}`,
+          { pin: "1234", assignmentPublicId: work.publicId },
+          null,
+        ],
+        [
+          `/api/public/assignments/${work.publicId}/entry`,
+          { entryId: clickId, learnerPublicId: child.public_id },
+          null,
+        ],
+        [
+          `/api/public/assignments/${work.publicId}/start`,
+          { attemptId: clickId, learnerPublicId: child.public_id },
+          null,
+        ],
+      ] as const)
+        expect((await call(path, post(body), actor)).status).toBe(410);
+    },
+  );
+  it("keeps assigned-work protection after downgrade and retains existing individual-link access", async () => {
+    const { work, child, classId } = await assigned();
+    await bindings.DB.prepare("DELETE FROM subscriptions").run();
+    for (const plan of ["free", "parent"] as const) {
+      if (plan === "parent")
+        await insertSubscription({ plan, status: "active" });
+      expect(
+        (
+          await call(
+            `/api/assignments/${work.id}/share`,
+            post({ clickId, channel: "google_classroom" }),
+          )
+        ).status,
+      ).toBe(403);
+      expect(
+        (
+          await call(
+            `/api/public/join/${classId}`,
+            post({ pin: "1234", assignmentPublicId: work.publicId }),
+            null,
+          )
+        ).status,
+      ).toBe(401);
+      const generic = await call(
+        `/api/public/assignments/${work.publicId}`,
+        {},
+        null,
+      );
+      expect(await generic.json()).toEqual({ error: "learner_required" });
+      expect(
+        (
+          await call(
+            `/api/public/assignments/${work.publicId}?learner=${child.public_id}`,
+            {},
+            null,
+          )
+        ).status,
+      ).toBe(200);
+    }
+  });
+  it("requires owner, same origin and controlled sharing input", async () => {
+    const { body: work } = await createAssignment();
+    const path = `/api/assignments/${work.id}/share`;
+    expect(
+      (await call(path, post({ clickId, channel: "google_classroom" }), null))
+        .status,
+    ).toBe(401);
+    expect(
+      (
+        await call(
+          path,
+          post({ clickId, channel: "google_classroom" }),
+          teacherB,
+        )
+      ).status,
+    ).toBe(404);
+    expect(
+      (await call(path, post({ clickId, channel: "student_pin" }))).status,
+    ).toBe(400);
+    expect(
+      (await call(path, post({ clickId: "bad", channel: "google_classroom" })))
+        .status,
+    ).toBe(400);
+    await expect(
+      handleRequest(
+        new Request(`https://example.test${path}`, {
+          method: "POST",
+          headers: {
+            origin: "https://evil.test",
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ clickId, channel: "google_classroom" }),
+        }),
+        testEnv(),
+        { getSession: sessionFor(teacherA) },
+      ),
+    ).rejects.toMatchObject({ status: 403, code: "invalid_origin" });
+    expect(
+      (
+        await call(
+          `/api/assignments/12345678-1234-4234-8234-123456789099/share`,
+          post({ clickId, channel: "google_classroom" }),
+        )
+      ).status,
+    ).toBe(404);
+  });
+  it("records entry/start/result channels once and keeps start attribution on submission", async () => {
+    const { body: work } = await createAssignment();
+    const publicId = String(work.publicId);
+    const entryPath = `/api/public/assignments/${publicId}/entry`;
+    for (let i = 0; i < 2; i++)
+      expect(
+        (
+          await call(
+            entryPath,
+            post({
+              entryId: clickId,
+              channel: "google_classroom",
+              pin: "1234",
+            }),
+            null,
+          )
+        ).status,
+      ).toBe(200);
+    const startBody = {
+      attemptId: clickId,
+      nickname: "Test 01",
+      channel: "google_classroom",
+    };
+    expect(
+      (
+        await call(
+          `/api/public/assignments/${publicId}/start`,
+          post(startBody),
+          null,
+        )
+      ).status,
+    ).toBe(200);
+    const words = (await publicWords(publicId)).words;
+    const body = {
+      attemptId: clickId,
+      nickname: "Test 01",
+      channel: "copy_link",
+      durationSeconds: 5,
+      answers: words.map((w) => ({ wordId: w.id, answer: w.word })),
+    };
+    for (let i = 0; i < 2; i++)
+      expect(
+        (
+          await call(
+            `/api/public/assignments/${publicId}/attempts`,
+            post(body),
+            null,
+          )
+        ).status,
+      ).toBe(201);
+    const rows = await bindings.DB.prepare(
+      "SELECT event_name,properties_json FROM lifecycle_events WHERE event_name IN ('assignment_entry','assignment_started','assignment_result_received')",
+    ).all<{ event_name: string; properties_json: string }>();
+    expect(rows.results).toHaveLength(3);
+    for (const row of rows.results)
+      expect(JSON.parse(row.properties_json).channel).toBe("google_classroom");
+    expect(
+      rows.results.find((r) => r.event_name === "assignment_entry")!
+        .properties_json,
+    ).not.toContain("1234");
+  });
+  it("validates assigned entry and preserves join rate limits", async () => {
+    const { work, classId } = await assigned();
+    expect(
+      (
+        await call(
+          `/api/public/assignments/${work.publicId}/entry`,
+          post({ entryId: clickId, channel: "google_classroom" }),
+          null,
+        )
+      ).status,
+    ).toBe(403);
+    const runtime = testEnv({
+      CREATE_LIMITER: { limit: async () => ({ success: false }) },
+    });
+    expect(
+      (
+        await call(
+          `/api/public/join/${classId}`,
+          post({ pin: "1234", assignmentPublicId: work.publicId }),
+          null,
+          runtime,
+        )
+      ).status,
+    ).toBe(429);
+  });
+  it("stores adult first acquisition separately from product signup, strips arbitrary fields, respects DNT", async () => {
+    const first = {
+      source: "google",
+      medium: "organic",
+      campaign: "teacher_resources",
+      url: "https://example.test?learner=SECRET",
+      pin: "1234",
+    };
+    expect((await call("/api/lifecycle/acquisition", post(first))).status).toBe(
+      200,
+    );
+    await call(
+      "/api/lifecycle/acquisition",
+      post({ source: "bing", campaign: "bad" }),
+    );
+    await call("/api/lifecycle/signup", post({ source: "assign_homework" }));
+    const rows = await bindings.DB.prepare(
+      "SELECT properties_json FROM lifecycle_events WHERE event_name='adult_acquisition_captured'",
+    ).all<{ properties_json: string }>();
+    expect(rows.results).toHaveLength(1);
+    expect(JSON.parse(rows.results[0].properties_json)).toEqual({
+      source: "google",
+      medium: "organic",
+      campaign: "teacher_resources",
+    });
+    expect(
+      (await call("/api/lifecycle/acquisition", post(first), null)).status,
+    ).toBe(401);
+    await call(
+      "/api/lifecycle/acquisition",
+      { ...post(first), headers: { DNT: "1" } },
+      teacherB,
+    );
+    const blocked = await bindings.DB.prepare(
+      "SELECT 1 FROM lifecycle_events WHERE user_id=? AND event_name='adult_acquisition_captured'",
+    )
+      .bind(teacherB.id)
+      .first();
+    expect(blocked).toBeNull();
+  });
+});
+
+describe("sharing telemetry resilience", () => {
+  const key = "12345678-1234-4234-8234-123456789012";
+  it("limits anonymous entry and adult clicks without inserting events", async () => {
+    const { body: work } = await createAssignment();
+    const denied = { limit: async () => ({ success: false }) };
+    const runtime = testEnv({ SUBMIT_LIMITER: denied, CREATE_LIMITER: denied });
+    expect(
+      (
+        await call(
+          `/api/public/assignments/${work.publicId}/entry`,
+          {
+            method: "POST",
+            body: JSON.stringify({ entryId: key, channel: "google_classroom" }),
+          },
+          null,
+          runtime,
+        )
+      ).status,
+    ).toBe(429);
+    expect(
+      (
+        await call(
+          `/api/assignments/${work.id}/share`,
+          {
+            method: "POST",
+            body: JSON.stringify({ clickId: key, channel: "copy_link" }),
+          },
+          teacherA,
+          runtime,
+        )
+      ).status,
+    ).toBe(429);
+    const event = await bindings.DB.prepare(
+      "SELECT 1 FROM lifecycle_events WHERE event_name IN ('assignment_entry','assignment_share_clicked')",
+    ).first();
+    expect(event).toBeNull();
+  });
+  it("keeps a saved result successful when attribution lookup fails", async () => {
+    const { body: work } = await createAssignment();
+    const publicId = String(work.publicId);
+    const words = (await publicWords(publicId)).words;
+    const db = new Proxy(bindings.DB, {
+      get(target, property) {
+        if (property === "prepare")
+          return (sql: string) => {
+            if (sql.includes("SELECT properties_json FROM lifecycle_events"))
+              throw new Error("test metrics outage");
+            return target.prepare(sql);
+          };
+        const value = Reflect.get(target, property);
+        return typeof value === "function" ? value.bind(target) : value;
+      },
+    });
+    const response = await call(
+      `/api/public/assignments/${publicId}/attempts`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          attemptId: key,
+          nickname: "Test 01",
+          channel: "copy_link",
+          durationSeconds: 5,
+          answers: words.map((w) => ({ wordId: w.id, answer: w.word })),
+        }),
+      },
+      null,
+      testEnv({ DB: db }),
+    );
+    expect(response.status).toBe(201);
+    expect(await response.json()).toMatchObject({ accuracy: 100 });
+  });
+  it("accepts controlled ChatGPT acquisition without storing referrer URLs", async () => {
+    await call("/api/lifecycle/acquisition", {
+      method: "POST",
+      body: JSON.stringify({
+        source: "chatgpt.com",
+        medium: "ai-assistant",
+        referrer: "https://chatgpt.com/c/private",
+      }),
+    });
+    const event = await bindings.DB.prepare(
+      "SELECT properties_json FROM lifecycle_events WHERE event_name='adult_acquisition_captured'",
+    ).first<{ properties_json: string }>();
+    expect(JSON.parse(event!.properties_json)).toEqual({
+      source: "chatgpt",
+      medium: "ai_assistant",
+      campaign: null,
+    });
+  });
+});
+
+describe("individual copy remains distinct from class sharing", () => {
+  it("records individual copy for existing non-Teacher access and rejects Classroom identity sharing", async () => {
+    const { body: child } = await createLearner("Test learner");
+    const { body: work } = await createAssignment(teacherA, {
+      learnerIds: [child.id],
+    });
+    const path = `/api/assignments/${work.id}/share`;
+    const body = {
+      clickId: "12345678-1234-4234-8234-123456789012",
+      channel: "copy_link",
+      audience: "individual",
+      learnerId: child.id,
+    };
+    const copied = await call(path, {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+    expect(copied.status).toBe(200);
+    expect(await copied.json()).toEqual({ path: null });
+    expect(
+      (
+        await call(path, {
+          method: "POST",
+          body: JSON.stringify({ ...body, channel: "google_classroom" }),
+        })
+      ).status,
+    ).toBe(400);
+    expect(
+      (
+        await call(path, {
+          method: "POST",
+          body: JSON.stringify({ ...body, learnerId: "bad" }),
+        })
+      ).status,
+    ).toBe(404);
   });
 });

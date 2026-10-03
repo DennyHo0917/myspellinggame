@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const classroomCopy = require("./classroom-marketing-copy.cjs");
 
 const root = path.resolve(__dirname, "..");
 const baseUrl = "https://myspellinggame.com";
@@ -566,12 +567,17 @@ const faqUpdates = {
 
 for (const [code, update] of Object.entries(faqUpdates)) {
   const item = locales[code];
-  item.intro = update.intro;
+  const classroom = classroomCopy[code === "pt-br" ? "pt-BR" : code];
+  item.intro = `${update.intro} ${classroom.faqIntro}`;
   const account = item.questions.findIndex(([question]) =>
     /account|cuenta|conta|compte|akun|账号/.test(question),
   );
   if (account >= 0) item.questions[account][1] = update.account;
   item.questions.push(...update.additions);
+  item.questions.push([
+    classroom.question,
+    `${classroom.openLinkDetail} ${classroom.teacherDetail} ${classroom.studentDetail} ${classroom.scopeDetail}`,
+  ]);
 }
 
 const planQuestions = {

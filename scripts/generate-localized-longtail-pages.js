@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const classroomCopy = require("./classroom-marketing-copy.cjs");
 
 const root = path.resolve(__dirname, "..");
 const baseUrl = "https://myspellinggame.com";
@@ -3745,7 +3746,22 @@ const teacherFeatureGroups = {
 
 for (const [code, features] of Object.entries(paidLandingFeatures)) {
   const teacherPlan = teacherLandingCopy[code].features.pop();
-  teacherLandingCopy[code].features.push(...features.teacher, teacherPlan);
+  const classroom = classroomCopy[code];
+  const teacher = teacherLandingCopy[code];
+  teacher.description = classroom.teacherDescription;
+  teacher.ogDescription = classroom.teacherDescription;
+  teacher.intro = classroom.teacherIntro;
+  teacher.features.push(
+    ...features.teacher,
+    [classroom.heading, `${classroom.openLinkDetail} ${classroom.teacherDetail}`],
+    teacherPlan,
+  );
+  teacher.freePlanFeatures.push(classroom.openLinkFeature);
+  teacher.paidPlanFeatures.push(classroom.teacherFeature);
+  teacher.faq.push([
+    classroom.question,
+    `${classroom.openLinkDetail} ${classroom.teacherDetail} ${classroom.studentDetail} ${classroom.scopeDetail}`,
+  ]);
 }
 
 const customLauncher = {

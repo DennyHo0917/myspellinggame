@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const classroomCopy = require("./classroom-marketing-copy.cjs");
 
 const root = path.resolve(__dirname, "..");
 const baseUrl = "https://myspellinggame.com";
@@ -499,8 +500,17 @@ function escape(value) {
     .replace(/"/g, "&quot;");
 }
 
+for (const locale of locales) {
+  const c = copy[locale.code];
+  const classroom = classroomCopy[locale.code];
+  c.freeItems.push(classroom.openLinkFeature);
+  c.parentItems.push(classroom.openLinkFeature);
+  c.teacherItems.push(classroom.openLinkFeature, classroom.teacherFeature);
+}
+
 function render(locale) {
   const c = copy[locale.code];
+  const classroom = classroomCopy[locale.code];
   const prefix = locale.dir ? `/${locale.dir}` : "";
   const links = [
     `<a href="${prefix}/custom-spelling-words-game">${footerLinks[locale.code][0]}</a>`,
@@ -534,8 +544,17 @@ function render(locale) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escape(c.title)}</title>
-  <meta name="description" content="${escape(c.description)}">
+  <meta name="description" content="${escape(classroom.pricingDescription)}">
   <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${escape(c.title)}">
+  <meta property="og:description" content="${escape(classroom.pricingDescription)}">
+  <meta property="og:url" content="${baseUrl}${pagePath(locale)}">
+  <meta property="og:image" content="${baseUrl}/images/my-spelling-game-og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${escape(c.title)}">
+  <meta name="twitter:description" content="${escape(classroom.pricingDescription)}">
+  <meta name="twitter:image" content="${baseUrl}/images/my-spelling-game-og.png">
   <link rel="canonical" href="${baseUrl}${pagePath(locale)}">
   ${alternates}
   <link rel="alternate" hreflang="x-default" href="${baseUrl}/pricing">
@@ -551,7 +570,7 @@ function render(locale) {
   <div class="product-shell">
     <header class="top-right-nav"><a class="brand-link" href="${locale.dir ? `/${locale.dir}/` : "/"}" aria-label="My Spelling Game home"><img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span class="brand-name">My Spelling Game</span></a><details class="language-switcher"><summary class="lang-btn" aria-label="${escape(c.language)}">${escape(c.language)}</summary><div class="lang-menu">${languageOptions}</div></details><a class="teacher-nav-link" href="/workspace?lang=${encodeURIComponent(locale.code)}">${escape(c.signIn)}</a><a class="header-home-link" href="${locale.dir ? `/${locale.dir}/` : "/"}">${escape(c.practice)}</a></header>
     <main class="product-main">
-      <section class="product-card"><h1>${escape(c.heading)}</h1><p>${escape(c.intro)}</p><p class="notice">${escape(c.note)}</p></section>
+      <section class="product-card"><h1>${escape(c.heading)}</h1><p>${escape(c.intro)}</p><p class="notice">${escape(c.note)} ${escape(classroom.accountDetail)}</p></section>
       <div class="subscription-status" data-subscription-status hidden role="status"><span data-subscription-message></span><button type="button" class="button-secondary" data-renew-subscription hidden></button></div>
       <div class="pricing-toolbar"><div class="plan-selector" role="group" aria-label="${escape(c.billingPeriod)}"><button type="button" class="plan-option" data-plan-option="month" aria-pressed="true">${escape(c.monthly)}</button><button type="button" class="plan-option" data-plan-option="year" aria-pressed="false">${escape(c.yearly)}</button></div></div>
       <p class="notice">${escape(c.resultViewNote)}</p>
@@ -560,6 +579,7 @@ function render(locale) {
         <section class="product-card pricing-card" data-plan-card="parent"><div class="pricing-card-heading"><h2>${escape(c.parent)}</h2></div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.parentMonth)}" data-year="${escape(c.parentYear)}">${escape(c.parentMonth)}</p></div><ul>${c.parentItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><button type="button" class="button-secondary plan-choice" data-plan-choice="parent" data-plan-cta="parent" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="false">${escape(c.selectParent)}</button></section>
         <section class="product-card pricing-card" data-plan-card="teacher"><div class="pricing-card-heading"><h2>${escape(c.teacher)}</h2></div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.teacherMonth)}" data-year="${escape(c.teacherYear)}">${escape(c.teacherMonth)}</p></div><ul>${c.teacherItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><button type="button" class="button-secondary plan-choice" data-plan-choice="teacher" data-plan-cta="teacher" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="false">${escape(c.selectTeacher)}</button></section>
       </div>
+      <section class="product-card" aria-labelledby="classroom-sharing"><h2 id="classroom-sharing">${escape(classroom.heading)}</h2><p>${escape(classroom.openLinkDetail)}</p><p>${escape(classroom.teacherDetail)}</p><p class="notice">${escape(classroom.scopeDetail)}</p></section>
     </main>
     <footer class="product-footer"><p><span class="footer-links">${links}</span><br><span class="footer-secondary-links">${secondaryLinks}</span><br>&copy; 2026 My Spelling Game ${footerRights[locale.code]}</p></footer>
   </div>

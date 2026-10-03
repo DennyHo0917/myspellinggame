@@ -3642,6 +3642,7 @@ test("workspace refreshes new results without replacing good data or unsaved for
 
   await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("0 submissions", { exact: true })).toBeVisible();
+  await expect(page.locator(".workspace-refresh-results")).toHaveCount(0);
 
   // A student submits while the teacher tab is away. Returning after the TTL refreshes it.
   attempts = 1;
@@ -3668,9 +3669,12 @@ test("workspace refreshes new results without replacing good data or unsaved for
   await expect(page.getByRole("heading", { name: "Students" })).toBeVisible();
   await expect.poll(() => workspaceRequests).toBe(beforeSwitchRequests + 1);
 
-  // A failed manual refresh leaves the current successful data in place.
+  // A failed automatic refresh leaves the current successful data in place.
   failNextWorkspaceRequest = true;
-  await page.getByRole("button", { name: "Refresh results" }).click();
+  await page.evaluate(() => {
+    window.__advanceWorkspaceTime(16_000);
+    window.__showWorkspacePage();
+  });
   await expect(page.getByText("Alice", { exact: true }).first()).toBeVisible();
   await expect(
     page.getByText(
@@ -3678,12 +3682,15 @@ test("workspace refreshes new results without replacing good data or unsaved for
     ),
   ).toBeVisible();
 
-  // Manual refresh updates the assignment list, detail, and progress views.
+  // Lists refresh automatically; assignment details keep their manual refresh action.
   attempts = 2;
   await page
     .locator('.workspace-sidebar-link[data-section="assignments"]')
     .click();
-  await page.getByRole("button", { name: "Refresh results" }).click();
+  await page.evaluate(() => {
+    window.__advanceWorkspaceTime(16_000);
+    window.__showWorkspacePage();
+  });
   await expect(page.getByText("2 submissions", { exact: true })).toBeVisible();
   await page.getByRole("link", { name: "View results" }).click();
   await expect(page.locator("tbody tr")).toHaveCount(2);
@@ -3693,16 +3700,17 @@ test("workspace refreshes new results without replacing good data or unsaved for
   await page
     .locator('.workspace-sidebar-link[data-section="progress"]')
     .click();
-  await expect(
-    page.getByRole("button", { name: "Refresh results" }),
-  ).toBeVisible();
+  await expect(page.locator(".workspace-refresh-results")).toHaveCount(0);
 
   // Account entitlement changes invalidate cached data, while forms stay untouched.
   plan = "parent";
   await page
     .locator('.workspace-sidebar-link[data-section="overview"]')
     .click();
-  await page.getByRole("button", { name: "Refresh results" }).click();
+  await page.evaluate(() => {
+    window.__advanceWorkspaceTime(16_000);
+    window.__showWorkspacePage();
+  });
   await expect(page.getByText("Parent Plan", { exact: true })).toBeVisible();
   await page.goto("/workspace/assignments/new?lang=en");
   await page.getByLabel("Assignment title").fill("Unsaved title");

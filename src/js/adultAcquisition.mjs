@@ -85,7 +85,13 @@ export function classifyAcquisition(href, referrer = "") {
       url.searchParams.get("utm_campaign"),
   });
 }
-export function captureAdultAcquisition() {
+export function clearAdultAcquisition() {
+  try {
+    sessionStorage.removeItem(KEY);
+  } catch {}
+}
+// undefined means identity is not loaded; null means confirmed signed out.
+export function captureAdultAcquisition(userId) {
   if (
     !acquisitionAllowed() ||
     /^\/(?:a|l|join)(?:\/|$)/.test(location.pathname) ||
@@ -94,9 +100,32 @@ export function captureAdultAcquisition() {
     return null;
   const value = classifyAcquisition(location.href, document.referrer);
   try {
-    const previous = sessionStorage.getItem(KEY);
-    if (previous) return sanitizeAcquisition(JSON.parse(previous));
-    sessionStorage.setItem(KEY, JSON.stringify(value));
+    const previous = JSON.parse(sessionStorage.getItem(KEY) || "null");
+    const switchedAccount =
+      userId !== undefined &&
+      typeof previous?.userId === "string" &&
+      previous.userId !== userId;
+    const previousValue = previous ? sanitizeAcquisition(previous) : null;
+    // An anonymous direct visit (including the logout landing page) must not
+    // hide a subsequent external arrival before the next account signs in.
+    const firstExternalArrival =
+      !previous?.userId &&
+      previousValue?.source === "direct" &&
+      !previousValue.medium &&
+      !previousValue.campaign &&
+      (value.source !== "direct" || value.medium || value.campaign);
+    const captured =
+      previousValue && !switchedAccount && !firstExternalArrival
+        ? previousValue
+        : value;
+    sessionStorage.setItem(
+      KEY,
+      JSON.stringify({
+        ...captured,
+        userId: userId === undefined ? (previous?.userId ?? null) : userId,
+      }),
+    );
+    return captured;
   } catch {}
   return value;
 }

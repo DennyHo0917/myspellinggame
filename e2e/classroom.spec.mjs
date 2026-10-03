@@ -13,7 +13,13 @@ const json = (route, value, status = 200) =>
   });
 async function workspace(
   page,
-  { assigned = false, plan = "teacher", closed = false, locale = "en" } = {},
+  {
+    assigned = false,
+    plan = "teacher",
+    closed = false,
+    expired = false,
+    locale = "en",
+  } = {},
 ) {
   const copy = productMessages(locale);
   await page.route("**/api/me", (r) =>
@@ -35,7 +41,9 @@ async function workspace(
       title: "Spelling & 拼写 + #",
       mode: "typing",
       status: closed ? "closed" : "published",
-      expires_at: new Date(Date.now() + 86400000).toISOString(),
+      expires_at: new Date(
+        Date.now() + (expired ? -1 : 1) * 86400000,
+      ).toISOString(),
       words,
       attempts: [],
       summary: { students: 0, attempts: 0, averageAccuracy: 0 },
@@ -189,6 +197,123 @@ test("closed assignments disable sharing", async ({ page }) => {
     page.getByRole("button", { name: copy.shareClassroom }),
   ).toBeDisabled();
 });
+for (const plan of ["free", "parent", "teacher"]) {
+  for (const state of ["closed", "expired"]) {
+    test(`${plan} ${state} assigned work disables individual copying`, async ({
+      page,
+    }) => {
+      await workspace(page, { assigned: true, plan, [state]: true });
+      await expect(
+        page.locator(".assignment-learner-links button"),
+      ).toBeDisabled();
+      expect(await page.evaluate(() => window.__clipboard)).toBeUndefined();
+    });
+  }
+}
+for (const [error, status, key] of [
+  ["assignment_closed", 410, "assignmentClosed"],
+  ["sign_in_required", 401, "signInRequired"],
+]) {
+  test(`individual copy refuses a stale ${error} response`, async ({
+    page,
+  }) => {
+    await page.route(`**/api/assignments/${id}/share`, (r) =>
+      json(r, { error }, status),
+    );
+    const copy = await workspace(page, { assigned: true });
+    const button = page.locator(".assignment-learner-links button");
+    await button.click();
+    await expect(
+      page.getByRole("status").filter({ hasText: copy[key] }),
+    ).toBeVisible();
+    await expect(button).toHaveText(copy.copyLink);
+    expect(await page.evaluate(() => window.__clipboard)).toBeUndefined();
+    await expect(page.getByLabel(copy.studentLink)).toHaveCount(0);
+    if (status === 410) await expect(button).toBeDisabled();
+    else await expect(button).toBeEnabled();
+  });
+}
+test("validated individual links remain manually copyable when clipboard permission is denied", async ({
+  page,
+}) => {
+  await page.route(`**/api/assignments/${id}/share`, (r) =>
+    json(r, { path: null }),
+  );
+  const copy = await workspace(page, { assigned: true });
+  await page.evaluate(() => {
+    navigator.clipboard.writeText = async () => {
+      throw new DOMException("Denied", "NotAllowedError");
+    };
+  });
+  await page.locator(".assignment-learner-links button").click();
+  await expect(page.getByLabel(copy.studentLink)).toHaveValue(
+    new RegExp(`learner=${learner}`),
+  );
+  await expect(page.getByText(copy.clipboardHelp)).toBeVisible();
+});
+
+for (const logout of [true, false]) {
+  test(`adult acquisition follows the account ${logout ? "after logout" : "after a session switch"}`, async ({
+    page,
+  }) => {
+    let account = "a";
+    const captures = [];
+    await page.route("**/api/me", (r) =>
+      json(r, {
+        user: {
+          id: `adult-${account}`,
+          name: `Adult ${account}`,
+          email: `${account}@example.test`,
+        },
+        plan: "teacher",
+        workspaceType: "teacher",
+        classPublicId: classId,
+      }),
+    );
+    await page.route("**/api/assignments", (r) =>
+      json(r, { assignments: [], learners: [], savedLists: [] }),
+    );
+    await page.route("**/api/lifecycle/acquisition", (r) => {
+      captures.push({ account, body: r.request().postDataJSON() });
+      return json(r, { ok: true });
+    });
+    await page.route("**/api/auth/sign-out", (r) => json(r, { ok: true }));
+    await page.goto("/workspace?lang=en&utm_source=google&utm_medium=cpc");
+    await expect.poll(() => captures.length).toBe(1);
+    if (logout) {
+      await page.locator(".workspace-user-toggle").click();
+      await page
+        .getByRole("menuitem", { name: "Sign out", exact: true })
+        .click();
+      await expect(page).toHaveURL(/\/$/);
+    }
+    account = "b";
+    if (logout) {
+      await page.goto("/workspace?lang=en&utm_source=bing&utm_medium=organic");
+    } else {
+      await page.goto("/?utm_source=bing&utm_medium=organic");
+      await expect(page.locator(".workspace-user-toggle")).toContainText(
+        "Adult b",
+      );
+      await page.goto("/workspace?lang=en");
+    }
+    await expect.poll(() => captures.length).toBe(2);
+    expect(captures).toEqual([
+      {
+        account: "a",
+        body: { source: "google", medium: "cpc", campaign: null },
+      },
+      {
+        account: "b",
+        body: { source: "bing", medium: "organic", campaign: null },
+      },
+    ]);
+    await page.goto("/workspace?lang=en&utm_source=facebook&utm_medium=social");
+    await expect.poll(() => captures.length).toBe(3);
+    expect(captures[2].body).toEqual(captures[1].body);
+  });
+}
+
 async function player(page) {
   const requests = [];
   await page.route("**/api/public/assignments/**", (r) => {

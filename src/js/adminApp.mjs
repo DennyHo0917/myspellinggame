@@ -1,3 +1,4 @@
+import { clearAdultAcquisition } from "./adultAcquisition.mjs";
 const $ = (id) => document.getElementById(id);
 const statusCard = $("admin-status");
 const loginCard = $("admin-login");
@@ -522,6 +523,7 @@ for (const button of document.querySelectorAll("[data-auth-provider]")) {
 }
 
 signOut.addEventListener("click", async () => {
+  clearAdultAcquisition();
   await api("/api/auth/sign-out", { method: "POST", body: "{}" }).catch(
     () => null,
   );

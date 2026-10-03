@@ -25,6 +25,7 @@ import {
   acquisitionAllowed,
   captureAdultAcquisition,
   acquisitionCallback,
+  clearAdultAcquisition,
 } from "./adultAcquisition.mjs";
 import { assignmentShareURL, classroomShareURL } from "./assignmentSharing.mjs";
 import { analyzeWords } from "./spellingCore.mjs";
@@ -594,6 +595,7 @@ function nav({ workspace = false, me = null } = {}) {
 }
 
 async function signOut() {
+  clearAdultAcquisition();
   invalidateWorkspaceCache();
   workspaceCache.identity = null;
   await api("/api/auth/sign-out", { method: "POST", body: "{}" }).catch(
@@ -740,6 +742,7 @@ function workspaceIdentity(me) {
 }
 
 function updateWorkspaceIdentity(me) {
+  if (me?.user?.id) captureAdultAcquisition(me.user.id);
   const identity = workspaceIdentity(me);
   if (workspaceCache.identity && workspaceCache.identity !== identity)
     invalidateWorkspaceCache();
@@ -2764,7 +2767,6 @@ async function renderDashboard(me, { force = false } = {}) {
   }
   if (renderId !== workspaceRenderId) return;
   if (data && !force) main.replaceChildren();
-  main.append(refreshResultsButton());
   revalidateWorkspaceData(me, section);
   if (section === "savedLists") {
     main.append(renderSavedLists(me, data.savedLists || []));
@@ -3410,6 +3412,9 @@ async function renderDetail(me, id, { force = false } = {}) {
       ? copy.freeAssignmentLink
       : copy.studentLink;
   const assignedLearners = data.assignedLearners || [];
+  const active =
+    data.status === "published" &&
+    new Date(data.expires_at).getTime() > Date.now();
   const linkPanel = document.createElement("div");
   const copyText =
     me.plan === "free"
@@ -3424,9 +3429,12 @@ async function renderDetail(me, id, { force = false } = {}) {
         ? copy.familyChildLinkCopied
         : copy.copied;
   const bindCopy = (button, url, learnerId, successText = copiedText) => {
+    button.disabled = !active;
     button.addEventListener("click", async () => {
-      // Individual copy already has an owned detail link: preserve the user gesture.
-      void api(`/api/assignments/${id}/share`, {
+      button.disabled = true;
+      let validatedURL = null;
+      let unavailable = false;
+      const share = api(`/api/assignments/${id}/share`, {
         method: "POST",
         body: JSON.stringify({
           channel: "copy_link",
@@ -3434,16 +3442,42 @@ async function renderDetail(me, id, { force = false } = {}) {
           learnerId,
           clickId: crypto.randomUUID(),
         }),
-      }).catch(() => null);
+      }).then(() => {
+        validatedURL = url;
+        return url;
+      });
       try {
-        await navigator.clipboard.writeText(url);
+        if (
+          typeof ClipboardItem === "function" &&
+          typeof navigator.clipboard?.write === "function"
+        ) {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              "text/plain": share.then(
+                (link) => new Blob([link], { type: "text/plain" }),
+              ),
+            }),
+          ]);
+        } else {
+          await navigator.clipboard.writeText(await share);
+        }
         button.textContent = successText;
         button.classList.add("is-success");
+        sharingStatus.replaceChildren();
         trackEvent("assignment_link_copied", {
           mode: data.mode,
           word_count: data.words.length,
         });
-      } catch {
+      } catch (error) {
+        const shareError = await share.then(
+          () => null,
+          (failure) => failure,
+        );
+        unavailable = shareError?.status === 410;
+        if (!validatedURL) {
+          sharingStatus.textContent = shareError?.message || error.message;
+          return;
+        }
         const input = document.createElement("input");
         input.readOnly = true;
         input.value = url;
@@ -3452,6 +3486,11 @@ async function renderDetail(me, id, { force = false } = {}) {
         sharingStatus.append(input);
         input.focus();
         input.select();
+      } finally {
+        button.disabled =
+          unavailable ||
+          !active ||
+          new Date(data.expires_at).getTime() <= Date.now();
       }
     });
   };
@@ -3543,9 +3582,6 @@ async function renderDetail(me, id, { force = false } = {}) {
   const sharingStatus = document.createElement("p");
   sharingStatus.className = "status";
   sharingStatus.setAttribute("role", "status");
-  const active =
-    data.status === "published" &&
-    new Date(data.expires_at).getTime() > Date.now();
   copyButton.disabled = !studentUrl || !active;
   copyButton.addEventListener("click", async () => {
     copyButton.disabled = true;
@@ -4302,12 +4338,15 @@ async function init() {
   try {
     me = await api("/api/me");
   } catch (error) {
-    if (error.status === 401) return renderLogin();
+    if (error.status === 401) {
+      captureAdultAcquisition(null);
+      return renderLogin();
+    }
     loading.className = "workspace-loading error";
     loading.textContent = error.message;
     return;
   }
-  const acquisition = captureAdultAcquisition();
+  const acquisition = captureAdultAcquisition(me.user.id);
   if (acquisition && acquisitionAllowed()) {
     void api("/api/lifecycle/acquisition", {
       method: "POST",

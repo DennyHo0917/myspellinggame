@@ -1373,6 +1373,10 @@ body.product-page:not(.workspace-page) .product-nav {
   position: relative;
 }
 
+.teacher-dashboard-card > .grid + .submission-limit-notice {
+  margin-top: 1rem;
+}
+
 .teacher-dashboard-card .teacher-plan-badge {
   position: absolute;
   top: clamp(1rem, 3vw, 1.5rem);

@@ -385,21 +385,22 @@ async function recordInvoice(
   if (invoice.livemode === false) return;
   const dynamicInvoice = invoice as unknown as {
     subscription?: unknown;
-    parent?: { subscription_details?: { subscription?: unknown } };
+    subscription_details?: { metadata?: Stripe.Metadata | null };
+    parent?: {
+      subscription_details?: {
+        subscription?: unknown;
+        metadata?: Stripe.Metadata | null;
+      };
+    };
   };
   const subscriptionId = objectId(
     dynamicInvoice.subscription ??
       dynamicInvoice.parent?.subscription_details?.subscription,
   );
   if (!subscriptionId && !explicit) return;
-  const customerId = objectId(invoice.customer);
-  const userId =
-    explicit?.userId ||
-    (await ownerFromStripeObject(db, {
-      customer: invoice.customer,
-      id: subscriptionId ?? undefined,
-    }));
-  if (!userId) return;
+  const subscriptionMetadata =
+    dynamicInvoice.parent?.subscription_details?.metadata ??
+    dynamicInvoice.subscription_details?.metadata;
   const invoiceLines = invoice.lines?.data ?? [];
   const priceLine =
     invoiceLines.find((line) => {
@@ -415,14 +416,38 @@ async function recordInvoice(
   const linePriceId = objectId(priceLine?.pricing?.price_details?.price);
   const priceId = explicit?.priceId || linePriceId;
   const pricePlan = priceId ? configuredPricePlan(priceId, env) : null;
+  const customerId = objectId(invoice.customer);
+  const userId =
+    explicit?.userId ||
+    (await ownerFromStripeObject(db, {
+      metadata: subscriptionMetadata,
+      customer: invoice.customer,
+      id: subscriptionId ?? undefined,
+    }));
+  if (!userId) {
+    if (!pricePlan) return;
+    // Do not acknowledge our invoice before another webhook can map its owner.
+    throw new HttpError(
+      503,
+      "billing_owner_pending",
+      "The invoice owner is not available yet.",
+    );
+  }
   const context = await orderContext(
     db,
     userId,
-    explicit?.plan ?? pricePlan ?? undefined,
+    explicit?.plan ?? pricePlan ?? subscriptionMetadata?.plan,
     explicit?.interval ??
-      (priceId ? configuredPriceInterval(priceId, env) : undefined),
+      (priceId
+        ? configuredPriceInterval(priceId, env)
+        : subscriptionMetadata?.billing_interval),
   );
-  if (!context) return;
+  if (!context)
+    throw new HttpError(
+      503,
+      "billing_owner_pending",
+      "The invoice owner is not available yet.",
+    );
   const failed =
     invoice.status === "void" || invoice.status === "uncollectible";
   await upsertPaymentOrder(db, {

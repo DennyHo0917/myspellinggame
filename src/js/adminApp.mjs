@@ -166,7 +166,7 @@ function formatOrderStatus(value) {
   return (
     {
       pending: "待完成",
-      completed: "待确认支付",
+      completed: "结账已完成",
       paid: "支付成功",
       failed: "支付失败",
       canceled: "已取消",

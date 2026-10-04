@@ -4336,6 +4336,147 @@ describe("Stripe event processing", () => {
       },
     }) as unknown as Stripe.Event;
 
+  function firstInvoiceEvent(
+    eventId: string,
+    withOwner = true,
+    legacy = false,
+  ) {
+    const event = paidInvoiceEvent(
+      eventId,
+      "in_first_ordered",
+      "subscription_create",
+      999,
+    );
+    const invoice = event.data.object as Stripe.Invoice;
+    const metadata = withOwner
+      ? {
+          owner_user_id: teacherA.id,
+          plan: "teacher",
+          billing_interval: "month",
+        }
+      : {};
+    event.data.object = {
+      ...invoice,
+      ...(legacy
+        ? { subscription_details: { metadata } }
+        : {
+            subscription: undefined,
+            parent: {
+              subscription_details: { subscription: "sub_trial", metadata },
+            },
+          }),
+    } as unknown as Stripe.Invoice;
+    return event;
+  }
+
+  it.each([
+    ["checkout", "subscription", "invoice"],
+    ["checkout", "invoice", "subscription"],
+    ["subscription", "checkout", "invoice"],
+    ["subscription", "invoice", "checkout"],
+    ["invoice", "checkout", "subscription"],
+    ["invoice", "subscription", "checkout"],
+  ] as const)(
+    "records first payment without cancellation in order %s, %s, %s",
+    async (...sequence) => {
+      await createTestCheckout("cs_first_ordered", new Date());
+      const checkout = checkoutEvent(
+        "cs_first_ordered",
+        "checkout.session.completed",
+      );
+      Object.assign(checkout.data.object, {
+        status: "complete",
+        payment_status: "paid",
+        customer: "cus_trial",
+        subscription: "sub_trial",
+        metadata: {
+          owner_user_id: teacherA.id,
+          plan: "teacher",
+          billing_interval: "month",
+        },
+      });
+      const events = {
+        checkout,
+        subscription: subscriptionEvent("evt_first_ordered", "active"),
+        invoice: firstInvoiceEvent("evt_invoice_first_ordered"),
+      };
+      for (const name of sequence)
+        await processStripeEvent(bindings.DB, events[name], testEnv());
+
+      await expect(
+        bindings.DB.prepare(
+          "SELECT plan, status FROM subscriptions WHERE user_id = ?",
+        )
+          .bind(teacherA.id)
+          .first(),
+      ).resolves.toEqual({ plan: "teacher", status: "active" });
+      expect(
+        await bindings.DB.prepare(
+          "SELECT COUNT(*) AS count FROM checkout_locks",
+        ).first("count"),
+      ).toBe(0);
+      expect(
+        await processStripeEvent(bindings.DB, events.invoice, testEnv()),
+      ).toBe(false);
+      await processStripeEvent(
+        bindings.DB,
+        firstInvoiceEvent("evt_invoice_first_duplicate"),
+        testEnv(),
+      );
+      await expect(
+        bindings.DB.prepare(
+          "SELECT COUNT(*) AS paid_count, SUM(amount_total) AS revenue FROM payment_orders WHERE status = 'paid'",
+        ).first(),
+      ).resolves.toEqual({ paid_count: 1, revenue: 999 });
+    },
+  );
+
+  it("records an invoice before other callbacks using legacy subscription metadata", async () => {
+    await processStripeEvent(
+      bindings.DB,
+      firstInvoiceEvent("evt_legacy_owner", true, true),
+      testEnv(),
+    );
+    expect(
+      await bindings.DB.prepare(
+        "SELECT status FROM payment_orders WHERE id = 'in_first_ordered'",
+      ).first("status"),
+    ).toBe("paid");
+  });
+
+  it("retries an unmapped invoice after a subscription callback supplies its owner", async () => {
+    const event = firstInvoiceEvent("evt_owner_retry", false);
+    await expect(
+      processStripeEvent(bindings.DB, event, testEnv()),
+    ).rejects.toMatchObject({ status: 503, code: "billing_owner_pending" });
+    await expect(
+      bindings.DB.prepare(
+        "SELECT processed_at, processing_at FROM stripe_events WHERE event_id = ?",
+      )
+        .bind(event.id)
+        .first(),
+    ).resolves.toEqual({ processed_at: null, processing_at: null });
+    await processSubscription("evt_owner_mapped", "active", "sub_trial");
+    expect(await processStripeEvent(bindings.DB, event, testEnv())).toBe(true);
+    expect(
+      await bindings.DB.prepare(
+        "SELECT status FROM payment_orders WHERE id = 'in_first_ordered'",
+      ).first("status"),
+    ).toBe("paid");
+  });
+
+  it("does not retry invoices for unrelated prices without a local owner", async () => {
+    const event = firstInvoiceEvent("evt_unrelated_invoice", false);
+    const invoice = event.data.object as Stripe.Invoice;
+    invoice.lines.data[0].pricing!.price_details!.price = "price_unrelated";
+    expect(await processStripeEvent(bindings.DB, event, testEnv())).toBe(true);
+    expect(
+      await bindings.DB.prepare(
+        "SELECT COUNT(*) AS count FROM payment_orders",
+      ).first("count"),
+    ).toBe(0);
+  });
+
   it("recreates a missing order when Stripe completes Checkout", async () => {
     await processStripeEvent(
       bindings.DB,

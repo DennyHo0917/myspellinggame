@@ -9,6 +9,27 @@ const ASSIGNMENT_ENTRY_POINTS = new Set([
 ]);
 
 const EVENT_PARAMS = {
+  tracking_cta_viewed: [
+    "mode",
+    "word_count",
+    "missed_count",
+    "replay_round",
+    "cta_location",
+    "signed_in",
+  ],
+  tracking_setup_viewed: ["current_plan", "entry_point", "trial_used"],
+  tracking_practice_ready: [
+    "mode",
+    "word_count",
+    "current_plan",
+    "entry_point",
+  ],
+  premium_feature_used: [
+    "feature",
+    "current_plan",
+    "word_count",
+    "after_upgrade",
+  ],
   word_list_created: [
     "mode",
     "word_count",
@@ -55,7 +76,9 @@ const EVENT_PARAMS = {
   assignment_abandoned: ["mode", "word_count"],
   upgrade_viewed: [],
   upgrade_clicked: ["plan", "billing_interval"],
-  upgrade_cta_clicked: ["cta_location"],
+  upgrade_cta_clicked: ["cta_location", "plan", "billing_interval"],
+  photo_import_clicked: ["locale"],
+  photo_import_blocked: ["current_plan", "locale"],
   usage_limit_reached: ["limit_type"],
   checkout_attempted: ["plan", "billing_interval"],
   checkout_started: ["plan", "billing_interval"],
@@ -164,6 +187,37 @@ export function trackEvent(name, params = {}) {
   if (typeof window === "undefined" || typeof window.gtag !== "function")
     return;
   window.gtag("event", name, sanitizeEventParams(name, params));
+}
+
+export function markUpgradeActivated(feature, userId) {
+  if (!feature || !userId) return;
+  try {
+    sessionStorage.setItem(
+      "mySpellingActivatedFeature",
+      JSON.stringify({ feature, userId, at: Date.now() }),
+    );
+  } catch {}
+}
+
+export function trackPremiumFeatureUsed(feature, account, wordCount) {
+  let afterUpgrade = false;
+  try {
+    const marker = JSON.parse(
+      sessionStorage.getItem("mySpellingActivatedFeature"),
+    );
+    afterUpgrade =
+      marker?.feature === feature &&
+      marker.userId === account?.user?.id &&
+      Date.now() - marker.at >= 0 &&
+      Date.now() - marker.at < 86400000;
+    if (afterUpgrade) sessionStorage.removeItem("mySpellingActivatedFeature");
+  } catch {}
+  trackEvent("premium_feature_used", {
+    feature,
+    current_plan: account?.plan,
+    word_count: wordCount,
+    after_upgrade: afterUpgrade,
+  });
 }
 
 export function trackUsageLimit(errorCode) {

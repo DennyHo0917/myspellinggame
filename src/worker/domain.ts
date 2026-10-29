@@ -12,7 +12,8 @@ const PAID_PLAN_LIMITS = {
 export const PLAN_LIMITS = {
   free: {
     activeAssignments: 1,
-    monthlyAttempts: 8,
+    monthlyAttempts: 1,
+    trackingTrialAttempts: 1,
     savedLists: 1,
     learnerProfiles: 1,
     historyDays: 14,

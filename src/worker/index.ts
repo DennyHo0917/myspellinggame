@@ -36,6 +36,7 @@ import {
   createCheckout,
   createPortal,
   hasActiveSubscription,
+  subscriptionPriceIds,
   verifyAndProcessWebhook,
   type StripeEnv,
 } from "./stripe";
@@ -464,10 +465,10 @@ async function adminUsers(env: Env, url: URL) {
              WHEN u.admin_plan IN ('parent', 'teacher') THEN u.admin_plan
              WHEN s.status IN ('active', 'trialing')
               AND (s.current_period_end IS NULL OR s.current_period_end > ?)
-              AND s.stripe_price_id IN (?, ?, ?, ?, ?, ?)
+              AND s.stripe_price_id IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
              THEN CASE
-               WHEN s.stripe_price_id IN (?, ?) THEN 'parent'
-               WHEN s.stripe_price_id IN (?, ?) THEN 'teacher'
+               WHEN s.stripe_price_id IN (?, ?, ?, ?) THEN 'parent'
+               WHEN s.stripe_price_id IN (?, ?, ?, ?) THEN 'teacher'
                WHEN s.plan IN ('parent', 'teacher') THEN s.plan
                WHEN u.workspace_type = 'family' THEN 'parent'
                ELSE 'teacher'
@@ -476,18 +477,14 @@ async function adminUsers(env: Env, url: URL) {
            END AS effective_plan
     FROM user u LEFT JOIN subscriptions s ON s.user_id = u.id
   )`;
+  const prices = subscriptionPriceIds(env);
   const planBindings = [
     now,
-    env.STRIPE_PARENT_PRICE_MONTHLY || "",
-    env.STRIPE_PARENT_PRICE_YEARLY || "",
-    env.STRIPE_TEACHER_PRICE_MONTHLY || "",
-    env.STRIPE_TEACHER_PRICE_YEARLY || "",
-    env.STRIPE_PRICE_MONTHLY || "",
-    env.STRIPE_PRICE_YEARLY || "",
-    env.STRIPE_PARENT_PRICE_MONTHLY || "",
-    env.STRIPE_PARENT_PRICE_YEARLY || "",
-    env.STRIPE_TEACHER_PRICE_MONTHLY || "",
-    env.STRIPE_TEACHER_PRICE_YEARLY || "",
+    ...prices.parent,
+    ...prices.teacher,
+    ...prices.legacy,
+    ...prices.parent,
+    ...prices.teacher,
   ];
   const count = await env.DB.prepare(
     `${userQuery} SELECT COUNT(*) AS count FROM admin_users ${where}`,
@@ -839,9 +836,9 @@ async function usage(
     db
       .prepare(
         `SELECT COUNT(*) AS count FROM monthly_submission_usage
-         WHERE user_id = ? AND month_key = ?`,
+         WHERE user_id = ? AND (? = 'free' OR month_key = ?)`,
       )
-      .bind(userId, monthStart(now))
+      .bind(userId, plan, monthStart(now))
       .first<{ count: number }>(),
     db
       .prepare(
@@ -872,6 +869,7 @@ async function usage(
     limits: PLAN_LIMITS[plan],
     activeAssignments: Number(active?.count ?? 0),
     monthlyAttempts: Number(monthly?.count ?? 0),
+    trackingTrialUsed: plan === "free" && Number(monthly?.count ?? 0) > 0,
     savedLists: Number(savedLists?.count ?? 0),
     learnerProfiles: Number(learners?.count ?? 0),
   };
@@ -1625,6 +1623,22 @@ async function createAssignment(env: Env, request: Request, userId: string) {
   const plan = await getPlan(env, userId);
   enforcePlanWordLimit(words, plan);
   const currentUsage = await usage(env.DB, userId, plan);
+  if (body.tracking === true && uniqueLearnerIds.length !== 1)
+    throw new HttpError(
+      400,
+      "invalid_learners",
+      "Choose one learner for tracked practice.",
+    );
+  if (
+    body.tracking === true &&
+    plan === "free" &&
+    currentUsage.trackingTrialUsed
+  )
+    throw new HttpError(
+      403,
+      "tracking_trial_used",
+      "The free tracking trial has been used.",
+    );
   if (currentUsage.activeAssignments >= PLAN_LIMITS[plan].activeAssignments) {
     throw new HttpError(
       403,
@@ -1695,6 +1709,10 @@ async function createAssignment(env: Env, request: Request, userId: string) {
       mode,
       word_count: words.length,
       learner_count: uniqueLearnerIds.length,
+      tracked_entry: body.tracking === true,
+      entry_point: isSignupSource(body.entryPoint)
+        ? body.entryPoint
+        : "workspace",
     },
     `assignment:${id}`,
   );
@@ -2035,6 +2053,17 @@ async function startAttempt(env: Env, request: Request, publicId: string) {
       `attempt:${attemptId}`,
     );
   }
+  if (attemptId && assignment.learner)
+    await recordLifecycleEvent(
+      env.DB,
+      assignment.owner_user_id,
+      "first_bound_practice_started",
+      {
+        assignment_id: assignment.id,
+        attempt_id: attemptId,
+        learner_id: assignment.learner.id,
+      },
+    );
   return { ok: true, ...(attemptId ? { attemptId } : {}) };
 }
 
@@ -2100,7 +2129,7 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
            END,
             ?, ?, ?, ?, ?, ?, ?, ?, ?,
             (? = 1 OR (SELECT COUNT(*) FROM monthly_submission_usage mu
-              WHERE mu.user_id = a.owner_user_id AND mu.month_key = ?) < ?)
+              WHERE mu.user_id = a.owner_user_id) < ?)
          FROM assignments a
          WHERE a.public_id = ? AND a.status = 'published' AND a.expires_at > ?
            AND (? = 0 OR (SELECT COUNT(*) FROM attempts x
@@ -2121,9 +2150,8 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       retentionExpiresAt,
       completed ? "completed" : "incomplete",
       learner?.id ?? null,
-      !completed || plan !== "free" ? 1 : 0,
-      monthKey,
-      PLAN_LIMITS.free.monthlyAttempts,
+      plan !== "free" ? 1 : 0,
+      PLAN_LIMITS.free.trackingTrialAttempts,
       publicId,
       completedAt,
       completed ? 1 : 0,
@@ -2159,6 +2187,17 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       },
       `attempt:${attemptId}`,
     );
+    if (saved.status === "completed" && learner)
+      await recordLifecycleEvent(
+        env.DB,
+        assignment.owner_user_id,
+        "first_bound_practice_completed",
+        {
+          assignment_id: assignment.id,
+          attempt_id: attemptId,
+          learner_id: learner.id,
+        },
+      );
     return saved;
   }
   const attemptCount = await env.DB.prepare(
@@ -2946,7 +2985,11 @@ export async function scheduled(_controller: ScheduledController, env: Env) {
       staleAssignments,
     ),
     env.DB.prepare(
-      "DELETE FROM monthly_submission_usage WHERE month_key < ?",
+      // Keep one lifetime marker per account so expiry cannot reset the free trial.
+      `DELETE FROM monthly_submission_usage WHERE month_key < ?
+       AND attempt_id NOT IN (
+         SELECT MIN(attempt_id) FROM monthly_submission_usage GROUP BY user_id
+       )`,
     ).bind(staleUsage),
     env.DB.prepare(
       "DELETE FROM stripe_events WHERE processed_at IS NOT NULL AND processed_at < ?",

@@ -579,3 +579,30 @@ test("purchases use verified transaction values and dedupe by transaction ID", (
     delete globalThis.localStorage;
   }
 });
+
+test("photo import analytics keep only aggregate funnel dimensions", () => {
+  assert.deepEqual(
+    sanitizeEventParams("photo_import_clicked", {
+      locale: "en",
+      filename: "private.jpg",
+    }),
+    { locale: "en" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("photo_import_blocked", {
+      current_plan: "free",
+      locale: "zh",
+      words: ["private"],
+    }),
+    { current_plan: "free", locale: "zh" },
+  );
+  assert.deepEqual(
+    sanitizeEventParams("upgrade_cta_clicked", {
+      cta_location: "photo_import",
+      plan: "parent",
+      billing_interval: "year",
+      email: "private",
+    }),
+    { cta_location: "photo_import", plan: "parent", billing_interval: "year" },
+  );
+});

@@ -1,3 +1,5 @@
+import { bindUpgradeReturn, readUpgradeReturn } from "./upgradeReturn.mjs";
+import { upgradeSelection } from "./upgradeSelection.mjs";
 import { trackCheckoutCancelled, trackEvent } from "./analytics.mjs";
 import {
   normalizeProductLocale,
@@ -21,6 +23,16 @@ const renewButton = subscriptionStatus?.querySelector(
   "[data-renew-subscription]",
 );
 let currentAccount = null;
+let intervalChosen = false;
+const selectionParams = new URLSearchParams(location.search);
+const explicitSelection =
+  ["parent", "teacher"].includes(selectionParams.get("plan")) &&
+  ["month", "year"].includes(selectionParams.get("interval"))
+    ? {
+        plan: selectionParams.get("plan"),
+        interval: selectionParams.get("interval"),
+      }
+    : null;
 let billingRequestPending = false;
 for (const choice of planChoices)
   choice.dataset.selectPlanLabel = choice.textContent;
@@ -96,7 +108,12 @@ if (checkoutCanceled) {
     credentials: "same-origin",
     keepalive: true,
   }).catch(() => null);
-  if (canceledWorkspaceReturn) location.replace(canceledWorkspaceReturn);
+  void accountPromise.then((me) => {
+    const origin = readUpgradeReturn();
+    if (origin && (!origin.userId || origin.userId === me?.user?.id))
+      location.replace(origin.path);
+    else if (canceledWorkspaceReturn) location.replace(canceledWorkspaceReturn);
+  });
 }
 
 if (pricingGrid && "IntersectionObserver" in window) {
@@ -179,6 +196,11 @@ function selectPlan(plan) {
       "aria-pressed",
       String(choice.dataset.planChoice === plan),
     );
+  for (const choice of planChoices)
+    choice.classList.toggle(
+      "button-secondary",
+      choice.dataset.planChoice !== plan,
+    );
   for (const card of document.querySelectorAll("[data-plan-card]"))
     card.classList.toggle("selected", card.dataset.planCard === plan);
 }
@@ -222,9 +244,10 @@ async function openBillingPortal(control) {
 }
 
 for (const option of planOptions)
-  option.addEventListener("click", () =>
-    selectInterval(option.dataset.planOption),
-  );
+  option.addEventListener("click", () => {
+    intervalChosen = true;
+    selectInterval(option.dataset.planOption);
+  });
 for (const choice of planChoices)
   choice.addEventListener("click", async () => {
     const plan = choice.dataset.planChoice;
@@ -234,9 +257,11 @@ for (const choice of planChoices)
       billingRequestPending
     )
       return;
+    selectPlan(plan);
     billingRequestPending = true;
     syncPlanControls();
     const me = await accountPromise;
+    bindUpgradeReturn(me?.user?.id);
     const changingPlan = ["parent", "teacher"].includes(me?.plan);
     const interval = selectedInterval();
     if (me?.plan === plan && me?.billingInterval === interval) {
@@ -359,11 +384,23 @@ accountPromise
       }
       subscriptionStatus.hidden = false;
     }
-    if (me.billingInterval === "month" || me.billingInterval === "year")
-      selectInterval(me.billingInterval);
-    else syncPlanControls();
+    if (!intervalChosen) {
+      const selection = upgradeSelection(me);
+      if (["parent", "teacher"].includes(me?.plan)) {
+        selectPlan(me.plan);
+        selectInterval(
+          ["month", "year"].includes(me.billingInterval)
+            ? me.billingInterval
+            : "year",
+        );
+      } else {
+        const preferred = explicitSelection || selection;
+        selectPlan(preferred.plan);
+        selectInterval(preferred.interval);
+      }
+    } else syncPlanControls();
     const current = document.querySelector(`[data-plan-cta="${me?.plan}"]`);
-    if (current && me.plan === "free") {
+    if (current && me?.plan === "free") {
       const currentCard = document.querySelector('[data-plan-card="free"]');
       currentCard?.classList.add("current-plan");
       currentCard?.setAttribute("aria-current", "true");
@@ -372,7 +409,7 @@ accountPromise
       current.removeAttribute("href");
       current.setAttribute("aria-disabled", "true");
     }
-    if (["parent", "teacher"].includes(me.plan) && freeChoice) {
+    if (["parent", "teacher"].includes(me?.plan) && freeChoice) {
       freeChoice.textContent = productMessage("manageBilling", {}, locale);
       freeChoice.addEventListener("click", (event) => {
         event.preventDefault();
@@ -381,3 +418,7 @@ accountPromise
     }
   })
   .catch(() => null);
+
+const initialSelection = explicitSelection || upgradeSelection(null);
+selectPlan(initialSelection.plan);
+selectInterval(initialSelection.interval);

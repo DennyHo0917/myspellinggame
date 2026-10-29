@@ -315,6 +315,27 @@ describe("admin dashboard", () => {
     expect((await call("/api/admin/users?provider=invalid")).status).toBe(400);
   });
 
+  it.each(["price_parent_monthly", "price_parent_new_monthly"])(
+    "recognizes %s in the admin plan filter after repricing",
+    async (priceId) => {
+      await insertSubscription(
+        member.id,
+        "active",
+        "month",
+        new Date(Date.now() + 86_400_000).toISOString(),
+        priceId,
+      );
+      const env = testEnv({
+        STRIPE_CHECKOUT_PARENT_PRICE_MONTHLY: "price_parent_new_monthly",
+      });
+      const response = await call("/api/admin/users?plan=parent", admin, env);
+      expect(await response.json()).toMatchObject({
+        users: [{ id: member.id, plan: "parent" }],
+        total: 1,
+      });
+    },
+  );
+
   it("lets only the admin assign and clear a user's effective plan", async () => {
     expect(
       (

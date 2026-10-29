@@ -30,6 +30,12 @@ These instructions apply to the entire repository.
 
 - Whenever a change adds or modifies a database migration, execute the remote D1 migrations with `npm run db:migrate:remote` before reporting the work complete.
 
+## Cloudflare Deployment
+
+- Pushing `main` triggers the Cloudflare Dashboard Git integration and automatically deploys the Worker.
+- After pushing `main`, wait for the automatic deployment and verify the new Cloudflare version plus a production smoke check. Do not also run `wrangler deploy`, even when the request says to push and deploy the Worker, unless the user explicitly requests a manual Wrangler deployment.
+- Automatic Worker deployment does not replace D1 migration handling. Run or verify remote D1 migrations separately when required.
+
 ## Push Destination
 
 - When the user explicitly asks to push, do not use the `gh` CLI or a pull-request workflow.

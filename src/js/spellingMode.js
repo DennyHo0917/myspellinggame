@@ -1,3 +1,11 @@
+import { saveTrackingEntry } from "./trackingDraft.mjs";
+import {
+  saveUpgradeReturn,
+  readUpgradeReturn,
+  upgradeReturnFor,
+  clearUpgradeReturn,
+} from "./upgradeReturn.mjs";
+import { upgradeSelection } from "./upgradeSelection.mjs";
 import { gameState } from "./gameState.js";
 import { getPageLocale, t } from "./pageLocale.js";
 import {
@@ -17,6 +25,7 @@ import {
   setAssignmentEntryPoint,
   trackEvent,
   trackLockedFeature,
+  trackPremiumFeatureUsed,
 } from "./analytics.mjs";
 import { buildShareHash, readShareState } from "./shareState.mjs";
 import { productMessage, productPagePath } from "./productLocale.mjs";
@@ -37,31 +46,37 @@ let copyToastTimer;
 
 export { parseWords };
 
-function contextualUpgradePlan(account) {
-  if (account?.workspaceType === "family") return "parent";
-  if (account?.workspaceType === "teacher") return "teacher";
-  return null;
-}
-
-function upgradeLink(feature, plan, { wholeClass = false } = {}) {
+function upgradeLink(feature, plan, interval, primary = true) {
   const link = document.createElement("a");
-  link.className = "button-link button-secondary contextual-paywall-cta";
-  link.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
-  link.textContent = t(
-    wholeClass
-      ? "wholeClassTeacherMonthly"
-      : plan === "parent"
-        ? "upgradeParentMonthly"
-        : "upgradeTeacherMonthly",
-  );
+  link.className = `button-link contextual-paywall-cta${primary ? " paywall-primary" : " button-secondary"}`;
+  const query = new URLSearchParams({ plan, interval });
+  link.href = `${productPagePath("pricing", getPageLocale())}?${query}`;
+  link.textContent = primary
+    ? productMessage(
+        feature === "photo_import" ? "unlockPhotoImport" : "unlockPremium",
+        {},
+        getPageLocale(),
+      )
+    : productMessage(`${plan}Plan`, {}, getPageLocale());
   link.addEventListener("click", () => {
+    saveUpgradeReturn(feature, accountState?.user?.id, {
+      words: textarea()?.value || "",
+      sentences: sentenceTextarea()?.value || "",
+      mode:
+        document.querySelector('input[name="practice-mode"]:checked')?.value ||
+        "dictation",
+    });
     try {
       sessionStorage.setItem("pendingCheckoutPlan", plan);
-      sessionStorage.setItem("pendingCheckoutInterval", "month");
+      sessionStorage.setItem("pendingCheckoutInterval", interval);
       sessionStorage.setItem("pendingCheckoutLocale", getPageLocale());
       sessionStorage.setItem(PENDING_UPGRADE_FEATURE_KEY, feature);
     } catch {}
-    trackEvent("upgrade_cta_clicked", { cta_location: feature });
+    trackEvent("upgrade_cta_clicked", {
+      cta_location: feature,
+      plan,
+      billing_interval: interval,
+    });
   });
   return link;
 }
@@ -72,26 +87,22 @@ function appendContextualPaywall(
   value,
   { account = accountState, freeCta = false } = {},
 ) {
-  const plan = contextualUpgradePlan(account);
+  const { plan, interval } = upgradeSelection(account);
   const benefit = document.createElement("span");
   benefit.className = "contextual-paywall-benefit";
   benefit.textContent = value;
   const price = document.createElement("strong");
   price.className = "contextual-paywall-price";
-  price.textContent = plan
-    ? t(plan === "parent" ? "parentPlanMonthly" : "teacherPlanMonthly")
-    : t("chooseUpgradePlan");
+  price.textContent = productMessage(
+    `${plan}Upgrade${interval === "year" ? "Yearly" : ""}Price`,
+    {},
+    getPageLocale(),
+  );
   const actions = document.createElement("span");
   actions.className = "contextual-paywall-actions";
-  if (plan === "teacher") actions.append(upgradeLink(feature, "teacher"));
-  else {
-    actions.append(upgradeLink(feature, "parent"));
-    actions.append(
-      upgradeLink(feature, "teacher", {
-        wholeClass: plan === "parent",
-      }),
-    );
-  }
+  actions.append(upgradeLink(feature, plan, interval));
+  if (plan === "parent")
+    actions.append(upgradeLink(feature, "teacher", interval, false));
   if (freeCta) {
     const free = document.createElement("a");
     free.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
@@ -110,6 +121,10 @@ function sentenceTextarea() {
 }
 
 function photoImportNotice(account = accountState) {
+  trackEvent("photo_import_blocked", {
+    current_plan: account?.plan || "anonymous",
+    locale: getPageLocale(),
+  });
   const field = textarea()?.closest(".word-entry-field");
   if (!field) return;
   field.querySelector(".photo-import-notice, .photo-import-review")?.remove();
@@ -204,6 +219,8 @@ function showPhotoImportReview(words) {
       .filter(Boolean)
       .join("\n");
     textarea().dispatchEvent(new Event("input", { bubbles: true }));
+    const count = currentWords().length;
+    if (count) trackPremiumFeatureUsed("photo_import", accountState, count);
     review.remove();
   });
   const cancel = document.createElement("button");
@@ -244,6 +261,7 @@ function initPhotoImport() {
   const input = document.getElementById("photo-import-input");
   if (!button || !input) return;
   button.addEventListener("click", () => {
+    trackEvent("photo_import_clicked", { locale: getPageLocale() });
     if (accountState !== undefined) {
       if (isPlusAccount(accountState)) input.click();
       else {
@@ -602,7 +620,48 @@ export function initSpellingMode() {
     .getElementById("auto-example-sentences-btn")
     ?.addEventListener("click", autoFillExampleSentences);
   initPhotoImport();
-  void getAccount();
+  void getAccount().then((account) => {
+    const resume = readUpgradeReturn();
+    if (
+      !resume ||
+      resume.path.startsWith("/workspace") ||
+      (resume.userId && resume.userId !== account?.user?.id)
+    )
+      return;
+    if (resume.draft) {
+      input.value = resume.draft.words || "";
+      if (sentenceInput) sentenceInput.value = resume.draft.sentences || "";
+      const mode = ["dictation", "typing", "chase"].includes(resume.draft.mode)
+        ? resume.draft.mode
+        : "dictation";
+      const radio = document.querySelector(
+        `input[name="practice-mode"][value="${mode}"]`,
+      );
+      if (radio) radio.checked = true;
+      syncModeUI();
+      updateWordStatus();
+    }
+    if (!upgradeReturnFor(account)) return;
+    const target = document.getElementById(
+      resume.feature === "photo_import"
+        ? "photo-import-btn"
+        : resume.feature === "example_sentences"
+          ? "auto-example-sentences-btn"
+          : "custom-word-list",
+    );
+    const notice = document.createElement("p");
+    notice.className = "notice upgrade-return-notice";
+    notice.setAttribute("role", "status");
+    notice.textContent = productMessage(
+      "upgradeReturnReady",
+      {},
+      getPageLocale(),
+    );
+    input.closest(".word-entry-field")?.prepend(notice);
+    target?.scrollIntoView({ block: "center" });
+    target?.focus({ preventScroll: true });
+    clearUpgradeReturn();
+  });
   if (shareState.autoStart && mode !== "chase")
     queueMicrotask(() => window.startGame?.());
 }
@@ -919,26 +978,38 @@ export function renderResultWorkspaceCta({ mode, wordCount, missedCount }) {
   const button = document.createElement("button");
   button.type = "button";
   button.className = "share-score-btn result-conversion-button";
-  button.textContent = t("workspaceCtaButton");
+  button.textContent = productMessage("trackNextPractice", {}, getPageLocale());
   button.addEventListener("click", () =>
     openTeacherAssignment("practice_result"),
   );
   const footnote = document.createElement("small");
-  footnote.textContent = t("workspaceCtaFootnote");
+  footnote.textContent = productMessage(
+    "trackingExplanation",
+    {},
+    getPageLocale(),
+  );
   block.append(message, benefits, button, footnote);
   summary.appendChild(block);
 
   void isTeacherSignedIn().then((signedIn) => {
-    footnote.hidden = signedIn;
-    if (signedIn || signupCtaViewTracked) return;
+    if (signupCtaViewTracked) return;
     signupCtaViewTracked = true;
-    track("signup_cta_viewed", {
+    track("tracking_cta_viewed", {
+      signed_in: signedIn,
       mode,
       word_count: wordCount,
       missed_count: missedCount,
       replay_round: gameState.replayRound,
       cta_location: "practice_result",
     });
+    if (!signedIn)
+      track("signup_cta_viewed", {
+        mode,
+        word_count: wordCount,
+        missed_count: missedCount,
+        replay_round: gameState.replayRound,
+        cta_location: "practice_result",
+      });
   });
 }
 
@@ -971,7 +1042,18 @@ export function openTeacherAssignment(entryPoint = "practice_result") {
   } catch (_) {
     // The teacher form still works when browser storage is unavailable.
   }
-  window.location.href = `/workspace/assignments/new?lang=${encodeURIComponent(pageLocale())}`;
+  const tracking = source !== "assign_homework";
+  if (tracking)
+    saveTrackingEntry(
+      {
+        words: currentWords().join("\n"),
+        exampleSentences: sentenceTextarea()?.value || "",
+        mode: selectedMode(),
+        entryPoint: source,
+      },
+      accountState?.user?.id,
+    );
+  window.location.href = `/workspace/assignments/new?lang=${encodeURIComponent(getPageLocale())}${tracking ? "&tracking=1" : ""}`;
 }
 
 if (typeof window !== "undefined") {

@@ -52,6 +52,22 @@ async function mockSignedOut(page) {
   );
 }
 
+async function mockPurchase(page, plan, amountTotal) {
+  await page.route("**/api/billing/purchase?*", (route) =>
+    route.fulfill({
+      json: {
+        purchase: {
+          transactionId: `in_${plan}_new_price`,
+          plan,
+          billingInterval: "month",
+          amountTotal,
+          currency: "usd",
+        },
+      },
+    }),
+  );
+}
+
 const conversionEvents = (page) =>
   page.evaluate(() =>
     window.dataLayer
@@ -146,8 +162,12 @@ test("Parent Checkout success waits for Parent activation and records the Parent
     });
   });
   await mockAssignments(page, "parent");
+  await mockPurchase(page, "parent", 799);
 
-  await page.goto("/workspace?lang=en&checkout=success&plan=parent");
+  await page.goto(
+    "/workspace?lang=en&checkout=success&plan=parent&checkout_session_id=cs_parent_new_price",
+    { waitUntil: "domcontentloaded" },
+  );
   await expect(page.getByText("Parent Plan", { exact: true })).toBeVisible();
   await expect(page.getByText("Parent Plan is active.")).toBeVisible();
   await expect(page).not.toHaveURL(/checkout=success|plan=parent/);
@@ -163,8 +183,9 @@ test("Parent Checkout success waits for Parent activation and records the Parent
   ).toEqual({
     plan: "parent",
     billing_interval: "month",
-    value: 4.99,
+    value: 7.99,
     currency: "USD",
+    transaction_id: "in_parent_new_price",
   });
 });
 
@@ -186,8 +207,12 @@ test("Teacher Checkout success waits for Teacher activation and records the Teac
     });
   });
   await mockAssignments(page, "teacher");
+  await mockPurchase(page, "teacher", 1499);
 
-  await page.goto("/workspace?lang=en&checkout=success&plan=teacher");
+  await page.goto(
+    "/workspace?lang=en&checkout=success&plan=teacher&checkout_session_id=cs_teacher_new_price",
+    { waitUntil: "domcontentloaded" },
+  );
   await expect(page.getByText("Teacher Plan", { exact: true })).toBeVisible();
   await expect(page.getByText("Teacher Plan is active.")).toBeVisible();
   expect(
@@ -202,8 +227,9 @@ test("Teacher Checkout success waits for Teacher activation and records the Teac
   ).toEqual({
     plan: "teacher",
     billing_interval: "month",
-    value: 9.99,
+    value: 14.99,
     currency: "USD",
+    transaction_id: "in_teacher_new_price",
   });
 });
 
@@ -639,6 +665,11 @@ test("anonymous Photo Import keeps an explicit Teacher choice through OAuth with
     route.fulfill({ contentType: "application/json", body: "{}" }),
   );
   await page.route("**/api/billing/checkout", (route) => {
+    if (!signedIn)
+      return route.fulfill({
+        status: 401,
+        json: { error: "sign_in_required" },
+      });
     checkoutBody = route.request().postDataJSON();
     return route.fulfill({
       contentType: "application/json",
@@ -652,21 +683,23 @@ test("anonymous Photo Import keeps an explicit Teacher choice through OAuth with
   await expect(paywall).toContainText(
     "Turn a photo of the school list into editable spelling words",
   );
-  await expect(paywall).toContainText("Choose the setting that fits:");
+  await expect(paywall).toContainText("Parent Plan · $79.90/year");
   await expect(
-    paywall.getByRole("link", { name: "Upgrade to Parent · $4.99/month" }),
+    paywall.getByRole("link", { name: "Unlock Photo Import" }),
   ).toBeVisible();
   await paywall
-    .getByRole("link", { name: "Choose Teacher · $9.99/month" })
+    .getByRole("link", { name: "Teacher Plan", exact: true })
     .click();
 
-  await expect(page).toHaveURL(/\/workspace\?lang=en#teacher-sign-in$/);
+  await expect(page).toHaveURL(/\/pricing\?plan=teacher&interval=year$/);
+  await page.getByRole("button", { name: "Select Teacher Plan" }).click();
+  await expect(page).toHaveURL(/\/workspace\?lang=en$/);
   await expect(
     page.getByRole("heading", { name: "Continue with Teacher Plan" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Continue with Google" }).click();
   await expect(page).toHaveURL(/\/workspace\?lang=en$/);
-  await expect(page.getByText("Teacher Plan · $9.99/month")).toBeVisible();
+  await expect(page.getByText("Teacher Plan · $149.90/year")).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Continue to secure checkout" }),
   ).toBeVisible();
@@ -677,7 +710,7 @@ test("anonymous Photo Import keeps an explicit Teacher choice through OAuth with
   await expect(page).toHaveURL(/#stripe-checkout$/);
   expect(checkoutBody).toEqual({
     plan: "teacher",
-    interval: "month",
+    interval: "year",
     locale: "en",
   });
   expect(
@@ -712,15 +745,15 @@ test("unknown context offers both plans without inferring from email", async ({
   await expect(paywall).toContainText(
     "Automatically match example sentences to your spelling words",
   );
-  await expect(paywall).toContainText("Choose the setting that fits:");
+  await expect(paywall).toContainText("Parent Plan · $79.90/year");
   await expect(
     paywall.getByRole("button", {
-      name: "Upgrade to Parent · $4.99/month",
+      name: "Unlock premium features",
     }),
   ).toBeVisible();
   await expect(
     paywall.getByRole("button", {
-      name: "Choose Teacher · $9.99/month",
+      name: "Teacher Plan · $149.90/year",
     }),
   ).toBeVisible();
 });
@@ -728,14 +761,14 @@ test("unknown context offers both plans without inferring from email", async ({
 for (const scenario of [
   {
     workspaceType: "family",
-    price: "Parent Plan · $4.99/month",
-    primary: "Upgrade to Parent · $4.99/month",
-    secondary: "For a whole class? View Teacher · $9.99/month",
+    price: "Parent Plan · $79.90/year",
+    primary: "Unlock premium features",
+    secondary: "Teacher Plan · $149.90/year",
   },
   {
     workspaceType: "teacher",
-    price: "Teacher Plan · $9.99/month",
-    primary: "Choose Teacher · $9.99/month",
+    price: "Teacher Plan · $149.90/year",
+    primary: "Unlock premium features",
     secondary: null,
   },
 ]) {
@@ -770,9 +803,22 @@ for (const scenario of [
     else
       await expect(
         paywall.getByRole("button", {
-          name: "Upgrade to Parent · $4.99/month",
+          name: /Parent Plan/,
         }),
       ).toHaveCount(0);
+    let checkoutBody;
+    await page.route("**/api/billing/checkout", (route) => {
+      checkoutBody = route.request().postDataJSON();
+      return route.fulfill({ status: 500, json: { error: "internal_error" } });
+    });
+    await paywall.getByRole("button", { name: scenario.primary }).click();
+    const plan = scenario.workspaceType === "teacher" ? "teacher" : "parent";
+    await expect
+      .poll(() => checkoutBody)
+      .toEqual({ plan, interval: "year", locale: "en" });
+    expect(await analyticsEvents(page, "upgrade_cta_clicked")).toEqual([
+      { cta_location: "sentence_library", plan, billing_interval: "year" },
+    ]);
   });
 }
 
@@ -861,14 +907,16 @@ test("signed-out pricing switches yearly and monthly plan prices", async ({
   const teacherPrice = page.locator(
     '[data-plan-card="teacher"] [data-plan-price]',
   );
-  await expect(parentPrice).toHaveText("$4.99 / month");
-  await expect(teacherPrice).toHaveText("$9.99 / month");
-  await yearly.click();
-  await expect(parentPrice).toHaveText("$49.99 / year");
-  await expect(teacherPrice).toHaveText("$99.99 / year");
+  await expect(yearly).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('[data-plan-choice="parent"]')).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(parentPrice).toHaveText("$79.90 / year");
+  await expect(teacherPrice).toHaveText("$149.90 / year");
   await monthly.click();
-  await expect(parentPrice).toHaveText("$4.99 / month");
-  await expect(teacherPrice).toHaveText("$9.99 / month");
+  await expect(parentPrice).toHaveText("$7.99 / month");
+  await expect(teacherPrice).toHaveText("$14.99 / month");
 });
 
 test("failed Pricing checkout records an attempt and shows an explicit Retry CTA", async ({
@@ -891,12 +939,14 @@ test("failed Pricing checkout records an attempt and shows an explicit Retry CTA
   });
 
   await page.goto("/pricing");
-  await page.getByRole("button", { name: "Select Parent Plan" }).click();
+  await page
+    .getByRole("button", { name: "Photo Import + Smart Review" })
+    .click();
   await expect(
     page.getByRole("button", { name: "Try checkout again" }),
   ).toBeVisible();
   expect(await analyticsEvents(page, "checkout_attempted")).toEqual([
-    { plan: "parent", billing_interval: "month" },
+    { plan: "parent", billing_interval: "year" },
   ]);
   expect(await analyticsEvents(page, "checkout_started")).toEqual([]);
   expect(
@@ -1030,7 +1080,9 @@ test("current monthly plan can switch to yearly after clear proration confirmati
   });
 
   await page.goto("/pricing");
-  const parent = page.getByRole("button", { name: "Select Parent Plan" });
+  const parent = page.getByRole("button", {
+    name: "Photo Import + Smart Review",
+  });
   await expect(
     page.getByRole("button", { name: "Current plan" }),
   ).toBeDisabled();
@@ -1044,7 +1096,7 @@ test("current monthly plan can switch to yearly after clear proration confirmati
     interval: "year",
     locale: "en",
   });
-  expect(confirmation).toContain("$49.99 / year");
+  expect(confirmation).toContain("$79.90 / year");
   expect(confirmation).toContain("credit unused time");
   expect(confirmation).toContain("charge any amount due immediately");
 });
@@ -1069,7 +1121,9 @@ test("failed interval change keeps the confirmed subscription UI unchanged", asy
 
   await page.goto("/pricing");
   await page.getByRole("button", { name: "Yearly plan" }).click();
-  await page.getByRole("button", { name: "Select Parent Plan" }).click();
+  await page
+    .getByRole("button", { name: "Photo Import + Smart Review" })
+    .click();
   await expect(
     page.getByRole("button", { name: "Try checkout again" }),
   ).toBeVisible();
@@ -1101,9 +1155,11 @@ test("canceling an interval change sends no billing request", async ({
 
   await page.goto("/pricing");
   await page.getByRole("button", { name: "Yearly plan" }).click();
-  await page.getByRole("button", { name: "Select Parent Plan" }).click();
+  await page
+    .getByRole("button", { name: "Photo Import + Smart Review" })
+    .click();
   await expect(
-    page.getByRole("button", { name: "Select Parent Plan" }),
+    page.getByRole("button", { name: "Photo Import + Smart Review" }),
   ).toBeEnabled();
   expect(changeCalls).toBe(0);
 });
@@ -1168,7 +1224,9 @@ test("Teacher pricing schedules Parent for the renewal date", async ({
   });
 
   await page.goto("/pricing");
-  await page.getByRole("button", { name: "Select Parent Plan" }).click();
+  await page
+    .getByRole("button", { name: "Photo Import + Smart Review" })
+    .click();
   await expect
     .poll(() => message)
     .toContain("Teacher Plan remains active through September 25, 2026");

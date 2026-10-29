@@ -3,6 +3,12 @@
   "main": "src/worker/index.ts",
   "compatibility_date": "2026-06-26",
   "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "STRIPE_CHECKOUT_PARENT_PRICE_MONTHLY": "price_1UMUXVRZFMylxfDxLBtaS4MQ",
+    "STRIPE_CHECKOUT_PARENT_PRICE_YEARLY": "price_1UMUXWRZFMylxfDx7HdMWkQs",
+    "STRIPE_CHECKOUT_TEACHER_PRICE_MONTHLY": "price_1UMUXWRZFMylxfDxHgc7Ekrj",
+    "STRIPE_CHECKOUT_TEACHER_PRICE_YEARLY": "price_1UMUXXRZFMylxfDxCsBqwcXe"
+  },
   "assets": {
     "directory": ".",
     "binding": "ASSETS",

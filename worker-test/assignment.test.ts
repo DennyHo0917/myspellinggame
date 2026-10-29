@@ -412,10 +412,89 @@ describe("teacher authorization and quotas", () => {
     );
   });
 
+  it("tracked entry requires one owned learner and rejects a consumed trial", async () => {
+    const child = await createLearner("Alice");
+    expect(
+      (await createAssignment(teacherA, { tracking: true })).response.status,
+    ).toBe(400);
+    const other = await createLearner("Bob", teacherB);
+    expect(
+      (
+        await createAssignment(teacherA, {
+          tracking: true,
+          learnerIds: [other.body.id],
+        })
+      ).response.status,
+    ).toBe(403);
+    const created = await createAssignment(teacherA, {
+      tracking: true,
+      learnerIds: [child.body.id],
+      entryPoint: "practice_result",
+    });
+    expect(created.response.status).toBe(201);
+    const publicId = String(created.body.publicId);
+    const learnerPublicId = String(child.body.public_id);
+    const assignment = await publicWords(publicId, learnerPublicId);
+    await submit(publicId, assignment.words, { learnerPublicId });
+    await call(`/api/assignments/${created.body.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: "closed" }),
+    });
+    const denied = await createAssignment(teacherA, {
+      tracking: true,
+      learnerIds: [child.body.id],
+    });
+    expect(denied.response.status).toBe(403);
+    expect(denied.body.error).toBe("tracking_trial_used");
+    await insertSubscription({ plan: "parent", status: "active" });
+    expect(
+      (
+        await createAssignment(teacherA, {
+          tracking: true,
+          learnerIds: [child.body.id],
+        })
+      ).response.status,
+    ).toBe(201);
+  });
+
+  it("records first bound start and completion once per owner, excluding anonymous and incomplete attempts", async () => {
+    const child = await createLearner("Alice");
+    const created = await createAssignment();
+    const publicId = String(created.body.publicId);
+    const learnerPublicId = String(child.body.public_id);
+    const assignment = await publicWords(publicId);
+    await start(publicId);
+    await submit(publicId, assignment.words);
+    const count = async (name: string) =>
+      Number(
+        await bindings.DB.prepare(
+          "SELECT COUNT(*) AS count FROM lifecycle_events WHERE user_id = ? AND event_name = ?",
+        )
+          .bind(teacherA.id, name)
+          .first("count"),
+      );
+    expect(await count("first_bound_practice_started")).toBe(0);
+    expect(await count("first_bound_practice_completed")).toBe(0);
+    const attemptId = crypto.randomUUID();
+    await start(publicId, { learnerPublicId, attemptId });
+    await start(publicId, { learnerPublicId, attemptId });
+    await submit(publicId, assignment.words, {
+      learnerPublicId,
+      completed: false,
+    });
+    expect(await count("first_bound_practice_started")).toBe(1);
+    expect(await count("first_bound_practice_completed")).toBe(0);
+    await submit(publicId, assignment.words, { learnerPublicId, attemptId });
+    await submit(publicId, assignment.words, { learnerPublicId, attemptId });
+    await submit(publicId, assignment.words, { learnerPublicId });
+    expect(await count("first_bound_practice_completed")).toBe(1);
+  });
+
   it("keeps the Free, Parent, and Teacher limits centralized", () => {
     expect(PLAN_LIMITS.free).toEqual({
       activeAssignments: 1,
-      monthlyAttempts: 8,
+      monthlyAttempts: 1,
+      trackingTrialAttempts: 1,
       savedLists: 1,
       learnerProfiles: 1,
       historyDays: 14,
@@ -945,28 +1024,22 @@ describe("teacher authorization and quotas", () => {
     );
   });
 
-  it("saves the ninth result and feedback but filters owner details and statistics", async () => {
+  it("saves the second result and feedback but filters owner details and statistics", async () => {
     const created = await createAssignment();
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
-    for (let i = 0; i < 7; i++) {
-      expect(
-        (await submit(publicId, assignment.words, { nickname: `Student ${i}` }))
-          .status,
-      ).toBe(201);
-    }
-    const eighth = await submit(publicId, assignment.words, {
-      nickname: "Eighth",
+    const first = await submit(publicId, assignment.words, {
+      nickname: "First",
     });
-    const eighthResult = (await eighth.json()) as { id: string };
+    const firstResult = (await first.json()) as { id: string };
     const attemptId = crypto.randomUUID();
-    const ninth = await submit(publicId, assignment.words, {
+    const second = await submit(publicId, assignment.words, {
       attemptId,
       nickname: "Hidden",
       answers: ["wrong", "wrong"],
     });
-    expect(ninth.status).toBe(201);
-    expect(await ninth.json()).toMatchObject({
+    expect(second.status).toBe(201);
+    expect(await second.json()).toMatchObject({
       id: attemptId,
       accuracy: 0,
       missedWords: ["apple", "banana"],
@@ -984,10 +1057,10 @@ describe("teacher authorization and quotas", () => {
         summary: unknown;
         lockedResultCount: number;
       };
-      expect(detail.attempts).toHaveLength(8);
+      expect(detail.attempts).toHaveLength(1);
       expect(detail.attempts.some((row) => row.id === attemptId)).toBe(false);
       expect(detail.summary).toMatchObject({
-        attempts: 8,
+        attempts: 1,
         averageAccuracy: 100,
       });
       expect(detail.lockedResultCount).toBe(1);
@@ -997,20 +1070,20 @@ describe("teacher authorization and quotas", () => {
     expect(JSON.stringify(listing)).toContain('"locked_result_count":1');
     expect(JSON.stringify(listing)).toContain('"average_accuracy":100');
     await call(
-      `/api/assignments/${created.body.id}/attempts/${eighthResult.id}`,
+      `/api/assignments/${created.body.id}/attempts/${firstResult.id}`,
       { method: "DELETE" },
     );
     await submit(publicId, assignment.words, { nickname: "After deletion" });
     const afterDelete = (await (
       await call(`/api/assignments/${created.body.id}`)
     ).json()) as { attempts: unknown[]; lockedResultCount: number };
-    expect(afterDelete.attempts).toHaveLength(7);
+    expect(afterDelete.attempts).toHaveLength(0);
     expect(afterDelete.lockedResultCount).toBe(2);
     await insertSubscription({ plan: "parent", status: "active" });
     const unlocked = (await (
       await call(`/api/assignments/${created.body.id}`)
     ).json()) as { attempts: unknown[]; lockedResultCount: number };
-    expect(unlocked.attempts).toHaveLength(9);
+    expect(unlocked.attempts).toHaveLength(2);
     expect(unlocked.lockedResultCount).toBe(0);
     await bindings.DB.prepare(
       "UPDATE attempts SET retention_expires_at = '2000-01-01T00:00:00.000Z' WHERE id = ?",
@@ -1020,7 +1093,7 @@ describe("teacher authorization and quotas", () => {
     const expired = (await (
       await call(`/api/assignments/${created.body.id}`)
     ).json()) as { attempts: unknown[] };
-    expect(expired.attempts).toHaveLength(8);
+    expect(expired.attempts).toHaveLength(1);
   });
 
   it("uses one account allowance across assignments and filters learner summaries and progress", async () => {
@@ -1030,18 +1103,6 @@ describe("teacher authorization and quotas", () => {
     const firstWords = await publicWords(
       String(first.body.publicId),
       learnerPublicId,
-    );
-    await bindings.DB.batch(
-      Array.from({ length: 7 }, () =>
-        bindings.DB.prepare(
-          "INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at) VALUES (?, ?, ?, ?)",
-        ).bind(
-          crypto.randomUUID(),
-          teacherA.id,
-          monthStart(),
-          new Date().toISOString(),
-        ),
-      ),
     );
     expect(
       (
@@ -1083,7 +1144,11 @@ describe("teacher authorization and quotas", () => {
       })
     ).json();
     expect(workspace).toMatchObject({
-      usage: { monthlyAttempts: 9, lockedResultCount: 1 },
+      usage: {
+        monthlyAttempts: 2,
+        trackingTrialUsed: true,
+        lockedResultCount: 1,
+      },
       learners: [{ needs_review_count: 0, missed_words: [] }],
       missedWords: [],
     });
@@ -1114,18 +1179,6 @@ describe("teacher authorization and quotas", () => {
     const created = await createAssignment();
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
-    await bindings.DB.batch(
-      Array.from({ length: 7 }, () =>
-        bindings.DB.prepare(
-          "INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at) VALUES (?, ?, ?, ?)",
-        ).bind(
-          crypto.randomUUID(),
-          teacherA.id,
-          monthStart(),
-          new Date().toISOString(),
-        ),
-      ),
-    );
     const ids = [crypto.randomUUID(), crypto.randomUUID()];
     const responses = await Promise.all(
       ids.flatMap((attemptId, i) =>
@@ -1147,25 +1200,26 @@ describe("teacher authorization and quotas", () => {
       await bindings.DB.prepare(
         "SELECT COUNT(*) AS count FROM monthly_submission_usage",
       ).first(),
-    ).toEqual({ count: 9 });
+    ).toEqual({ count: 2 });
   });
 
-  it("starts a new monthly allowance without reopening locked older results or locking legacy results", async () => {
+  it("does not reset the lifetime trial after a new month or cleanup and preserves legacy visibility", async () => {
     const created = await createAssignment();
     const publicId = String(created.body.publicId);
     const assignment = await publicWords(publicId);
-    for (let i = 0; i < 9; i++)
+    for (let i = 0; i < 2; i++)
       await submit(publicId, assignment.words, { nickname: `Student ${i}` });
     // Simulate previous month's immutable usage ledger while results remain retained.
     await bindings.DB.prepare(
       "UPDATE monthly_submission_usage SET month_key = '2000-01-01T00:00:00.000Z'",
     ).run();
+    await scheduled({} as ScheduledController, testEnv());
     await submit(publicId, assignment.words, { nickname: "New month" });
     let detail = (await (
       await call(`/api/assignments/${created.body.id}`)
     ).json()) as { attempts: unknown[]; lockedResultCount: number };
-    expect(detail.attempts).toHaveLength(9);
-    expect(detail.lockedResultCount).toBe(1);
+    expect(detail.attempts).toHaveLength(1);
+    expect(detail.lockedResultCount).toBe(2);
     // Old worker inserts omit the new column; migration default preserves access.
     await bindings.DB.prepare(
       `INSERT INTO attempts
@@ -1177,8 +1231,8 @@ describe("teacher authorization and quotas", () => {
     detail = (await (
       await call(`/api/assignments/${created.body.id}`)
     ).json()) as typeof detail;
-    expect(detail.attempts).toHaveLength(10);
-    expect(detail.lockedResultCount).toBe(1);
+    expect(detail.attempts).toHaveLength(2);
+    expect(detail.lockedResultCount).toBe(2);
   });
 
   it.each(["parent", "teacher"] as const)(
@@ -3058,6 +3112,41 @@ describe("Stripe checkout", () => {
   });
 
   it.each([
+    ["parent", "month"],
+    ["parent", "year"],
+    ["teacher", "month"],
+    ["teacher", "year"],
+  ] as const)(
+    "uses the new %s %s price for Checkout",
+    async (plan, interval) => {
+      const priceId = `price_${plan}_new_${interval}`;
+      const env = testEnv({
+        STRIPE_CHECKOUT_PARENT_PRICE_MONTHLY: "price_parent_new_month",
+        STRIPE_CHECKOUT_PARENT_PRICE_YEARLY: "price_parent_new_year",
+        STRIPE_CHECKOUT_TEACHER_PRICE_MONTHLY: "price_teacher_new_month",
+        STRIPE_CHECKOUT_TEACHER_PRICE_YEARLY: "price_teacher_new_year",
+      });
+      await createCheckout(
+        env,
+        bindings.DB,
+        teacherA,
+        interval,
+        "https://example.test",
+        {
+          now,
+          plan,
+          createSession: async (params) => {
+            expect(params.line_items).toEqual([
+              { price: priceId, quantity: 1 },
+            ]);
+            return createSession(params);
+          },
+        },
+      );
+    },
+  );
+
+  it.each([
     ["month", "price_teacher_monthly"],
     ["year", "price_teacher_yearly"],
   ] as const)(
@@ -4722,6 +4811,58 @@ describe("Stripe event processing", () => {
         stripe_price_id:
           interval === "year" ? "price_parent_yearly" : "price_parent_monthly",
       });
+    },
+  );
+
+  it.each([
+    ["parent", "month"],
+    ["parent", "year"],
+    ["teacher", "month"],
+    ["teacher", "year"],
+  ] as const)(
+    "preserves old and new %s %s access after repricing",
+    async (plan, interval) => {
+      const env = testEnv({
+        STRIPE_CHECKOUT_PARENT_PRICE_MONTHLY: "price_parent_new_monthly",
+        STRIPE_CHECKOUT_PARENT_PRICE_YEARLY: "price_parent_new_yearly",
+        STRIPE_CHECKOUT_TEACHER_PRICE_MONTHLY: "price_teacher_new_monthly",
+        STRIPE_CHECKOUT_TEACHER_PRICE_YEARLY: "price_teacher_new_yearly",
+      });
+      for (const version of ["old", "new"]) {
+        const priceId = `price_${plan}_${version === "new" ? "new_" : ""}${interval === "year" ? "yearly" : "monthly"}`;
+        const event = subscriptionEvent(
+          `evt_${version}`,
+          "active",
+          interval,
+          plan,
+        );
+        const sub = event.data.object as Stripe.Subscription;
+        sub.items.data[0].price.id = priceId;
+        await processStripeEvent(bindings.DB, event, env);
+        await processStripeEvent(
+          bindings.DB,
+          {
+            id: `evt_invoice_${version}`,
+            type: "invoice.payment_succeeded",
+            data: {
+              object: {
+                id: `in_${version}`,
+                amount_paid: 799,
+                currency: "usd",
+                subscription: sub.id,
+                customer: "cus_trial",
+                billing_reason: "subscription_cycle",
+              },
+            },
+          } as unknown as Stripe.Event,
+          env,
+        );
+        const response = await call("/api/me", {}, teacherA, env);
+        expect(await response.json()).toMatchObject({
+          plan,
+          billingInterval: interval,
+        });
+      }
     },
   );
 

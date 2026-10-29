@@ -1212,10 +1212,10 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
   await expect(
     page
       .locator(".locked-feature-plan")
-      .getByRole("button", { name: "Choose Teacher · $9.99/month" }),
+      .getByRole("button", { name: "Unlock premium features" }),
   ).toHaveCount(1);
   await expect(page.locator(".locked-feature-plan")).toContainText(
-    "Teacher Plan · $9.99/month",
+    "Teacher Plan · $149.90/year",
   );
 });
 
@@ -1415,8 +1415,8 @@ test("practice advises signed-in plans after 20 words and preserves hard limits"
   await expect(
     page
       .locator("#spelling-limit-cta")
-      .getByRole("link", { name: "Upgrade to Parent · $4.99/month" }),
-  ).toHaveAttribute("href", "/workspace?lang=en#teacher-sign-in");
+      .getByRole("link", { name: "Unlock premium features" }),
+  ).toHaveAttribute("href", "/pricing?plan=parent&interval=year");
 
   account.plan = "parent";
   await page.reload();
@@ -1446,12 +1446,8 @@ test("practice advises signed-in plans after 20 words and preserves hard limits"
 });
 
 for (const [locale, label, advice] of [
-  [
-    "es",
-    "Mejorar al plan familiar · $4.99/mes",
-    "Las listas largas pueden aumentar",
-  ],
-  ["zh", "升级家长方案 · US$4.99/月", "词表较长时，记忆负担可能增加"],
+  ["es", "Desbloquear funciones premium", "Las listas largas pueden aumentar"],
+  ["zh", "解锁高级功能", "词表较长时，记忆负担可能增加"],
 ]) {
   test(`${locale} Free word-limit upgrade stays in the active locale`, async ({
     page,
@@ -1475,7 +1471,7 @@ for (const [locale, label, advice] of [
     await page.locator("#start-practice-btn").click();
     await expect(
       page.locator("#spelling-limit-cta").getByRole("link", { name: label }),
-    ).toHaveAttribute("href", `/workspace?lang=${locale}#teacher-sign-in`);
+    ).toHaveAttribute("href", `/${locale}/pricing?plan=parent&interval=year`);
   });
 }
 
@@ -1622,7 +1618,7 @@ test("share choices are localized without raw message keys", async ({
   }
 });
 
-test("Track results skips anonymous copying and opens the existing assignment flow", async ({
+test("Track results skips anonymous copying and opens the simplified tracking flow", async ({
   page,
 }) => {
   await mockWorkspaceRoster(page);
@@ -1670,7 +1666,20 @@ test("Track results skips anonymous copying and opens the existing assignment fl
     });
   });
   await page.route("**/api/assignments", async (route) => {
-    if (route.request().method() !== "POST") return route.fallback();
+    if (route.request().method() !== "POST")
+      return route.fulfill({
+        json: {
+          assignments: [],
+          learners: [
+            {
+              id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+              name: "Alice",
+              public_id: "abcdefghijklmnopqrstuvwx",
+              archived: 0,
+            },
+          ],
+        },
+      });
     await route.fulfill({
       status: 201,
       contentType: "application/json",
@@ -1712,7 +1721,9 @@ test("Track results skips anonymous copying and opens the existing assignment fl
   await page
     .locator(".practice-share-option", { hasText: "Track results" })
     .click();
-  await expect(page).toHaveURL(/\/workspace\/assignments\/new\?lang=en$/);
+  await expect(page).toHaveURL(
+    /\/workspace\/assignments\/new\?lang=en&tracking=1$/,
+  );
   await expect(
     page.getByRole("button", { name: "Continue with Google" }),
   ).toBeVisible();
@@ -1749,7 +1760,7 @@ test("Track results skips anonymous copying and opens the existing assignment fl
     });
   });
   await page.getByRole("button", { name: "Continue with Google" }).click();
-  await expect(page.getByLabel("Assignment title")).toBeVisible();
+  await expect(page.locator("#tracking-learner")).toBeVisible();
   expect(
     await page.evaluate(() =>
       JSON.parse(sessionStorage.getItem("trackAuthEvents") || "[]")
@@ -1760,7 +1771,7 @@ test("Track results skips anonymous copying and opens the existing assignment fl
   expect(await analyticsEvents(page, "teacher_auth_completed")).toEqual([
     { entry_point: "copy_track" },
   ]);
-  await page.getByLabel("Assignment title").fill("Tracked practice");
+
   await page.evaluate(() => {
     addEventListener("beforeunload", () => {
       sessionStorage.setItem(
@@ -1769,9 +1780,11 @@ test("Track results skips anonymous copying and opens the existing assignment fl
       );
     });
   });
-  await page.getByRole("button", { name: "Create and publish" }).click();
+  await page
+    .getByRole("button", { name: "Start tracked practice", exact: true })
+    .click();
   await expect(page).toHaveURL(
-    `/workspace/assignments/${assignmentId}?lang=en`,
+    `/a/${publicId}?learner=abcdefghijklmnopqrstuvwx&lang=en`,
   );
   expect(
     await page.evaluate(() =>
@@ -1787,7 +1800,7 @@ test("Track results skips anonymous copying and opens the existing assignment fl
   ).toBeNull();
 });
 
-test("signed-in Track results opens the existing assignment form directly", async ({
+test("signed-in Track results opens tracking setup directly", async ({
   page,
 }) => {
   await mockWorkspaceRoster(page);
@@ -1805,8 +1818,10 @@ test("signed-in Track results opens the existing assignment form directly", asyn
   await page
     .locator(".practice-share-option", { hasText: "Track results" })
     .click();
-  await expect(page).toHaveURL(/\/workspace\/assignments\/new\?lang=en$/);
-  await expect(page.getByLabel("Assignment title")).toBeVisible();
+  await expect(page).toHaveURL(
+    /\/workspace\/assignments\/new\?lang=en&tracking=1$/,
+  );
+  await expect(page.locator("#tracking-learner")).toBeVisible();
   await expect(page.getByLabel("Spelling words")).toHaveValue(
     "because\nfriend\nbeautiful\nanswer\nenough\nfavorite\nlibrary\nthrough",
   );
@@ -1837,7 +1852,7 @@ test("typing result offers Workspace CTA and keeps the practice draft", async ({
   });
 
   await expect(
-    page.getByRole("button", { name: "Continue in Workspace" }),
+    page.getByRole("button", { name: "Start tracked practice" }),
   ).toBeVisible();
   expect(await analyticsEvents(page, "signup_cta_viewed")).toEqual([
     {
@@ -1856,8 +1871,10 @@ test("typing result offers Workspace CTA and keeps the practice draft", async ({
       sessionStorage.setItem("eventsBeforeNavigation", JSON.stringify(events));
     });
   });
-  await page.getByRole("button", { name: "Continue in Workspace" }).click();
-  await expect(page).toHaveURL(/\/workspace\/assignments\/new\?lang=en$/);
+  await page.getByRole("button", { name: "Start tracked practice" }).click();
+  await expect(page).toHaveURL(
+    /\/workspace\/assignments\/new\?lang=en&tracking=1$/,
+  );
   expect(
     await page.evaluate(() => ({
       words: sessionStorage.getItem("mySpellingTeacherDraftWords"),
@@ -1908,7 +1925,7 @@ test("signed-in result keeps the CTA without signup copy or signup analytics", a
   });
 
   await expect(
-    page.getByRole("button", { name: "Continue in Workspace" }),
+    page.getByRole("button", { name: "Start tracked practice" }),
   ).toBeVisible();
   await expect(
     page.getByText("Free account · Google or Microsoft sign-in"),
@@ -1923,8 +1940,10 @@ test("signed-in result keeps the CTA without signup copy or signup analytics", a
       sessionStorage.setItem("eventsBeforeNavigation", JSON.stringify(events));
     });
   });
-  await page.getByRole("button", { name: "Continue in Workspace" }).click();
-  await expect(page).toHaveURL(/\/workspace\/assignments\/new\?lang=en$/);
+  await page.getByRole("button", { name: "Start tracked practice" }).click();
+  await expect(page).toHaveURL(
+    /\/workspace\/assignments\/new\?lang=en&tracking=1$/,
+  );
   expect(
     await page.evaluate(() => ({
       words: sessionStorage.getItem("mySpellingTeacherDraftWords"),
@@ -1965,7 +1984,7 @@ test("dictation result uses the same Workspace CTA", async ({ page }) => {
     window.endGame();
   });
   await expect(
-    page.getByRole("button", { name: "Continue in Workspace" }),
+    page.getByRole("button", { name: "Start tracked practice" }),
   ).toBeVisible();
   expect(await analyticsEvents(page, "signup_cta_viewed")).toEqual([
     {
@@ -2736,7 +2755,9 @@ test("Parent plan starts Checkout with its plan and interval", async ({
   });
 
   await page.goto("/pricing");
-  const parent = page.getByRole("button", { name: "Select Parent Plan" });
+  const parent = page.getByRole("button", {
+    name: "Photo Import + Smart Review",
+  });
   await parent.scrollIntoViewIfNeeded();
   await expect
     .poll(() => analyticsEvents(page, "upgrade_viewed"))
@@ -2789,14 +2810,14 @@ test("Teacher plan starts Checkout with its plan and interval", async ({
   await expect(page).toHaveURL(/#teacher-checkout$/);
   expect(checkoutBody).toEqual({
     plan: "teacher",
-    interval: "month",
+    interval: "year",
     locale: "en",
   });
   expect(await analyticsEvents(page, "upgrade_clicked")).toEqual([
-    { plan: "teacher", billing_interval: "month" },
+    { plan: "teacher", billing_interval: "year" },
   ]);
   expect(await analyticsEvents(page, "checkout_attempted")).toEqual([
-    { plan: "teacher", billing_interval: "month" },
+    { plan: "teacher", billing_interval: "year" },
   ]);
 });
 
@@ -2852,7 +2873,7 @@ test("saved checkout choice requires confirmation and stays retryable", async ({
     sessionStorage.setItem("pendingCheckoutPlan", "parent"),
   );
   await page.goto("/workspace?lang=en");
-  await expect(page.getByText("Parent Plan · $49.99/year")).toBeVisible();
+  await expect(page.getByText("Parent Plan · $79.90/year")).toBeVisible();
   expect(checkoutCalls).toBe(0);
   await page
     .getByRole("button", { name: "Continue to secure checkout" })
@@ -2862,7 +2883,7 @@ test("saved checkout choice requires confirmation and stays retryable", async ({
       "We couldn’t open Stripe Checkout. Your selected plan is still saved.",
     ),
   ).toBeVisible();
-  await expect(page.getByText("Parent Plan · $49.99/year")).toBeVisible();
+  await expect(page.getByText("Parent Plan · $79.90/year")).toBeVisible();
   expect(
     await page.evaluate(() =>
       sessionStorage.getItem("pendingCheckoutInterval"),
@@ -2985,8 +3006,8 @@ test("new assignment survives checkout retry and restores after activation", asy
     .locator('input[name="learnerTarget"][value="selected"]')
     .check({ force: true });
   await page.locator(".learner-picker-summary").click();
-  await page.locator(".learner-picker-option", { hasText: "Alice" }).click();
-  await page.getByRole("button", { name: /Choose Teacher/ }).click();
+  await page.locator('input[name="learnerId"]').check({ force: true });
+  await page.getByRole("button", { name: "Unlock premium features" }).click();
   await expect(
     page.getByRole("button", { name: "Try checkout again" }),
   ).toBeVisible();
@@ -3098,7 +3119,7 @@ test("saved-list edit returns after checkout cancellation without overwriting ne
       objectId: listId,
       path: "/workspace/saved-lists?lang=en",
     });
-  await page.getByRole("button", { name: /Choose Teacher/ }).click();
+  await page.getByRole("button", { name: "Unlock premium features" }).click();
   await page.waitForURL(/\/pricing\?checkout=cancelled$/);
   await expect(page).toHaveURL(/\/workspace\/saved-lists\?lang=en$/);
   await expect(page.getByLabel("List title")).toHaveValue("Draft list");
@@ -3411,11 +3432,11 @@ test("mobile conversion pages keep their key actions usable", async ({
   ).toHaveAttribute("href", "/workspace?lang=en#teacher-sign-in");
   await expect(page.getByText("Unlimited full results").first()).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Monthly plan", exact: true }),
+    page.getByRole("button", { name: "Yearly plan", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("button", { name: "Yearly plan", exact: true }).click();
-  await expect(page.getByText("$49.99 / year")).toBeVisible();
-  await expect(page.getByText("$99.99 / year")).toBeVisible();
+  await expect(page.getByText("$79.90 / year")).toBeVisible();
+  await expect(page.getByText("$149.90 / year")).toBeVisible();
   await expectNoHorizontalOverflow();
 
   await page.goto("/workspace?lang=en");
@@ -3434,7 +3455,7 @@ test("Free workspace explains result viewing and paid plans remain unlimited", a
   page,
 }) => {
   let plan = "free";
-  let monthlyAttempts = 6;
+  let monthlyAttempts = 0;
   const json = (route, body, status = 200) =>
     route.fulfill({
       status,
@@ -3457,7 +3478,7 @@ test("Free workspace explains result viewing and paid plans remain unlimited", a
         limits: PLAN_LIMITS[plan],
         activeAssignments: 0,
         monthlyAttempts,
-        lockedResultCount: Math.max(0, monthlyAttempts - 8),
+        lockedResultCount: Math.max(0, monthlyAttempts - 1),
         savedLists: 0,
         learnerProfiles: 0,
       },
@@ -3472,42 +3493,19 @@ test("Free workspace explains result viewing and paid plans remain unlimited", a
     page.getByRole("heading", { name: "Recent assignments" }),
   ).toBeVisible();
   await expect(page.locator(".teacher-pricing")).toHaveCount(0);
-  await expect(
-    page
-      .locator(".teacher-dashboard-card")
-      .getByRole("link", {
-        name: "View Plans",
-      })
-      .first(),
-  ).toHaveAttribute("href", "/pricing");
+  await expect(page.locator(".free-tracking-card")).toContainText(
+    "no monthly reset",
+  );
+  await expect(page.locator(".submission-limit-notice")).toHaveCount(0);
+  monthlyAttempts = 2;
+  await page.reload({ waitUntil: "domcontentloaded" });
   const warning = page.locator(".submission-limit-notice");
-  await expect(warning).toContainText(
-    "Free opens the first 8 completed results per account each month",
-  );
-  await expect(warning).toContainText(
-    "Students can still submit and see feedback",
-  );
-  await expect(
-    warning.getByRole("link", { name: "View Plans" }),
-  ).toHaveAttribute("href", "/pricing");
-  await page
-    .locator(".teacher-dashboard-card")
-    .getByRole("link", { name: "View Plans" })
-    .first()
-    .click();
+  await expect(warning).toContainText("Your free tracking trial is used");
+  await expect(warning).toContainText("1 results to unlock");
+  await warning.getByRole("link", { name: "Unlock premium features" }).click();
   await expect(page).toHaveURL(/\/pricing$/);
   await expect(page.locator(".pricing-grid .pricing-card")).toHaveCount(3);
   await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
-
-  monthlyAttempts = 9;
-  await page.reload({ waitUntil: "domcontentloaded" });
-  await expect(page.locator(".submission-limit-notice")).toContainText(
-    "Full result viewing has reached 8 this month",
-  );
-
-  await expect(page.locator(".submission-limit-notice")).toContainText(
-    "1 results to unlock",
-  );
   plan = "teacher";
   monthlyAttempts = 100;
   await page.reload({ waitUntil: "domcontentloaded" });
@@ -4035,6 +4033,17 @@ test("Teacher creates today's review assignment from learner detail", async ({
       limits: PLAN_LIMITS.teacher,
     }),
   );
+  let submitted;
+  await page.route("**/api/assignments", (route) => {
+    if (route.request().method() === "POST") {
+      submitted = route.request().postDataJSON();
+      return json(route, { id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc" });
+    }
+    return json(route, {
+      learners: [{ id: learnerId, name: "Emily", archived: 0 }],
+      assignments: [],
+    });
+  });
   await page.route(`**/api/learners/${learnerId}`, (route) =>
     json(route, {
       learner: { id: learnerId, name: "Emily", archived: false },
@@ -4093,6 +4102,57 @@ test("Teacher creates today's review assignment from learner detail", async ({
   await expect(
     page.locator('input[name="mode"][value="dictation"]'),
   ).toBeChecked();
+  await expect(
+    page.locator('input[name="learnerTarget"][value="selected"]'),
+  ).toBeChecked();
+  await expect(
+    page.locator(`input[name="learnerId"][value="${learnerId}"]`),
+  ).toBeChecked();
+  await page.evaluate(() => {
+    sessionStorage.setItem(
+      "mySpellingActivatedFeature",
+      JSON.stringify({
+        feature: "todays_review",
+        userId: "teacher-a",
+        at: Date.now(),
+      }),
+    );
+  });
+  await page.reload();
+  await expect(
+    page.locator(`input[name="learnerId"][value="${learnerId}"]`),
+  ).toBeChecked();
+  expect(await analyticsEvents(page, "premium_feature_used")).toEqual([]);
+  await page.evaluate(() =>
+    addEventListener("beforeunload", () =>
+      sessionStorage.setItem(
+        "reviewUseEvents",
+        JSON.stringify(
+          (window.dataLayer || [])
+            .map((e) => Array.from(e))
+            .filter((e) => e[0] === "event" && e[1] === "premium_feature_used")
+            .map((e) => e[2]),
+        ),
+      ),
+    ),
+  );
+  await page
+    .getByRole("button", { name: "Create and publish", exact: true })
+    .click();
+  await expect.poll(() => submitted?.learnerIds).toEqual([learnerId]);
+  await expect(page).toHaveURL(/\/workspace\/assignments\/cccccccc/);
+  expect(
+    await page.evaluate(() =>
+      JSON.parse(sessionStorage.getItem("reviewUseEvents")),
+    ),
+  ).toEqual([
+    {
+      feature: "todays_review",
+      current_plan: "teacher",
+      word_count: 1,
+      after_upgrade: true,
+    },
+  ]);
 });
 
 test("Parent creates children, assigns both, and opens progress with Smart Review", async ({

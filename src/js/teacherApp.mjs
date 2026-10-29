@@ -1,8 +1,18 @@
+import { takeTrackingEntry, saveTrackingEntry } from "./trackingDraft.mjs";
+import {
+  saveUpgradeReturn,
+  bindUpgradeReturn,
+  upgradeReturnFor,
+  clearUpgradeReturn,
+} from "./upgradeReturn.mjs";
+import { upgradeSelection } from "./upgradeSelection.mjs";
 import {
   clearAssignmentEntryPoint,
   getAssignmentEntryPoint,
   setAssignmentEntryPoint,
   trackEvent,
+  markUpgradeActivated,
+  trackPremiumFeatureUsed,
   trackLockedFeature,
   trackLockedFeatureError,
   trackPurchase,
@@ -79,7 +89,7 @@ function safeWorkspaceReturnPath(value) {
     const lang = PRODUCT_LOCALES.some(([value]) => value === requestedLang)
       ? requestedLang
       : locale;
-    return `${url.pathname}?lang=${encodeURIComponent(lang)}`;
+    return `${url.pathname}?lang=${encodeURIComponent(lang)}${url.pathname === "/workspace/assignments/new" && url.searchParams.get("tracking") === "1" ? "&tracking=1" : ""}`;
   } catch {
     return null;
   }
@@ -184,6 +194,9 @@ const ERROR_KEYS = {
   learner_not_found: "learnerNotFound",
   learner_exists: "learnerExists",
   learner_limit: "learnerLimit",
+  invalid_learners: "trackingChooseLearner",
+  learner_forbidden: "reviewLearnerUnavailable",
+  tracking_trial_used: "trackingTrialUsed",
   invalid_avatar: "invalidAvatar",
   smart_review_required: "smartReviewRequired",
   sentence_library_required: "sentenceLibraryRequired",
@@ -222,12 +235,6 @@ function isTeacherPlan(me) {
 
 function isParentPlan(me) {
   return me.plan === "parent";
-}
-
-function contextualUpgradePlan() {
-  if (workspaceState?.me?.workspaceType === "family") return "parent";
-  if (workspaceState?.me?.workspaceType === "teacher") return "teacher";
-  return null;
 }
 
 function upgradePrice(plan, interval = "month") {
@@ -977,7 +984,9 @@ function shell(me = null, activeSection = "overview") {
   ];
   const menu = document.createElement("div");
   menu.className = "workspace-sidebar-menu";
-  for (const [key, label, href] of items) {
+  for (const [key, label, href] of items.filter(
+    ([key]) => me.plan !== "free" || !["savedLists", "progress"].includes(key),
+  )) {
     const link = document.createElement(href ? "a" : "button");
     link.className = "workspace-sidebar-link";
     link.dataset.section = key;
@@ -1087,39 +1096,52 @@ function upgradeLink(ctaLocation, direct = false) {
     const link = document.createElement("a");
     link.className = "button-link pro";
     link.href = productPagePath("pricing", locale);
-    link.textContent = copy.upgrade;
+    link.textContent = copy.unlockPremium;
     link.addEventListener("click", () => {
       prepareWorkspaceDraftReturn();
+      saveUpgradeReturn(ctaLocation, workspaceState?.me?.user?.id);
       trackEvent("upgrade_cta_clicked", { cta_location: ctaLocation });
     });
     return link;
   }
   const controls = document.createElement("span");
   controls.className = "contextual-paywall-actions";
-  const recommendedPlan = contextualUpgradePlan();
+  const { plan: recommendedPlan, interval } = upgradeSelection(
+    workspaceState?.me,
+  );
+  if (ctaLocation === "word_limit") {
+    const price = document.createElement("strong");
+    price.className = "contextual-paywall-price";
+    price.textContent = upgradePrice(recommendedPlan, interval);
+    controls.append(price);
+  }
   const plans =
     recommendedPlan === "teacher" ? ["teacher"] : ["parent", "teacher"];
   for (const plan of plans) {
     const button = document.createElement("button");
     button.className = "button-secondary pro";
     button.type = "button";
+    button.classList.toggle("paywall-primary", plan === recommendedPlan);
     button.textContent =
-      plan === "teacher" && recommendedPlan === "parent"
-        ? copy.wholeClassTeacherMonthly
-        : copy[
-            plan === "parent" ? "upgradeParentMonthly" : "upgradeTeacherMonthly"
-          ];
+      plan === recommendedPlan
+        ? copy.unlockPremium
+        : upgradePrice(plan, interval);
     button.addEventListener("click", async () => {
-      trackEvent("upgrade_cta_clicked", { cta_location: ctaLocation });
+      trackEvent("upgrade_cta_clicked", {
+        cta_location: ctaLocation,
+        plan,
+        billing_interval: interval,
+      });
       for (const control of controls.querySelectorAll("button"))
         control.disabled = true;
+      saveUpgradeReturn(ctaLocation, workspaceState?.me?.user?.id);
       try {
         sessionStorage.setItem(PENDING_UPGRADE_FEATURE_KEY, ctaLocation);
       } catch {}
       try {
-        await startCheckout("month", plan);
+        await startCheckout(interval, plan);
       } catch (error) {
-        showCheckoutRetry("month", plan, error);
+        showCheckoutRetry(interval, plan, error);
         for (const control of controls.querySelectorAll("button"))
           control.disabled = false;
       }
@@ -1139,8 +1161,8 @@ function showLockedFeaturePlan(host, message, ctaLocation) {
   text.textContent = message;
   const price = document.createElement("strong");
   price.className = "contextual-paywall-price";
-  const plan = contextualUpgradePlan();
-  price.textContent = plan ? upgradePrice(plan) : copy.chooseUpgradePlan;
+  const { plan, interval } = upgradeSelection(workspaceState?.me);
+  price.textContent = upgradePrice(plan, interval);
   const feature = {
     sentence_library: "example_sentences",
     smart_review: "smart_review",
@@ -1154,7 +1176,13 @@ function showLockedFeaturePlan(host, message, ctaLocation) {
   host.append(notice);
 }
 
-function saveAssignmentDraft(words, title = "", exampleSentences = "") {
+function saveAssignmentDraft(
+  words,
+  title = "",
+  exampleSentences = "",
+  learnerIds = [],
+  reviewFeature = null,
+) {
   try {
     sessionStorage.setItem(
       "mySpellingTeacherDraftWords",
@@ -1186,6 +1214,9 @@ function saveAssignmentDraft(words, title = "", exampleSentences = "") {
             ? exampleSentences
             : exampleSentences.map((sentence) => sentence || "").join("\n"),
         mode: "dictation",
+        learnerTarget: learnerIds.length ? "selected" : "anyone",
+        learnerIds,
+        reviewFeature,
       },
     });
   }
@@ -2539,6 +2570,9 @@ function progressLearnerRows(learners, { reviewActions = false } = {}) {
           saveAssignmentDraft(
             result.words,
             m("reviewDraftTitle", { name: learner.name }),
+            "",
+            [learner.id],
+            "smart_review",
           );
         } catch (error) {
           status.textContent = error.message;
@@ -2706,6 +2740,8 @@ async function renderProgressCenter(me, data, main = shell(me, "progress")) {
 }
 
 async function renderDashboard(me, { force = false } = {}) {
+  prepareWorkspaceDraftReturn();
+  activeWorkspaceDraft = null;
   const renderId = ++workspaceRenderId;
   const params = new URLSearchParams(location.search);
   const section = workspaceSection(
@@ -2714,7 +2750,14 @@ async function renderDashboard(me, { force = false } = {}) {
       location.hash.replace(/^#/, ""),
   );
   const main = shell(me, section);
-  main.classList.toggle("workspace-overview-main", section === "overview");
+  main.classList.toggle(
+    "workspace-overview-main",
+    section === "overview" && me.plan !== "free",
+  );
+  main.classList.toggle(
+    "free-tracking-main",
+    section === "overview" && me.plan === "free",
+  );
   let data = workspaceCache.data;
   if (!data || force) {
     let loading = main.querySelector(".workspace-loading");
@@ -2764,6 +2807,51 @@ async function renderDashboard(me, { force = false } = {}) {
     );
     return;
   }
+  if (me.plan === "free") {
+    const card = document.createElement("section");
+    card.className = "product-card free-tracking-card";
+    const heading = document.createElement("h1");
+    heading.textContent = copy.freeTrackingTitle;
+    const intro = document.createElement("p");
+    intro.textContent = copy.resultViewLimit;
+    card.append(heading, intro);
+    const used =
+      data.usage.trackingTrialUsed ?? data.usage.monthlyAttempts >= 1;
+    intro.hidden = used;
+    if (used) card.append(submissionLimitNotice(data.usage));
+    else {
+      const learner = (data.learners || []).find((item) => !item.archived);
+      const start = document.createElement("button");
+      start.type = "button";
+      start.textContent = copy.trackNextPractice;
+      start.addEventListener("click", () => {
+        saveTrackingEntry(
+          { words: "", learnerId: learner?.id || "", entryPoint: "workspace" },
+          me.user.id,
+        );
+        location.href = `/workspace/assignments/new?lang=${encodeURIComponent(locale)}&tracking=1`;
+      });
+      card.append(start);
+    }
+    const practice = document.createElement("a");
+    practice.className = "button-link button-secondary";
+    practice.href = productPagePath("", locale);
+    practice.textContent = copy.home;
+    card.append(practice);
+    main.append(
+      card,
+      renderAssignmentsCard(me, data.assignments || [], {
+        limit: 5,
+        id: "recent-assignments",
+        heading: copy.recentAssignments,
+      }),
+    );
+    const saved = document.createElement("a");
+    saved.href = `/workspace/saved-lists?lang=${encodeURIComponent(locale)}`;
+    saved.textContent = copy.savedLists;
+    main.append(saved);
+    return;
+  }
   const needsReviewCount = (data.learners || []).reduce(
     (sum, learner) => sum + Number(learner.needs_review_count || 0),
     0,
@@ -2804,6 +2892,7 @@ async function renderDashboard(me, { force = false } = {}) {
 
 async function startCheckout(interval, plan = "teacher") {
   prepareWorkspaceDraftReturn();
+  bindUpgradeReturn(workspaceState?.me?.user?.id);
   try {
     sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
     sessionStorage.setItem("pendingCheckoutPlan", plan);
@@ -2828,7 +2917,6 @@ async function startCheckout(interval, plan = "teacher") {
     try {
       sessionStorage.removeItem("pendingCheckoutInterval");
       sessionStorage.removeItem(CHECKOUT_RETRY_REQUIRED_KEY);
-      sessionStorage.removeItem(PENDING_UPGRADE_FEATURE_KEY);
     } catch {}
     location.href = checkout.url;
   } catch (error) {
@@ -3173,6 +3261,7 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
     .slice(0, 16);
   form.querySelector("#assignment-deadline").value = local;
   const assignmentValues = () => ({
+    reviewFeature: storedDraft?.values?.reviewFeature || null,
     title: form.querySelector("#assignment-title").value,
     words: form.querySelector("#assignment-words").value,
     exampleSentences: form.querySelector("#assignment-sentences").value,
@@ -3186,6 +3275,19 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
       .map((input) => input.value)
       .sort(),
   });
+  if (
+    !editing &&
+    !storedDraft &&
+    me.plan === "free" &&
+    activeLearners.length === 1
+  ) {
+    form.querySelector(
+      'input[name="learnerTarget"][value="selected"]',
+    ).checked = true;
+    const child = form.querySelector('input[name="learnerId"]');
+    if (child) child.checked = true;
+    form.dispatchEvent(new Event("change", { bubbles: true }));
+  }
   const baseline = assignmentValues();
   if (
     storedDraft?.values &&
@@ -3222,10 +3324,45 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
     });
     form.dispatchEvent(new Event("change", { bubbles: true }));
   }
+  // A removed/archived child must never silently become an anonymous assignment.
+  const missingDraftLearner = (storedDraft?.values?.learnerIds || []).some(
+    (id) => !activeLearners.some((learner) => learner.id === id),
+  );
+  if (
+    missingDraftLearner ||
+    (storedDraft?.values?.learnerTarget === "selected" &&
+      !activeLearners.length)
+  ) {
+    learnerOptions.hidden = false;
+    const warning = document.createElement("p");
+    warning.className = "notice";
+    warning.setAttribute("role", "alert");
+    warning.textContent = copy.reviewLearnerUnavailable;
+    learnerField.append(warning);
+    learnerField.setAttribute("aria-invalid", "true");
+    syncFormSubmit(form);
+    form.addEventListener("change", (event) => {
+      if (!["learnerTarget", "learnerId"].includes(event.target.name)) return;
+      const selected =
+        form.querySelector('input[name="learnerTarget"]:checked')?.value ===
+        "selected";
+      const invalid =
+        selected && !form.querySelector('input[name="learnerId"]:checked');
+      learnerField.setAttribute("aria-invalid", String(invalid));
+      warning.hidden = !invalid;
+      syncFormSubmit(form);
+    });
+  }
   const saveDraft = () =>
     writeWorkspaceDraft(me, "assignment", draftObjectId, draftPath, {
       baseline: editing ? baseline : null,
-      values: assignmentValues(),
+      values: {
+        ...assignmentValues(),
+        ...(missingDraftLearner &&
+        learnerField.getAttribute("aria-invalid") === "true"
+          ? { learnerIds: storedDraft.values.learnerIds }
+          : {}),
+      },
     });
   activeWorkspaceDraft = {
     kind: "assignment",
@@ -3295,6 +3432,17 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
           body: JSON.stringify(body),
         },
       );
+      if (
+        !editing &&
+        ["smart_review", "todays_review"].includes(
+          storedDraft?.values?.reviewFeature,
+        )
+      )
+        trackPremiumFeatureUsed(
+          storedDraft.values.reviewFeature,
+          me,
+          analyzeWords(body.words).words.length,
+        );
       clearWorkspaceDraft(me, "assignment", draftObjectId);
       if (editing) {
         location.href = `/workspace/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`;
@@ -3332,7 +3480,193 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
   main.append(card);
 }
 
+async function renderTrackingPractice(me) {
+  const main = shell(me, "assignments");
+  const card = document.createElement("section");
+  card.className = "product-card tracking-practice-card";
+  card.innerHTML = `<h1>${copy.trackingTitle}</h1><p>${copy.trackingExplanation}</p>`;
+  main.append(card);
+  const status = statusElement(card);
+  const path = `/workspace/assignments/new?lang=${encodeURIComponent(locale)}&tracking=1`;
+  const incoming = takeTrackingEntry(me.user.id);
+  let draft = incoming || readWorkspaceDraft(me, "tracking")?.values || {};
+  const persist = () =>
+    writeWorkspaceDraft(me, "tracking", "new", path, { values: draft });
+  persist();
+  activeWorkspaceDraft = { kind: "tracking", objectId: "new", save: persist };
+  let data;
+  try {
+    data = await api("/api/assignments");
+  } catch (error) {
+    status.textContent = error.message;
+    return;
+  }
+  const practice = document.createElement("a");
+  practice.href = productPagePath("", locale);
+  practice.textContent = copy.home;
+  practice.className = "button-link button-secondary";
+  card.append(practice);
+  if (
+    me.plan === "free" &&
+    (data.usage?.trackingTrialUsed || data.usage?.monthlyAttempts >= 1)
+  ) {
+    status.textContent = copy.trackingTrialUsed;
+    card.append(upgradeLink("tracking_trial_used", true));
+    trackEvent("tracking_setup_viewed", {
+      current_plan: me.plan,
+      entry_point: draft.entryPoint || "workspace",
+      trial_used: true,
+    });
+    return;
+  }
+  if (me.plan === "free") {
+    const trial = document.createElement("p");
+    trial.className = "notice";
+    trial.textContent = copy.resultViewLimit;
+    card.insertBefore(trial, status);
+  }
+  const learners = (data.learners || []).filter((learner) => !learner.archived);
+  const form = document.createElement("form");
+  form.className = "product-form";
+  form.innerHTML = `<div class="field"><label for="tracking-learner">${copy.trackingChooseLearner}</label><select id="tracking-learner" required></select></div>
+    <div class="field" id="tracking-name-field"><label for="tracking-name">${copy.trackingLearnerName}</label><input id="tracking-name" maxlength="32" autocomplete="off"></div>
+    <div class="field"><label for="tracking-words">${copy.words}</label><textarea id="tracking-words" required spellcheck="false"></textarea></div>
+    <div class="field"><label for="tracking-sentences">${copy.exampleSentences}</label><textarea id="tracking-sentences" maxlength="30000"></textarea></div>
+    <div class="field"><label for="tracking-mode">${copy.mode}</label><select id="tracking-mode"><option value="dictation">${copy.dictation}</option><option value="typing">${copy.typing}</option></select></div>
+    <div class="actions"><button type="submit">${copy.trackNextPractice}</button></div>`;
+  const select = form.querySelector("#tracking-learner");
+  select.add(new Option(copy.trackingChooseLearner, ""));
+  for (const learner of learners)
+    select.add(new Option(learner.name, learner.id));
+  select.add(new Option(copy.trackingAddLearner, "new"));
+  select.value =
+    draft.learnerId ||
+    (learners.length === 1 ? learners[0].id : learners.length ? "" : "new");
+  if (!select.value && draft.learnerId)
+    status.textContent = copy.reviewLearnerUnavailable;
+  form.querySelector("#tracking-name").value = draft.name || "";
+  form.querySelector("#tracking-words").value = draft.words || "";
+  form.querySelector("#tracking-sentences").value =
+    draft.exampleSentences || "";
+  form.querySelector("#tracking-mode").value = ["typing", "chase"].includes(
+    draft.mode,
+  )
+    ? "typing"
+    : "dictation";
+  const sync = () => {
+    const adding = select.value === "new";
+    form.querySelector("#tracking-name-field").hidden = !adding;
+    form.querySelector("#tracking-name").required = adding;
+    draft = {
+      ...draft,
+      learnerId: select.value,
+      name: form.querySelector("#tracking-name").value,
+      words: form.querySelector("#tracking-words").value,
+      exampleSentences: form.querySelector("#tracking-sentences").value,
+      mode: form.querySelector("#tracking-mode").value,
+    };
+    persist();
+  };
+  sync();
+  form.addEventListener("input", sync);
+  form.addEventListener("change", sync);
+  card.insertBefore(form, status);
+  attachWordLimit(form, me, "#tracking-words");
+  trackEvent("tracking_setup_viewed", {
+    current_plan: me.plan,
+    entry_point: draft.entryPoint || "workspace",
+    trial_used: false,
+  });
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (form.querySelector('[aria-invalid="true"]')) return;
+    const button = form.querySelector('button[type="submit"]');
+    if (button.disabled) return;
+    button.disabled = true;
+    status.textContent = copy.loading;
+    try {
+      sync();
+      let learner = learners.find((item) => item.id === select.value);
+      if (select.value === "new") {
+        learner = await api("/api/learners", {
+          method: "POST",
+          body: JSON.stringify({ name: draft.name }),
+        });
+        learners.push(learner);
+        select.add(new Option(learner.name, learner.id));
+        select.value = learner.id;
+        sync();
+        trackEvent("learner_created");
+      }
+      if (!learner?.public_id) throw new Error(copy.reviewLearnerUnavailable);
+      const result =
+        draft.createdAssignment ||
+        (await api("/api/assignments", {
+          method: "POST",
+          body: JSON.stringify({
+            title: m("trackingAssignmentTitle", { name: learner.name }).slice(
+              0,
+              80,
+            ),
+            words: draft.words,
+            exampleSentences: draft.exampleSentences,
+            mode: draft.mode,
+            learnerIds: [learner.id],
+            maxAttempts: 10,
+            expiresAt: new Date(Date.now() + 7 * 86400000).toISOString(),
+            tracking: true,
+            entryPoint: draft.entryPoint || "workspace",
+          }),
+        }));
+      if (!draft.createdAssignment)
+        trackEvent("assignment_created", {
+          mode: draft.mode,
+          word_count: analyzeWords(draft.words).words.length,
+          entry_point: draft.entryPoint || "workspace",
+        });
+      draft.createdAssignment = result;
+      persist();
+      trackEvent("tracking_practice_ready", {
+        mode: draft.mode,
+        current_plan: me.plan,
+        entry_point: draft.entryPoint || "workspace",
+        word_count: analyzeWords(draft.words).words.length,
+      });
+      clearWorkspaceDraft(me, "tracking");
+      clearAssignmentEntryPoint();
+      location.href = `/a/${result.publicId}?learner=${encodeURIComponent(learner.public_id)}&lang=${encodeURIComponent(locale)}`;
+    } catch (error) {
+      status.textContent =
+        error.code === "tracking_trial_used"
+          ? copy.trackingTrialUsed
+          : error.message;
+      status.className = "status error";
+      if (
+        [
+          "tracking_trial_used",
+          "learner_limit",
+          "active_assignment_limit",
+          "word_limit",
+        ].includes(error.code)
+      ) {
+        card.querySelector(".tracking-limit-action")?.remove();
+        const actions = document.createElement("div");
+        actions.className = "tracking-limit-action actions";
+        actions.append(upgradeLink(error.code, true));
+        const manage = document.createElement("a");
+        manage.href = `/workspace/assignments?lang=${encodeURIComponent(locale)}`;
+        manage.textContent = copy.assignments;
+        actions.append(manage);
+        card.append(actions);
+      }
+      button.disabled = false;
+    }
+  });
+}
+
 async function renderNew(me) {
+  if (new URLSearchParams(location.search).get("tracking") === "1")
+    return renderTrackingPractice(me);
   return renderAssignmentForm(me);
 }
 
@@ -3591,6 +3925,9 @@ async function renderDetail(me, id, { force = false } = {}) {
         saveAssignmentDraft(
           result.words,
           m("reviewDraftTitle", { name: data.title }),
+          "",
+          assignedLearners.map((learner) => learner.id),
+          "smart_review",
         );
       } catch (error) {
         reviewStatus.textContent = error.message;
@@ -3840,6 +4177,8 @@ async function renderLearner(me, id, { force = false } = {}) {
         reviewData.words,
         m("todaysReviewDraftTitle", { name: data.learner.name }),
         reviewData.words.map((word) => word.exampleSentence),
+        [data.learner.id],
+        "todays_review",
       );
     });
     todaysReview.append(list, button);
@@ -3886,6 +4225,9 @@ async function renderLearner(me, id, { force = false } = {}) {
         saveAssignmentDraft(
           result.words,
           m("reviewDraftTitle", { name: data.learner.name }),
+          "",
+          [data.learner.id],
+          "smart_review",
         );
       } catch (error) {
         status.textContent = error.message;
@@ -4065,8 +4407,16 @@ async function renderTeacherRoute(me) {
 async function finishPlanActivation(me) {
   await recordPurchase().catch(() => null);
   clearCheckoutParam();
+  const origin = upgradeReturnFor(me);
+  if (origin) markUpgradeActivated(origin.feature, me.user.id);
+  if (origin && !origin.path.startsWith("/workspace")) {
+    location.replace(origin.path);
+    return;
+  }
   const resume = resumableWorkspaceDraft(me);
-  if (resume?.path) history.replaceState({}, "", resume.path);
+  if (origin?.path || resume?.path)
+    history.replaceState({}, "", origin?.path || resume.path);
+  clearUpgradeReturn();
   await renderTeacherRoute(me);
   const main = root.querySelector(".product-main");
   if (main) {

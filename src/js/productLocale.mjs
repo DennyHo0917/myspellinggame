@@ -39,6 +39,21 @@ const PACKS = {
       "Adults sign in. Learners join by link, without accounts or passwords.",
     authMissing:
       "Google or Microsoft sign-in is not configured in this environment yet.",
+    reviewLearnerUnavailable:
+      "A learner in this draft is no longer available. Choose who this practice is for before publishing.",
+    trackNextPractice: "Start tracked practice",
+    trackingChooseLearner: "Choose a learner",
+    trackingTitle: "Track the next practice",
+    trackingExplanation:
+      "Choose a learner or add one, then practise with this word list. Results from the next practice will be saved; the round you just finished will not be imported.",
+    trackingAddLearner: "Add a learner",
+    trackingLearnerName: "Learner name",
+    trackingAssignmentTitle: "Practice for {name}",
+    trackingTrialUsed:
+      "Your free tracking trial is used. Upgrade to keep tracking, or continue ordinary practice for free.",
+    freeTrackingTitle: "Free tracking trial",
+    upgradeReturnReady:
+      "Your plan is active. Continue with the feature you selected; your words are restored.",
     dashboardTitle: "Workspace",
     greeting: "Welcome, {name}",
     newAssignment: "Create assignment",
@@ -49,12 +64,12 @@ const PACKS = {
     activeUsage: "{used} of {limit} active assignments",
     lockedResults: "{count} results to unlock",
     resultViewLimit:
-      "Free opens the first 8 completed results per account each calendar month (UTC). Further results are saved and students still see feedback. Upgrade to view them within the 14-day retention period.",
-    submissionUsage: "{used}/{limit} full results this month",
+      "Try one completed result per account, with no monthly reset. Further results require a paid plan and are kept for 14 days. Ordinary practice stays free.",
+    submissionUsage: "{used}/{limit} trial result used",
     submissionLimitWarning:
-      "Free opens the first {limit} completed results per account each month. Students can still submit and see feedback. Upgrade to view additional results before they expire.",
+      "Try one tracked result for free. Upgrade for ongoing tracking; ordinary practice stays free.",
     submissionLimitReached:
-      "Full result viewing has reached {limit} this month. Submissions and student feedback continue. Upgrade to unlock retained results.",
+      "Your free tracking trial is used. Upgrade to view further results within 14 days. Ordinary practice stays free.",
     unlimited: "Unlimited full results",
     studentUsage: "{used} student nicknames stored",
     noAssignments: "No assignments yet. Create one to share with students.",
@@ -203,14 +218,16 @@ const PACKS = {
     checkoutRetry:
       "We couldn’t open Stripe Checkout. Your selected plan is still saved.",
     retryCheckout: "Try checkout again",
-    parentUpgradePrice: "Parent Plan · $4.99/month",
-    teacherUpgradePrice: "Teacher Plan · $9.99/month",
-    parentUpgradeYearlyPrice: "Parent Plan · $49.99/year",
-    teacherUpgradeYearlyPrice: "Teacher Plan · $99.99/year",
-    upgradeParentMonthly: "Upgrade to Parent · $4.99/month",
-    upgradeTeacherMonthly: "Choose Teacher · $9.99/month",
+    unlockPhotoImport: "Unlock Photo Import",
+    unlockPremium: "Unlock premium features",
+    parentUpgradePrice: "Parent Plan · $7.99/month",
+    teacherUpgradePrice: "Teacher Plan · $14.99/month",
+    parentUpgradeYearlyPrice: "Parent Plan · $79.90/year",
+    teacherUpgradeYearlyPrice: "Teacher Plan · $149.90/year",
+    upgradeParentMonthly: "Upgrade to Parent · $7.99/month",
+    upgradeTeacherMonthly: "Choose Teacher · $14.99/month",
     chooseUpgradePlan: "Choose the setting that fits:",
-    wholeClassTeacherMonthly: "For a whole class? View Teacher · $9.99/month",
+    wholeClassTeacherMonthly: "For a whole class? View Teacher · $14.99/month",
     pendingUpgradeTitle: "Continue with {plan}",
     pendingUpgradeCopy:
       "Sign in to keep your selection. You decide when to open secure checkout.",
@@ -424,6 +441,21 @@ const PACKS = {
       "Los adultos inician sesión. Los estudiantes entran mediante un enlace, sin cuentas ni contraseñas.",
     authMissing:
       "El acceso con Google o Microsoft aún no está configurado en este entorno.",
+    reviewLearnerUnavailable:
+      "Un estudiante de este borrador ya no está disponible. Elige a quién asignar la práctica antes de publicarla.",
+    trackNextPractice: "Practicar con seguimiento",
+    trackingChooseLearner: "Elige un estudiante",
+    trackingTitle: "Registra la próxima práctica",
+    trackingExplanation:
+      "Elige o añade un estudiante y practica con esta lista. Se guardarán los resultados de la próxima práctica, no los de la ronda que acabas de terminar.",
+    trackingAddLearner: "Añadir estudiante",
+    trackingLearnerName: "Nombre del estudiante",
+    trackingAssignmentTitle: "Práctica de {name}",
+    trackingTrialUsed:
+      "Ya usaste la prueba de seguimiento. Elige un plan de pago para continuar o sigue practicando gratis sin guardar resultados.",
+    freeTrackingTitle: "Prueba de seguimiento",
+    upgradeReturnReady:
+      "Tu plan está activo. Continúa con la función que elegiste; hemos recuperado tus palabras.",
     dashboardTitle: "Espacio de trabajo",
     greeting: "Hola, {name}",
     newAssignment: "Crear tarea",
@@ -434,12 +466,12 @@ const PACKS = {
     activeUsage: "{used} de {limit} tareas activas",
     lockedResults: "{count} resultados por desbloquear",
     resultViewLimit:
-      "Gratis permite ver los primeros 8 resultados completados por cuenta cada mes natural (UTC). Los demás se guardan y el alumnado sigue viendo sus comentarios. Mejora el plan para consultarlos durante los 14 días de conservación.",
-    submissionUsage: "{used}/{limit} resultados completos este mes",
+      "Prueba un resultado completo por cuenta, sin renovación mensual. Los siguientes requieren un plan de pago y se guardan 14 días. La práctica habitual sigue siendo gratis.",
+    submissionUsage: "{used}/{limit} resultado de prueba usado",
     submissionLimitWarning:
-      "Gratis permite ver los primeros {limit} resultados completos de la cuenta cada mes. El alumnado puede seguir enviando tareas y viendo sus comentarios. Mejora el plan para consultar los demás antes de que caduquen.",
+      "Prueba gratis el seguimiento de un resultado. Para seguir registrando el progreso, elige un plan de pago. La práctica habitual sigue gratis.",
     submissionLimitReached:
-      "Ya se han abierto los {limit} resultados de este mes. Las entregas y los comentarios para el alumnado continúan. Mejora el plan para desbloquear los resultados conservados.",
+      "Ya usaste la prueba de seguimiento. Elige un plan de pago para ver los siguientes resultados antes de 14 días. La práctica habitual sigue gratis.",
     unlimited: "Resultados completos sin límite",
     studentUsage: "{used} apodos guardados",
     noAssignments:
@@ -590,15 +622,17 @@ const PACKS = {
     checkoutRetry:
       "No pudimos abrir el pago seguro. El plan que elegiste sigue guardado.",
     retryCheckout: "Reintentar el pago",
-    parentUpgradePrice: "Plan para familias · $4.99/mes",
-    teacherUpgradePrice: "Plan para docentes · $9.99/mes",
-    parentUpgradeYearlyPrice: "Plan para familias · $49.99/año",
-    teacherUpgradeYearlyPrice: "Plan para docentes · $99.99/año",
-    upgradeParentMonthly: "Mejorar al plan familiar · $4.99/mes",
-    upgradeTeacherMonthly: "Elegir el plan docente · $9.99/mes",
+    unlockPhotoImport: "Desbloquear importación de fotos",
+    unlockPremium: "Desbloquear funciones premium",
+    parentUpgradePrice: "Plan para familias · $7.99/mes",
+    teacherUpgradePrice: "Plan para docentes · $14.99/mes",
+    parentUpgradeYearlyPrice: "Plan para familias · $79.90/año",
+    teacherUpgradeYearlyPrice: "Plan para docentes · $149.90/año",
+    upgradeParentMonthly: "Mejorar al plan familiar · $7.99/mes",
+    upgradeTeacherMonthly: "Elegir el plan docente · $14.99/mes",
     chooseUpgradePlan: "Elige el uso que corresponda:",
     wholeClassTeacherMonthly:
-      "¿Para toda una clase? Ver plan docente · $9.99/mes",
+      "¿Para toda una clase? Ver plan docente · $14.99/mes",
     pendingUpgradeTitle: "Continuar con {plan}",
     pendingUpgradeCopy:
       "Inicia sesión para conservar tu elección. Tú decides cuándo abrir el pago seguro.",
@@ -812,6 +846,21 @@ const PACKS = {
       "Os adultos entram com sua conta. Os alunos participam por link, sem conta ou senha.",
     authMissing:
       "O login com Google ou Microsoft ainda não foi configurado neste ambiente.",
+    reviewLearnerUnavailable:
+      "Um aluno deste rascunho não está mais disponível. Escolha quem fará a prática antes de publicar.",
+    trackNextPractice: "Praticar com acompanhamento",
+    trackingChooseLearner: "Escolha um aluno",
+    trackingTitle: "Acompanhe a próxima prática",
+    trackingExplanation:
+      "Escolha ou adicione um aluno e pratique com esta lista. Os resultados da próxima prática serão salvos; a rodada que acabou de terminar não será importada.",
+    trackingAddLearner: "Adicionar aluno",
+    trackingLearnerName: "Nome do aluno",
+    trackingAssignmentTitle: "Prática de {name}",
+    trackingTrialUsed:
+      "Você já usou o teste de acompanhamento. Assine para continuar acompanhando ou pratique grátis sem salvar resultados.",
+    freeTrackingTitle: "Teste de acompanhamento",
+    upgradeReturnReady:
+      "Seu plano está ativo. Continue com o recurso escolhido; suas palavras foram restauradas.",
     dashboardTitle: "Espaço de trabalho",
     greeting: "Olá, {name}",
     newAssignment: "Criar tarefa",
@@ -822,12 +871,12 @@ const PACKS = {
     activeUsage: "{used} de {limit} tarefas ativas",
     lockedResults: "{count} resultados para desbloquear",
     resultViewLimit:
-      "O plano Grátis libera os primeiros 8 resultados concluídos por conta a cada mês civil (UTC). Os demais são salvos e os alunos continuam vendo o feedback. Mude de plano para consultá-los dentro dos 14 dias de armazenamento.",
-    submissionUsage: "{used}/{limit} resultados completos neste mês",
+      "Experimente um resultado completo por conta, sem renovação mensal. Os próximos exigem um plano pago e ficam salvos por 14 dias. A prática comum continua gratuita.",
+    submissionUsage: "{used}/{limit} resultado de teste usado",
     submissionLimitWarning:
-      "O plano Grátis libera os primeiros {limit} resultados concluídos da conta a cada mês. Alunos continuam enviando atividades e vendo o feedback. Mude de plano para consultar os demais antes que expirem.",
+      "Experimente acompanhar um resultado grátis. Assine para continuar acompanhando o progresso; a prática comum continua gratuita.",
     submissionLimitReached:
-      "Os {limit} resultados deste mês já foram liberados. Os envios e o feedback dos alunos continuam. Mude de plano para desbloquear os resultados ainda armazenados.",
+      "Você já usou o teste de acompanhamento. Assine para ver os próximos resultados em até 14 dias. A prática comum continua gratuita.",
     unlimited: "Resultados completos sem limite",
     studentUsage: "{used} apelidos armazenados",
     noAssignments:
@@ -978,15 +1027,17 @@ const PACKS = {
     checkoutRetry:
       "Não foi possível abrir o checkout. O plano escolhido continua salvo.",
     retryCheckout: "Tentar o checkout novamente",
-    parentUpgradePrice: "Plano para Pais · US$ 4,99/mês",
-    teacherUpgradePrice: "Plano para Professores · US$ 9,99/mês",
-    parentUpgradeYearlyPrice: "Plano para Pais · US$ 49,99/ano",
-    teacherUpgradeYearlyPrice: "Plano para Professores · US$ 99,99/ano",
-    upgradeParentMonthly: "Assinar Plano para Pais · US$ 4,99/mês",
-    upgradeTeacherMonthly: "Escolher Plano para Professores · US$ 9,99/mês",
+    unlockPhotoImport: "Liberar importação de fotos",
+    unlockPremium: "Liberar recursos premium",
+    parentUpgradePrice: "Plano para Pais · US$ 7,99/mês",
+    teacherUpgradePrice: "Plano para Professores · US$ 14,99/mês",
+    parentUpgradeYearlyPrice: "Plano para Pais · US$ 79,90/ano",
+    teacherUpgradeYearlyPrice: "Plano para Professores · US$ 149,90/ano",
+    upgradeParentMonthly: "Assinar Plano para Pais · US$ 7,99/mês",
+    upgradeTeacherMonthly: "Escolher Plano para Professores · US$ 14,99/mês",
     chooseUpgradePlan: "Escolha como você vai usar:",
     wholeClassTeacherMonthly:
-      "Para uma turma inteira? Ver Professores · US$ 9,99/mês",
+      "Para uma turma inteira? Ver Professores · US$ 14,99/mês",
     pendingUpgradeTitle: "Continuar com {plan}",
     pendingUpgradeCopy:
       "Entre para manter sua escolha. Você decide quando abrir o checkout seguro.",
@@ -1198,6 +1249,21 @@ const PACKS = {
       "Les adultes se connectent. Les élèves rejoignent l’activité par lien, sans compte ni mot de passe.",
     authMissing:
       "La connexion Google ou Microsoft n’est pas encore configurée dans cet environnement.",
+    reviewLearnerUnavailable:
+      "Un élève de ce brouillon n’est plus disponible. Choisissez à qui attribuer l’exercice avant de le publier.",
+    trackNextPractice: "S’entraîner avec suivi",
+    trackingChooseLearner: "Choisissez un élève",
+    trackingTitle: "Suivez le prochain exercice",
+    trackingExplanation:
+      "Choisissez ou ajoutez un élève, puis utilisez cette liste. Les résultats du prochain exercice seront enregistrés ; la partie que vous venez de terminer ne sera pas importée.",
+    trackingAddLearner: "Ajouter un élève",
+    trackingLearnerName: "Nom de l’élève",
+    trackingAssignmentTitle: "Exercice de {name}",
+    trackingTrialUsed:
+      "Votre essai du suivi est utilisé. Abonnez-vous pour poursuivre le suivi ou continuez à vous entraîner gratuitement sans enregistrer les résultats.",
+    freeTrackingTitle: "Essai du suivi",
+    upgradeReturnReady:
+      "Votre abonnement est actif. Reprenez la fonction choisie ; vos mots ont été restaurés.",
     dashboardTitle: "Espace de travail",
     greeting: "Bonjour, {name}",
     newAssignment: "Créer un devoir",
@@ -1208,12 +1274,12 @@ const PACKS = {
     activeUsage: "{used} devoirs actifs sur {limit}",
     lockedResults: "{count} résultats à déverrouiller",
     resultViewLimit:
-      "Le forfait Gratuit ouvre les 8 premiers résultats terminés par compte chaque mois civil (UTC). Les suivants sont enregistrés et les élèves voient toujours leurs commentaires. Changez de forfait pour les consulter pendant les 14 jours de conservation.",
-    submissionUsage: "{used}/{limit} résultats complets ce mois-ci",
+      "Essayez un résultat complet par compte, sans renouvellement mensuel. Les suivants nécessitent un abonnement et sont conservés 14 jours. L’entraînement classique reste gratuit.",
+    submissionUsage: "{used}/{limit} résultat d’essai utilisé",
     submissionLimitWarning:
-      "Le forfait Gratuit ouvre les {limit} premiers résultats terminés du compte chaque mois. Les élèves peuvent toujours envoyer leur travail et consulter leurs commentaires. Changez de forfait pour voir les autres avant leur expiration.",
+      "Essayez gratuitement le suivi d’un résultat. Abonnez-vous pour poursuivre le suivi ; l’entraînement classique reste gratuit.",
     submissionLimitReached:
-      "Les {limit} résultats de ce mois sont déjà ouverts. Les envois et les commentaires des élèves restent disponibles. Changez de forfait pour déverrouiller les résultats encore conservés.",
+      "Votre essai du suivi est utilisé. Abonnez-vous pour consulter les résultats suivants sous 14 jours. L’entraînement classique reste gratuit.",
     unlimited: "Résultats complets illimités",
     studentUsage: "{used} pseudonymes conservés",
     noAssignments:
@@ -1366,15 +1432,17 @@ const PACKS = {
     checkoutRetry:
       "Impossible d’ouvrir le paiement sécurisé. Votre offre reste enregistrée.",
     retryCheckout: "Réessayer le paiement",
-    parentUpgradePrice: "Offre Parents · 4,99 $US/mois",
-    teacherUpgradePrice: "Offre Enseignants · 9,99 $US/mois",
-    parentUpgradeYearlyPrice: "Offre Parents · 49,99 $US/an",
-    teacherUpgradeYearlyPrice: "Offre Enseignants · 99,99 $US/an",
-    upgradeParentMonthly: "Choisir l’offre Parents · 4,99 $US/mois",
-    upgradeTeacherMonthly: "Choisir l’offre Enseignants · 9,99 $US/mois",
+    unlockPhotoImport: "Débloquer l’import photo",
+    unlockPremium: "Débloquer les fonctions premium",
+    parentUpgradePrice: "Offre Parents · 7,99 $US/mois",
+    teacherUpgradePrice: "Offre Enseignants · 14,99 $US/mois",
+    parentUpgradeYearlyPrice: "Offre Parents · 79,90 $US/an",
+    teacherUpgradeYearlyPrice: "Offre Enseignants · 149,90 $US/an",
+    upgradeParentMonthly: "Choisir l’offre Parents · 7,99 $US/mois",
+    upgradeTeacherMonthly: "Choisir l’offre Enseignants · 14,99 $US/mois",
     chooseUpgradePlan: "Choisissez l’usage qui vous correspond :",
     wholeClassTeacherMonthly:
-      "Pour toute une classe ? Voir Enseignants · 9,99 $US/mois",
+      "Pour toute une classe ? Voir Enseignants · 14,99 $US/mois",
     pendingUpgradeTitle: "Continuer avec {plan}",
     pendingUpgradeCopy:
       "Connectez-vous pour conserver votre choix. Vous décidez quand ouvrir le paiement sécurisé.",
@@ -1589,6 +1657,21 @@ const PACKS = {
       "Orang dewasa cukup masuk. Siswa bergabung lewat tautan, tanpa akun atau kata sandi.",
     authMissing:
       "Login Google atau Microsoft belum dikonfigurasi di lingkungan ini.",
+    reviewLearnerUnavailable:
+      "Salah satu pelajar dalam draf ini sudah tidak tersedia. Pilih penerima latihan sebelum menerbitkan.",
+    trackNextPractice: "Mulai latihan tercatat",
+    trackingChooseLearner: "Pilih pelajar",
+    trackingTitle: "Catat latihan berikutnya",
+    trackingExplanation:
+      "Pilih atau tambahkan pelajar, lalu berlatih dengan daftar ini. Hasil latihan berikutnya akan disimpan; putaran yang baru selesai tidak akan diimpor.",
+    trackingAddLearner: "Tambah pelajar",
+    trackingLearnerName: "Nama pelajar",
+    trackingAssignmentTitle: "Latihan {name}",
+    trackingTrialUsed:
+      "Uji coba pelacakan sudah terpakai. Berlangganan untuk melanjutkan pelacakan atau tetap berlatih gratis tanpa menyimpan hasil.",
+    freeTrackingTitle: "Coba pelacakan gratis",
+    upgradeReturnReady:
+      "Paket Anda sudah aktif. Lanjutkan fitur yang dipilih; daftar kata Anda sudah dipulihkan.",
     dashboardTitle: "Ruang kerja",
     greeting: "Selamat datang, {name}",
     newAssignment: "Buat tugas",
@@ -1599,12 +1682,12 @@ const PACKS = {
     activeUsage: "{used} dari {limit} tugas aktif",
     lockedResults: "{count} hasil belum terbuka",
     resultViewLimit:
-      "Paket Gratis membuka 8 hasil selesai pertama per akun setiap bulan kalender (UTC). Hasil berikutnya tetap disimpan dan siswa tetap melihat umpan balik. Upgrade untuk melihatnya selama masa penyimpanan 14 hari.",
-    submissionUsage: "{used}/{limit} hasil lengkap bulan ini",
+      "Coba satu hasil lengkap per akun, tanpa pembaruan bulanan. Hasil berikutnya memerlukan paket berbayar dan disimpan selama 14 hari. Latihan biasa tetap gratis.",
+    submissionUsage: "{used}/{limit} hasil uji coba terpakai",
     submissionLimitWarning:
-      "Paket Gratis membuka {limit} hasil selesai pertama per akun setiap bulan. Siswa tetap dapat mengirim tugas dan melihat umpan balik. Upgrade untuk melihat hasil lainnya sebelum kedaluwarsa.",
+      "Coba lacak satu hasil secara gratis. Berlangganan untuk melanjutkan pelacakan; latihan biasa tetap gratis.",
     submissionLimitReached:
-      "Kuota {limit} hasil lengkap bulan ini telah terpakai. Pengiriman tugas dan umpan balik siswa tetap tersedia. Upgrade untuk membuka hasil yang masih tersimpan.",
+      "Uji coba pelacakan Anda sudah terpakai. Berlangganan untuk melihat hasil berikutnya dalam 14 hari. Latihan biasa tetap gratis.",
     unlimited: "Hasil lengkap tanpa batas",
     studentUsage: "{used} nama panggilan tersimpan",
     noAssignments: "Belum ada tugas. Buat tugas untuk dibagikan kepada siswa.",
@@ -1753,15 +1836,17 @@ const PACKS = {
     checkoutRetry:
       "Checkout belum dapat dibuka. Paket yang dipilih tetap tersimpan.",
     retryCheckout: "Coba checkout lagi",
-    parentUpgradePrice: "Paket Orang Tua · US$4,99/bulan",
-    teacherUpgradePrice: "Paket Guru · US$9,99/bulan",
-    parentUpgradeYearlyPrice: "Paket Orang Tua · US$49,99/tahun",
-    teacherUpgradeYearlyPrice: "Paket Guru · US$99,99/tahun",
-    upgradeParentMonthly: "Upgrade Paket Orang Tua · US$4,99/bulan",
-    upgradeTeacherMonthly: "Pilih Paket Guru · US$9,99/bulan",
+    unlockPhotoImport: "Buka impor foto",
+    unlockPremium: "Buka fitur premium",
+    parentUpgradePrice: "Paket Orang Tua · US$7,99/bulan",
+    teacherUpgradePrice: "Paket Guru · US$14,99/bulan",
+    parentUpgradeYearlyPrice: "Paket Orang Tua · US$79,90/tahun",
+    teacherUpgradeYearlyPrice: "Paket Guru · US$149,90/tahun",
+    upgradeParentMonthly: "Upgrade Paket Orang Tua · US$7,99/bulan",
+    upgradeTeacherMonthly: "Pilih Paket Guru · US$14,99/bulan",
     chooseUpgradePlan: "Pilih penggunaan yang sesuai:",
     wholeClassTeacherMonthly:
-      "Untuk seluruh kelas? Lihat Paket Guru · US$9,99/bulan",
+      "Untuk seluruh kelas? Lihat Paket Guru · US$14,99/bulan",
     pendingUpgradeTitle: "Lanjutkan dengan {plan}",
     pendingUpgradeCopy:
       "Masuk untuk menyimpan pilihan Anda. Anda menentukan kapan membuka checkout aman.",
@@ -1959,6 +2044,20 @@ const PACKS = {
     workspacePrivacyNote:
       "家长或教师登录，学习者通过链接加入，无需账号和密码。",
     authMissing: "当前环境尚未配置 Google 或 Microsoft 登录。",
+    reviewLearnerUnavailable:
+      "草稿中的孩子已归档或删除，请重新选择练习对象后再发布。",
+    trackNextPractice: "开始带记录练习",
+    trackingChooseLearner: "选择孩子或学生",
+    trackingTitle: "记录下一次练习",
+    trackingExplanation:
+      "选择或添加孩子，沿用这份词表开始练习。学习记录从接下来这轮开始保存，刚才完成的成绩不会补录。",
+    trackingAddLearner: "添加孩子或学生",
+    trackingLearnerName: "孩子或学生的名字",
+    trackingAssignmentTitle: "{name}的练习",
+    trackingTrialUsed:
+      "免费追踪体验已用完。升级后可继续追踪，也可以免费进行不保存记录的普通练习。",
+    freeTrackingTitle: "免费追踪体验",
+    upgradeReturnReady: "已解锁，可以继续使用刚才的功能；你的词表已恢复。",
     dashboardTitle: "工作台",
     greeting: "{name}，你好",
     newAssignment: "创建作业",
@@ -1969,12 +2068,12 @@ const PACKS = {
     activeUsage: "活跃作业 {used}/{limit}",
     lockedResults: "{count} 份结果待解锁",
     resultViewLimit:
-      "免费版每个账号每个自然月（UTC）开放前 8 份完成结果。超额结果仍会保存，学生仍可查看本人反馈；升级可在 14 天保留期内解锁查看。",
-    submissionUsage: "本月完整结果 {used}/{limit}",
+      "每个账号可免费体验 1 次完整结果追踪，不按月重置。后续结果需付费查看，保留 14 天；普通练习始终免费。",
+    submissionUsage: "追踪体验已用 {used}/{limit} 次",
     submissionLimitWarning:
-      "免费版每个账号每月开放前 {limit} 份完成结果。学生仍可提交并查看反馈；升级可在保留期内查看更多结果。",
+      "可免费体验 1 次结果追踪，升级后可持续追踪；普通练习始终免费。",
     submissionLimitReached:
-      "本月已开放 {limit} 份完整结果。后续提交仍正常保存，学生仍可查看反馈；升级即可解锁保留期内的结果。",
+      "免费追踪体验已用完。升级可查看后续结果，请在 14 天保留期内查看；普通练习始终免费。",
     unlimited: "完整结果不限量",
     studentUsage: "已保存 {used} 个学生昵称",
     noAssignments: "还没有作业。创建一份后即可分享给学生。",
@@ -2115,14 +2214,16 @@ const PACKS = {
     checkoutPending: "结账请求正在处理中，请稍后重试。",
     checkoutRetry: "暂时无法打开 Stripe 结账页，你选择的方案仍已保留。",
     retryCheckout: "重新尝试结账",
-    parentUpgradePrice: "家长方案 · US$4.99/月",
-    teacherUpgradePrice: "教师方案 · US$9.99/月",
-    parentUpgradeYearlyPrice: "家长方案 · US$49.99/年",
-    teacherUpgradeYearlyPrice: "教师方案 · US$99.99/年",
-    upgradeParentMonthly: "升级家长方案 · US$4.99/月",
-    upgradeTeacherMonthly: "选择教师方案 · US$9.99/月",
+    unlockPhotoImport: "升级解锁拍照导入",
+    unlockPremium: "解锁高级功能",
+    parentUpgradePrice: "家长方案 · US$7.99/月",
+    teacherUpgradePrice: "教师方案 · US$14.99/月",
+    parentUpgradeYearlyPrice: "家长方案 · US$79.90/年",
+    teacherUpgradeYearlyPrice: "教师方案 · US$149.90/年",
+    upgradeParentMonthly: "升级家长方案 · US$7.99/月",
+    upgradeTeacherMonthly: "选择教师方案 · US$14.99/月",
     chooseUpgradePlan: "请选择使用场景：",
-    wholeClassTeacherMonthly: "用于整个班级？查看教师方案 · US$9.99/月",
+    wholeClassTeacherMonthly: "用于整个班级？查看教师方案 · US$14.99/月",
     pendingUpgradeTitle: "继续选择{plan}",
     pendingUpgradeCopy: "登录后会保留你的选择，由你确认后再打开安全结账。",
     pendingCheckoutReview: "已保留以下选择；只有点击继续后才会打开结账页。",

@@ -6,6 +6,8 @@ export type LifecycleEventName =
   | "saved_list_created"
   | "learner_created"
   | "assignment_created"
+  | "first_bound_practice_started"
+  | "first_bound_practice_completed"
   | "assignment_started"
   | "assignment_result_received"
   | "assignment_attempt_abandoned"

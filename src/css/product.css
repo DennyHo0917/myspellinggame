@@ -1,3 +1,4 @@
+@import url("./paywall.css");
 @import url("./footer.css");
 @import url("./account.css");
 
@@ -241,6 +242,18 @@ a {
   display: grid;
   gap: 1rem;
   min-width: 0;
+}
+
+.free-tracking-main > .workspace-refresh-results {
+  justify-self: start;
+}
+
+.tracking-practice-card [hidden] {
+  display: none !important;
+}
+
+.tracking-practice-card textarea {
+  min-height: 110px;
 }
 
 .product-card {
@@ -2901,7 +2914,7 @@ body.assignment-page {
 }
 
 .pricing-card .price {
-  font-size: clamp(2rem, 4vw, 2.7rem);
+  font-size: 2rem;
 }
 
 .assignment-player {

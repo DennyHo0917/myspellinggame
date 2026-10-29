@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   buildWelcomeEmail,
+  buildPriceChangeEmail,
   resolveWelcomeLocale,
   sendWelcomeEmail,
 } from "../src/worker/email";
@@ -35,5 +36,37 @@ describe("welcome email", () => {
     expect(url).toBe("https://api.resend.com/emails");
     expect(body.to).toEqual(["user@example.com"]);
     expect(body.subject).toBe("Welcome to MySpellingGame");
+  });
+});
+
+describe("price change email", () => {
+  it.each([
+    ["en-US", "", "7.99"],
+    ["es", "/es", "7,99"],
+    ["pt-BR", "/pt-br", "7,99"],
+    ["fr", "/fr", "7,99"],
+    ["id", "/id", "7,99"],
+    ["zh-CN", "/zh", "7.99"],
+  ])(
+    "includes the price, renewal time, and cancellation link in %s",
+    (locale, prefix, amount) => {
+      const email = buildPriceChangeEmail("2026-10-18T22:06:19.000Z", locale);
+      expect(email.text).toContain(amount);
+      expect(email.text).toContain("2026");
+      expect(email.text).toMatch(/22[:.]06[:.]19/);
+      expect(email.text).toContain("(UTC)");
+      expect(email.html).toContain(
+        `href="https://myspellinggame.com${prefix}/pricing"`,
+      );
+      expect(email.reply_to).toBe("dennyho0917@hotmail.com");
+      expect(email.text).not.toContain("{date}");
+      expect(email.html).not.toContain("{date}");
+    },
+  );
+
+  it("rejects an invalid renewal time before sending", () => {
+    expect(() => buildPriceChangeEmail("unknown", "en")).toThrow(
+      "Invalid renewal date",
+    );
   });
 });

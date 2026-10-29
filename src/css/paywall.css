@@ -1,0 +1,43 @@
+.paywall-primary,
+.button-secondary.paywall-primary {
+  background: #2f6f73;
+  color: #fff;
+}
+.paywall-primary:hover {
+  background: #24585b;
+  color: #fff;
+}
+.contextual-paywall-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.contextual-paywall-actions > a,
+.contextual-paywall-actions > button {
+  white-space: nowrap;
+}
+
+.contextual-paywall-actions .contextual-paywall-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.contextual-paywall-actions .paywall-primary {
+  color: #fff;
+  background: #2f6f73;
+}
+.contextual-paywall-actions .button-secondary:not(.paywall-primary) {
+  color: #24585b;
+  background: #e6efee;
+}
+
+.contextual-paywall-actions > .contextual-paywall-price {
+  flex-basis: 100%;
+}

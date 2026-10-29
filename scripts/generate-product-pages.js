@@ -97,19 +97,19 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Free forever",
     resultViewNote:
-      "Free opens the first 8 completed results per account each calendar month (UTC). Further results are saved and students still see feedback. Upgrade to view them within the 14-day retention period.",
+      "Try one completed result per account, with no monthly reset. Further results require a paid plan and are kept for 14 days. Ordinary practice stays free.",
     freeItems: [
       "Up to 25 words per assignment",
       "1 active assignment",
       "1 saved list",
       "1 learner",
-      "First 8 full results per account / month",
+      "1 tracked result per account, once",
       "14-day progress history",
       "Smart Review not included",
     ],
     parent: "Parent Plan",
-    parentMonth: "$4.99 / month",
-    parentYear: "$49.99 / year",
+    parentMonth: "$7.99 / month",
+    parentYear: "$79.90 / year",
     parentItems: [
       "Up to 40 words per assignment",
       "Up to 5 children",
@@ -123,8 +123,8 @@ const copy = {
       "Automatic example sentences from the curated library",
     ],
     teacher: "Teacher Plan",
-    teacherMonth: "$9.99 / month",
-    teacherYear: "$99.99 / year",
+    teacherMonth: "$14.99 / month",
+    teacherYear: "$149.90 / year",
     teacherItems: [
       "Up to 40 words per assignment",
       "Up to 40 students",
@@ -143,7 +143,7 @@ const copy = {
     monthly: "Monthly plan",
     yearly: "Yearly plan",
     billingPeriod: "Billing period",
-    selectParent: "Select Parent Plan",
+    selectParent: "Photo Import + Smart Review",
     selectTeacher: "Select Teacher Plan",
     signIn: "Workspace",
     practice: "Home",
@@ -164,19 +164,19 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Gratis para siempre",
     resultViewNote:
-      "Gratis permite ver los primeros 8 resultados completados por cuenta cada mes natural (UTC). Los demás se guardan y el alumnado sigue viendo sus comentarios. Mejora el plan para consultarlos durante los 14 días de conservación.",
+      "Prueba un resultado completo por cuenta, sin renovación mensual. Los siguientes requieren un plan de pago y se guardan 14 días. La práctica habitual sigue siendo gratis.",
     freeItems: [
       "Hasta 25 palabras por tarea",
       "1 tarea activa",
       "1 lista guardada",
       "1 estudiante",
-      "Primeros 8 resultados completos por cuenta al mes",
+      "1 resultado de prueba por cuenta, una sola vez",
       "14 días de historial de progreso",
       "Sin repaso inteligente",
     ],
     parent: "Plan para familias",
-    parentMonth: "$4.99 al mes",
-    parentYear: "$49,99 al año",
+    parentMonth: "$7.99 al mes",
+    parentYear: "$79,90 al año",
     parentItems: [
       "Hasta 40 palabras por tarea",
       "Hasta 5 hijos",
@@ -190,8 +190,8 @@ const copy = {
       "Frases de ejemplo automáticas de la biblioteca seleccionada",
     ],
     teacher: "Plan para docentes",
-    teacherMonth: "$9.99 al mes",
-    teacherYear: "$99,99 al año",
+    teacherMonth: "$14.99 al mes",
+    teacherYear: "$149,90 al año",
     teacherItems: [
       "Hasta 40 palabras por tarea",
       "Hasta 40 estudiantes",
@@ -210,7 +210,7 @@ const copy = {
     monthly: "Plan mensual",
     yearly: "Plan anual",
     billingPeriod: "Periodo de facturación",
-    selectParent: "Elegir plan para familias",
+    selectParent: "Fotos + repaso inteligente",
     selectTeacher: "Elegir plan para docentes",
     signIn: "Espacio de trabajo",
     practice: "Inicio",
@@ -231,19 +231,19 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Grátis para sempre",
     resultViewNote:
-      "O plano Grátis libera os primeiros 8 resultados concluídos por conta a cada mês civil (UTC). Os demais são salvos e os alunos continuam vendo o feedback. Mude de plano para consultá-los dentro dos 14 dias de armazenamento.",
+      "Experimente um resultado completo por conta, sem renovação mensal. Os próximos exigem um plano pago e ficam salvos por 14 dias. A prática comum continua gratuita.",
     freeItems: [
       "Até 25 palavras por tarefa",
       "1 tarefa ativa",
       "1 lista salva",
       "1 aluno",
-      "Primeiros 8 resultados completos por conta/mês",
+      "1 resultado de teste por conta, uma única vez",
       "14 dias de histórico de progresso",
       "Sem revisão inteligente",
     ],
     parent: "Plano para Pais",
-    parentMonth: "$4.99 por mês",
-    parentYear: "$49,99 por ano",
+    parentMonth: "$7.99 por mês",
+    parentYear: "$79,90 por ano",
     parentItems: [
       "Até 40 palavras por tarefa",
       "Até 5 filhos",
@@ -257,8 +257,8 @@ const copy = {
       "Frases de exemplo automáticas da biblioteca selecionada",
     ],
     teacher: "Plano para Professores",
-    teacherMonth: "$9.99 por mês",
-    teacherYear: "$99,99 por ano",
+    teacherMonth: "$14.99 por mês",
+    teacherYear: "$149,90 por ano",
     teacherItems: [
       "Até 40 palavras por tarefa",
       "Até 40 alunos",
@@ -277,7 +277,7 @@ const copy = {
     monthly: "Plano mensal",
     yearly: "Plano anual",
     billingPeriod: "Periodicidade",
-    selectParent: "Escolher Plano para Pais",
+    selectParent: "Fotos + revisão inteligente",
     selectTeacher: "Escolher Plano para Professores",
     signIn: "Espaço de trabalho",
     practice: "Início",
@@ -298,19 +298,19 @@ const copy = {
     freePrice: "0 $",
     freeBilling: "Gratuit pour toujours",
     resultViewNote:
-      "Le forfait Gratuit ouvre les 8 premiers résultats terminés par compte chaque mois civil (UTC). Les suivants sont enregistrés et les élèves voient toujours leurs commentaires. Changez de forfait pour les consulter pendant les 14 jours de conservation.",
+      "Essayez un résultat complet par compte, sans renouvellement mensuel. Les suivants nécessitent un abonnement et sont conservés 14 jours. L’entraînement classique reste gratuit.",
     freeItems: [
       "Jusqu’à 25 mots par devoir",
       "1 devoir actif",
       "1 liste enregistrée",
       "1 élève",
-      "8 premiers résultats complets par compte et par mois",
+      "1 résultat d’essai par compte, une seule fois",
       "14 jours d’historique de progression",
       "Sans révision intelligente",
     ],
     parent: "Offre Parents",
-    parentMonth: "4,99 $ par mois",
-    parentYear: "49,99 $ par an",
+    parentMonth: "7,99 $ par mois",
+    parentYear: "79,90 $ par an",
     parentItems: [
       "Jusqu’à 40 mots par devoir",
       "Jusqu’à 5 enfants",
@@ -324,8 +324,8 @@ const copy = {
       "Phrases d’exemple automatiques de la bibliothèque sélectionnée",
     ],
     teacher: "Offre Enseignants",
-    teacherMonth: "9,99 $ par mois",
-    teacherYear: "99,99 $ par an",
+    teacherMonth: "14,99 $ par mois",
+    teacherYear: "149,90 $ par an",
     teacherItems: [
       "Jusqu’à 40 mots par devoir",
       "Jusqu’à 40 élèves",
@@ -344,7 +344,7 @@ const copy = {
     monthly: "Offre mensuelle",
     yearly: "Offre annuelle",
     billingPeriod: "Période de facturation",
-    selectParent: "Choisir l’offre Parents",
+    selectParent: "Photos + révision ciblée",
     selectTeacher: "Choisir l’offre Enseignants",
     signIn: "Espace de travail",
     practice: "Accueil",
@@ -365,19 +365,19 @@ const copy = {
     freePrice: "$0",
     freeBilling: "Gratis selamanya",
     resultViewNote:
-      "Paket Gratis membuka 8 hasil selesai pertama per akun setiap bulan kalender (UTC). Hasil berikutnya tetap disimpan dan siswa tetap melihat umpan balik. Upgrade untuk melihatnya selama masa penyimpanan 14 hari.",
+      "Coba satu hasil lengkap per akun, tanpa pembaruan bulanan. Hasil berikutnya memerlukan paket berbayar dan disimpan selama 14 hari. Latihan biasa tetap gratis.",
     freeItems: [
       "Hingga 25 kata per tugas",
       "1 tugas aktif",
       "1 daftar tersimpan",
       "1 siswa",
-      "8 hasil lengkap pertama per akun/bulan",
+      "1 hasil uji coba per akun, hanya sekali",
       "Riwayat perkembangan 14 hari",
       "Tanpa Ulasan Pintar",
     ],
     parent: "Paket Orang Tua",
-    parentMonth: "$4.99 per bulan",
-    parentYear: "$49.99 per tahun",
+    parentMonth: "$7.99 per bulan",
+    parentYear: "$79.90 per tahun",
     parentItems: [
       "Hingga 40 kata per tugas",
       "Hingga 5 anak",
@@ -391,8 +391,8 @@ const copy = {
       "Kalimat contoh otomatis dari pustaka pilihan",
     ],
     teacher: "Paket Guru",
-    teacherMonth: "$9.99 per bulan",
-    teacherYear: "$99.99 per tahun",
+    teacherMonth: "$14.99 per bulan",
+    teacherYear: "$149.90 per tahun",
     teacherItems: [
       "Hingga 40 kata per tugas",
       "Hingga 40 siswa",
@@ -411,7 +411,7 @@ const copy = {
     monthly: "Paket bulanan",
     yearly: "Paket tahunan",
     billingPeriod: "Periode tagihan",
-    selectParent: "Pilih Paket Orang Tua",
+    selectParent: "Impor foto + Ulasan Pintar",
     selectTeacher: "Pilih Paket Guru",
     signIn: "Ruang kerja",
     practice: "Beranda",
@@ -431,19 +431,19 @@ const copy = {
     freePrice: "$0",
     freeBilling: "永久免费",
     resultViewNote:
-      "免费版每个账号每个自然月（UTC）开放前 8 份完成结果。超额结果仍会保存，学生仍可查看本人反馈；升级可在 14 天保留期内解锁查看。",
+      "每个账号可免费体验 1 次完整结果追踪，不按月重置。后续结果需付费查看，保留 14 天；普通练习始终免费。",
     freeItems: [
       "每份作业最多 25 个单词",
       "最多 1 个活跃作业",
       "保存 1 个词表",
       "创建 1 个学习者档案",
-      "每账号每月前 8 份完整结果",
+      "每账号 1 次结果追踪体验，不重复发放",
       "查看 14 天学习记录",
       "不含智能复习",
     ],
     parent: "家长方案",
-    parentMonth: "每月 $4.99",
-    parentYear: "每年 $49.99",
+    parentMonth: "每月 $7.99",
+    parentYear: "每年 $79.90",
     parentItems: [
       "每份作业最多 40 个单词",
       "最多 5 个孩子",
@@ -457,8 +457,8 @@ const copy = {
       "从精选例句库自动填充例句",
     ],
     teacher: "教师方案",
-    teacherMonth: "每月 $9.99",
-    teacherYear: "每年 $99.99",
+    teacherMonth: "每月 $14.99",
+    teacherYear: "每年 $149.90",
     teacherItems: [
       "每份作业最多 40 个单词",
       "最多 40 个学生",
@@ -477,7 +477,7 @@ const copy = {
     monthly: "月付方案",
     yearly: "年付方案",
     billingPeriod: "计费周期",
-    selectParent: "选择家长方案",
+    selectParent: "解锁拍照导入 + 智能复习",
     selectTeacher: "选择教师方案",
     signIn: "工作台",
     practice: "首页",
@@ -553,12 +553,12 @@ function render(locale) {
     <main class="product-main">
       <section class="product-card"><h1>${escape(c.heading)}</h1><p>${escape(c.intro)}</p><p class="notice">${escape(c.note)}</p></section>
       <div class="subscription-status" data-subscription-status hidden role="status"><span data-subscription-message></span><button type="button" class="button-secondary" data-renew-subscription hidden></button></div>
-      <div class="pricing-toolbar"><div class="plan-selector" role="group" aria-label="${escape(c.billingPeriod)}"><button type="button" class="plan-option" data-plan-option="month" aria-pressed="true">${escape(c.monthly)}</button><button type="button" class="plan-option" data-plan-option="year" aria-pressed="false">${escape(c.yearly)}</button></div></div>
+      <div class="pricing-toolbar"><div class="plan-selector" role="group" aria-label="${escape(c.billingPeriod)}"><button type="button" class="plan-option" data-plan-option="month" aria-pressed="false">${escape(c.monthly)}</button><button type="button" class="plan-option" data-plan-option="year" aria-pressed="true">${escape(c.yearly)}</button></div></div>
       <p class="notice">${escape(c.resultViewNote)}</p>
       <div class="pricing-grid">
         <section class="product-card pricing-card" data-plan-card="free"><div class="pricing-card-heading"><h2>${escape(c.free)}</h2></div><div class="selected-plan"><p class="price">${escape(c.freePrice)}</p><p class="plan-description">${escape(c.freeBilling)}</p></div><ul>${c.freeItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><a class="button-link button-secondary" data-plan-cta="free" data-free-teacher-cta data-current-plan-label="${escape(c.currentPlan)}" href="/workspace?lang=${encodeURIComponent(locale.code)}#teacher-sign-in">${escape(c.freeTeacher)}</a></section>
-        <section class="product-card pricing-card" data-plan-card="parent"><div class="pricing-card-heading"><h2>${escape(c.parent)}</h2></div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.parentMonth)}" data-year="${escape(c.parentYear)}">${escape(c.parentMonth)}</p></div><ul>${c.parentItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><button type="button" class="button-secondary plan-choice" data-plan-choice="parent" data-plan-cta="parent" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="false">${escape(c.selectParent)}</button></section>
-        <section class="product-card pricing-card" data-plan-card="teacher"><div class="pricing-card-heading"><h2>${escape(c.teacher)}</h2></div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.teacherMonth)}" data-year="${escape(c.teacherYear)}">${escape(c.teacherMonth)}</p></div><ul>${c.teacherItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><button type="button" class="button-secondary plan-choice" data-plan-choice="teacher" data-plan-cta="teacher" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="false">${escape(c.selectTeacher)}</button></section>
+        <section class="product-card pricing-card selected" data-plan-card="parent"><div class="pricing-card-heading"><h2>${escape(c.parent)}</h2></div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.parentMonth)}" data-year="${escape(c.parentYear)}">${escape(c.parentYear)}</p></div><ul>${c.parentItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><button type="button" class="plan-choice" data-plan-choice="parent" data-plan-cta="parent" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="true">${escape(c.selectParent)}</button></section>
+        <section class="product-card pricing-card" data-plan-card="teacher"><div class="pricing-card-heading"><h2>${escape(c.teacher)}</h2></div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.teacherMonth)}" data-year="${escape(c.teacherYear)}">${escape(c.teacherYear)}</p></div><ul>${c.teacherItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><button type="button" class="button-secondary plan-choice" data-plan-choice="teacher" data-plan-cta="teacher" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="false">${escape(c.selectTeacher)}</button></section>
       </div>
     </main>
     <footer class="product-footer"><p><span class="footer-links">${links}</span><br><span class="footer-secondary-links">${secondaryLinks}</span><br>&copy; 2026 My Spelling Game ${footerRights[locale.code]}</p></footer>

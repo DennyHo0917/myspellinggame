@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const classroomCopy = require("./classroom-marketing-copy.cjs");
 
 const root = path.resolve(__dirname, "..");
 const baseUrl = "https://myspellinggame.com";
@@ -3127,7 +3128,7 @@ const teacherLandingCopy = {
       ],
       [
         "Teacher Plan",
-        "Support up to 40 students with 5 active assignments, unlimited tracked submissions, and 365-day history.",
+        "Support up to 40 students with 10 active assignments, unlimited tracked submissions, and 365-day history.",
       ],
     ],
     planComparisonTitle: "Free Plan vs Teacher Plan",
@@ -3144,7 +3145,7 @@ const teacherLandingCopy = {
       "Photo Import and automatic example sentences",
       "Class Join/PIN and CSV Export",
       "Class-wide missed-word statistics",
-      "Up to 40 students, 5 active assignments, and 365-day history",
+      "Up to 40 students, 10 active assignments, and 365-day history",
     ],
     ctaTitle: "Ready to create this week's spelling assignment?",
     ctaText:
@@ -3223,7 +3224,7 @@ const teacherLandingCopy = {
       ],
       [
         "Plan para docentes",
-        "Hasta 40 alumnos, 5 tareas activas, entregas registradas ilimitadas y 365 días de historial.",
+        "Hasta 40 alumnos, 10 tareas activas, entregas registradas ilimitadas y 365 días de historial.",
       ],
     ],
     planComparisonTitle: "Plan gratuito vs Plan para docentes",
@@ -3240,7 +3241,7 @@ const teacherLandingCopy = {
       "Importación por foto y frases automáticas",
       "Acceso a clase/PIN y exportación CSV",
       "Estadísticas de errores de toda la clase",
-      "Hasta 40 alumnos, 5 tareas activas y 365 días de historial",
+      "Hasta 40 alumnos, 10 tareas activas y 365 días de historial",
     ],
     ctaTitle: "¿Todo listo para crear la tarea de ortografía de esta semana?",
     ctaText:
@@ -3319,7 +3320,7 @@ const teacherLandingCopy = {
       ],
       [
         "Plano para Professores",
-        "Até 40 alunos, 5 atividades ativas, envios acompanhados ilimitados e histórico de 365 dias.",
+        "Até 40 alunos, 10 atividades ativas, envios acompanhados ilimitados e histórico de 365 dias.",
       ],
     ],
     planComparisonTitle: "Plano gratuito vs Plano para Professores",
@@ -3336,7 +3337,7 @@ const teacherLandingCopy = {
       "Importação por foto e frases automáticas",
       "Entrada na turma/PIN e exportação CSV",
       "Estatísticas de erros de toda a turma",
-      "Até 40 alunos, 5 atividades ativas e histórico de 365 dias",
+      "Até 40 alunos, 10 atividades ativas e histórico de 365 dias",
     ],
     ctaTitle: "Pronto para criar a atividade de ortografia desta semana?",
     ctaText:
@@ -3415,7 +3416,7 @@ const teacherLandingCopy = {
       ],
       [
         "Offre Enseignants",
-        "Jusqu’à 40 élèves, 5 devoirs actifs, remises suivies illimitées et historique sur 365 jours.",
+        "Jusqu’à 40 élèves, 10 devoirs actifs, remises suivies illimitées et historique sur 365 jours.",
       ],
     ],
     planComparisonTitle: "Offre gratuite vs Offre Enseignants",
@@ -3432,7 +3433,7 @@ const teacherLandingCopy = {
       "Import par photo et phrases automatiques",
       "Accès classe/PIN et export CSV",
       "Statistiques des mots manqués de la classe",
-      "Jusqu’à 40 élèves, 5 devoirs actifs et historique sur 365 jours",
+      "Jusqu’à 40 élèves, 10 devoirs actifs et historique sur 365 jours",
     ],
     ctaTitle: "Prêt à créer le devoir d’orthographe de cette semaine ?",
     ctaText:
@@ -3511,7 +3512,7 @@ const teacherLandingCopy = {
       ],
       [
         "Paket Guru",
-        "Hingga 40 siswa, 5 tugas aktif, kiriman terlacak tanpa batas, dan riwayat 365 hari.",
+        "Hingga 40 siswa, 10 tugas aktif, kiriman terlacak tanpa batas, dan riwayat 365 hari.",
       ],
     ],
     planComparisonTitle: "Paket Gratis vs Paket Guru",
@@ -3528,7 +3529,7 @@ const teacherLandingCopy = {
       "Impor foto dan kalimat contoh otomatis",
       "Gabung kelas/PIN dan ekspor CSV",
       "Statistik kata salah di seluruh kelas",
-      "Hingga 40 siswa, 5 tugas aktif, dan riwayat 365 hari",
+      "Hingga 40 siswa, 10 tugas aktif, dan riwayat 365 hari",
     ],
     ctaTitle: "Siap membuat tugas ejaan minggu ini?",
     ctaText:
@@ -3590,7 +3591,7 @@ const teacherLandingCopy = {
       ["CSV", "按作业和学生导出结果，便于留档、汇报或进一步分析。"],
       [
         "教师方案",
-        "最多支持 40 名学生和 5 份活跃作业，提交追踪不限量，并保留 365 天记录。",
+        "最多支持 40 名学生和 10 份活跃作业，提交追踪不限量，并保留 365 天记录。",
       ],
     ],
     planComparisonTitle: "免费方案 vs 教师方案",
@@ -3607,7 +3608,7 @@ const teacherLandingCopy = {
       "拍照导入和自动生成例句",
       "班级加入/PIN 和 CSV 导出",
       "班级错词统计",
-      "最多 40 名学生、5 份活跃作业和 365 天历史记录",
+      "最多 40 名学生、10 份活跃作业和 365 天历史记录",
     ],
     ctaTitle: "准备好布置本周英语拼写作业了吗？",
     ctaText: "进入工作台创建可追踪作业，或查看教师方案的完整班级功能。",
@@ -3745,7 +3746,21 @@ const teacherFeatureGroups = {
 
 for (const [code, features] of Object.entries(paidLandingFeatures)) {
   const teacherPlan = teacherLandingCopy[code].features.pop();
-  teacherLandingCopy[code].features.push(...features.teacher, teacherPlan);
+  const classroom = classroomCopy[code];
+  const teacher = teacherLandingCopy[code];
+  teacher.description = classroom.teacherDescription;
+  teacher.ogDescription = classroom.teacherDescription;
+  teacher.intro = classroom.teacherIntro;
+  teacher.features.push(
+    ...features.teacher,
+    [classroom.heading, `${classroom.openLinkDetail} ${classroom.teacherDetail}`],
+    teacherPlan,
+  );
+  teacher.paidPlanFeatures.push(classroom.openLinkFeature, classroom.teacherFeature);
+  teacher.faq.push([
+    classroom.question,
+    `${classroom.openLinkDetail} ${classroom.teacherDetail} ${classroom.studentDetail} ${classroom.scopeDetail}`,
+  ]);
 }
 
 const customLauncher = {

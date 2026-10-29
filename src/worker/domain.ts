@@ -25,14 +25,14 @@ export const PLAN_LIMITS = {
   },
   parent: {
     ...PAID_PLAN_LIMITS,
-    activeAssignments: 3,
+    activeAssignments: 5,
     learnerProfiles: 5,
     csvExport: false,
     missedWordStats: false,
   },
   teacher: {
     ...PAID_PLAN_LIMITS,
-    activeAssignments: 5,
+    activeAssignments: 10,
     learnerProfiles: 40,
   },
 } as const;

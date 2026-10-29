@@ -1,3 +1,4 @@
+import { clearAdultAcquisition } from "./adultAcquisition.mjs";
 const $ = (id) => document.getElementById(id);
 const statusCard = $("admin-status");
 const loginCard = $("admin-login");
@@ -19,6 +20,10 @@ const ordersPrevious = $("admin-orders-previous");
 const ordersNext = $("admin-orders-next");
 const orderQueryInput = $("admin-order-query");
 const orderStatusFilter = $("admin-order-status-filter");
+const subscriptionsBody = $("admin-subscriptions");
+const subscriptionsStatus = $("admin-subscriptions-status");
+const subscriptionsPrevious = $("admin-subscriptions-previous");
+const subscriptionsNext = $("admin-subscriptions-next");
 const drawer = $("admin-user-drawer");
 const drawerStatus = $("admin-drawer-status");
 const drawerPlan = $("admin-drawer-plan");
@@ -31,6 +36,11 @@ let ordersPage = 1;
 let orderQuery = "";
 let orderStatus = "";
 let ordersLoaded = false;
+let subscriptionsPage = 1;
+let subscriptionQuery = "";
+let subscriptionPlan = "";
+let subscriptionProvider = "";
+let subscriptionsLoaded = false;
 let selectedUser = null;
 
 async function api(path, options = {}) {
@@ -72,6 +82,7 @@ async function api(path, options = {}) {
 }
 
 function show(element) {
+  $("admin-diagnostics").hidden = element !== dashboard;
   for (const item of [statusCard, loginCard, deniedCard, dashboard])
     item.hidden = item !== element;
   if (element !== dashboard && drawer.open) drawer.close();
@@ -86,6 +97,7 @@ function formatDate(value) {
         day: "2-digit",
         hour: "2-digit",
         minute: "2-digit",
+        timeZone: "Asia/Shanghai",
       })
     : "-";
 }
@@ -105,17 +117,33 @@ function formatProvider(value) {
 function formatSubscriptionStatus(value) {
   return (
     {
-      active: "生效",
-      trialing: "生效",
+      active: "生效中",
+      trialing: "试用中",
       canceled: "已取消",
       incomplete: "未完成",
       pending: "待处理",
       past_due: "已逾期",
       unpaid: "未付款",
-    }[value] ||
-    value ||
-    "-"
+      incomplete_expired: "已失效",
+      paused: "已暂停",
+    }[value] || (value ? "未知状态" : "-")
   );
+}
+
+function formatCancellation(user) {
+  if (user.subscriptionStatus === "canceled") return "已取消";
+  if (user.subscriptionStatus === "incomplete_expired") return "-";
+  return user.cancelAtPeriodEnd || user.cancelAt ? "已取消续费" : "未取消";
+}
+
+function subscriptionExpiresAt(user) {
+  if (user.endedAt) return user.endedAt;
+  if (
+    user.cancelAt &&
+    (!user.currentPeriodEnd || user.cancelAt < user.currentPeriodEnd)
+  )
+    return user.cancelAt;
+  return user.currentPeriodEnd;
 }
 
 function formatBillingInterval(value) {
@@ -138,7 +166,7 @@ function formatOrderStatus(value) {
   return (
     {
       pending: "待完成",
-      completed: "待确认支付",
+      completed: "结账已完成",
       paid: "支付成功",
       failed: "支付失败",
       canceled: "已取消",
@@ -165,6 +193,29 @@ function textCell(value, className = "") {
   const cell = document.createElement("td");
   cell.className = className;
   cell.textContent = value;
+  return cell;
+}
+
+function dateCell(value, compact = false) {
+  if (!compact || !value) return textCell(formatDate(value));
+  const date = new Date(value);
+  const cell = textCell(
+    `${date.toLocaleDateString("zh-CN", {
+      timeZone: "Asia/Shanghai",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })} `,
+    "admin-date-cell",
+  );
+  const time = document.createElement("small");
+  time.textContent = date.toLocaleTimeString("zh-CN", {
+    timeZone: "Asia/Shanghai",
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  cell.append(time);
   return cell;
 }
 
@@ -202,6 +253,39 @@ function renderStats(stats) {
     ` · 计费周期：月付 ${stats.monthlyUsers} · 年付 ${stats.yearlyUsers}`;
 }
 
+function renderUserRow(user, subscription = false) {
+  const row = document.createElement("tr");
+  row.className = "admin-clickable-row";
+  row.append(
+    textCell(user.name),
+    textCell(user.email),
+    textCell(formatProvider(user.loginProvider)),
+    badgeCell(formatPlan(user.plan), user.plan),
+    dateCell(user.lastActiveAt, subscription),
+    dateCell(user.createdAt, subscription),
+  );
+  if (subscription)
+    row.append(
+      dateCell(user.subscriptionStartedAt, true),
+      dateCell(subscriptionExpiresAt(user), true),
+      textCell(formatSubscriptionStatus(user.subscriptionStatus)),
+      textCell(formatCancellation(user)),
+    );
+  const action = document.createElement("td");
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "button-secondary admin-detail-button";
+  button.textContent = "查看详情";
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    void openUserDrawer(user);
+  });
+  action.append(button);
+  row.append(action);
+  row.addEventListener("click", () => void openUserDrawer(user));
+  return row;
+}
+
 async function loadUsers() {
   usersStatus.textContent = "正在加载用户……";
   const params = new URLSearchParams({
@@ -211,38 +295,35 @@ async function loadUsers() {
     provider,
   });
   const data = await api(`/api/admin/users?${params}`);
-  usersBody.replaceChildren(
-    ...data.users.map((user) => {
-      const row = document.createElement("tr");
-      row.className = "admin-clickable-row";
-      row.append(
-        textCell(user.name),
-        textCell(user.email),
-        textCell(formatProvider(user.loginProvider)),
-        badgeCell(formatPlan(user.plan), user.plan),
-        textCell(formatDate(user.lastActiveAt)),
-        textCell(formatDate(user.createdAt)),
-      );
-      const action = document.createElement("td");
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "button-secondary admin-detail-button";
-      button.textContent = "查看详情";
-      button.addEventListener("click", (event) => {
-        event.stopPropagation();
-        void openUserDrawer(user);
-      });
-      action.append(button);
-      row.append(action);
-      row.addEventListener("click", () => void openUserDrawer(user));
-      return row;
-    }),
-  );
+  usersBody.replaceChildren(...data.users.map((user) => renderUserRow(user)));
   const pages = Math.max(1, Math.ceil(data.total / data.pageSize));
   pageLabel.textContent = `第 ${data.page} / ${pages} 页 · 共 ${data.total} 位用户`;
   previous.disabled = data.page <= 1;
   next.disabled = data.page >= pages;
   usersStatus.textContent = data.users.length ? "" : "没有找到用户。";
+}
+
+async function loadSubscriptions() {
+  subscriptionsStatus.textContent = "正在加载订阅用户……";
+  const params = new URLSearchParams({
+    page: String(subscriptionsPage),
+    q: subscriptionQuery,
+    plan: subscriptionPlan,
+    provider: subscriptionProvider,
+  });
+  const data = await api(`/api/admin/subscriptions?${params}`);
+  subscriptionsLoaded = true;
+  subscriptionsBody.replaceChildren(
+    ...data.users.map((user) => renderUserRow(user, true)),
+  );
+  const pages = Math.max(1, Math.ceil(data.total / data.pageSize));
+  $("admin-subscriptions-page").textContent =
+    `第 ${data.page} / ${pages} 页 · 共 ${data.total} 位订阅用户`;
+  subscriptionsPrevious.disabled = data.page <= 1;
+  subscriptionsNext.disabled = data.page >= pages;
+  subscriptionsStatus.textContent = data.users.length
+    ? ""
+    : "没有找到订阅用户。";
 }
 
 function renderOrderUser(order) {
@@ -305,7 +386,12 @@ function renderUserDetails(user) {
       ["当前方案", formatPlan(user.plan)],
       ["订阅状态", formatSubscriptionStatus(user.subscriptionStatus)],
       ["计费周期", formatBillingInterval(user.billingInterval)],
-      ["周期结束时间", formatDate(user.currentPeriodEnd)],
+      ["订阅时间（北京时间）", formatDate(user.subscriptionStartedAt)],
+      ["到期时间（北京时间）", formatDate(subscriptionExpiresAt(user))],
+      [
+        "是否取消续费",
+        user.subscriptionStatus ? formatCancellation(user) : "-",
+      ],
       [
         "管理员指定",
         user.adminPlan ? formatPlan(user.adminPlan) : "按订阅自动判断",
@@ -356,25 +442,57 @@ async function openUserDrawer(user) {
 async function loadDashboard() {
   const stats = await api("/api/admin/stats");
   show(dashboard);
+  $("admin-diagnostics").hidden = false;
   signOut.hidden = false;
   renderStats(stats);
   await loadUsers();
 }
 
 function selectTab(name) {
-  const usersSelected = name === "users";
-  $("admin-users-tab").setAttribute("aria-selected", String(usersSelected));
-  $("admin-orders-tab").setAttribute("aria-selected", String(!usersSelected));
-  $("admin-users-panel").hidden = !usersSelected;
-  $("admin-orders-panel").hidden = usersSelected;
-  if (!usersSelected && !ordersLoaded)
+  for (const tab of ["users", "orders", "subscriptions"]) {
+    $(`admin-${tab}-tab`).setAttribute("aria-selected", String(name === tab));
+    $(`admin-${tab}-panel`).hidden = name !== tab;
+  }
+  if (name === "orders" && !ordersLoaded)
     void loadOrders().catch(
       (error) => (ordersStatus.textContent = error.message),
+    );
+  if (name === "subscriptions" && !subscriptionsLoaded)
+    void loadSubscriptions().catch(
+      (error) => (subscriptionsStatus.textContent = error.message),
     );
 }
 
 $("admin-users-tab").addEventListener("click", () => selectTab("users"));
 $("admin-orders-tab").addEventListener("click", () => selectTab("orders"));
+$("admin-subscriptions-tab").addEventListener("click", () =>
+  selectTab("subscriptions"),
+);
+
+$("admin-subscription-search").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  subscriptionQuery = $("admin-subscription-query").value.trim();
+  subscriptionPlan = $("admin-subscription-plan-filter").value;
+  subscriptionProvider = $("admin-subscription-provider-filter").value;
+  subscriptionsPage = 1;
+  await loadSubscriptions().catch(
+    (error) => (subscriptionsStatus.textContent = error.message),
+  );
+});
+
+subscriptionsPrevious.addEventListener("click", async () => {
+  subscriptionsPage -= 1;
+  await loadSubscriptions().catch(
+    (error) => (subscriptionsStatus.textContent = error.message),
+  );
+});
+
+subscriptionsNext.addEventListener("click", async () => {
+  subscriptionsPage += 1;
+  await loadSubscriptions().catch(
+    (error) => (subscriptionsStatus.textContent = error.message),
+  );
+});
 
 $("admin-search").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -442,6 +560,7 @@ $("admin-drawer-plan-save").addEventListener("click", async () => {
     if (selectedUser) renderUserDetails(selectedUser);
     drawerStatus.textContent = "方案已更新。";
     await loadUsers();
+    if (subscriptionsLoaded) await loadSubscriptions();
   } catch (error) {
     drawerStatus.textContent = error.message;
   } finally {
@@ -474,6 +593,7 @@ $("admin-user-delete").addEventListener("click", async () => {
     renderStats(await api("/api/admin/stats"));
     await loadUsers();
     if (ordersLoaded) await loadOrders();
+    if (subscriptionsLoaded) await loadSubscriptions();
   } catch (error) {
     drawerStatus.textContent = error.message;
   } finally {
@@ -486,10 +606,13 @@ $("admin-refresh").addEventListener("click", async () => {
     renderStats(await api("/api/admin/stats"));
     if ($("admin-users-tab").getAttribute("aria-selected") === "true")
       await loadUsers();
-    else await loadOrders();
+    else if ($("admin-orders-tab").getAttribute("aria-selected") === "true")
+      await loadOrders();
+    else await loadSubscriptions();
   } catch (error) {
     usersStatus.textContent = error.message;
     ordersStatus.textContent = error.message;
+    subscriptionsStatus.textContent = error.message;
   }
 });
 
@@ -520,6 +643,7 @@ for (const button of document.querySelectorAll("[data-auth-provider]")) {
 }
 
 signOut.addEventListener("click", async () => {
+  clearAdultAcquisition();
   await api("/api/auth/sign-out", { method: "POST", body: "{}" }).catch(
     () => null,
   );
@@ -531,4 +655,56 @@ loadDashboard().catch((error) => {
   if (error.status === 401) show(loginCard);
   else if (error.status === 403) show(deniedCard);
   else statusCard.querySelector(".status").textContent = error.message;
+});
+
+$("admin-diagnostic-search").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const status = $("admin-diagnostic-status");
+  status.textContent = "正在加载诊断…";
+  try {
+    const trace = $("admin-diagnostic-trace").value.trim();
+    const data = await api(
+      `/api/admin/diagnostics${trace ? `?trace=${encodeURIComponent(trace)}` : ""}`,
+    );
+    const render = (id, rows, fields) => {
+      const body = $(id);
+      body.replaceChildren();
+      for (const row of rows) {
+        const tr = document.createElement("tr");
+        for (const field of fields)
+          tr.append(
+            textCell(
+              field === "source"
+                ? row[field] === "server"
+                  ? "服务端确认"
+                  : "浏览器报告"
+                : (row[field] ?? "—"),
+            ),
+          );
+        body.append(tr);
+      }
+    };
+    render("admin-diagnostic-summary", data.summary, [
+      "source",
+      "event_name",
+      "error_code",
+      "http_status",
+      "release_version",
+      "count",
+      "last_seen",
+    ]);
+    render("admin-diagnostic-recent", data.recent, [
+      "occurred_at",
+      "trace_id",
+      "source",
+      "event_name",
+      "route_template",
+      "error_code",
+      "http_status",
+      "release_version",
+    ]);
+    status.textContent = `仅包含最近 ${data.retentionDays} 天；事件与原因使用固定代码，不含学生身份或原始错误文本。`;
+  } catch {
+    status.textContent = "诊断暂不可用，业务操作不受影响。";
+  }
 });

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures.mjs";
 import { PLAN_LIMITS } from "../src/worker/domain.ts";
 import { productMessages } from "../src/js/productLocale.mjs";
 
@@ -1020,7 +1020,7 @@ test("new assignment validates learner selection before submitting", async ({
 
   await page.goto("/workspace/assignments/new?lang=en");
   await expect(page.getByLabel("Link sharing only")).toBeChecked();
-  await page.getByLabel("Selected students").check();
+  await page.locator('[data-target-option="selected"]').click();
   await expect(page.locator(".assignment-learners-error")).toHaveText(
     "Select at least one learner.",
   );
@@ -1030,7 +1030,11 @@ test("new assignment validates learner selection before submitting", async ({
   await page.getByLabel("Assignment title").fill("Learner validation");
   await page.getByLabel("Spelling words").fill("apple");
   expect(postCount).toBe(0);
-  await page.getByLabel("Alice").check();
+  await page.locator(".learner-picker-summary").click();
+  await page
+    .locator(".learner-picker-option")
+    .filter({ hasText: "Alice" })
+    .click();
   await expect(page.locator(".assignment-learners-error")).toBeHidden();
   await expect(
     page.getByRole("button", { name: "Create and publish" }),
@@ -2487,6 +2491,7 @@ test("assignment recovery after a long suspension submits active duration only",
   await page.goto(`/a/${publicId}?lang=en`);
   await page.getByLabel("Nickname").fill("Student 01");
   await page.getByRole("button", { name: "Start assignment" }).click();
+  await expect(page.locator(".answer-form input")).toBeVisible();
   await page.evaluate(() => {
     const key = "mySpellingAssignment:abcdefghijklmnopqrstuvwx";
     const saved = JSON.parse(sessionStorage.getItem(key));
@@ -2591,6 +2596,7 @@ test("a student can return to the start during consecutive assignments", async (
   await page.getByLabel("Nickname").fill("Student 01");
   for (let round = 0; round < 2; round += 1) {
     await page.getByRole("button", { name: "Start assignment" }).click();
+    await expect(page.locator(".answer-form input")).toBeVisible();
     if (round === 0) {
       await page.evaluate(() => {
         const key = "mySpellingAssignment:abcdefghijklmnopqrstuvwx";
@@ -3634,6 +3640,7 @@ test("workspace refreshes new results without replacing good data or unsaved for
 
   await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("0 submissions", { exact: true })).toBeVisible();
+  await expect(page.locator(".workspace-refresh-results")).toHaveCount(0);
 
   // A student submits while the teacher tab is away. Returning after the TTL refreshes it.
   attempts = 1;
@@ -3660,9 +3667,12 @@ test("workspace refreshes new results without replacing good data or unsaved for
   await expect(page.getByRole("heading", { name: "Students" })).toBeVisible();
   await expect.poll(() => workspaceRequests).toBe(beforeSwitchRequests + 1);
 
-  // A failed manual refresh leaves the current successful data in place.
+  // A failed automatic refresh leaves the current successful data in place.
   failNextWorkspaceRequest = true;
-  await page.getByRole("button", { name: "Refresh results" }).click();
+  await page.evaluate(() => {
+    window.__advanceWorkspaceTime(16_000);
+    window.__showWorkspacePage();
+  });
   await expect(page.getByText("Alice", { exact: true }).first()).toBeVisible();
   await expect(
     page.getByText(
@@ -3670,12 +3680,15 @@ test("workspace refreshes new results without replacing good data or unsaved for
     ),
   ).toBeVisible();
 
-  // Manual refresh updates the assignment list, detail, and progress views.
+  // Lists refresh automatically; assignment details keep their manual refresh action.
   attempts = 2;
   await page
     .locator('.workspace-sidebar-link[data-section="assignments"]')
     .click();
-  await page.getByRole("button", { name: "Refresh results" }).click();
+  await page.evaluate(() => {
+    window.__advanceWorkspaceTime(16_000);
+    window.__showWorkspacePage();
+  });
   await expect(page.getByText("2 submissions", { exact: true })).toBeVisible();
   await page.getByRole("link", { name: "View results" }).click();
   await expect(page.locator("tbody tr")).toHaveCount(2);
@@ -3685,16 +3698,17 @@ test("workspace refreshes new results without replacing good data or unsaved for
   await page
     .locator('.workspace-sidebar-link[data-section="progress"]')
     .click();
-  await expect(
-    page.getByRole("button", { name: "Refresh results" }),
-  ).toBeVisible();
+  await expect(page.locator(".workspace-refresh-results")).toHaveCount(0);
 
   // Account entitlement changes invalidate cached data, while forms stay untouched.
   plan = "parent";
   await page
     .locator('.workspace-sidebar-link[data-section="overview"]')
     .click();
-  await page.getByRole("button", { name: "Refresh results" }).click();
+  await page.evaluate(() => {
+    window.__advanceWorkspaceTime(16_000);
+    window.__showWorkspacePage();
+  });
   await expect(page.getByText("Parent Plan", { exact: true })).toBeVisible();
   await page.goto("/workspace/assignments/new?lang=en");
   await page.getByLabel("Assignment title").fill("Unsaved title");
@@ -3763,19 +3777,23 @@ test("new assignment validates Free word-count boundaries before submit", async 
   await expect(page.locator(".word-limit-upgrade")).toBeVisible();
   await expect(page.locator(".word-limit-upgrade")).toHaveCount(1);
 
-  await wordsInput.fill(`Apple\napple\na\n${"x".repeat(25)}`);
-  await expect(page.locator(".word-count")).toHaveText("1 / 25");
+  await wordsInput.fill(`Apple\napple\na\nb\n${"x".repeat(25)}`);
+  await expect(page.locator(".word-count")).toHaveText("2 / 25");
   await expect(page.locator(".word-list-error")).toContainText(
     "Repeated words: apple",
   );
   await expect(page.locator(".word-list-error")).toContainText(
-    "at least 2 characters: a",
+    "Only a and I are valid one-letter words: b",
   );
   await expect(page.locator(".word-list-error")).toContainText(
     "24 characters or fewer",
   );
   await expect(page.locator(".word-limit-upgrade")).toBeHidden();
   await expect(submit).toBeDisabled();
+
+  await wordsInput.fill("a\ni\napple");
+  await expect(page.locator(".word-count")).toHaveText("3 / 25");
+  await expect(wordsInput).toHaveAttribute("aria-invalid", "false");
 
   await page.getByLabel("Assignment title").fill("Week two");
   await wordsInput.fill("apple\nbanana");
@@ -4263,7 +4281,7 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
   await expect(
     page.getByRole("heading", { name: "Recent assignments" }),
   ).toBeVisible();
-  await expect(page.getByText("0 of 3 active assignments")).toBeVisible();
+  await expect(page.getByText("0 of 5 active assignments")).toBeVisible();
   await expect(page.getByText("Unlimited full results")).toBeVisible();
   await expect(page.getByText("0 of 5 child profiles")).toBeVisible();
   await expect(page.getByText(/Class URL:/)).toHaveCount(0);
@@ -5306,10 +5324,22 @@ test("desktop workspace sidebar collapses and restores", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("paid workspace billing sidebar opens pricing and allows plan changes", async ({
+test("paid workspace billing sidebar marks current interval and opens billing portal", async ({
   page,
 }) => {
   await mockWorkspaceShell(page, "parent");
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "owner-a", name: "Owner A", email: "a@example.test" },
+        plan: "parent",
+        billingInterval: "month",
+        subscriptionStatus: "active",
+        currentPeriodEnd: new Date(Date.now() + 30 * 86400000).toISOString(),
+      }),
+    }),
+  );
   let portalBody;
   await page.route("**/api/billing/portal", (route) => {
     portalBody = route.request().postDataJSON();
@@ -5340,7 +5370,17 @@ test("paid workspace billing sidebar opens pricing and allows plan changes", asy
   await expect(page.locator('[data-plan-card="parent"]')).toContainText(
     "Current plan",
   );
-  await page.getByRole("button", { name: "Select Teacher Plan" }).click();
+  await page.locator('[data-plan-option="year"]').click();
+  await expect(page.locator('[data-plan-card="parent"]')).not.toHaveAttribute(
+    "aria-current",
+    "true",
+  );
+  await page.locator('[data-plan-option="month"]').click();
+  await expect(page.locator('[data-plan-card="parent"]')).toHaveAttribute(
+    "aria-current",
+    "true",
+  );
+  await page.getByRole("link", { name: "Manage billing", exact: true }).click();
   await expect(page).toHaveURL(/\/pricing\?from=portal$/);
   expect(portalBody).toEqual({ locale: "en" });
 });
@@ -5485,11 +5525,14 @@ for (const [lang, path] of [
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
+    await page.addInitScript((locale) => {
+      localStorage.setItem("mySpellingGameManualLocale", locale);
+    }, lang);
     await page.goto(`${path}/pricing?lang=${lang}`);
     await expect(
       page.locator(".notice").filter({ hasText: "UTC" }),
     ).toBeVisible();
-    await expect(page.locator('[data-plan-card="free"]')).toContainText("8");
+    await expect(page.locator('[data-plan-card="free"]')).toContainText("4");
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= window.innerWidth,

@@ -385,21 +385,22 @@ async function recordInvoice(
   if (invoice.livemode === false) return;
   const dynamicInvoice = invoice as unknown as {
     subscription?: unknown;
-    parent?: { subscription_details?: { subscription?: unknown } };
+    subscription_details?: { metadata?: Stripe.Metadata | null };
+    parent?: {
+      subscription_details?: {
+        subscription?: unknown;
+        metadata?: Stripe.Metadata | null;
+      };
+    };
   };
   const subscriptionId = objectId(
     dynamicInvoice.subscription ??
       dynamicInvoice.parent?.subscription_details?.subscription,
   );
   if (!subscriptionId && !explicit) return;
-  const customerId = objectId(invoice.customer);
-  const userId =
-    explicit?.userId ||
-    (await ownerFromStripeObject(db, {
-      customer: invoice.customer,
-      id: subscriptionId ?? undefined,
-    }));
-  if (!userId) return;
+  const subscriptionMetadata =
+    dynamicInvoice.parent?.subscription_details?.metadata ??
+    dynamicInvoice.subscription_details?.metadata;
   const invoiceLines = invoice.lines?.data ?? [];
   const priceLine =
     invoiceLines.find((line) => {
@@ -415,14 +416,38 @@ async function recordInvoice(
   const linePriceId = objectId(priceLine?.pricing?.price_details?.price);
   const priceId = explicit?.priceId || linePriceId;
   const pricePlan = priceId ? configuredPricePlan(priceId, env) : null;
+  const customerId = objectId(invoice.customer);
+  const userId =
+    explicit?.userId ||
+    (await ownerFromStripeObject(db, {
+      metadata: subscriptionMetadata,
+      customer: invoice.customer,
+      id: subscriptionId ?? undefined,
+    }));
+  if (!userId) {
+    if (!pricePlan) return;
+    // Do not acknowledge our invoice before another webhook can map its owner.
+    throw new HttpError(
+      503,
+      "billing_owner_pending",
+      "The invoice owner is not available yet.",
+    );
+  }
   const context = await orderContext(
     db,
     userId,
-    explicit?.plan ?? pricePlan ?? undefined,
+    explicit?.plan ?? pricePlan ?? subscriptionMetadata?.plan,
     explicit?.interval ??
-      (priceId ? configuredPriceInterval(priceId, env) : undefined),
+      (priceId
+        ? configuredPriceInterval(priceId, env)
+        : subscriptionMetadata?.billing_interval),
   );
-  if (!context) return;
+  if (!context)
+    throw new HttpError(
+      503,
+      "billing_owner_pending",
+      "The invoice owner is not available yet.",
+    );
   const failed =
     invoice.status === "void" || invoice.status === "uncollectible";
   await upsertPaymentOrder(db, {
@@ -983,8 +1008,8 @@ async function applySubscription(
       `INSERT INTO subscriptions (
          user_id, plan, status, billing_interval, stripe_customer_id,
          stripe_subscription_id, stripe_price_id, current_period_end,
-         cancel_at_period_end, updated_at
-       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         cancel_at_period_end, updated_at, started_at, cancel_at, ended_at
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(user_id) DO UPDATE SET
          plan = excluded.plan,
          status = excluded.status,
@@ -994,6 +1019,9 @@ async function applySubscription(
          stripe_price_id = excluded.stripe_price_id,
          current_period_end = excluded.current_period_end,
          cancel_at_period_end = excluded.cancel_at_period_end,
+         started_at = excluded.started_at,
+         cancel_at = excluded.cancel_at,
+         ended_at = excluded.ended_at,
          updated_at = excluded.updated_at
        WHERE subscriptions.stripe_subscription_id IS NULL
           OR subscriptions.stripe_subscription_id = excluded.stripe_subscription_id
@@ -1010,6 +1038,9 @@ async function applySubscription(
       subscriptionPeriodEnd(subscription),
       subscription.cancel_at_period_end ? 1 : 0,
       now,
+      unixToIso(subscription.start_date ?? subscription.created),
+      unixToIso(subscription.cancel_at),
+      unixToIso(subscription.ended_at),
       replacedSubscriptionId,
     )
     .run();
@@ -1062,6 +1093,9 @@ async function applyCheckout(
          stripe_customer_id = COALESCE(excluded.stripe_customer_id, subscriptions.stripe_customer_id),
          stripe_subscription_id = COALESCE(excluded.stripe_subscription_id, subscriptions.stripe_subscription_id),
          stripe_price_id = COALESCE(excluded.stripe_price_id, subscriptions.stripe_price_id),
+         started_at = CASE WHEN COALESCE(excluded.stripe_subscription_id, subscriptions.stripe_subscription_id) = subscriptions.stripe_subscription_id THEN subscriptions.started_at END,
+         cancel_at = CASE WHEN COALESCE(excluded.stripe_subscription_id, subscriptions.stripe_subscription_id) = subscriptions.stripe_subscription_id THEN subscriptions.cancel_at END,
+         ended_at = CASE WHEN COALESCE(excluded.stripe_subscription_id, subscriptions.stripe_subscription_id) = subscriptions.stripe_subscription_id THEN subscriptions.ended_at END,
          updated_at = excluded.updated_at`,
     )
     .bind(

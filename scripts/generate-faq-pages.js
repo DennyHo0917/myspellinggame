@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const classroomCopy = require("./classroom-marketing-copy.cjs");
 
 const root = path.resolve(__dirname, "..");
 const baseUrl = "https://myspellinggame.com";
@@ -257,7 +258,8 @@ const locales = {
     teacher: "工作台",
     title: "常见问题 | My Spelling Game",
     heading: "常见问题",
-    intro: "集中说明单词表、练习模式、分享链接、账号、作业、拍照导入、自动例句和学习报告。",
+    intro:
+      "集中说明单词表、练习模式、分享链接、账号、作业、拍照导入、自动例句和学习报告。",
     questions: [
       [
         "可以使用自己的单词吗？",
@@ -565,12 +567,17 @@ const faqUpdates = {
 
 for (const [code, update] of Object.entries(faqUpdates)) {
   const item = locales[code];
-  item.intro = update.intro;
+  const classroom = classroomCopy[code === "pt-br" ? "pt-BR" : code];
+  item.intro = `${update.intro} ${classroom.faqIntro}`;
   const account = item.questions.findIndex(([question]) =>
     /account|cuenta|conta|compte|akun|账号/.test(question),
   );
   if (account >= 0) item.questions[account][1] = update.account;
   item.questions.push(...update.additions);
+  item.questions.push([
+    classroom.question,
+    `${classroom.openLinkDetail} ${classroom.teacherDetail} ${classroom.studentDetail} ${classroom.scopeDetail}`,
+  ]);
 }
 
 const planQuestions = {
@@ -670,9 +677,27 @@ const footerLinks = {
 };
 const footerSecondaryLinks = {
   en: ["Pricing", "FAQ", "Privacy", "About", "Contact"],
-  es: ["Precios", "Preguntas frecuentes", "Privacidad", "Acerca de", "Contacto"],
-  "pt-br": ["Preços", "Perguntas frequentes", "Privacidade", "Sobre", "Contato"],
-  fr: ["Tarifs", "Questions fréquentes", "Confidentialité", "À propos", "Contact"],
+  es: [
+    "Precios",
+    "Preguntas frecuentes",
+    "Privacidad",
+    "Acerca de",
+    "Contacto",
+  ],
+  "pt-br": [
+    "Preços",
+    "Perguntas frequentes",
+    "Privacidade",
+    "Sobre",
+    "Contato",
+  ],
+  fr: [
+    "Tarifs",
+    "Questions fréquentes",
+    "Confidentialité",
+    "À propos",
+    "Contact",
+  ],
   id: ["Harga", "Pertanyaan umum", "Privasi", "Tentang", "Kontak"],
   zh: ["价格", "常见问题", "隐私", "关于", "联系"],
 };

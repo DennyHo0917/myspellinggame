@@ -264,12 +264,66 @@ const PRICE_CHANGE_COPY = {
   },
 } as const;
 
+const CANCELED_PRICE_CHANGE_COPY = {
+  en: {
+    subject: "Parent Plan price update: your cancellation is unchanged",
+    change:
+      "The My Spelling Game Parent Plan price is changing from US$4.99 to US$7.99 per month. The new price applies if you choose to subscribe again after your current paid period ends.",
+    end: "Your current paid period ends on {date}, as scheduled.",
+    billing:
+      "Your scheduled cancellation remains in place. There will be no automatic renewal or extra charge for your current period.",
+  },
+  es: {
+    subject: "Nuevo precio del plan familiar: tu cancelación sigue vigente",
+    change:
+      "El plan para familias de My Spelling Game pasa de 4,99 a 7,99 USD al mes. El nuevo precio se aplicará si decides volver a suscribirte después de que termine el periodo ya pagado.",
+    end: "El periodo que ya has pagado termina el {date}, como estaba previsto.",
+    billing:
+      "Tu cancelación sigue vigente. No habrá renovación automática ni cargos adicionales por el periodo actual.",
+  },
+  "pt-BR": {
+    subject: "Novo preço do Plano para Pais: seu cancelamento está mantido",
+    change:
+      "O Plano para Pais do My Spelling Game passa de US$ 4,99 para US$ 7,99 por mês. O novo preço vale caso você decida assinar novamente após o fim do período já pago.",
+    end: "O período já pago termina em {date}, conforme programado.",
+    billing:
+      "Seu cancelamento está mantido. Não haverá renovação automática nem cobrança extra pelo período atual.",
+  },
+  fr: {
+    subject: "Nouveau tarif Parents : votre résiliation reste effective",
+    change:
+      "L'offre Parents My Spelling Game passe de 4,99 à 7,99 USD par mois. Le nouveau tarif s'appliquera uniquement si vous décidez de vous réabonner après la fin de votre période déjà payée.",
+    end: "Votre période déjà payée se termine le {date}, comme prévu.",
+    billing:
+      "Votre résiliation reste effective. Il n'y aura ni renouvellement automatique ni supplément pour la période en cours.",
+  },
+  id: {
+    subject: "Harga baru Paket Orang Tua: pembatalan Anda tetap berlaku",
+    change:
+      "Harga Paket Orang Tua My Spelling Game berubah dari US$4,99 menjadi US$7,99 per bulan. Harga baru berlaku jika Anda memilih berlangganan lagi setelah periode yang sudah dibayar berakhir.",
+    end: "Periode yang sudah Anda bayar berakhir pada {date}, sesuai jadwal.",
+    billing:
+      "Pembatalan Anda tetap berlaku. Tidak ada perpanjangan otomatis atau biaya tambahan untuk periode saat ini.",
+  },
+  "zh-CN": {
+    subject: "家长方案价格调整：你的到期取消安排保持不变",
+    change:
+      "My Spelling Game 家长方案将从每月 US$4.99 调整为每月 US$7.99。如果你在当前付费周期结束后主动重新订阅，才会按新价格收费。",
+    end: "当前已付费周期将按原安排于 {date} 结束。",
+    billing: "你的到期取消安排保持不变，不会自动续费，本期也不会补收差价。",
+  },
+} as const;
+
 export function buildPriceChangeEmail(
   periodEnd: string,
   acceptLanguage?: string | null,
+  options: { renewalCancelled?: boolean } = {},
 ) {
   const locale = resolveWelcomeLocale(acceptLanguage);
   const copy = PRICE_CHANGE_COPY[locale];
+  const detail = options.renewalCancelled
+    ? CANCELED_PRICE_CHANGE_COPY[locale]
+    : copy;
   const date = new Date(periodEnd);
   if (!Number.isFinite(date.getTime())) throw new Error("Invalid renewal date");
   const formattedDate =
@@ -281,10 +335,10 @@ export function buildPriceChangeEmail(
     }).format(date) + " (UTC)";
   const paragraphs = [
     copy.greeting,
-    copy.change,
-    copy.end.replace("{date}", formattedDate),
-    copy.billing,
-    copy.cancel,
+    detail.change,
+    detail.end.replace("{date}", formattedDate),
+    detail.billing,
+    ...(options.renewalCancelled ? [] : [copy.cancel]),
     copy.thanks,
   ];
   const prefix =
@@ -309,9 +363,9 @@ export function buildPriceChangeEmail(
   return {
     from: FROM,
     reply_to: "dennyho0917@hotmail.com",
-    subject: copy.subject,
+    subject: detail.subject,
     text: `${paragraphs.join("\n\n")}\n\n${copy.manage}: ${url}\n\nMy Spelling Game`,
-    html: `<!doctype html><html lang="${locale}"><body style="margin:0;padding:24px;background:#f5f7fa;font-family:Arial,sans-serif;color:#1f2937"><div style="max-width:600px;margin:0 auto;padding:28px;background:white;border:1px solid #e5e7eb;border-radius:8px"><img src="${LOGO_URL}" width="40" height="40" alt=""><h1 style="font-size:22px;line-height:1.4">${escape(copy.subject)}</h1>${paragraphs.map((paragraph) => `<p style="font-size:16px;line-height:1.6">${escape(paragraph)}</p>`).join("")}<p><a href="${url}" style="color:#2563eb">${escape(copy.manage)}</a></p><p>My Spelling Game</p></div></body></html>`,
+    html: `<!doctype html><html lang="${locale}"><body style="margin:0;padding:24px;background:#f5f7fa;font-family:Arial,sans-serif;color:#1f2937"><div style="max-width:600px;margin:0 auto;padding:28px;background:white;border:1px solid #e5e7eb;border-radius:8px"><img src="${LOGO_URL}" width="40" height="40" alt=""><h1 style="font-size:22px;line-height:1.4">${escape(detail.subject)}</h1>${paragraphs.map((paragraph) => `<p style="font-size:16px;line-height:1.6">${escape(paragraph)}</p>`).join("")}<p><a href="${url}" style="color:#2563eb">${escape(copy.manage)}</a></p><p>My Spelling Game</p></div></body></html>`,
   };
 }
 

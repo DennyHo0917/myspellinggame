@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const classroomCopy = require("./classroom-marketing-copy.cjs");
 
 const root = path.resolve(__dirname, "..");
 const baseUrl = "https://myspellinggame.com";
@@ -113,7 +114,7 @@ const copy = {
     parentItems: [
       "Up to 40 words per assignment",
       "Up to 5 children",
-      "3 active assignments",
+      "5 active assignments",
       "Unlimited full results",
       "Unlimited saved lists",
       "365-day progress history",
@@ -128,7 +129,7 @@ const copy = {
     teacherItems: [
       "Up to 40 words per assignment",
       "Up to 40 students",
-      "5 active assignments",
+      "10 active assignments",
       "Unlimited full results",
       "Unlimited saved lists",
       "365-day progress history",
@@ -180,7 +181,7 @@ const copy = {
     parentItems: [
       "Hasta 40 palabras por tarea",
       "Hasta 5 hijos",
-      "3 tareas activas",
+      "5 tareas activas",
       "Resultados completos ilimitados",
       "Listas guardadas ilimitadas",
       "365 días de historial de progreso",
@@ -195,7 +196,7 @@ const copy = {
     teacherItems: [
       "Hasta 40 palabras por tarea",
       "Hasta 40 estudiantes",
-      "5 tareas activas",
+      "10 tareas activas",
       "Resultados completos ilimitados",
       "Listas guardadas ilimitadas",
       "365 días de historial de progreso",
@@ -247,7 +248,7 @@ const copy = {
     parentItems: [
       "Até 40 palavras por tarefa",
       "Até 5 filhos",
-      "3 tarefas ativas",
+      "5 tarefas ativas",
       "Resultados completos ilimitados",
       "Listas salvas ilimitadas",
       "365 dias de histórico de progresso",
@@ -262,7 +263,7 @@ const copy = {
     teacherItems: [
       "Até 40 palavras por tarefa",
       "Até 40 alunos",
-      "5 tarefas ativas",
+      "10 tarefas ativas",
       "Resultados completos ilimitados",
       "Listas salvas ilimitadas",
       "365 dias de histórico de progresso",
@@ -314,7 +315,7 @@ const copy = {
     parentItems: [
       "Jusqu’à 40 mots par devoir",
       "Jusqu’à 5 enfants",
-      "3 devoirs actifs",
+      "5 devoirs actifs",
       "Résultats complets illimités",
       "Listes enregistrées illimitées",
       "365 jours d’historique de progression",
@@ -329,7 +330,7 @@ const copy = {
     teacherItems: [
       "Jusqu’à 40 mots par devoir",
       "Jusqu’à 40 élèves",
-      "5 devoirs actifs",
+      "10 devoirs actifs",
       "Résultats complets illimités",
       "Listes enregistrées illimitées",
       "365 jours d’historique de progression",
@@ -381,7 +382,7 @@ const copy = {
     parentItems: [
       "Hingga 40 kata per tugas",
       "Hingga 5 anak",
-      "3 tugas aktif",
+      "5 tugas aktif",
       "Hasil lengkap tanpa batas",
       "Daftar tersimpan tanpa batas",
       "Riwayat perkembangan 365 hari",
@@ -396,7 +397,7 @@ const copy = {
     teacherItems: [
       "Hingga 40 kata per tugas",
       "Hingga 40 siswa",
-      "5 tugas aktif",
+      "10 tugas aktif",
       "Hasil lengkap tanpa batas",
       "Daftar tersimpan tanpa batas",
       "Riwayat perkembangan 365 hari",
@@ -447,7 +448,7 @@ const copy = {
     parentItems: [
       "每份作业最多 40 个单词",
       "最多 5 个孩子",
-      "最多 3 个活跃作业",
+      "最多 5 个活跃作业",
       "完整结果不限量",
       "保存词表不限量",
       "查看 365 天学习记录",
@@ -462,7 +463,7 @@ const copy = {
     teacherItems: [
       "每份作业最多 40 个单词",
       "最多 40 个学生",
-      "最多 5 个活跃作业",
+      "最多 10 个活跃作业",
       "完整结果不限量",
       "保存词表不限量",
       "查看 365 天学习记录",
@@ -499,8 +500,15 @@ function escape(value) {
     .replace(/"/g, "&quot;");
 }
 
+for (const locale of locales) {
+  const c = copy[locale.code];
+  const classroom = classroomCopy[locale.code];
+  c.teacherItems.push(classroom.openLinkFeature, classroom.teacherFeature);
+}
+
 function render(locale) {
   const c = copy[locale.code];
+  const classroom = classroomCopy[locale.code];
   const prefix = locale.dir ? `/${locale.dir}` : "";
   const links = [
     `<a href="${prefix}/custom-spelling-words-game">${footerLinks[locale.code][0]}</a>`,
@@ -534,8 +542,17 @@ function render(locale) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escape(c.title)}</title>
-  <meta name="description" content="${escape(c.description)}">
+  <meta name="description" content="${escape(classroom.pricingDescription)}">
   <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${escape(c.title)}">
+  <meta property="og:description" content="${escape(classroom.pricingDescription)}">
+  <meta property="og:url" content="${baseUrl}${pagePath(locale)}">
+  <meta property="og:image" content="${baseUrl}/images/my-spelling-game-og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${escape(c.title)}">
+  <meta name="twitter:description" content="${escape(classroom.pricingDescription)}">
+  <meta name="twitter:image" content="${baseUrl}/images/my-spelling-game-og.png">
   <link rel="canonical" href="${baseUrl}${pagePath(locale)}">
   ${alternates}
   <link rel="alternate" hreflang="x-default" href="${baseUrl}/pricing">
@@ -551,7 +568,7 @@ function render(locale) {
   <div class="product-shell">
     <header class="top-right-nav"><a class="brand-link" href="${locale.dir ? `/${locale.dir}/` : "/"}" aria-label="My Spelling Game home"><img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span class="brand-name">My Spelling Game</span></a><details class="language-switcher"><summary class="lang-btn" aria-label="${escape(c.language)}">${escape(c.language)}</summary><div class="lang-menu">${languageOptions}</div></details><a class="teacher-nav-link" href="/workspace?lang=${encodeURIComponent(locale.code)}">${escape(c.signIn)}</a><a class="header-home-link" href="${locale.dir ? `/${locale.dir}/` : "/"}">${escape(c.practice)}</a></header>
     <main class="product-main">
-      <section class="product-card"><h1>${escape(c.heading)}</h1><p>${escape(c.intro)}</p><p class="notice">${escape(c.note)}</p></section>
+      <section class="product-card"><h1>${escape(c.heading)}</h1><p>${escape(c.intro)}</p><p class="notice">${escape(c.note)} ${escape(classroom.accountDetail)}</p></section>
       <div class="subscription-status" data-subscription-status hidden role="status"><span data-subscription-message></span><button type="button" class="button-secondary" data-renew-subscription hidden></button></div>
       <div class="pricing-toolbar"><div class="plan-selector" role="group" aria-label="${escape(c.billingPeriod)}"><button type="button" class="plan-option" data-plan-option="month" aria-pressed="false">${escape(c.monthly)}</button><button type="button" class="plan-option" data-plan-option="year" aria-pressed="true">${escape(c.yearly)}</button></div></div>
       <p class="notice">${escape(c.resultViewNote)}</p>
@@ -560,6 +577,7 @@ function render(locale) {
         <section class="product-card pricing-card selected" data-plan-card="parent"><div class="pricing-card-heading"><h2>${escape(c.parent)}</h2></div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.parentMonth)}" data-year="${escape(c.parentYear)}">${escape(c.parentYear)}</p></div><ul>${c.parentItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><button type="button" class="plan-choice" data-plan-choice="parent" data-plan-cta="parent" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="true">${escape(c.selectParent)}</button></section>
         <section class="product-card pricing-card" data-plan-card="teacher"><div class="pricing-card-heading"><h2>${escape(c.teacher)}</h2></div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.teacherMonth)}" data-year="${escape(c.teacherYear)}">${escape(c.teacherYear)}</p></div><ul>${c.teacherItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><button type="button" class="button-secondary plan-choice" data-plan-choice="teacher" data-plan-cta="teacher" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="false">${escape(c.selectTeacher)}</button></section>
       </div>
+      <section class="product-card" aria-labelledby="classroom-sharing"><h2 id="classroom-sharing">${escape(classroom.heading)}</h2><p>${escape(classroom.openLinkDetail)}</p><p>${escape(classroom.teacherDetail)}</p><p class="notice">${escape(classroom.scopeDetail)}</p></section>
     </main>
     <footer class="product-footer"><p><span class="footer-links">${links}</span><br><span class="footer-secondary-links">${secondaryLinks}</span><br>&copy; 2026 My Spelling Game ${footerRights[locale.code]}</p></footer>
   </div>

@@ -9,6 +9,28 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const locales = ["", "es", "pt-br", "fr", "id", "zh"];
 const hreflangs = ["en", "es", "pt-BR", "fr", "id", "zh-CN", "x-default"];
 
+test("pricing lists Classroom sharing only in Teacher across all locales", () => {
+  for (const locale of locales) {
+    const html = fs.readFileSync(
+      path.join(root, locale, "pricing.html"),
+      "utf8",
+    );
+    for (const plan of ["free", "parent", "teacher"]) {
+      const card = html.match(
+        new RegExp(
+          `<section[^>]*data-plan-card="${plan}"[^>]*>([\\s\\S]*?)</section>`,
+        ),
+      )?.[1];
+      assert.ok(card, `${locale || "en"}: ${plan}`);
+      assert.equal(
+        card.includes("Google Classroom"),
+        plan === "teacher",
+        `${locale || "en"}: ${plan} Classroom availability`,
+      );
+    }
+  }
+});
+
 function publicHtmlFiles() {
   return locales.flatMap((locale) =>
     fs
@@ -901,6 +923,8 @@ test("llms.txt publishes the current product summary and canonical sources", () 
     "1 saved list",
     "1 student profile",
     "14 days of progress and mastery history",
+    "supports up to 25 words per list",
+    "## Google Classroom Sharing",
     "## Primary Pages",
     "https://myspellinggame.com/",
     "https://myspellinggame.com/faq",

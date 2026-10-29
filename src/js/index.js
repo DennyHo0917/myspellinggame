@@ -1,5 +1,10 @@
 import "./gameState.js";
 import { getPageLocale } from "./pageLocale.js";
+import { accountAvatar } from "./accountAvatar.mjs";
+import {
+  captureAdultAcquisition,
+  clearAdultAcquisition,
+} from "./adultAcquisition.mjs";
 import "./wordDatabase.js";
 import "./domRefs.js";
 import "./screens.js";
@@ -20,17 +25,20 @@ async function syncHomeAccount() {
       credentials: "same-origin",
       cache: "no-store",
     });
-    if (!response.ok) return;
+    if (!response.ok) {
+      if (response.status === 401) captureAdultAcquisition(null);
+      return;
+    }
     const { user } = await response.json();
+    if (user?.id) captureAdultAcquisition(user.id);
     if (!user?.name) return;
     const userMenu = document.createElement("details");
     userMenu.className = "workspace-user-menu";
     const toggle = document.createElement("summary");
     toggle.className = "workspace-user-toggle";
-    toggle.innerHTML = `<span class="workspace-user-avatar" aria-hidden="true"></span><span></span>`;
-    toggle.querySelector(".workspace-user-avatar").textContent =
-      user.name.trim().charAt(0).toUpperCase() || "?";
-    toggle.querySelector("span:last-child").textContent = user.name;
+    const userName = document.createElement("span");
+    userName.textContent = user.name;
+    toggle.append(accountAvatar(user), userName);
     const menu = document.createElement("div");
     menu.className = "workspace-user-dropdown";
     menu.setAttribute("role", "menu");
@@ -47,7 +55,10 @@ async function syncHomeAccount() {
         headers: { "content-type": "application/json" },
         body: "{}",
       }).catch(() => null);
-      if (response?.ok) location.reload();
+      if (response?.ok) {
+        clearAdultAcquisition();
+        location.reload();
+      }
     });
     menu.append(email, logout);
     userMenu.append(toggle, menu);

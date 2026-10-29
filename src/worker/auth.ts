@@ -77,6 +77,7 @@ export function createAuth(env: AuthEnv, request: Request) {
               clientId: env.GOOGLE_CLIENT_ID,
               clientSecret: env.GOOGLE_CLIENT_SECRET,
               prompt: "select_account" as const,
+              overrideUserInfoOnSignIn: true,
             },
           }
         : {}),
@@ -86,6 +87,8 @@ export function createAuth(env: AuthEnv, request: Request) {
               clientId: env.MICROSOFT_CLIENT_ID,
               clientSecret: env.MICROSOFT_CLIENT_SECRET,
               prompt: "select_account" as const,
+              overrideUserInfoOnSignIn: true,
+              profilePhotoSize: 48 as const,
             },
           }
         : {}),

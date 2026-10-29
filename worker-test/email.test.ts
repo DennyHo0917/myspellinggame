@@ -69,4 +69,30 @@ describe("price change email", () => {
       "Invalid renewal date",
     );
   });
+
+  it.each(["en", "es", "pt-BR", "fr", "id", "zh-CN"])(
+    "keeps a scheduled cancellation distinct from automatic renewal in %s",
+    (locale) => {
+      const renewing = buildPriceChangeEmail(
+        "2026-10-29T22:00:45.000Z",
+        locale,
+      );
+      const canceled = buildPriceChangeEmail(
+        "2026-10-29T22:00:45.000Z",
+        locale,
+        { renewalCancelled: true },
+      );
+      expect(canceled.subject).not.toBe(renewing.subject);
+      expect(canceled.text).toMatch(/7[.,]99/);
+      expect(canceled.text).toMatch(/22[:.]00[:.]45/);
+      expect(canceled.text).toContain("(UTC)");
+      expect(canceled.text).not.toContain("{date}");
+      expect(canceled.html).toContain(canceled.subject);
+      if (locale === "en") {
+        expect(canceled.text).toContain("There will be no automatic renewal");
+        expect(canceled.text).toContain("if you choose to subscribe again");
+        expect(canceled.text).not.toContain("will renew automatically");
+      }
+    },
+  );
 });

@@ -1,4 +1,7 @@
 export type LifecycleEventName =
+  | "adult_acquisition_captured"
+  | "assignment_share_clicked"
+  | "assignment_entry"
   | "signup_created"
   | "signup_context_captured"
   | "login"

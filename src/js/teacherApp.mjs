@@ -1,3 +1,9 @@
+import {
+  readPendingCheckout,
+  savePendingCheckout,
+  clearPendingCheckout,
+  consumePendingCheckout,
+} from "./pendingCheckout.mjs";
 import { takeTrackingEntry, saveTrackingEntry } from "./trackingDraft.mjs";
 import {
   saveUpgradeReturn,
@@ -1108,15 +1114,39 @@ function statusElement(parent) {
 }
 
 function upgradeLink(ctaLocation, direct = false) {
+  const label =
+    copy[
+      {
+        locked_results: "unlockResults",
+        submission_limit_reached: "unlockTracking",
+        submission_limit_warning: "unlockTracking",
+        tracking_trial_used: "unlockTracking",
+        monthly_submission_limit: "unlockTracking",
+        word_limit: "unlockWordLimit",
+        active_assignment_limit: "unlockAssignments",
+        saved_list_limit: "unlockSavedLists",
+        learner_limit: "unlockLearners",
+        smart_review: "unlockSmartReview",
+        todays_review: "unlockSmartReview",
+        smart_review_required: "unlockSmartReview",
+        sentence_library: "unlockSentences",
+        sentence_library_required: "unlockSentences",
+      }[ctaLocation]
+    ] || copy.unlockPremium;
   if (!direct) {
     const link = document.createElement("a");
     link.className = "button-link pro";
-    link.href = productPagePath("pricing", locale);
-    link.textContent = copy.unlockPremium;
+    const selection = upgradeSelection(workspaceState?.me);
+    link.href = `${productPagePath("pricing", locale)}?${new URLSearchParams({ plan: selection.plan, interval: selection.interval })}`;
+    link.textContent = label;
     link.addEventListener("click", () => {
       prepareWorkspaceDraftReturn();
       saveUpgradeReturn(ctaLocation, workspaceState?.me?.user?.id);
-      trackEvent("upgrade_cta_clicked", { cta_location: ctaLocation });
+      trackEvent("upgrade_cta_clicked", {
+        cta_location: ctaLocation,
+        plan: selection.plan,
+        billing_interval: selection.interval,
+      });
     });
     return link;
   }
@@ -1139,9 +1169,7 @@ function upgradeLink(ctaLocation, direct = false) {
     button.type = "button";
     button.classList.toggle("paywall-primary", plan === recommendedPlan);
     button.textContent =
-      plan === recommendedPlan
-        ? copy.unlockPremium
-        : upgradePrice(plan, interval);
+      plan === recommendedPlan ? label : upgradePrice(plan, interval);
     button.addEventListener("click", async () => {
       trackEvent("upgrade_cta_clicked", {
         cta_location: ctaLocation,
@@ -1425,7 +1453,7 @@ function lockedResultsNotice(count) {
   notice.className = "notice";
   const message = document.createElement("p");
   message.textContent = m("lockedResults", { count });
-  notice.append(message, upgradeLink("locked_results"));
+  notice.append(message, upgradeLink("locked_results", true));
   return notice;
 }
 
@@ -1448,6 +1476,7 @@ function submissionLimitNotice(data) {
     message,
     upgradeLink(
       reached ? "submission_limit_reached" : "submission_limit_warning",
+      true,
     ),
   );
   return notice;
@@ -2917,7 +2946,7 @@ async function startCheckout(interval, plan = "teacher") {
   try {
     sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
     sessionStorage.setItem("pendingCheckoutPlan", plan);
-    sessionStorage.setItem("pendingCheckoutInterval", interval);
+    savePendingCheckout(plan, interval);
   } catch {}
   try {
     try {
@@ -2986,35 +3015,15 @@ function showCheckoutRetry(interval, plan, error) {
       retry.disabled = false;
     }
   });
-  notice.append(message, price, retry, status);
-  main.prepend(notice);
-}
-
-function showPendingCheckoutConfirmation(interval, plan) {
-  const main = root.querySelector(".product-main");
-  if (!main) return;
-  main.querySelector(".pending-checkout-notice")?.remove();
-  const notice = document.createElement("section");
-  notice.className = "notice checkout-retry-notice pending-checkout-notice";
-  const message = document.createElement("p");
-  message.textContent = copy.pendingCheckoutReview;
-  const price = document.createElement("strong");
-  price.className = "contextual-paywall-price";
-  price.textContent = upgradePrice(plan, interval);
-  const proceed = document.createElement("button");
-  proceed.type = "button";
-  proceed.className = "button-secondary";
-  proceed.textContent = copy.continueCheckout;
-  proceed.addEventListener("click", async () => {
-    proceed.disabled = true;
-    try {
-      await startCheckout(interval, plan);
-    } catch (error) {
-      notice.remove();
-      showCheckoutRetry(interval, plan, error);
-    }
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.className = "button-secondary";
+  cancel.textContent = copy.cancel;
+  cancel.addEventListener("click", () => {
+    clearPendingCheckout();
+    notice.remove();
   });
-  notice.append(message, price, proceed);
+  notice.append(message, price, retry, cancel, status);
   main.prepend(notice);
 }
 
@@ -3532,6 +3541,7 @@ async function renderTrackingPractice(me) {
     (data.usage?.trackingTrialUsed || data.usage?.monthlyAttempts >= 1)
   ) {
     status.textContent = copy.trackingTrialUsed;
+    trackLockedFeature("tracking_trial_used", me.plan);
     card.append(upgradeLink("tracking_trial_used", true));
     trackEvent("tracking_setup_viewed", {
       current_plan: me.plan,
@@ -4591,8 +4601,7 @@ function clearCheckoutParam() {
   url.searchParams.delete("checkout_session_id");
   history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
   try {
-    sessionStorage.removeItem(PENDING_CHECKOUT_LOCALE_KEY);
-    sessionStorage.removeItem("pendingCheckoutPlan");
+    clearPendingCheckout();
   } catch {}
 }
 
@@ -4679,6 +4688,7 @@ function showActivationTimeout(plan) {
 }
 
 async function init() {
+  readPendingCheckout();
   installDiagnostics();
   const loading = document.createElement("p");
   loading.className = "workspace-loading";
@@ -4781,14 +4791,10 @@ async function init() {
     new URLSearchParams(location.search).get("checkout") !== "success"
   )
     history.replaceState({}, "", resume.path);
-  let pendingInterval = null;
-  let pendingPlan = null;
+  const pending = readPendingCheckout();
+  const autoCheckout = consumePendingCheckout();
   let checkoutRetryRequired = false;
   try {
-    pendingInterval = sessionStorage.getItem("pendingCheckoutInterval");
-    const storedPlan = sessionStorage.getItem("pendingCheckoutPlan");
-    if (storedPlan === "parent" || storedPlan === "teacher")
-      pendingPlan = storedPlan;
     checkoutRetryRequired =
       sessionStorage.getItem(CHECKOUT_RETRY_REQUIRED_KEY) === "1";
   } catch {}
@@ -4815,14 +4821,16 @@ async function init() {
   } else {
     await renderTeacherRoute(me);
   }
-  if (
-    pendingPlan &&
-    (pendingInterval === "month" || pendingInterval === "year")
-  ) {
-    if (checkoutRetryRequired)
-      showCheckoutRetry(pendingInterval, pendingPlan, null);
-    else showPendingCheckoutConfirmation(pendingInterval, pendingPlan);
-  }
+  if (params.get("checkout") !== "success" && pending && me.plan === "free") {
+    if (autoCheckout && !checkoutRetryRequired) {
+      try {
+        await startCheckout(pending.interval, pending.plan);
+      } catch (error) {
+        showCheckoutRetry(pending.interval, pending.plan, error);
+      }
+    } else if (checkoutRetryRequired)
+      showCheckoutRetry(pending.interval, pending.plan, null);
+  } else if (me.plan !== "free") clearPendingCheckout();
 }
 
 init();

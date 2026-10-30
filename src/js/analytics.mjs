@@ -121,6 +121,7 @@ const reportedLockedFeatures = new Set();
 const reportedCheckoutCancellations = new Set();
 const reportedPurchases = new Set();
 const LOCKED_FEATURE_ERRORS = {
+  tracking_trial_used: "tracking_trial_used",
   active_assignment_limit: "active_assignments",
   monthly_submission_limit: "monthly_submissions",
   word_limit: "word_limit",
@@ -188,7 +189,14 @@ export function entryPage() {
 export function trackEvent(name, params = {}) {
   if (typeof window === "undefined" || typeof window.gtag !== "function")
     return;
-  window.gtag("event", name, sanitizeEventParams(name, params));
+  const safeParams = sanitizeEventParams(name, params);
+  if (
+    ["upgrade_cta_clicked", "checkout_redirected", "upgrade_clicked"].includes(
+      name,
+    )
+  )
+    safeParams.transport_type = "beacon";
+  window.gtag("event", name, safeParams);
 }
 
 export function markUpgradeActivated(feature, userId) {

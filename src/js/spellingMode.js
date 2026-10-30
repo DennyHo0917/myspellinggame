@@ -1,3 +1,4 @@
+import { savePendingCheckout } from "./pendingCheckout.mjs";
 import { saveTrackingEntry } from "./trackingDraft.mjs";
 import {
   saveUpgradeReturn,
@@ -53,7 +54,7 @@ function upgradeLink(feature, plan, interval, primary = true) {
   link.href = `${productPagePath("pricing", getPageLocale())}?${query}`;
   link.textContent = primary
     ? productMessage(
-        feature === "photo_import" ? "unlockPhotoImport" : "unlockPremium",
+        feature === "photo_import" ? "unlockPhotoImport" : "unlockWordLimit",
         {},
         getPageLocale(),
       )
@@ -67,7 +68,7 @@ function upgradeLink(feature, plan, interval, primary = true) {
         "dictation",
     });
     try {
-      sessionStorage.setItem("pendingCheckoutPlan", plan);
+      savePendingCheckout(plan, interval);
       sessionStorage.setItem("pendingCheckoutInterval", interval);
       sessionStorage.setItem("pendingCheckoutLocale", getPageLocale());
       sessionStorage.setItem(PENDING_UPGRADE_FEATURE_KEY, feature);

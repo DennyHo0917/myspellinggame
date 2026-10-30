@@ -189,7 +189,7 @@ test("new child is retained when assignment creation fails, and used free trial 
     productMessages("en").trackingTrialUsed,
   );
   await expect(
-    page.getByRole("button", { name: "Unlock premium features" }),
+    page.getByRole("button", { name: "Upgrade to keep tracking" }),
   ).toBeVisible();
   await expect(page.locator("#tracking-words")).toHaveCount(0);
 });
@@ -289,7 +289,7 @@ test("anonymous result survives login and paid activation returns to blocked tra
   );
   expect(callback).toContain("tracking=1");
   await page
-    .getByRole("button", { name: "Unlock premium features", exact: true })
+    .getByRole("button", { name: "Upgrade to keep tracking", exact: true })
     .click();
   await expect(page).toHaveURL(/tracking=1/);
   await expect(page.locator("#tracking-words")).toHaveValue(

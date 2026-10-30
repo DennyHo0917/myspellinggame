@@ -1,3 +1,8 @@
+import {
+  readPendingCheckout,
+  savePendingCheckout,
+  clearPendingCheckout,
+} from "./pendingCheckout.mjs";
 import { bindUpgradeReturn, readUpgradeReturn } from "./upgradeReturn.mjs";
 import { upgradeSelection } from "./upgradeSelection.mjs";
 import { trackCheckoutCancelled, trackEvent } from "./analytics.mjs";
@@ -7,6 +12,8 @@ import {
   productMessages,
   productMessage,
 } from "./productLocale.mjs";
+
+readPendingCheckout();
 
 const locale = normalizeProductLocale(document.body.dataset.productLocale);
 const copy = productMessages(locale);
@@ -58,7 +65,15 @@ function showCheckoutRetry(choice, error) {
     notice.remove();
     choice.click();
   });
-  notice.append(message, retry, status);
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.className = "button-secondary";
+  cancel.textContent = copy.cancel;
+  cancel.addEventListener("click", () => {
+    clearPendingCheckout();
+    notice.remove();
+  });
+  notice.append(message, retry, cancel, status);
   choice.closest(".pricing-card")?.append(notice);
 }
 
@@ -94,6 +109,7 @@ try {
       ? sessionStorage.getItem("pendingCheckoutInterval")
       : "unknown";
     trackCheckoutCancelled(canceledCheckoutPlan, canceledCheckoutInterval);
+    clearPendingCheckout();
     sessionStorage.removeItem("pendingCheckoutInterval");
     sessionStorage.removeItem("pendingCheckoutPlan");
     sessionStorage.removeItem("pendingCheckoutRetryRequired");
@@ -278,7 +294,7 @@ for (const choice of planChoices)
     choice.textContent = productMessage("loading", {}, locale);
     try {
       if (!changingPlan) {
-        sessionStorage.setItem("pendingCheckoutInterval", interval);
+        savePendingCheckout(plan, interval);
         sessionStorage.setItem("pendingCheckoutPlan", plan);
         sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
         sessionStorage.removeItem("pendingCheckoutRetryRequired");
@@ -298,6 +314,7 @@ for (const choice of planChoices)
       );
       const data = await response.json().catch(() => ({}));
       if (response.status === 401) {
+        savePendingCheckout(plan, interval, true);
         location.href = `/workspace?lang=${encodeURIComponent(locale)}`;
         return;
       }

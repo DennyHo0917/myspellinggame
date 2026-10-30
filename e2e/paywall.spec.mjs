@@ -51,6 +51,7 @@ for (const locale of ["en", "es", "pt-br", "fr", "id", "zh"]) {
     expect(await events(page, "upgrade_cta_clicked")).toEqual([
       {
         cta_location: "photo_import",
+        transport_type: "beacon",
         plan: "parent",
         billing_interval: "year",
       },
@@ -110,6 +111,15 @@ test("saved Teacher monthly selection survives the photo paywall", async ({
   await mockAccount(page);
   await page.goto("/");
   await page.evaluate(() => {
+    sessionStorage.setItem(
+      "mySpellingPendingCheckout",
+      JSON.stringify({
+        plan: "teacher",
+        interval: "month",
+        at: Date.now(),
+        auto: false,
+      }),
+    );
     sessionStorage.setItem("pendingCheckoutPlan", "teacher");
     sessionStorage.setItem("pendingCheckoutInterval", "month");
   });

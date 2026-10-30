@@ -497,6 +497,15 @@ test("a failed Checkout waits for the Retry CTA after reload", async ({
   await page.addInitScript(() => {
     sessionStorage.setItem("pendingCheckoutPlan", "parent");
     sessionStorage.setItem("pendingCheckoutInterval", "month");
+    sessionStorage.setItem(
+      "mySpellingPendingCheckout",
+      JSON.stringify({
+        plan: "parent",
+        interval: "month",
+        at: Date.now(),
+        auto: false,
+      }),
+    );
     sessionStorage.setItem("pendingCheckoutRetryRequired", "1");
   });
   await page.route("**/api/me", (route) =>

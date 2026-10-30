@@ -118,7 +118,7 @@ test("free workspace is a single trial with a linked child and a free practice e
   await expect(
     page
       .locator(".free-tracking-card")
-      .getByRole("link", { name: "Unlock premium features" }),
+      .getByRole("button", { name: "Upgrade to keep tracking", exact: true }),
   ).toBeVisible();
   for (const width of [390, 1280]) {
     await page.setViewportSize({ width, height: 850 });

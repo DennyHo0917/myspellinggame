@@ -1,6 +1,7 @@
 @import url("./paywall.css");
 @import url("./footer.css");
 @import url("./account.css");
+@import url("./line-numbers.css");
 
 :root {
   color-scheme: light;
@@ -504,6 +505,11 @@ fieldset legend {
 .field textarea {
   resize: vertical;
   min-height: 160px;
+}
+.field .inline-numbered-input {
+  border: 1px solid #b9cac8;
+  border-radius: 10px;
+  background: white;
 }
 .field small {
   color: var(--muted);
@@ -2085,6 +2091,11 @@ body.workspace-page {
 .workspace-shell :is(a, button, input, textarea, select):focus-visible {
   outline: 3px solid rgba(52, 104, 194, 0.34);
   outline-offset: 2px;
+}
+.workspace-shell .inline-numbered-input:focus-within {
+  outline: 3px solid rgba(52, 104, 194, 0.34);
+  outline-offset: 2px;
+  border-color: var(--brand);
 }
 
 .workspace-shell button:disabled {

@@ -1,0 +1,52 @@
+/* Word-like list markers stay inside the editor and outside its value. */
+.inline-numbered-input {
+  position: relative;
+  width: 100%;
+  border: 1px solid var(--line-border, #cfded9);
+  border-radius: var(--radius, 10px);
+  background: var(--editor-bg, #fbfdfc);
+  overflow: hidden;
+}
+
+.inline-numbered-input:focus-within {
+  border-color: var(--primary, var(--brand, #2f6f73));
+  box-shadow: 0 0 0 4px rgba(47, 111, 115, 0.12);
+}
+
+.inline-numbered-textarea {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding-left: 42px !important;
+}
+
+.inline-numbered-textarea:focus,
+.inline-numbered-textarea:focus-visible {
+  outline: none !important;
+}
+
+.list-marker-layer {
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: 2;
+  width: 42px;
+  padding: 14px 8px 14px 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--muted, #5f6d7a);
+  line-height: 1.45;
+  text-align: right;
+  white-space: pre;
+  font-variant-numeric: tabular-nums;
+}
+
+.list-marker-layer div {
+  height: auto;
+  min-height: 1em;
+}

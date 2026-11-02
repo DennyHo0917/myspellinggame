@@ -1427,6 +1427,15 @@ body.product-page:not(.workspace-page) .product-nav {
   margin-top: 1.25rem;
 }
 
+.free-tracking-card .submission-limit-notice {
+  margin-top: 0.5rem;
+}
+
+.free-tracking-card .actions,
+.free-tracking-card > .button-secondary {
+  margin-top: 1.15rem;
+}
+
 .auth-card {
   width: min(680px, 100%);
   margin: 0 auto;

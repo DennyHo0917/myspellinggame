@@ -2868,8 +2868,11 @@ async function renderDashboard(me, { force = false } = {}) {
     const used =
       data.usage.trackingTrialUsed ?? data.usage.monthlyAttempts >= 1;
     intro.hidden = used;
-    if (used) card.append(submissionLimitNotice(data.usage));
-    else {
+    const actions = document.createElement("div");
+    actions.className = "actions free-tracking-actions";
+    if (used) {
+      card.append(submissionLimitNotice(data.usage));
+    } else {
       const learner = (data.learners || []).find((item) => !item.archived);
       const start = document.createElement("button");
       start.type = "button";
@@ -2881,13 +2884,14 @@ async function renderDashboard(me, { force = false } = {}) {
         );
         location.href = `/workspace/assignments/new?lang=${encodeURIComponent(locale)}&tracking=1`;
       });
-      card.append(start);
+      actions.append(start);
     }
     const practice = document.createElement("a");
     practice.className = "button-link button-secondary";
     practice.href = productPagePath("", locale);
     practice.textContent = copy.home;
-    card.append(practice);
+    actions.append(practice);
+    card.append(actions);
     main.append(
       card,
       renderAssignmentsCard(me, data.assignments || [], {

@@ -58,7 +58,7 @@ describe("price change email", () => {
       expect(email.html).toContain(
         `href="https://myspellinggame.com${prefix}/pricing"`,
       );
-      expect(email.reply_to).toBe("dennyho0917@hotmail.com");
+      expect(email.reply_to).toBe("dennyho0917@gmail.com");
       expect(email.text).not.toContain("{date}");
       expect(email.html).not.toContain("{date}");
     },

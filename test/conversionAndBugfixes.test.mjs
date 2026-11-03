@@ -188,3 +188,49 @@ test("CTA monthly pricing and secondary yearly copy is complete in all 6 locales
     assert.ok(copy.orParentYearly?.includes("79.90") || copy.orParentYearly?.includes("79,90"), `${locale}:orParentYearly`);
   }
 });
+
+test("upgradeSelection targets teacher for parent accounts and respects pending choices", () => {
+  assert.equal(upgradeSelection({ plan: "parent" }).plan, "teacher");
+  assert.equal(upgradeSelection({ plan: "parent", billingInterval: "year" }).interval, "year");
+  assert.equal(upgradeSelection({ plan: "parent", billingInterval: "month" }).interval, "month");
+  assert.equal(upgradeSelection({ plan: "free" }).plan, "parent");
+  assert.equal(upgradeSelection({ plan: "free", workspaceType: "teacher" }).plan, "teacher");
+  assert.equal(upgradeSelection({}).plan, "parent");
+});
+
+test("active assignment and learner limits are localized and plan-aware across all 6 locales", () => {
+  const keys = [
+    "activeLimit",
+    "activeLimitParent",
+    "activeLimitTeacher",
+    "learnerLimit",
+    "learnerLimitParent",
+    "learnerLimitTeacher",
+  ];
+  for (const [locale] of PRODUCT_LOCALES) {
+    const copy = productMessages(locale);
+    for (const key of keys) {
+      assert.ok(copy[key]?.length > 0, `${locale}: ${key} must exist`);
+      assert.doesNotMatch(copy[key], /\{date\}|\{count\}|\{limit\}/, `${locale}: ${key} has unreplaced placeholder`);
+    }
+  }
+
+  // En specific limit wording
+  const en = productMessages("en");
+  assert.match(en.activeLimit, /Free Plan limit of 1/);
+  assert.match(en.activeLimitParent, /Parent Plan limit of 5/);
+  assert.match(en.activeLimitTeacher, /Teacher Plan limit of 10/);
+  assert.match(en.learnerLimit, /Free Plan limit of 1/);
+  assert.match(en.learnerLimitParent, /Parent Plan limit of 5/);
+  assert.match(en.learnerLimitTeacher, /Teacher Plan limit of 40/);
+
+  // Zh specific limit wording
+  const zh = productMessages("zh");
+  assert.match(zh.activeLimit, /免费版最多 1 个/);
+  assert.match(zh.activeLimitParent, /家庭方案最多 5 个/);
+  assert.match(zh.activeLimitTeacher, /教师方案最多 10 个/);
+  assert.match(zh.learnerLimit, /免费方案 1 个/);
+  assert.match(zh.learnerLimitParent, /家庭方案最多 5 个/);
+  assert.match(zh.learnerLimitTeacher, /教师方案最多 40 个/);
+});
+

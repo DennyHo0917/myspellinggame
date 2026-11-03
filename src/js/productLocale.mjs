@@ -224,6 +224,10 @@ const PACKS = {
       "Enter a nickname or classroom number with 2–32 characters.",
     activeLimit:
       "You've reached the Free Plan limit of 1 active assignment. Close an existing assignment or upgrade for more active assignments.",
+    activeLimitParent:
+      "You've reached your Parent Plan limit of 5 active assignments. Close an existing assignment to publish a new one, or upgrade to Teacher for up to 10 active assignments.",
+    activeLimitTeacher:
+      "You've reached the Teacher Plan limit of 10 active assignments. Close an existing assignment before publishing or reopening another one.",
     billingUnavailable: "Billing is not configured in this environment yet.",
     checkoutPending: "A checkout is already being prepared. Please try again.",
     checkoutRetry:
@@ -447,6 +451,10 @@ const PACKS = {
       "A student profile with that nickname or number already exists.",
     learnerLimit:
       "You’ve reached the Free Plan limit of 1 student profile. View plans for more student profiles.",
+    learnerLimitParent:
+      "You’ve reached your Parent Plan limit of 5 student profiles. Archive an existing profile or upgrade to Teacher for up to 40 profiles.",
+    learnerLimitTeacher:
+      "You’ve reached the Teacher Plan limit of 40 learner profiles. Archive an inactive profile before adding a new student.",
     smartReviewRequired:
       "Smart Review is included in Parent and Teacher Plans.",
     proActive:
@@ -691,6 +699,10 @@ const PACKS = {
       "Introduce un apodo o número de clase de 2 a 32 caracteres.",
     activeLimit:
       "Has alcanzado el límite del plan Gratis de 1 tarea activa. Cierra una tarea existente o mejora el plan para tener más tareas activas.",
+    activeLimitParent:
+      "Has alcanzado el límite del plan Familiar de 5 tareas activas. Cierra una tarea existente para publicar una nueva o pásate al plan Docente para tener hasta 10 tareas.",
+    activeLimitTeacher:
+      "Has alcanzado el límite del plan Docente de 10 tareas activas. Cierra una tarea existente antes de publicar o reabrir otra.",
     billingUnavailable: "Los pagos aún no están configurados en este entorno.",
     checkoutPending: "Ya se está preparando un pago. Inténtalo de nuevo.",
     checkoutRetry:
@@ -915,6 +927,10 @@ const PACKS = {
     learnerExists: "Ya existe un perfil con ese apodo o número.",
     learnerLimit:
       "Has alcanzado el límite de 1 perfil del Plan Gratis. Consulta los planes para gestionar más perfiles.",
+    learnerLimitParent:
+      "Has alcanzado el límite del plan Familiar de 5 perfiles. Archiva un perfil existente o pásate al plan Docente para gestionar hasta 40 estudiantes.",
+    learnerLimitTeacher:
+      "Has alcanzado el límite del plan Docente de 40 estudiantes. Archiva un perfil inactivo antes de añadir un nuevo estudiante.",
     smartReviewRequired:
       "El repaso inteligente está incluido en los planes para familias y docentes.",
     proActive:
@@ -1157,6 +1173,10 @@ const PACKS = {
     invalidNickname: "Use um apelido ou número de sala com 2 a 32 caracteres.",
     activeLimit:
       "Você atingiu o limite do plano Grátis de 1 tarefa ativa. Feche uma tarefa existente ou mude de plano para ter mais tarefas ativas.",
+    activeLimitParent:
+      "Você atingiu o limite do plano Familiar de 5 tarefas ativas. Feche uma tarefa existente para publicar outra ou mude para o plano Professor para ter até 10 tarefas.",
+    activeLimitTeacher:
+      "Você atingiu o limite do plano Professor de 10 tarefas ativas. Feche uma tarefa existente antes de publicar ou reabrir outra.",
     billingUnavailable:
       "Os pagamentos ainda não estão configurados neste ambiente.",
     checkoutPending: "Um checkout já está sendo preparado. Tente novamente.",
@@ -1381,6 +1401,10 @@ const PACKS = {
     learnerExists: "Já existe um perfil com esse apelido ou número.",
     learnerLimit:
       "Você atingiu o limite de 1 perfil do Plano Grátis. Veja os planos para acompanhar mais perfis.",
+    learnerLimitParent:
+      "Você atingiu o limite do plano Familiar de 5 perfis de alunos. Arquive um perfil existente ou mude para o plano Professor para ter até 40 alunos.",
+    learnerLimitTeacher:
+      "Você atingiu o limite do plano Professor de 40 alunos. Arquive um perfil inativo antes de adicionar um novo aluno.",
     smartReviewRequired:
       "A revisão inteligente está incluída nos planos para Pais e Professores.",
     proActive:
@@ -1625,6 +1649,10 @@ const PACKS = {
     invalidNickname: "Saisissez un pseudonyme ou numéro de 2 à 32 caractères.",
     activeLimit:
       "Vous avez atteint la limite de l’offre Gratuite : 1 devoir actif. Fermez un devoir existant ou changez d’offre pour en avoir davantage.",
+    activeLimitParent:
+      "Vous avez atteint la limite de l’offre Famille : 5 devoirs actifs. Fermez un devoir existant pour en publier un nouveau, ou passez à l’offre Enseignant pour en avoir jusqu’à 10.",
+    activeLimitTeacher:
+      "Vous avez atteint la limite de l’offre Enseignant : 10 devoirs actifs. Fermez un devoir existant avant d’en publier ou d’en rouvrir un autre.",
     billingUnavailable: "La facturation n’est pas encore configurée ici.",
     checkoutPending:
       "Un paiement est déjà en cours de préparation. Veuillez réessayer.",
@@ -1851,6 +1879,10 @@ const PACKS = {
     learnerExists: "Un profil avec ce pseudo ou ce numéro existe déjà.",
     learnerLimit:
       "Vous avez atteint la limite gratuite de 1 profil. Consultez les offres pour suivre davantage de profils.",
+    learnerLimitParent:
+      "Vous avez atteint la limite de l’offre Famille : 5 profils d’enfants. Archivez un profil existant ou passez à l’offre Enseignant pour gérer jusqu’à 40 élèves.",
+    learnerLimitTeacher:
+      "Vous avez atteint la limite de l’offre Enseignant : 40 élèves. Archivez un profil inactif avant d’ajouter un nouvel élève.",
     smartReviewRequired:
       "La révision intelligente est incluse dans les offres Parents et Enseignants.",
     proActive:
@@ -2093,6 +2125,10 @@ const PACKS = {
       "Masukkan nama panggilan atau nomor kelas sepanjang 2–32 karakter.",
     activeLimit:
       "Anda telah mencapai batas paket Gratis sebanyak 1 tugas aktif. Tutup tugas yang ada atau upgrade paket untuk menambah tugas aktif.",
+    activeLimitParent:
+      "Anda telah mencapai batas paket Keluarga sebanyak 5 tugas aktif. Tutup tugas yang ada untuk menerbitkan yang baru, atau upgrade ke paket Guru untuk hingga 10 tugas aktif.",
+    activeLimitTeacher:
+      "Anda telah mencapai batas paket Guru sebanyak 10 tugas aktif. Tutup tugas yang ada sebelum menerbitkan atau membuka kembali tugas lainnya.",
     billingUnavailable: "Pembayaran belum dikonfigurasi di lingkungan ini.",
     checkoutPending: "Checkout sedang disiapkan. Silakan coba lagi.",
     checkoutRetry:
@@ -2317,6 +2353,10 @@ const PACKS = {
       "Profil dengan nama panggilan atau nomor tersebut sudah ada.",
     learnerLimit:
       "Anda telah mencapai batas 1 profil pada Paket Gratis. Lihat paket untuk menambah profil.",
+    learnerLimitParent:
+      "Anda telah mencapai batas paket Keluarga sebanyak 5 profil. Arsipkan profil yang ada atau upgrade ke paket Guru untuk hingga 40 profil pelajar.",
+    learnerLimitTeacher:
+      "Anda telah mencapai batas paket Guru sebanyak 40 profil pelajar. Arsipkan profil yang tidak aktif sebelum menambah pelajar baru.",
     smartReviewRequired:
       "Ulasan pintar tersedia pada Paket Orang Tua dan Guru.",
     proActive:
@@ -2532,6 +2572,10 @@ const PACKS = {
     invalidNickname: "请输入 2～32 个字符的昵称或课堂编号。",
     activeLimit:
       "已达到免费版最多 1 个活跃作业的限制。请先关闭一份现有作业，或升级方案以提高活跃作业上限。",
+    activeLimitParent:
+      "已达到家庭方案最多 5 个活跃作业的限制。请先关闭一份现有作业以发布新作业，或升级至教师方案以支持最多 10 个活跃作业。",
+    activeLimitTeacher:
+      "已达到教师方案最多 10 个活跃作业的限制。请先关闭一份现有作业，然后再发布或重新开启新作业。",
     billingUnavailable: "当前环境尚未配置付费功能。",
     checkoutPending: "结账请求正在处理中，请稍后重试。",
     checkoutRetry: "暂时无法打开 Stripe 结账页，你选择的方案仍已保留。",
@@ -2741,6 +2785,10 @@ const PACKS = {
     learnerExists: "相同昵称或编号的学生档案已存在。",
     learnerLimit:
       "你已达到免费方案 1 个学生档案的上限。查看方案可管理更多学生档案。",
+    learnerLimitParent:
+      "已达到家庭方案最多 5 个孩子档案的限制。请归档一个现有档案，或升级至教师方案以支持最多 40 个学生档案。",
+    learnerLimitTeacher:
+      "已达到教师方案最多 40 个学生档案的限制。请先归档不再使用的档案，再添加新学生。",
     smartReviewRequired: "智能错词复习包含在家长方案和教师方案中。",
     proActive: "你的付费方案已激活。已解锁词表保存、长期掌握度和智能错词复习。",
     rateLimited: "请求过于频繁，请稍后重试。",

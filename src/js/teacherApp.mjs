@@ -253,7 +253,19 @@ async function api(path, options = {}) {
   if (!response.ok) {
     trackUsageLimit(data.error);
     trackLockedFeatureError(data.error, workspaceState?.me?.plan || "free");
-    const error = new Error(m(ERROR_KEYS[data.error] || "error"));
+    let errorKey = ERROR_KEYS[data.error] || "error";
+    if (data.error === "active_assignment_limit") {
+      const plan = workspaceState?.me?.plan || "free";
+      if (plan === "parent") errorKey = "activeLimitParent";
+      else if (plan === "teacher") errorKey = "activeLimitTeacher";
+      else errorKey = "activeLimit";
+    } else if (data.error === "learner_limit") {
+      const plan = workspaceState?.me?.plan || "free";
+      if (plan === "parent") errorKey = "learnerLimitParent";
+      else if (plan === "teacher") errorKey = "learnerLimitTeacher";
+      else errorKey = "learnerLimit";
+    }
+    const error = new Error(m(errorKey));
     error.code = data.error;
     error.status = response.status;
     throw error;
@@ -1836,7 +1848,7 @@ function showSectionError(section, error, ctaLocation) {
   const message = document.createElement("p");
   message.textContent = error.message;
   notice.append(message);
-  if (ctaLocation)
+  if (ctaLocation && workspaceState?.me?.plan !== "teacher")
     notice.append(upgradeLink(ctaLocation, ctaLocation === "word_limit"));
   section.append(notice);
 }
@@ -4085,7 +4097,9 @@ async function renderTrackingPractice(me) {
         card.querySelector(".tracking-limit-action")?.remove();
         const actions = document.createElement("div");
         actions.className = "tracking-limit-action actions";
-        actions.append(upgradeLink(error.code, true));
+        if (workspaceState?.me?.plan !== "teacher") {
+          actions.append(upgradeLink(error.code, true));
+        }
         const manage = document.createElement("a");
         manage.href = `/workspace/assignments?lang=${encodeURIComponent(locale)}`;
         manage.textContent = copy.assignments;
@@ -4465,13 +4479,21 @@ async function renderDetail(me, id, { force = false } = {}) {
     });
   }
   toggle.addEventListener("click", async () => {
-    await api(`/api/assignments/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        status: data.status === "published" ? "closed" : "published",
-      }),
-    });
-    location.reload();
+    try {
+      await api(`/api/assignments/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          status: data.status === "published" ? "closed" : "published",
+        }),
+      });
+      location.reload();
+    } catch (error) {
+      showSectionError(
+        card,
+        error,
+        error.code === "active_assignment_limit" ? "active_assignment_limit" : null,
+      );
+    }
   });
   remove.addEventListener("click", async () => {
     if (!confirm(copy.deleteConfirm)) return;

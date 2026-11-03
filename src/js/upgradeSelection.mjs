@@ -3,8 +3,14 @@ import { readPendingCheckout } from "./pendingCheckout.mjs";
 export function upgradeSelection(account) {
   const pending = readPendingCheckout();
   if (pending) return { plan: pending.plan, interval: pending.interval };
+  const targetPlan =
+    account?.plan === "parent"
+      ? "teacher"
+      : account?.workspaceType === "teacher"
+        ? "teacher"
+        : "parent";
   return {
-    plan: account?.workspaceType === "teacher" ? "teacher" : "parent",
+    plan: targetPlan,
     interval:
       account?.billingInterval === "year" || account?.billingInterval === "month"
         ? account.billingInterval

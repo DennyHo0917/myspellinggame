@@ -154,6 +154,26 @@ function isWordEntry(value: unknown): value is WordEntryInput {
   );
 }
 
+function exampleSentencesByWordLine(
+  wordText: string,
+  exampleSentences: string | readonly unknown[],
+): Map<string, string | null> {
+  const sentenceLines =
+    typeof exampleSentences === "string"
+      ? exampleSentences.split(/\r?\n/)
+      : exampleSentences;
+  const sentences = new Map<string, string | null>();
+  wordText.split(/\r?\n/).forEach((line, index) => {
+    const sentence = validateExampleSentence(sentenceLines[index]);
+    for (const token of normalizeWord(line)
+      .split(/[\s,]+/)
+      .filter(Boolean)) {
+      if (!sentences.has(token)) sentences.set(token, sentence);
+    }
+  });
+  return sentences;
+}
+
 export function parseWordEntries(
   value: unknown,
   exampleSentences?: unknown,
@@ -163,6 +183,19 @@ export function parseWordEntries(
   const words = parseWordList(
     source ? source.map((entry) => entry.word) : value,
   );
+  // Textareas pair a sentence with the word line, including blank lines.
+  // Collapsing those lines first shifts later sentences onto the wrong words.
+  if (
+    !source &&
+    typeof value === "string" &&
+    (typeof exampleSentences === "string" || Array.isArray(exampleSentences))
+  ) {
+    const byLine = exampleSentencesByWordLine(value, exampleSentences);
+    return words.map((word) => ({
+      word,
+      example_sentence: byLine.get(word) ?? null,
+    }));
+  }
   const sentences = new Map<string, string | null>();
   if (source) {
     for (const entry of source) {

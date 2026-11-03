@@ -216,6 +216,26 @@ test("P1-4: Missed Words Sheet PDF generates Look-Cover-Write-Check practice lin
   assert.ok(html.includes("sheet-watermark"), "Free HTML preview has watermark");
   assert.ok(!html.includes("{count}"));
   assert.ok(!html.includes("{date}"));
+
+  const emptyPaid = buildMissedWordsPdf({
+    assignmentTitle: "Perfect List",
+    words: [],
+    studentUrl: "https://myspellinggame.com/a/perfect?lang=en",
+    isFreeSample: false,
+    copy,
+  });
+  const emptyPaidPdf = Buffer.from(emptyPaid.bytes).toString("latin1");
+  assert.ok(!emptyPaidPdf.includes("because"), "Paid empty sheet does not invent sample words");
+  assert.ok(!emptyPaidPdf.includes("example"), "Paid empty sheet does not invent placeholder words");
+  const emptyPaidHtml = renderMissedWordsSheetHtml({
+    assignmentTitle: "Perfect List",
+    words: [],
+    studentUrl: "https://myspellinggame.com/a/perfect?lang=en",
+    isFreeSample: false,
+    copy,
+  });
+  assert.ok(!emptyPaidHtml.includes("because"));
+  assert.ok(!emptyPaidHtml.includes("1. example"));
 });
 
 test("Telemetry allowlist retains print parameters and strips sensitive fields", () => {

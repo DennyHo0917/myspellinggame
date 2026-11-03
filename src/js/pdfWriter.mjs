@@ -352,7 +352,7 @@ export function buildMissedWordsPdf({ assignmentTitle, words = [], studentUrl, i
   pdf.text(copy?.practiceAttempt3 || "Practice 3", 460, 670, 9, "HelveticaBold");
   pdf.line(36, 663, 576, 663, 0.8, [0.8, 0.8, 0.8]);
 
-  const list = (words.length ? words : ["example", "practice", "spelling"]).slice(0, 14);
+  const list = (words.length ? words : isFreeSample ? ["example", "practice", "spelling"] : []).slice(0, 14);
   let y = 646;
   list.forEach((item, index) => {
     const wordText = typeof item === "string" ? item : item.word;

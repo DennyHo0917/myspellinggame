@@ -12,7 +12,10 @@ import {
   dictationSummary,
   exampleSentenceParts,
   normalizeAnswer,
+  alignExampleSentences,
+  mergeLibrarySentences,
   parseWords,
+  sentencesFromMatches,
   SAMPLE_EXAMPLE_SENTENCES,
   SAMPLE_WORDS,
   retryMissedDictation,
@@ -117,6 +120,39 @@ test("sample words ship with one example sentence per word", () => {
     SAMPLE_WORDS.every((word, index) =>
       SAMPLE_EXAMPLE_SENTENCES[index].toLowerCase().includes(word),
     ),
+  );
+});
+
+test("edited word lists keep example sentences with the same word only", () => {
+  assert.deepEqual(
+    alignExampleSentences(
+      "because\nfriend\nbeautiful",
+      "I stayed inside because it was raining.\nMy friend helped me.\nWe saw a beautiful rainbow.",
+      "beautiful",
+    ),
+    ["We saw a beautiful rainbow."],
+  );
+  assert.deepEqual(
+    alignExampleSentences(
+      "because\nfriend",
+      "I stayed inside because it was raining.\nMy friend helped me.",
+      "apple\nfriend",
+    ),
+    ["", "My friend helped me."],
+  );
+  assert.equal(
+    mergeLibrarySentences("apple\nfriend", "\nMy friend helped me.", {
+      apple: "I ate an apple.",
+      friend: "A different friend sentence.",
+    }),
+    "I ate an apple.\nMy friend helped me.",
+  );
+  assert.equal(
+    sentencesFromMatches("apple\n\nfriend", {
+      apple: "I ate an apple.",
+      friend: null,
+    }),
+    "I ate an apple.\n\n",
   );
 });
 

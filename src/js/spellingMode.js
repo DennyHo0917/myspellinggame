@@ -13,6 +13,8 @@ import {
   ANONYMOUS_WORD_LIMIT,
   analyzeWords,
   customTypingRoundComplete,
+  alignExampleSentences,
+  mergeLibrarySentences,
   parseWords,
   SAMPLE_EXAMPLE_SENTENCES,
   SAMPLE_WORDS,
@@ -44,6 +46,8 @@ let accountState;
 let tesseractPromise;
 let wordLimitHitTracked = false;
 let copyToastTimer;
+let previousWordText = "";
+let sentenceFillGeneration = 0;
 
 export { parseWords };
 
@@ -313,10 +317,27 @@ function sentenceLibraryNotice(
   field.append(notice);
 }
 
+function realignExampleSentences() {
+  const sentenceInput = sentenceTextarea();
+  const wordInput = textarea();
+  if (!sentenceInput || !wordInput) return;
+  const next = alignExampleSentences(
+    previousWordText,
+    sentenceInput.value,
+    wordInput.value,
+  ).join("\n");
+  if (next !== sentenceInput.value) {
+    sentenceInput.value = next;
+    sentenceInput.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+  previousWordText = wordInput.value;
+}
+
 async function autoFillExampleSentences() {
   const button = document.getElementById("auto-example-sentences-btn");
   const words = currentWords();
   if (!button || !words.length) return;
+  const generation = ++sentenceFillGeneration;
   button.disabled = true;
   try {
     const account = await getAccount();
@@ -336,14 +357,20 @@ async function autoFillExampleSentences() {
       body: JSON.stringify({ words: words.join("\n"), difficulty: "simple" }),
     });
     const data = await response.json().catch(() => ({}));
+    if (generation !== sentenceFillGeneration) return;
     if (!response.ok) throw new Error(data.error || "sentence_library_error");
-    const existing = (sentenceTextarea()?.value || "").split(/\r?\n/);
-    sentenceTextarea().value = words
-      .map(
-        (word, index) =>
-          existing[index]?.trim() || data.matches?.[word.toLowerCase()] || "",
-      )
-      .join("\n");
+    const sentenceInput = sentenceTextarea();
+    const wordInput = textarea();
+    if (!sentenceInput || !wordInput) return;
+    // Apply matches to the list that is on screen now. An older response must
+    // not write the previous batch back into the sentence box.
+    sentenceInput.value = mergeLibrarySentences(
+      wordInput.value,
+      sentenceInput.value,
+      data.matches || {},
+    );
+    sentenceInput.dispatchEvent(new Event("input", { bubbles: true }));
+    previousWordText = wordInput.value;
   } catch (error) {
     if (error.message === "sentence_library_required")
       trackLockedFeature("example_sentences", accountState?.plan || "free");
@@ -353,7 +380,7 @@ async function autoFillExampleSentences() {
         : productMessage("sentenceLibraryError", {}, getPageLocale()),
     );
   } finally {
-    button.disabled = false;
+    if (generation === sentenceFillGeneration) button.disabled = false;
   }
 }
 
@@ -610,9 +637,14 @@ export function initSpellingMode() {
         : t("wordsReady", { count: analysis.words.length }),
     );
   };
+  previousWordText = input.value;
   updateWordStatus();
   void updateLongListAdvice();
+  input.addEventListener("beforeinput", () => {
+    previousWordText = input.value;
+  });
   input.addEventListener("input", () => {
+    realignExampleSentences();
     updateWordStatus();
     void updateLongListAdvice();
   });
@@ -833,6 +865,7 @@ export function replayMissedWords() {
   const input = textarea();
   if (!input || !missed.length) return;
   input.value = missed.join("\n");
+  input.dispatchEvent(new Event("input", { bubbles: true }));
   track("missed_words_replayed", {
     word_count: missed.length,
     mode: "typing",

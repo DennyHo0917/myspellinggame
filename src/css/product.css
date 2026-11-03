@@ -377,14 +377,25 @@ a {
   grid-column: 1 / -1;
   justify-self: start;
   display: inline-flex;
-  margin: 0;
-  padding: 0.2rem 0.5rem;
+  margin: 0.35rem 0 0;
+  padding: 0.2rem 0.55rem;
   border-radius: 999px;
   background: #e8f5ee;
-  color: var(--green);
+  color: #1f7a4d;
   font-size: 0.8rem;
+  font-weight: 700;
 }
 .selected-plan .plan-savings[hidden] {
+  display: none;
+}
+.selected-plan .plan-subtext {
+  grid-column: 1 / -1;
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.selected-plan .plan-subtext[hidden] {
   display: none;
 }
 .checkout-confirm {
@@ -3225,4 +3236,367 @@ body.assignment-page {
   margin: 0;
   color: #166534;
   font-weight: 500;
+}
+
+.cta-secondary-note {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
+  white-space: nowrap;
+}
+.classroom-cta-wrap,
+.unlock-action-wrap,
+.waiting-action-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+/* ==========================================================================
+   Print & PDF Sheet Styles (Letter Size: 8.5" x 11", Margin >= 0.5")
+   ========================================================================== */
+
+.print-preview-dialog {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0;
+  width: min(860px, 95vw);
+  max-height: 90vh;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  background: var(--surface, #fff);
+  color: var(--text, #1a1a1a);
+}
+
+.print-preview-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.print-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.print-preview-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.print-sheet-scroll-wrap {
+  padding: 1.5rem;
+  background: #f0f3f4;
+  overflow-y: auto;
+  max-height: calc(90vh - 75px);
+  display: flex;
+  justify-content: center;
+}
+
+.print-sheet {
+  width: 8.5in;
+  min-height: 11in;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  color: #1a1a1a;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  padding: 0.5in;
+  position: relative;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.35;
+}
+
+.sheet-brand-header {
+  border-bottom: 2px solid #2f6f73;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.sheet-brand-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #2f6f73;
+  margin: 0 0 0.2rem 0;
+}
+
+.sheet-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  color: #222;
+}
+
+.sheet-meta-grid {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.sheet-meta-item strong {
+  color: #333;
+}
+
+.sheet-table-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.4rem 0;
+  border-bottom: 1.5px solid #333;
+  margin-bottom: 0.6rem;
+}
+
+.sheet-word-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px dashed #e8e8e8;
+  font-size: 0.88rem;
+}
+
+.sheet-word-left {
+  flex: 1;
+  padding-right: 1.5rem;
+}
+
+.sheet-word-text {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #111;
+}
+
+.sheet-word-sentence {
+  font-style: italic;
+  font-size: 0.8rem;
+  color: #555;
+  margin-top: 0.15rem;
+}
+
+.sheet-word-right {
+  width: 200px;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+.sheet-dictation-line {
+  flex: 1;
+  border-bottom: 1.2px solid #555;
+  height: 1.1rem;
+}
+
+.sheet-watermark {
+  position: absolute;
+  top: 42%;
+  left: 2%;
+  right: 2%;
+  transform: rotate(-30deg);
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: rgba(210, 40, 40, 0.14);
+  text-align: center;
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+  z-index: 10;
+  line-height: 1.4;
+}
+
+.sheet-score-card {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: #f7faf9;
+  border: 1px solid #d8e5e3;
+  border-radius: 6px;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.sheet-score-big {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #2f6f73;
+}
+
+.sheet-score-detail {
+  font-size: 0.9rem;
+}
+
+.sheet-score-detail strong {
+  display: block;
+  font-size: 1rem;
+  color: #222;
+}
+
+.sheet-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0.9rem 0 0.3rem 0;
+  padding-bottom: 0.3rem;
+  border-bottom: 1.5px solid #333;
+}
+
+.sheet-advice {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: #555;
+  margin: 0 0 0.6rem 0;
+}
+
+.sheet-missed-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px dashed #eee;
+  font-size: 0.9rem;
+}
+
+.sheet-checkbox {
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid #555;
+  border-radius: 2px;
+}
+
+.sheet-step-box {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+.sheet-step-header {
+  background: #f0f6f6;
+  padding: 0.45rem 0.85rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #2f6f73;
+  border-bottom: 1px solid #ddd;
+}
+
+.sheet-step-body {
+  padding: 0.6rem 0.85rem;
+  font-size: 0.82rem;
+  color: #333;
+}
+
+.sheet-step-body ol {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.sheet-step-body li {
+  margin-bottom: 0.25rem;
+}
+
+.sheet-footer {
+  margin-top: 1.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.sheet-qr-box {
+  flex-shrink: 0;
+}
+
+.sheet-footer-text {
+  flex: 1;
+  font-size: 0.78rem;
+  color: #444;
+}
+
+.sheet-footer-title {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #111;
+  margin-bottom: 0.2rem;
+}
+
+.sheet-footer-url {
+  font-weight: 700;
+  color: #2f6f73;
+  margin-bottom: 0.35rem;
+}
+
+.sheet-footer-notes {
+  font-size: 0.72rem;
+  color: #666;
+}
+
+.sheet-footer-cta {
+  font-weight: 700;
+  color: #1b6843;
+  margin-top: 0.2rem;
+}
+
+.sheet-sample-footer {
+  font-weight: 700;
+  color: #c02020;
+  margin-top: 0.25rem;
+}
+
+@media print {
+  @page {
+    size: letter portrait;
+    margin: 0.5in;
+  }
+  body * {
+    visibility: hidden !important;
+  }
+  .print-sheet,
+  .print-sheet * {
+    visibility: visible !important;
+  }
+  .print-sheet {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    min-height: auto !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    background: transparent !important;
+  }
+  .print-preview-dialog {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    box-shadow: none !important;
+  }
+  .print-preview-toolbar {
+    display: none !important;
+  }
+  .print-sheet-scroll-wrap {
+    padding: 0 !important;
+    background: transparent !important;
+    overflow: visible !important;
+    max-height: none !important;
+  }
 }

@@ -20,7 +20,7 @@ test("checkout intent expires, consumes once, clears old choices and preserves v
     storage.set("pendingCheckoutInterval", "month");
     assert.deepEqual(upgradeSelection({}), {
       plan: "parent",
-      interval: "year",
+      interval: "month",
     });
     savePendingCheckout("teacher", "month", true);
     assert.deepEqual(upgradeSelection({}), {
@@ -40,7 +40,7 @@ test("checkout intent expires, consumes once, clears old choices and preserves v
     assert.equal(readPendingCheckout(), null);
     assert.deepEqual(upgradeSelection({ workspaceType: "teacher" }), {
       plan: "teacher",
-      interval: "year",
+      interval: "month",
     });
   } finally {
     delete globalThis.sessionStorage;

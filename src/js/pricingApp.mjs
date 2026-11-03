@@ -33,20 +33,28 @@ let currentAccount = null;
 let intervalChosen = false;
 const selectionParams = new URLSearchParams(location.search);
 const fromParam = selectionParams.get("from");
+const intervalParam = selectionParams.get("interval");
+const planParam = selectionParams.get("plan");
 const explicitSelection =
-  ["parent", "teacher"].includes(selectionParams.get("plan")) &&
-  ["month", "year"].includes(selectionParams.get("interval"))
+  ["parent", "teacher"].includes(planParam) &&
+  ["month", "year"].includes(intervalParam)
     ? {
-        plan: selectionParams.get("plan"),
-        interval: selectionParams.get("interval"),
+        plan: planParam,
+        interval: intervalParam,
       }
     : fromParam === "classroom_lock"
       ? {
           plan: "teacher",
-          interval:
-            selectionParams.get("interval") === "month" ? "month" : "year",
+          interval: intervalParam === "year" ? "year" : "month",
         }
-      : null;
+      : ["month", "year"].includes(intervalParam)
+        ? {
+            plan: ["parent", "teacher"].includes(planParam)
+              ? planParam
+              : "parent",
+            interval: intervalParam,
+          }
+        : null;
 let billingRequestPending = false;
 for (const choice of planChoices)
   choice.dataset.selectPlanLabel = choice.textContent;
@@ -155,6 +163,31 @@ function selectInterval(interval) {
       String(option.dataset.planOption === interval),
     );
   for (const price of planPrices) price.textContent = price.dataset[interval];
+  for (const savings of document.querySelectorAll("[data-plan-savings]")) {
+    const text = savings.dataset[interval];
+    if (text) {
+      savings.textContent = text;
+      savings.hidden = false;
+    } else {
+      savings.hidden = true;
+    }
+  }
+  for (const subtext of document.querySelectorAll("[data-plan-subtext]")) {
+    const text = subtext.dataset[interval];
+    if (text) {
+      subtext.textContent = text;
+      subtext.hidden = false;
+    } else {
+      subtext.hidden = true;
+    }
+  }
+  try {
+    const url = new URL(location.href);
+    if (url.searchParams.get("interval") !== interval) {
+      url.searchParams.set("interval", interval);
+      history.replaceState({}, "", url);
+    }
+  } catch {}
   syncPlanControls();
 }
 
@@ -415,7 +448,7 @@ accountPromise
         selectInterval(
           ["month", "year"].includes(me.billingInterval)
             ? me.billingInterval
-            : "year",
+            : "month",
         );
       } else {
         const preferred = explicitSelection || selection;

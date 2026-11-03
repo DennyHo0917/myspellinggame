@@ -143,6 +143,10 @@ const copy = {
     ],
     monthly: "Monthly plan",
     yearly: "Yearly plan",
+    parentSavings: "Save ~17%",
+    parentSubtext: "$6.66/mo billed yearly",
+    teacherSavings: "Save ~17%",
+    teacherSubtext: "$12.49/mo billed yearly",
     billingPeriod: "Billing period",
     selectParent: "Photo Import + Smart Review",
     selectTeacher: "Select Teacher Plan",
@@ -210,6 +214,10 @@ const copy = {
     ],
     monthly: "Plan mensual",
     yearly: "Plan anual",
+    parentSavings: "Ahorra ~17%",
+    parentSubtext: "$6.66/mes facturado al año",
+    teacherSavings: "Ahorra ~17%",
+    teacherSubtext: "$12.49/mes facturado al año",
     billingPeriod: "Periodo de facturación",
     selectParent: "Fotos + repaso inteligente",
     selectTeacher: "Elegir plan para docentes",
@@ -277,6 +285,10 @@ const copy = {
     ],
     monthly: "Plano mensal",
     yearly: "Plano anual",
+    parentSavings: "Economize ~17%",
+    parentSubtext: "US$ 6,66/mês cobrado ao ano",
+    teacherSavings: "Economize ~17%",
+    teacherSubtext: "US$ 12,49/mês cobrado ao ano",
     billingPeriod: "Periodicidade",
     selectParent: "Fotos + revisão inteligente",
     selectTeacher: "Escolher Plano para Professores",
@@ -312,6 +324,8 @@ const copy = {
     parent: "Offre Parents",
     parentMonth: "7,99 $ par mois",
     parentYear: "79,90 $ par an",
+    parentSavings: "Économisez ~17 %",
+    parentSubtext: "6,66 $US/mois facturé annuellement",
     parentItems: [
       "Jusqu’à 40 mots par devoir",
       "Jusqu’à 5 enfants",
@@ -327,6 +341,8 @@ const copy = {
     teacher: "Offre Enseignants",
     teacherMonth: "14,99 $ par mois",
     teacherYear: "149,90 $ par an",
+    teacherSavings: "Économisez ~17 %",
+    teacherSubtext: "12,49 $US/mois facturé annuellement",
     teacherItems: [
       "Jusqu’à 40 mots par devoir",
       "Jusqu’à 40 élèves",
@@ -411,6 +427,10 @@ const copy = {
     ],
     monthly: "Paket bulanan",
     yearly: "Paket tahunan",
+    parentSavings: "Hemat ~17%",
+    parentSubtext: "US$6,66/bln ditagih tahunan",
+    teacherSavings: "Hemat ~17%",
+    teacherSubtext: "US$12,49/bln ditagih tahunan",
     billingPeriod: "Periode tagihan",
     selectParent: "Impor foto + Ulasan Pintar",
     selectTeacher: "Pilih Paket Guru",
@@ -477,6 +497,10 @@ const copy = {
     ],
     monthly: "月付方案",
     yearly: "年付方案",
+    parentSavings: "年付立省 ~17%",
+    parentSubtext: "每月约 $6.66，按年结算",
+    teacherSavings: "年付立省 ~17%",
+    teacherSubtext: "每月约 $12.49，按年结算",
     billingPeriod: "计费周期",
     selectParent: "解锁拍照导入 + 智能复习",
     selectTeacher: "选择教师方案",
@@ -570,12 +594,12 @@ function render(locale) {
     <main class="product-main">
       <section class="product-card"><h1>${escape(c.heading)}</h1><p>${escape(c.intro)}</p><p class="notice">${escape(c.note)} ${escape(classroom.accountDetail)}</p></section>
       <div class="subscription-status" data-subscription-status hidden role="status"><span data-subscription-message></span><button type="button" class="button-secondary" data-renew-subscription hidden></button></div>
-      <div class="pricing-toolbar"><div class="plan-selector" role="group" aria-label="${escape(c.billingPeriod)}"><button type="button" class="plan-option" data-plan-option="month" aria-pressed="false">${escape(c.monthly)}</button><button type="button" class="plan-option" data-plan-option="year" aria-pressed="true">${escape(c.yearly)}</button></div></div>
+      <div class="pricing-toolbar"><div class="plan-selector" role="group" aria-label="${escape(c.billingPeriod)}"><button type="button" class="plan-option" data-plan-option="month" aria-pressed="true">${escape(c.monthly)}</button><button type="button" class="plan-option" data-plan-option="year" aria-pressed="false">${escape(c.yearly)}</button></div></div>
       <p class="notice">${escape(c.resultViewNote)}</p>
       <div class="pricing-grid">
         <section class="product-card pricing-card" data-plan-card="free"><div class="pricing-card-heading"><h2>${escape(c.free)}</h2></div><div class="selected-plan"><p class="price">${escape(c.freePrice)}</p><p class="plan-description">${escape(c.freeBilling)}</p></div><ul>${c.freeItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><a class="button-link button-secondary" data-plan-cta="free" data-free-teacher-cta data-current-plan-label="${escape(c.currentPlan)}" href="/workspace?lang=${encodeURIComponent(locale.code)}#teacher-sign-in">${escape(c.freeTeacher)}</a></section>
-        <section class="product-card pricing-card selected" data-plan-card="parent"><div class="pricing-card-heading"><h2>${escape(c.parent)}</h2></div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.parentMonth)}" data-year="${escape(c.parentYear)}">${escape(c.parentYear)}</p></div><ul>${c.parentItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><button type="button" class="plan-choice" data-plan-choice="parent" data-plan-cta="parent" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="true">${escape(c.selectParent)}</button></section>
-        <section class="product-card pricing-card" data-plan-card="teacher"><div class="pricing-card-heading"><h2>${escape(c.teacher)}</h2></div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.teacherMonth)}" data-year="${escape(c.teacherYear)}">${escape(c.teacherYear)}</p></div><ul>${c.teacherItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><button type="button" class="button-secondary plan-choice" data-plan-choice="teacher" data-plan-cta="teacher" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="false">${escape(c.selectTeacher)}</button></section>
+        <section class="product-card pricing-card selected" data-plan-card="parent"><div class="pricing-card-heading"><h2>${escape(c.parent)}</h2></div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.parentMonth)}" data-year="${escape(c.parentYear)}">${escape(c.parentMonth)}</p><p class="plan-savings" data-plan-savings data-month="" data-year="${escape(c.parentSavings)}" hidden>${escape(c.parentSavings)}</p><p class="plan-subtext" data-plan-subtext data-month="" data-year="${escape(c.parentSubtext)}" hidden>${escape(c.parentSubtext)}</p></div><ul>${c.parentItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><button type="button" class="plan-choice" data-plan-choice="parent" data-plan-cta="parent" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="true">${escape(c.selectParent)}</button></section>
+        <section class="product-card pricing-card" data-plan-card="teacher"><div class="pricing-card-heading"><h2>${escape(c.teacher)}</h2></div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.teacherMonth)}" data-year="${escape(c.teacherYear)}">${escape(c.teacherMonth)}</p><p class="plan-savings" data-plan-savings data-month="" data-year="${escape(c.teacherSavings)}" hidden>${escape(c.teacherSavings)}</p><p class="plan-subtext" data-plan-subtext data-month="" data-year="${escape(c.teacherSubtext)}" hidden>${escape(c.teacherSubtext)}</p></div><ul>${c.teacherItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><button type="button" class="button-secondary plan-choice" data-plan-choice="teacher" data-plan-cta="teacher" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="false">${escape(c.selectTeacher)}</button></section>
       </div>
       <section class="product-card" aria-labelledby="classroom-sharing"><h2 id="classroom-sharing">${escape(classroom.heading)}</h2><p>${escape(classroom.openLinkDetail)}</p><p>${escape(classroom.teacherDetail)}</p><p class="notice">${escape(classroom.scopeDetail)}</p></section>
     </main>

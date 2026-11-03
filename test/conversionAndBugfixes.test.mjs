@@ -1,3 +1,6 @@
+import { upgradeSelection } from "../src/js/upgradeSelection.mjs";
+import fs from "node:fs";
+import path from "node:path";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PRODUCT_LOCALES, productMessages } from "../src/js/productLocale.mjs";
@@ -143,4 +146,45 @@ test("CONV-8: Telemetry events accept only approved parameters and strip extra/P
     }),
     { source: "classroom", plan: "teacher", billing_interval: "year" },
   );
+});
+
+test("Pricing default interval is month and savings badges exist across all 6 locales", () => {
+  const selection = upgradeSelection({});
+  assert.equal(selection.interval, "month");
+
+  const pricingFiles = [
+    { file: "pricing.html", locale: "en" },
+    { file: "es/pricing.html", locale: "es" },
+    { file: "pt-br/pricing.html", locale: "pt-BR" },
+    { file: "fr/pricing.html", locale: "fr" },
+    { file: "id/pricing.html", locale: "id" },
+    { file: "zh/pricing.html", locale: "zh" },
+  ];
+
+  for (const { file } of pricingFiles) {
+    const html = fs.readFileSync(path.resolve(file), "utf8");
+    // Month toggle active by default
+    assert.ok(html.includes('data-plan-option="month" aria-pressed="true"'), `${file}: month pressed`);
+    assert.ok(html.includes('data-plan-option="year" aria-pressed="false"'), `${file}: year unpressed`);
+    // Monthly prices rendered by default (either 7.99 or 7,99)
+    assert.ok(html.includes("7.99") || html.includes("7,99"), `${file}: parent monthly price`);
+    assert.ok(html.includes("14.99") || html.includes("14,99"), `${file}: teacher monthly price`);
+    // Savings badges and subtexts exist in markup
+    assert.ok(html.includes("data-plan-savings"), `${file}: data-plan-savings`);
+    assert.ok(html.includes("17"), `${file}: 17% savings`);
+    assert.ok(html.includes("data-plan-subtext"), `${file}: data-plan-subtext`);
+    assert.ok(html.includes("6.66") || html.includes("6,66"), `${file}: 6.66 subtext`);
+    assert.ok(html.includes("12.49") || html.includes("12,49"), `${file}: 12.49 subtext`);
+  }
+});
+
+test("CTA monthly pricing and secondary yearly copy is complete in all 6 locales", () => {
+  for (const [locale] of PRODUCT_LOCALES) {
+    const copy = productMessages(locale);
+    assert.ok(copy.classroomModalCta?.includes("14.99") || copy.classroomModalCta?.includes("14,99"), `${locale}:classroomModalCta month`);
+    assert.ok(copy.teacherPriceMonthly?.includes("14.99") || copy.teacherPriceMonthly?.includes("14,99"), `${locale}:teacherPriceMonthly`);
+    assert.ok(copy.parentPriceMonthly?.includes("7.99") || copy.parentPriceMonthly?.includes("7,99"), `${locale}:parentPriceMonthly`);
+    assert.ok(copy.orTeacherYearly?.includes("149.90") || copy.orTeacherYearly?.includes("149,90"), `${locale}:orTeacherYearly`);
+    assert.ok(copy.orParentYearly?.includes("79.90") || copy.orParentYearly?.includes("79,90"), `${locale}:orParentYearly`);
+  }
 });

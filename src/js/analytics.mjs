@@ -114,6 +114,9 @@ const EVENT_PARAMS = {
     "locale",
   ],
   typing_chase_result_shared: ["outcome", "share_method", "locale"],
+  print_takehome_click: ["plan", "mode", "word_count"],
+  print_parent_report_click: ["plan", "is_sample"],
+  print_missed_words_click: ["plan", "count"],
 };
 
 const LIMIT_TYPES = {

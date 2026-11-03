@@ -46,6 +46,19 @@ import {
 import { assignmentShareURL, classroomShareURL } from "./assignmentSharing.mjs";
 import { accountAvatar } from "./accountAvatar.mjs";
 import { analyzeWords } from "./spellingCore.mjs";
+import {
+  buildTakeHomePdf,
+  buildParentReportPdf,
+  buildMissedWordsPdf,
+  buildClassroomGuidePdf,
+} from "./pdfWriter.mjs";
+import {
+  renderTakeHomeSheetHtml,
+  renderParentReportSheetHtml,
+  renderMissedWordsSheetHtml,
+  renderClassroomGuideSheetHtml,
+} from "./sheetRenderer.mjs";
+import { showPrintModal } from "./printPdf.mjs";
 
 const root = document.getElementById("product-app");
 const locale = productLocale();
@@ -1499,6 +1512,141 @@ function usageCards(data, me, needsReviewCount) {
   return grid;
 }
 
+function openTakeHomeModal(data, me, studentUrl) {
+  const url = studentUrl || `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`;
+  const slug = (data.title || "assignment").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  showPrintModal({
+    title: copy.takeHomeTitle || "Take-Home Spelling List",
+    filename: `myspellinggame-${slug}-takehome.pdf`,
+    renderSheetHtml: () =>
+      renderTakeHomeSheetHtml({
+        title: data.title,
+        due: data.expires_at ? date(data.expires_at) : "",
+        mode: data.mode,
+        words: data.words,
+        studentUrl: url,
+        copy,
+      }),
+    getPdfBytes: () =>
+      buildTakeHomePdf({
+        title: data.title,
+        due: data.expires_at ? date(data.expires_at) : "",
+        mode: data.mode,
+        words: data.words,
+        studentUrl: url,
+        copy,
+      }).bytes,
+    telemetryEvent: "print_takehome_click",
+    telemetryParams: {
+      plan: me?.plan || "free",
+      mode: data.mode,
+      word_count: data.words?.length || 0,
+    },
+    copy,
+  });
+}
+
+function openParentReportModal(data, attempt, me, isFreeSample = false) {
+  const title = data?.title || copy.assignment || "Spelling Assignment";
+  const studentUrl = data ? `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}` : location.origin;
+  const nickname = attempt ? attempt.nickname : (copy.lockedRowLearner?.replace("{n}", "1") || "Sample Learner");
+  const accuracy = attempt ? attempt.accuracy : 80;
+  const correctCount = attempt ? attempt.correct_count : 8;
+  const totalCount = attempt ? (attempt.correct_count + attempt.incorrect_count) : 10;
+  const missedWords = attempt ? attempt.missed_words : ["example", "practice"];
+  const dateStr = attempt ? date(attempt.completed_at) : date(new Date().toISOString());
+  const slug = nickname.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+  showPrintModal({
+    title: copy.parentReportTitle || "Student Spelling Progress Report",
+    filename: `myspellinggame-${slug}-parent-report.pdf`,
+    renderSheetHtml: () =>
+      renderParentReportSheetHtml({
+        nickname,
+        assignmentTitle: title,
+        dateStr,
+        accuracy,
+        correctCount,
+        totalCount,
+        missedWords,
+        studentUrl,
+        isFreeSample,
+        copy,
+      }),
+    getPdfBytes: () =>
+      buildParentReportPdf({
+        nickname,
+        assignmentTitle: title,
+        dateStr,
+        accuracy,
+        correctCount,
+        totalCount,
+        missedWords,
+        studentUrl,
+        isFreeSample,
+        copy,
+      }).bytes,
+    telemetryEvent: "print_parent_report_click",
+    telemetryParams: {
+      plan: me?.plan || "free",
+      is_sample: isFreeSample,
+    },
+    copy,
+  });
+}
+
+function openMissedWordsModal(data, me, studentUrl) {
+  const url = studentUrl || `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`;
+  const missedWords = (data.missedWordStats || []).map((m) => m.word);
+  if (!missedWords.length && data.attempts) {
+    for (const a of data.attempts) {
+      for (const w of a.missed_words || []) {
+        if (!missedWords.includes(w)) missedWords.push(w);
+      }
+    }
+  }
+  const slug = (data.title || "assignment").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  showPrintModal({
+    title: copy.missedWordsSheetTitle || "Missed Words Practice Sheet",
+    filename: `myspellinggame-${slug}-missed-words.pdf`,
+    renderSheetHtml: () =>
+      renderMissedWordsSheetHtml({
+        assignmentTitle: data.title,
+        words: missedWords,
+        studentUrl: url,
+        copy,
+      }),
+    getPdfBytes: () =>
+      buildMissedWordsPdf({
+        assignmentTitle: data.title,
+        words: missedWords,
+        studentUrl: url,
+        copy,
+      }).bytes,
+    telemetryEvent: "print_missed_words_click",
+    telemetryParams: {
+      plan: me?.plan || "free",
+      count: missedWords.length,
+    },
+    copy,
+  });
+}
+
+function openClassroomGuideModal(me) {
+  showPrintModal({
+    title: copy.classroomGuideTitle || "Google Classroom Spelling in 3 Easy Steps",
+    filename: "myspellinggame-classroom-guide.pdf",
+    renderSheetHtml: () => renderClassroomGuideSheetHtml({ copy }),
+    getPdfBytes: () => buildClassroomGuidePdf({ copy }).bytes,
+    telemetryEvent: "classroom_cta_click",
+    telemetryParams: {
+      locked: me?.plan === "free",
+      plan: me?.plan || "free",
+    },
+    copy,
+  });
+}
+
 function showClassroomLockedModal(studentUrl) {
   document.querySelector(".classroom-locked-dialog")?.remove();
   const dialog = document.createElement("dialog");
@@ -1525,15 +1673,22 @@ function showClassroomLockedModal(studentUrl) {
 
   const upgradeCta = document.createElement("a");
   upgradeCta.className = "button-link pro classroom-upgrade-cta";
-  upgradeCta.href = `${productPagePath("pricing", locale)}?from=classroom_lock&plan=teacher&interval=year&lang=${encodeURIComponent(locale)}`;
+  upgradeCta.href = `${productPagePath("pricing", locale)}?from=classroom_lock&plan=teacher&interval=month&lang=${encodeURIComponent(locale)}`;
   upgradeCta.textContent = copy.classroomModalCta;
   upgradeCta.addEventListener("click", () => {
     trackEvent("upgrade_click", {
       source: "classroom",
       plan: "teacher",
-      billing_interval: "year",
+      billing_interval: "month",
     });
   });
+
+  const ctaWrap = document.createElement("div");
+  ctaWrap.className = "classroom-cta-wrap";
+  const secondaryNote = document.createElement("small");
+  secondaryNote.className = "cta-secondary-note";
+  secondaryNote.textContent = copy.orTeacherYearly;
+  ctaWrap.append(upgradeCta, secondaryNote);
 
   const copyLink = document.createElement("button");
   copyLink.type = "button";
@@ -1554,7 +1709,14 @@ function showClassroomLockedModal(studentUrl) {
     }
   });
 
-  actions.append(upgradeCta, copyLink);
+  const guideBtn = document.createElement("button");
+  guideBtn.type = "button";
+  guideBtn.className = "button-secondary classroom-guide-btn";
+  guideBtn.textContent = copy.classroomGuideBtn || "Classroom 1-Page Guide (PDF)";
+  guideBtn.addEventListener("click", () => {
+    openClassroomGuideModal(workspaceState?.me);
+  });
+  actions.append(ctaWrap, copyLink, guideBtn);
   dialog.append(header, body, actions, copyStatus);
 
   dialog.addEventListener("click", (event) => {
@@ -1593,17 +1755,24 @@ function lockedResultsNotice(count, summaryData = null) {
 
   const unlockBtn = document.createElement("a");
   unlockBtn.className = "button-link pro";
-  unlockBtn.href = `${productPagePath("pricing", locale)}?from=unlock_bar&plan=teacher&interval=year&lang=${encodeURIComponent(locale)}`;
-  unlockBtn.textContent = `${copy.unlockResults} · $149.90/yr`;
+  unlockBtn.href = `${productPagePath("pricing", locale)}?from=unlock_bar&plan=teacher&interval=month&lang=${encodeURIComponent(locale)}`;
+  unlockBtn.textContent = `${copy.unlockResults} · ${copy.teacherPriceMonthly || "$14.99/mo"}`;
   unlockBtn.addEventListener("click", () => {
     trackEvent("upgrade_click", {
       source: "unlock_bar",
       plan: "teacher",
-      billing_interval: "year",
+      billing_interval: "month",
     });
   });
 
-  notice.append(message, unlockBtn);
+  const unlockWrap = document.createElement("div");
+  unlockWrap.className = "unlock-action-wrap";
+  const secondaryNote = document.createElement("small");
+  secondaryNote.className = "cta-secondary-note";
+  secondaryNote.textContent = copy.orTeacherYearly;
+  unlockWrap.append(unlockBtn, secondaryNote);
+
+  notice.append(message, unlockWrap);
   return notice;
 }
 
@@ -2542,16 +2711,24 @@ function renderLearners(me, learners) {
     msg.textContent = m("learnersWaitingCount", { count: 1 });
     const upgradeBtn = document.createElement("a");
     upgradeBtn.className = "button-link pro";
-    upgradeBtn.href = `${productPagePath("pricing", locale)}?from=waiting_list&plan=teacher&interval=year&lang=${encodeURIComponent(locale)}`;
-    upgradeBtn.textContent = copy.teacherPlan || "Teacher Plan";
+    upgradeBtn.href = `${productPagePath("pricing", locale)}?from=waiting_list&plan=teacher&interval=month&lang=${encodeURIComponent(locale)}`;
+    upgradeBtn.textContent = `${copy.teacherPlan} · ${copy.teacherPriceMonthly || "$14.99/mo"}`;
     upgradeBtn.addEventListener("click", () => {
       trackEvent("upgrade_click", {
         source: "waiting_list",
         plan: "teacher",
-        billing_interval: "year",
+        billing_interval: "month",
       });
     });
-    waitingNotice.append(msg, upgradeBtn);
+
+    const waitingWrap = document.createElement("div");
+    waitingWrap.className = "waiting-action-wrap";
+    const secondaryNote = document.createElement("small");
+    secondaryNote.className = "cta-secondary-note";
+    secondaryNote.textContent = copy.orTeacherYearly;
+    waitingWrap.append(upgradeBtn, secondaryNote);
+
+    waitingNotice.append(msg, waitingWrap);
     section.append(waitingNotice);
   }
   section.append(list);
@@ -4298,7 +4475,14 @@ async function renderDetail(me, id, { force = false } = {}) {
     actions.append(copyButton);
     actions.append(classroom);
   } else sharingStatus.textContent = copy.classroomIndividualOnly;
-  actions.append(edit, saveList, toggle);
+  const printTakeHome = document.createElement("button");
+  printTakeHome.type = "button";
+  printTakeHome.className = "button-secondary print-take-home-btn";
+  printTakeHome.textContent = copy.printTakeHome || "Print / Download take-home";
+  printTakeHome.addEventListener("click", () => {
+    openTakeHomeModal(data, me, studentUrl);
+  });
+  actions.append(edit, saveList, printTakeHome, toggle);
   if (isTeacherPlan(me)) {
     const exportLink = document.createElement("a");
     exportLink.className = "button-link button-secondary";
@@ -4494,7 +4678,14 @@ async function renderDetail(me, id, { force = false } = {}) {
           results.append(notice);
         }
       });
-      actionCell.append(deleteButton);
+      const reportBtn = document.createElement("button");
+      reportBtn.type = "button";
+      reportBtn.className = "button-secondary print-report-btn";
+      reportBtn.textContent = copy.printParentReport || "Parent report";
+      reportBtn.addEventListener("click", () => {
+        openParentReportModal(data, attempt, me, me.plan === "free");
+      });
+      actionCell.append(reportBtn, deleteButton);
       row.append(actionCell);
       body.append(row);
     }
@@ -4526,9 +4717,17 @@ async function renderDetail(me, id, { force = false } = {}) {
         const actionCell = document.createElement("td");
         const unlockLink = document.createElement("a");
         unlockLink.className = "button-link button-secondary";
-        unlockLink.href = `${productPagePath("pricing", locale)}?from=locked_row&plan=teacher&interval=year&lang=${encodeURIComponent(locale)}`;
+        unlockLink.href = `${productPagePath("pricing", locale)}?from=locked_row&plan=teacher&interval=month&lang=${encodeURIComponent(locale)}`;
         unlockLink.textContent = copy.unlock;
-        actionCell.append(unlockLink);
+        const previewReportBtn = document.createElement("button");
+        previewReportBtn.type = "button";
+        previewReportBtn.className = "button-secondary preview-report-btn";
+        previewReportBtn.textContent = copy.previewPrint || "Preview print";
+        previewReportBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openParentReportModal(data, null, me, true);
+        });
+        actionCell.append(previewReportBtn, unlockLink);
         row.append(actionCell);
 
         const openUpgrade = (event) => {
@@ -4536,7 +4735,7 @@ async function renderDetail(me, id, { force = false } = {}) {
             trackEvent("upgrade_click", {
               source: "locked_row",
               plan: "teacher",
-              billing_interval: "year",
+              billing_interval: "month",
             });
             location.href = unlockLink.href;
           }
@@ -4567,9 +4766,19 @@ async function renderDetail(me, id, { force = false } = {}) {
   if (isTeacherPlan(me)) {
     const misses = document.createElement("section");
     misses.className = "product-card";
+    const missesHeader = document.createElement("div");
+    missesHeader.className = "actions compact-actions";
     const missesTitle = document.createElement("h2");
     missesTitle.textContent = copy.commonMisses;
-    misses.append(missesTitle);
+    const printMissesBtn = document.createElement("button");
+    printMissesBtn.type = "button";
+    printMissesBtn.className = "button-secondary print-misses-btn";
+    printMissesBtn.textContent = copy.printMissedWords || "Print missed words";
+    printMissesBtn.addEventListener("click", () => {
+      openMissedWordsModal(data, me, studentUrl);
+    });
+    missesHeader.append(missesTitle, printMissesBtn);
+    misses.append(missesHeader);
     const list = document.createElement("div");
     list.className = "word-list";
     for (const item of data.missedWordStats || []) {

@@ -167,7 +167,7 @@ export function renderMissedWordsSheetHtml({
   copy,
 }) {
   const qrSvg = studentUrl ? qrCodeToSvg(generateQRCodeMatrix(studentUrl), 76) : "";
-  const list = (words.length ? words : ["example", "practice", "spelling"]).slice(0, 14);
+  const list = (words.length ? words : isFreeSample ? ["example", "practice", "spelling"] : []).slice(0, 14);
 
   let rowsHtml = "";
   list.forEach((item, index) => {

@@ -810,6 +810,21 @@ describe("teacher authorization and quotas", () => {
     });
   });
 
+  it("keeps example sentences on the same word line when the list has blank lines", async () => {
+    await insertSubscription({ plan: "teacher", status: "active" });
+    const created = await createAssignment(teacherA, {
+      title: "Blank lines",
+      words: "apple\n\nbanana",
+      exampleSentences: "An apple.\n\nA banana.",
+    });
+    expect(created.response.status).toBe(201);
+    const assignment = await publicWords(String(created.body.publicId));
+    expect(assignment.words).toMatchObject([
+      { word: "apple", example_sentence: "An apple." },
+      { word: "banana", example_sentence: "A banana." },
+    ]);
+  });
+
   it("normalizes valid one-letter and apostrophe words in assignments and rejects malformed input", async () => {
     const created = await createAssignment(teacherA, {
       words: "a\nI\ndon’t\nwe’re",

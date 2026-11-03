@@ -210,6 +210,78 @@ export function customTypingRoundComplete(
   );
 }
 
+function sentenceLines(value) {
+  if (Array.isArray(value)) return value.map((line) => String(line ?? ""));
+  return String(value ?? "").split(/\r?\n/);
+}
+
+function sentenceWordKey(value) {
+  return String(value ?? "")
+    .replace(/[\u2018\u2019\u02bc]/g, "'")
+    .trim()
+    .toLowerCase();
+}
+
+// Keep a sentence only with the word it was written for. A replaced list must
+// not keep the previous batch lined up by row.
+export function alignExampleSentences(
+  previousWords,
+  previousSentences,
+  nextWords,
+) {
+  const priorWords = sentenceLines(previousWords);
+  const priorSentences = sentenceLines(previousSentences);
+  const map = new Map();
+  priorWords.forEach((word, index) => {
+    const key = sentenceWordKey(word);
+    const sentence = String(priorSentences[index] ?? "")
+      .trim()
+      .slice(0, 300);
+    if (key && sentence) map.set(key, sentence);
+  });
+  return sentenceLines(nextWords).map((word) => {
+    const key = sentenceWordKey(word);
+    return key ? map.get(key) || "" : "";
+  });
+}
+
+export function sentencesFromMatches(wordText, matches = {}) {
+  return sentenceLines(wordText)
+    .map((word) => {
+      const key = sentenceWordKey(word);
+      return key
+        ? String(matches?.[key] ?? "")
+            .trim()
+            .slice(0, 300)
+        : "";
+    })
+    .join("\n");
+}
+
+export function mergeLibrarySentences(
+  wordText,
+  existingSentences,
+  matches = {},
+) {
+  const lines = sentenceLines(wordText);
+  const existing = sentenceLines(existingSentences);
+  return lines
+    .map((word, index) => {
+      const key = sentenceWordKey(word);
+      if (!key) return "";
+      const current = String(existing[index] ?? "")
+        .trim()
+        .slice(0, 300);
+      return (
+        current ||
+        String(matches?.[key] ?? "")
+          .trim()
+          .slice(0, 300)
+      );
+    })
+    .join("\n");
+}
+
 export function typingCompletionStats(processedCount, missedWords = []) {
   const wordCount = Math.max(0, Number(processedCount) || 0);
   const missedCount = Math.min(wordCount, new Set(missedWords).size);

@@ -45,7 +45,12 @@ import {
 } from "./adultAcquisition.mjs";
 import { assignmentShareURL, classroomShareURL } from "./assignmentSharing.mjs";
 import { accountAvatar } from "./accountAvatar.mjs";
-import { analyzeWords } from "./spellingCore.mjs";
+import {
+  alignExampleSentences,
+  analyzeWords,
+  mergeLibrarySentences,
+  sentencesFromMatches,
+} from "./spellingCore.mjs";
 import {
   buildTakeHomePdf,
   buildParentReportPdf,
@@ -483,6 +488,29 @@ function attachWordLimit(form, me, wordsSelector, { locked = false } = {}) {
   update();
 }
 
+function bindSentenceRealignment(wordsInput, sentencesInput) {
+  if (!wordsInput || !sentencesInput) return () => {};
+  let previousWords = wordsInput.value;
+  const realign = () => {
+    const next = alignExampleSentences(
+      previousWords,
+      sentencesInput.value,
+      wordsInput.value,
+    ).join("\n");
+    previousWords = wordsInput.value;
+    if (next === sentencesInput.value) return;
+    sentencesInput.value = next;
+    sentencesInput.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+  wordsInput.addEventListener("beforeinput", () => {
+    previousWords = wordsInput.value;
+  });
+  wordsInput.addEventListener("input", realign);
+  return () => {
+    previousWords = wordsInput.value;
+  };
+}
+
 function attachSentenceLibraryControls(
   form,
   me,
@@ -493,42 +521,14 @@ function attachSentenceLibraryControls(
   const sentenceField = form
     .querySelector(sentencesSelector)
     ?.closest(".field");
-  if (!sentenceField) return;
+  if (!sentenceField) return () => {};
   const wordsInput = form.querySelector(wordsSelector);
   const sentencesInput = form.querySelector(sentencesSelector);
-  const wordSentenceMap = new Map();
-
-  const syncMapFromInputs = () => {
-    if (!wordsInput || !sentencesInput) return;
-    const words = wordsInput.value.split(/\r?\n/).map((w) => w.trim());
-    const sentences = sentencesInput.value.split(/\r?\n/);
-    words.forEach((word, index) => {
-      if (word && sentences[index] !== undefined && sentences[index].trim()) {
-        wordSentenceMap.set(word.toLowerCase(), sentences[index].trim());
-      }
-    });
-  };
-
-  syncMapFromInputs();
-
-  if (wordsInput && sentencesInput) {
-    wordsInput.addEventListener("input", () => {
-      const currentWords = wordsInput.value.split(/\r?\n/);
-      const newSentences = currentWords.map((word) => {
-        const trimmed = word.trim().toLowerCase();
-        return trimmed && wordSentenceMap.has(trimmed)
-          ? wordSentenceMap.get(trimmed)
-          : "";
-      });
-      if (sentencesInput.value.trim() || wordSentenceMap.size > 0) {
-        sentencesInput.value = newSentences.join("\n");
-      }
-    });
-
-    sentencesInput.addEventListener("input", () => {
-      syncMapFromInputs();
-    });
-  }
+  const syncSentenceBaseline = bindSentenceRealignment(
+    wordsInput,
+    sentencesInput,
+  );
+  let fillGeneration = 0;
 
   const level = document.createElement("select");
   level.id = `${sentencesSelector.slice(1)}-level`;
@@ -553,23 +553,26 @@ function attachSentenceLibraryControls(
       );
       return;
     }
-    const words = form.querySelector(wordsSelector).value;
+    const words = wordsInput?.value || "";
+    const generation = ++fillGeneration;
     fill.disabled = true;
     try {
       const { matches } = await api("/api/sentence-library/match", {
         method: "POST",
         body: JSON.stringify({ words, difficulty: level.value }),
       });
-      const lines = words
-        .split(/\r?\n/)
-        .map((word) => word.trim())
-        .filter(Boolean);
-      const updatedLines = lines.map((word) => {
-        const sentence = matches[word.toLowerCase()] || "";
-        if (sentence) wordSentenceMap.set(word.toLowerCase(), sentence);
-        return sentence;
-      });
-      form.querySelector(sentencesSelector).value = updatedLines.join("\n");
+      if (generation !== fillGeneration || !sentencesInput) return;
+      const currentWords = wordsInput?.value || "";
+      sentencesInput.value =
+        currentWords === words
+          ? sentencesFromMatches(currentWords, matches || {})
+          : mergeLibrarySentences(
+              currentWords,
+              sentencesInput.value,
+              matches || {},
+            );
+      sentencesInput.dispatchEvent(new Event("input", { bubbles: true }));
+      syncSentenceBaseline();
     } catch (error) {
       showSectionError(
         form.closest("section") || form,
@@ -577,7 +580,7 @@ function attachSentenceLibraryControls(
         error.code === "sentence_library_required" ? "sentence_library" : null,
       );
     } finally {
-      fill.disabled = false;
+      if (generation === fillGeneration) fill.disabled = false;
     }
   });
   const controls = document.createElement("div");
@@ -592,6 +595,7 @@ function attachSentenceLibraryControls(
     form.addEventListener("change", update);
     update();
   }
+  return syncSentenceBaseline;
 }
 
 function nav({ workspace = false, me = null } = {}) {
@@ -1525,8 +1529,12 @@ function usageCards(data, me, needsReviewCount) {
 }
 
 function openTakeHomeModal(data, me, studentUrl) {
-  const url = studentUrl || `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`;
-  const slug = (data.title || "assignment").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const url =
+    studentUrl ||
+    `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`;
+  const slug = (data.title || "assignment")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-");
   showPrintModal({
     title: copy.takeHomeTitle || "Take-Home Spelling List",
     filename: `myspellinggame-${slug}-takehome.pdf`,
@@ -1560,20 +1568,31 @@ function openTakeHomeModal(data, me, studentUrl) {
 
 function openParentReportModal(data, attempt, me, isFreeSample = false) {
   const title = data?.title || copy.assignment || "Spelling Assignment";
-  const studentUrl = data ? `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}` : location.origin;
-  const nickname = (isFreeSample || !attempt)
-    ? (copy.sampleStudentNickname || "Student A (Sample)")
-    : attempt.nickname;
-  const accuracy = (isFreeSample || !attempt) ? 80 : attempt.accuracy;
-  const correctCount = (isFreeSample || !attempt) ? 8 : attempt.correct_count;
-  const totalCount = (isFreeSample || !attempt) ? 10 : (attempt.correct_count + attempt.incorrect_count);
-  const missedWords = (isFreeSample || !attempt)
-    ? ["because", "friend"]
-    : (attempt.missed_words || []);
-  const dateStr = (isFreeSample || !attempt)
-    ? date(new Date().toISOString())
-    : date(attempt.completed_at);
-  const slug = (isFreeSample || !attempt) ? "sample" : nickname.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const studentUrl = data
+    ? `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`
+    : location.origin;
+  const nickname =
+    isFreeSample || !attempt
+      ? copy.sampleStudentNickname || "Student A (Sample)"
+      : attempt.nickname;
+  const accuracy = isFreeSample || !attempt ? 80 : attempt.accuracy;
+  const correctCount = isFreeSample || !attempt ? 8 : attempt.correct_count;
+  const totalCount =
+    isFreeSample || !attempt
+      ? 10
+      : attempt.correct_count + attempt.incorrect_count;
+  const missedWords =
+    isFreeSample || !attempt
+      ? ["because", "friend"]
+      : attempt.missed_words || [];
+  const dateStr =
+    isFreeSample || !attempt
+      ? date(new Date().toISOString())
+      : date(attempt.completed_at);
+  const slug =
+    isFreeSample || !attempt
+      ? "sample"
+      : nickname.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
   showPrintModal({
     title: copy.parentReportTitle || "Student Spelling Progress Report",
@@ -1621,20 +1640,33 @@ function openParentReportModal(data, attempt, me, isFreeSample = false) {
   });
 }
 
-function openMissedWordsModal(data, me, studentUrl, isFreeSample = false) {
-  const url = studentUrl || `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`;
-  let missedWords = (data.missedWordStats || []).map((m) => m.word);
-  if (!missedWords.length && data.attempts) {
-    for (const a of data.attempts) {
-      for (const w of a.missed_words || []) {
-        if (!missedWords.includes(w)) missedWords.push(w);
+function collectAssignmentMissedWords(data) {
+  const missedWords = [];
+  for (const item of data?.missedWordStats || []) {
+    if (item?.word && !missedWords.includes(item.word))
+      missedWords.push(item.word);
+  }
+  if (!missedWords.length) {
+    for (const attempt of data?.attempts || []) {
+      for (const word of attempt.missed_words || []) {
+        if (word && !missedWords.includes(word)) missedWords.push(word);
       }
     }
   }
-  if (isFreeSample || !missedWords.length) {
-    missedWords = ["because", "friend", "special", "beautiful", "thought"];
-  }
-  const slug = isFreeSample ? "sample" : (data.title || "assignment").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  return missedWords;
+}
+
+function openMissedWordsModal(data, me, studentUrl, isFreeSample = false) {
+  const url =
+    studentUrl ||
+    `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`;
+  const missedWords = isFreeSample
+    ? ["because", "friend", "special", "beautiful", "thought"]
+    : collectAssignmentMissedWords(data);
+  if (!missedWords.length) return false;
+  const slug = isFreeSample
+    ? "sample"
+    : (data.title || "assignment").toLowerCase().replace(/[^a-z0-9]+/g, "-");
   showPrintModal({
     title: copy.missedWordsSheetTitle || "Missed Words Practice Sheet",
     filename: `myspellinggame-${slug}-missed-words.pdf`,
@@ -1674,7 +1706,8 @@ function openMissedWordsModal(data, me, studentUrl, isFreeSample = false) {
 
 function openClassroomGuideModal(me) {
   showPrintModal({
-    title: copy.classroomGuideTitle || "Google Classroom Spelling in 3 Easy Steps",
+    title:
+      copy.classroomGuideTitle || "Google Classroom Spelling in 3 Easy Steps",
     filename: "myspellinggame-classroom-guide.pdf",
     renderSheetHtml: () => renderClassroomGuideSheetHtml({ copy }),
     getPdfBytes: () => buildClassroomGuidePdf({ copy }).bytes,
@@ -1752,7 +1785,8 @@ function showClassroomLockedModal(studentUrl) {
   const guideBtn = document.createElement("button");
   guideBtn.type = "button";
   guideBtn.className = "button-secondary classroom-guide-btn";
-  guideBtn.textContent = copy.classroomGuideBtn || "Classroom 1-Page Guide (PDF)";
+  guideBtn.textContent =
+    copy.classroomGuideBtn || "Classroom 1-Page Guide (PDF)";
   guideBtn.addEventListener("click", () => {
     openClassroomGuideModal(workspaceState?.me);
   });
@@ -3502,7 +3536,7 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
         <div class="actions assignment-submit-actions"><button type="submit">${editing ? copy.saveChanges : copy.publish}</button></div>
       </aside>
     </div>`;
-  attachSentenceLibraryControls(
+  const syncAssignmentSentences = attachSentenceLibraryControls(
     form,
     me,
     "#assignment-words",
@@ -3797,6 +3831,7 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
       syncFormSubmit(form);
     });
   }
+  syncAssignmentSentences();
   const saveDraft = () =>
     writeWorkspaceDraft(me, "assignment", draftObjectId, draftPath, {
       baseline: editing ? baseline : null,
@@ -4016,6 +4051,10 @@ async function renderTrackingPractice(me) {
   form.addEventListener("input", sync);
   form.addEventListener("change", sync);
   card.insertBefore(form, status);
+  bindSentenceRealignment(
+    form.querySelector("#tracking-words"),
+    form.querySelector("#tracking-sentences"),
+  );
   attachWordLimit(form, me, "#tracking-words");
   trackEvent("tracking_setup_viewed", {
     current_plan: me.plan,
@@ -4491,7 +4530,9 @@ async function renderDetail(me, id, { force = false } = {}) {
       showSectionError(
         card,
         error,
-        error.code === "active_assignment_limit" ? "active_assignment_limit" : null,
+        error.code === "active_assignment_limit"
+          ? "active_assignment_limit"
+          : null,
       );
     }
   });
@@ -4528,7 +4569,8 @@ async function renderDetail(me, id, { force = false } = {}) {
   const printTakeHome = document.createElement("button");
   printTakeHome.type = "button";
   printTakeHome.className = "button-secondary print-take-home-btn";
-  printTakeHome.textContent = copy.printTakeHome || "Print / Download take-home";
+  printTakeHome.textContent =
+    copy.printTakeHome || "Print / Download take-home";
   printTakeHome.addEventListener("click", () => {
     openTakeHomeModal(data, me, studentUrl);
   });
@@ -4839,10 +4881,12 @@ async function renderDetail(me, id, { force = false } = {}) {
     missesHeader.className = "actions compact-actions";
     const missesTitle = document.createElement("h2");
     missesTitle.textContent = copy.commonMisses;
+    const missedWords = collectAssignmentMissedWords(data);
     const printMissesBtn = document.createElement("button");
     printMissesBtn.type = "button";
     printMissesBtn.className = "button-secondary print-misses-btn";
     printMissesBtn.textContent = copy.printMissedWords || "Print missed words";
+    printMissesBtn.disabled = missedWords.length === 0;
     printMissesBtn.addEventListener("click", () => {
       openMissedWordsModal(data, me, studentUrl, false);
     });
@@ -4857,6 +4901,12 @@ async function renderDetail(me, id, { force = false } = {}) {
       list.append(chip);
     }
     misses.append(list);
+    if (!missedWords.length) {
+      const empty = document.createElement("p");
+      empty.className = "notice";
+      empty.textContent = copy.noMisses;
+      misses.append(empty);
+    }
     main.append(misses);
   } else {
     const misses = document.createElement("section");
@@ -4876,7 +4926,9 @@ async function renderDetail(me, id, { force = false } = {}) {
     misses.append(missesHeader);
     const notice = document.createElement("p");
     notice.className = "notice";
-    notice.textContent = copy.commonMissesFreeNotice || "Class-wide missed words analysis and printable practice sheets are available on the Teacher Plan.";
+    notice.textContent =
+      copy.commonMissesFreeNotice ||
+      "Class-wide missed words analysis and printable practice sheets are available on the Teacher Plan.";
     misses.append(notice);
     main.append(misses);
   }

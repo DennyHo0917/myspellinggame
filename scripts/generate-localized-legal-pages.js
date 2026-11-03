@@ -150,7 +150,7 @@ const locale = {
       panels: [
         [
           "Email",
-          'For support, feedback, or collaboration, please email:<br><a class="text-link" href="mailto:dennyho0917@hotmail.com">dennyho0917@hotmail.com</a>',
+          'For support, feedback, or collaboration, please email:<br><a class="text-link" href="mailto:dennyho0917@gmail.com">dennyho0917@gmail.com</a>',
         ],
         [
           "Helpful Details",
@@ -264,7 +264,7 @@ const locale = {
       panels: [
         [
           "Email",
-          'Para soporte, comentarios o colaboración, escribe a:<br><a class="text-link" href="mailto:dennyho0917@hotmail.com">dennyho0917@hotmail.com</a>',
+          'Para soporte, comentarios o colaboración, escribe a:<br><a class="text-link" href="mailto:dennyho0917@gmail.com">dennyho0917@gmail.com</a>',
         ],
         [
           "Detalles útiles",
@@ -378,7 +378,7 @@ const locale = {
       panels: [
         [
           "Email",
-          'Para suporte, feedback ou colaboração, envie um email para:<br><a class="text-link" href="mailto:dennyho0917@hotmail.com">dennyho0917@hotmail.com</a>',
+          'Para suporte, feedback ou colaboração, envie um email para:<br><a class="text-link" href="mailto:dennyho0917@gmail.com">dennyho0917@gmail.com</a>',
         ],
         [
           "Detalhes úteis",
@@ -492,7 +492,7 @@ const locale = {
       panels: [
         [
           "Email",
-          'Pour le support, un retour ou une collaboration, écrivez à :<br><a class="text-link" href="mailto:dennyho0917@hotmail.com">dennyho0917@hotmail.com</a>',
+          'Pour le support, un retour ou une collaboration, écrivez à :<br><a class="text-link" href="mailto:dennyho0917@gmail.com">dennyho0917@gmail.com</a>',
         ],
         [
           "Détails utiles",
@@ -606,7 +606,7 @@ const locale = {
       panels: [
         [
           "Email",
-          'Untuk dukungan, masukan, atau kerja sama, kirim email ke:<br><a class="text-link" href="mailto:dennyho0917@hotmail.com">dennyho0917@hotmail.com</a>',
+          'Untuk dukungan, masukan, atau kerja sama, kirim email ke:<br><a class="text-link" href="mailto:dennyho0917@gmail.com">dennyho0917@gmail.com</a>',
         ],
         [
           "Detail yang membantu",
@@ -720,7 +720,7 @@ const locale = {
       panels: [
         [
           "邮箱",
-          '如需支持、反馈或合作，请发送邮件到：<br><a class="text-link" href="mailto:dennyho0917@hotmail.com">dennyho0917@hotmail.com</a>',
+          '如需支持、反馈或合作，请发送邮件到：<br><a class="text-link" href="mailto:dennyho0917@gmail.com">dennyho0917@gmail.com</a>',
         ],
         [
           "建议提供的信息",

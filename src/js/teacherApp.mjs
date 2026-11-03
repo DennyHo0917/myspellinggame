@@ -4743,10 +4743,22 @@ async function renderDetail(me, id, { force = false } = {}) {
           row.append(td);
         }
         const actionCell = document.createElement("td");
+        actionCell.className = "action-cell";
+        actionCell.addEventListener("click", (e) => {
+          e.stopPropagation();
+        });
         const unlockLink = document.createElement("a");
         unlockLink.className = "button-link button-secondary";
         unlockLink.href = `${productPagePath("pricing", locale)}?from=locked_row&plan=teacher&interval=month&lang=${encodeURIComponent(locale)}`;
         unlockLink.textContent = copy.unlock;
+        unlockLink.addEventListener("click", (e) => {
+          e.stopPropagation();
+          trackEvent("upgrade_click", {
+            source: "locked_row",
+            plan: "teacher",
+            billing_interval: "month",
+          });
+        });
         const previewReportBtn = document.createElement("button");
         previewReportBtn.type = "button";
         previewReportBtn.className = "button-secondary preview-report-btn";
@@ -4768,23 +4780,18 @@ async function renderDetail(me, id, { force = false } = {}) {
         actionCell.append(previewReportBtn, unlockLink);
         row.append(actionCell);
 
-        const openUpgrade = (event) => {
+        const openRowPreview = (event) => {
           if (event.target.closest("button") || event.target.closest("a")) {
             return;
           }
-          trackEvent("upgrade_click", {
-            source: "locked_row",
-            plan: "teacher",
-            billing_interval: "month",
-          });
-          location.href = unlockLink.href;
+          openParentReportModal(data, null, me, true);
         };
-        row.addEventListener("click", openUpgrade);
+        row.addEventListener("click", openRowPreview);
         row.addEventListener("keydown", (e) => {
           if (e.target.closest("button") || e.target.closest("a")) return;
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            openUpgrade(e);
+            openRowPreview(e);
           }
         });
         body.append(row);

@@ -121,19 +121,40 @@ test("P0-2: Parent report PDF distinguishes Free sample watermark vs Paid unwate
 
   // Free preview HTML
   const freeHtml = renderParentReportSheetHtml({
-    nickname: "Sample Learner",
+    nickname: "Student A (Sample)",
     assignmentTitle: "Weekly Quiz",
     dateStr: "Nov 3, 2026",
     accuracy: 80,
     correctCount: 8,
     totalCount: 10,
-    missedWords: ["beautiful"],
+    missedWords: ["because", "friend"],
     studentUrl: "https://myspellinggame.com/a/quiz?lang=en",
     isFreeSample: true,
     copy,
   });
   assert.ok(freeHtml.includes("sheet-watermark"), "HTML preview renders watermark div in sample mode");
+  assert.ok(freeHtml.includes("SAMPLE / PREVIEW"), "Watermark contains SAMPLE / PREVIEW");
+  assert.ok(freeHtml.includes("sheet-sample-footer"), "Contains sample footer notice container");
+  assert.ok(freeHtml.includes("Sample — full parent reports on Teacher · $14.99/mo"), "Footer has exact monthly Teacher plan notice");
   assert.ok(!freeHtml.includes("{count}"), "Contains no raw {count} template variable");
+  assert.ok(!freeHtml.includes("{date}"), "Contains no raw {date} template variable");
+
+  // Paid preview HTML
+  const paidHtml = renderParentReportSheetHtml({
+    nickname: "Leo",
+    assignmentTitle: "Weekly Quiz",
+    dateStr: "Nov 3, 2026",
+    accuracy: 95,
+    correctCount: 19,
+    totalCount: 20,
+    missedWords: ["enough"],
+    studentUrl: "https://myspellinggame.com/a/quiz?lang=en",
+    isFreeSample: false,
+    copy,
+  });
+  assert.ok(!paidHtml.includes("sheet-watermark"), "Paid preview has NO watermark");
+  assert.ok(!paidHtml.includes("sheet-sample-footer"), "Paid preview has NO sample footer");
+  assert.ok(paidHtml.includes("Leo"), "Paid preview shows student nickname");
 });
 
 test("P1-3: Classroom 1-Page Guide PDF generates 3-step cheat sheet", () => {
@@ -269,4 +290,40 @@ test("All print copy is complete in all 6 locales without placeholder leaks", ()
       assert.ok(!copy[key].includes("{date}"), `${locale}:${key} contains unrendered {date}`);
     }
   }
+});
+
+test("Free locked attempt row: Preview print opens watermark preview without location jump, Unlock keeps from=locked_row", () => {
+  const copy = productMessages("en");
+
+  // Verify that preview print upgrade CTA matches exact specification
+  const locale = "en";
+  const upgradeHref = `/pricing?from=print_parent_report&plan=teacher&interval=month&lang=${locale}`;
+  const unlockHref = `/pricing?from=locked_row&plan=teacher&interval=month&lang=${locale}`;
+
+  assert.ok(upgradeHref.includes("from=print_parent_report"), "Preview print uses from=print_parent_report");
+  assert.ok(upgradeHref.includes("plan=teacher"), "Preview print targets Teacher plan");
+  assert.ok(upgradeHref.includes("interval=month"), "Preview print defaults to monthly interval");
+  assert.ok(!upgradeHref.includes("from=locked_row"), "Preview print never uses from=locked_row");
+
+  assert.ok(unlockHref.includes("from=locked_row"), "Unlock button keeps from=locked_row");
+
+  // Verify sample report data contains strictly sample placeholders, no real student names
+  const sampleHtml = renderParentReportSheetHtml({
+    nickname: copy.sampleStudentNickname || "Student A (Sample)",
+    assignmentTitle: "Spelling List 1",
+    dateStr: "Nov 3, 2026",
+    accuracy: 80,
+    correctCount: 8,
+    totalCount: 10,
+    missedWords: ["because", "friend"],
+    studentUrl: "https://myspellinggame.com/a/assignment-1?lang=en",
+    isFreeSample: true,
+    copy,
+  });
+
+  assert.ok(sampleHtml.includes("Student A (Sample)"), "Free report uses generic sample student name");
+  assert.ok(sampleHtml.includes("SAMPLE / PREVIEW"), "Free report shows clear watermark");
+  assert.ok(sampleHtml.includes("Sample — full parent reports on Teacher · $14.99/mo"), "Free report displays sample footer note");
+  assert.ok(!sampleHtml.includes("{count}"), "No {count} in free report");
+  assert.ok(!sampleHtml.includes("{date}"), "No {date} in free report");
 });

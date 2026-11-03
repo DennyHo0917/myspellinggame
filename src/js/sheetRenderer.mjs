@@ -113,8 +113,8 @@ export function renderParentReportSheetHtml({
     `;
   });
 
-  return `
-    ${isFreeSample ? `<div class="sheet-watermark" aria-hidden="true">${escapeHtml(copy?.sampleWatermark || "SAMPLE · Teacher Plan · $14.99/mo")}</div>` : ""}
+  const html = `
+    ${isFreeSample ? `<div class="sheet-watermark" aria-hidden="true">${escapeHtml(copy?.sampleWatermark || "SAMPLE / PREVIEW · Teacher Plan · $14.99/mo")}</div>` : ""}
 
     <div class="sheet-brand-header">
       <div class="sheet-brand-name">My Spelling Game</div>
@@ -150,7 +150,7 @@ export function renderParentReportSheetHtml({
         ${studentUrl ? `<div class="sheet-footer-url">${escapeHtml(studentUrl)}</div>` : ""}
         ${
           isFreeSample
-            ? `<div class="sheet-sample-footer">${escapeHtml(copy?.sampleFooterNotice || "Sample — Full unwatermarked parent reports available on Teacher Plan · $14.99/mo")}</div>`
+            ? `<div class="sheet-sample-footer">${escapeHtml(copy?.sampleFooterNotice || "Sample — full parent reports on Teacher · $14.99/mo")}</div>`
             : `<div class="sheet-footer-notes">${escapeHtml(copy?.printFooterNote || "Students practice free online · Teachers track results in Workspace")}</div>`
         }
       </div>

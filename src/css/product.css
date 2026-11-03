@@ -3404,19 +3404,20 @@ body.assignment-page {
 
 .sheet-watermark {
   position: absolute;
-  top: 42%;
+  top: 40%;
   left: 2%;
   right: 2%;
   transform: rotate(-30deg);
-  font-size: 1.65rem;
+  font-size: 2rem;
   font-weight: 800;
-  color: rgba(210, 40, 40, 0.14);
+  color: rgba(220, 38, 38, 0.22);
   text-align: center;
   text-transform: uppercase;
   pointer-events: none;
   user-select: none;
   z-index: 10;
   line-height: 1.4;
+  letter-spacing: 2px;
 }
 
 .sheet-score-card {

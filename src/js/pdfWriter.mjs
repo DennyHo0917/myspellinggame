@@ -248,7 +248,7 @@ export function buildParentReportPdf({
   pdf.line(36, 730, 576, 730, 1.2, [0.15, 0.45, 0.42]);
 
   if (isFreeSample) {
-    pdf.watermark(copy?.sampleWatermark || "SAMPLE - Teacher Plan $14.99/mo");
+    pdf.watermark(copy?.sampleWatermark || "SAMPLE / PREVIEW - Teacher Plan $14.99/mo");
   }
 
   // Learner info
@@ -298,7 +298,7 @@ export function buildParentReportPdf({
 
   if (isFreeSample) {
     pdf.text(
-      copy?.sampleFooterNotice || "SAMPLE - Full unwatermarked parent reports available on Teacher Plan - $14.99/mo",
+      copy?.sampleFooterNotice || "Sample - full parent reports on Teacher - $14.99/mo",
       120,
       44,
       8,

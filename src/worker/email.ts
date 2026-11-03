@@ -362,7 +362,7 @@ export function buildPriceChangeEmail(
     );
   return {
     from: FROM,
-    reply_to: "dennyho0917@hotmail.com",
+    reply_to: "dennyho0917@gmail.com",
     subject: detail.subject,
     text: `${paragraphs.join("\n\n")}\n\n${copy.manage}: ${url}\n\nMy Spelling Game`,
     html: `<!doctype html><html lang="${locale}"><body style="margin:0;padding:24px;background:#f5f7fa;font-family:Arial,sans-serif;color:#1f2937"><div style="max-width:600px;margin:0 auto;padding:28px;background:white;border:1px solid #e5e7eb;border-radius:8px"><img src="${LOGO_URL}" width="40" height="40" alt=""><h1 style="font-size:22px;line-height:1.4">${escape(detail.subject)}</h1>${paragraphs.map((paragraph) => `<p style="font-size:16px;line-height:1.6">${escape(paragraph)}</p>`).join("")}<p><a href="${url}" style="color:#2563eb">${escape(copy.manage)}</a></p><p>My Spelling Game</p></div></body></html>`,

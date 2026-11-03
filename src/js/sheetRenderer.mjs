@@ -13,10 +13,24 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
+function sanitizeTemplatePlaceholders(str) {
+  return String(str || "").replace(/\{[a-zA-Z0-9_-]+\}/g, "");
+}
+
+function getDueLabel(copy) {
+  if (copy?.dueLabel) return copy.dueLabel;
+  if (copy?.due) {
+    return copy.due.replace(/\{date\}|[:：]/g, "").trim();
+  }
+  return "Due";
+}
+
 export function renderTakeHomeSheetHtml({ title, due, mode, words = [], studentUrl, copy }) {
   const qrSvg = studentUrl ? qrCodeToSvg(generateQRCodeMatrix(studentUrl), 76) : "";
   const list = words.slice(0, 25);
   const isCompact = list.length > 12;
+  const dueClean = due ? String(due).replace(/\{[a-zA-Z0-9_-]+\}/g, "").trim() : "";
+  const dueLabel = getDueLabel(copy);
 
   let wordsHtml = "";
   list.forEach((item, index) => {
@@ -38,7 +52,7 @@ export function renderTakeHomeSheetHtml({ title, due, mode, words = [], studentU
     `;
   });
 
-  return `
+  const html = `
     <div class="sheet-brand-header">
       <div class="sheet-brand-name">My Spelling Game</div>
       <h1 class="sheet-title">${escapeHtml(copy?.takeHomeTitle || "Take-Home Spelling List")}</h1>
@@ -46,7 +60,7 @@ export function renderTakeHomeSheetHtml({ title, due, mode, words = [], studentU
 
     <div class="sheet-meta-grid">
       <div class="sheet-meta-item"><strong>${escapeHtml(copy?.assignment || "Assignment")}:</strong> ${escapeHtml(title)}</div>
-      ${due ? `<div class="sheet-meta-item"><strong>${escapeHtml(copy?.due || "Due")}:</strong> ${escapeHtml(due)}</div>` : ""}
+      ${dueClean ? `<div class="sheet-meta-item"><strong>${escapeHtml(dueLabel)}:</strong> ${escapeHtml(dueClean)}</div>` : ""}
       <div class="sheet-meta-item"><strong>${escapeHtml(copy?.mode || "Mode")}:</strong> ${escapeHtml(mode || "Dictation")}</div>
     </div>
 
@@ -70,6 +84,7 @@ export function renderTakeHomeSheetHtml({ title, due, mode, words = [], studentU
       </div>
     </div>
   `;
+  return sanitizeTemplatePlaceholders(html);
 }
 
 export function renderParentReportSheetHtml({
@@ -141,9 +156,16 @@ export function renderParentReportSheetHtml({
       </div>
     </div>
   `;
+  return sanitizeTemplatePlaceholders(html);
 }
 
-export function renderMissedWordsSheetHtml({ assignmentTitle, words = [], studentUrl, copy }) {
+export function renderMissedWordsSheetHtml({
+  assignmentTitle,
+  words = [],
+  studentUrl,
+  isFreeSample = false,
+  copy,
+}) {
   const qrSvg = studentUrl ? qrCodeToSvg(generateQRCodeMatrix(studentUrl), 76) : "";
   const list = (words.length ? words : ["example", "practice", "spelling"]).slice(0, 14);
 
@@ -162,7 +184,9 @@ export function renderMissedWordsSheetHtml({ assignmentTitle, words = [], studen
     `;
   });
 
-  return `
+  const html = `
+    ${isFreeSample ? `<div class="sheet-watermark" aria-hidden="true">${escapeHtml(copy?.sampleMissedWordsWatermark || "SAMPLE · Teacher Plan · $14.99/mo")}</div>` : ""}
+
     <div class="sheet-brand-header">
       <div class="sheet-brand-name">My Spelling Game</div>
       <h1 class="sheet-title">${escapeHtml(copy?.missedWordsSheetTitle || "Missed Words Practice Sheet")}</h1>
@@ -192,18 +216,22 @@ export function renderMissedWordsSheetHtml({ assignmentTitle, words = [], studen
         <div class="sheet-footer-title">${escapeHtml(copy?.practiceOnlineTitle || "Practice Online (Free for Students)")}</div>
         <div>${escapeHtml(copy?.scanOrVisit || "Scan the QR code or practice at:")}</div>
         ${studentUrl ? `<div class="sheet-footer-url">${escapeHtml(studentUrl)}</div>` : ""}
-        <div class="sheet-footer-notes">${escapeHtml(copy?.printFooterNote || "Students practice free online · Teachers track results in Workspace")}</div>
-        <div class="sheet-footer-cta">${escapeHtml(copy?.printFooterTeacherCta || "Teachers: Unlock class results from $14.99/mo")}</div>
+        ${
+          isFreeSample
+            ? `<div class="sheet-sample-footer">${escapeHtml(copy?.sampleMissedWordsNotice || "Sample — Full class-wide missed word sheets available on Teacher Plan · $14.99/mo")}</div>`
+            : `<div class="sheet-footer-notes">${escapeHtml(copy?.printFooterNote || "Students practice free online · Teachers track results in Workspace")}</div>`
+        }
       </div>
     </div>
   `;
+  return sanitizeTemplatePlaceholders(html);
 }
 
 export function renderClassroomGuideSheetHtml({ copy }) {
   const pricingUrl = "https://myspellinggame.com/pricing?from=print_classroom&plan=teacher&interval=month";
   const qrSvg = qrCodeToSvg(generateQRCodeMatrix(pricingUrl), 76);
 
-  return `
+  const html = `
     <div class="sheet-brand-header">
       <div class="sheet-brand-name">My Spelling Game</div>
       <h1 class="sheet-title">${escapeHtml(copy?.classroomGuideTitle || "Google Classroom Spelling in 3 Easy Steps")}</h1>
@@ -268,4 +296,5 @@ export function renderClassroomGuideSheetHtml({ copy }) {
       </div>
     </div>
   `;
+  return sanitizeTemplatePlaceholders(html);
 }

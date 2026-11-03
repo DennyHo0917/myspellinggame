@@ -1549,13 +1549,19 @@ function openTakeHomeModal(data, me, studentUrl) {
 function openParentReportModal(data, attempt, me, isFreeSample = false) {
   const title = data?.title || copy.assignment || "Spelling Assignment";
   const studentUrl = data ? `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}` : location.origin;
-  const nickname = attempt ? attempt.nickname : (copy.lockedRowLearner?.replace("{n}", "1") || "Sample Learner");
-  const accuracy = attempt ? attempt.accuracy : 80;
-  const correctCount = attempt ? attempt.correct_count : 8;
-  const totalCount = attempt ? (attempt.correct_count + attempt.incorrect_count) : 10;
-  const missedWords = attempt ? attempt.missed_words : ["example", "practice"];
-  const dateStr = attempt ? date(attempt.completed_at) : date(new Date().toISOString());
-  const slug = nickname.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const nickname = (isFreeSample || !attempt)
+    ? (copy.sampleStudentNickname || "Student A (Sample)")
+    : attempt.nickname;
+  const accuracy = (isFreeSample || !attempt) ? 80 : attempt.accuracy;
+  const correctCount = (isFreeSample || !attempt) ? 8 : attempt.correct_count;
+  const totalCount = (isFreeSample || !attempt) ? 10 : (attempt.correct_count + attempt.incorrect_count);
+  const missedWords = (isFreeSample || !attempt)
+    ? ["because", "friend"]
+    : (attempt.missed_words || []);
+  const dateStr = (isFreeSample || !attempt)
+    ? date(new Date().toISOString())
+    : date(attempt.completed_at);
+  const slug = (isFreeSample || !attempt) ? "sample" : nickname.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
   showPrintModal({
     title: copy.parentReportTitle || "Student Spelling Progress Report",
@@ -1591,13 +1597,21 @@ function openParentReportModal(data, attempt, me, isFreeSample = false) {
       plan: me?.plan || "free",
       is_sample: isFreeSample,
     },
+    isFreeSample,
+    upgradeCta: isFreeSample
+      ? {
+          label: copy.unlockFullReportsCta || "See Teacher Plan · $14.99/mo",
+          href: `${productPagePath("pricing", locale)}?from=print_parent_report&plan=teacher&interval=month&lang=${encodeURIComponent(locale)}`,
+          from: "print_parent_report",
+        }
+      : null,
     copy,
   });
 }
 
-function openMissedWordsModal(data, me, studentUrl) {
+function openMissedWordsModal(data, me, studentUrl, isFreeSample = false) {
   const url = studentUrl || `${location.origin}/a/${data.public_id}?lang=${encodeURIComponent(locale)}`;
-  const missedWords = (data.missedWordStats || []).map((m) => m.word);
+  let missedWords = (data.missedWordStats || []).map((m) => m.word);
   if (!missedWords.length && data.attempts) {
     for (const a of data.attempts) {
       for (const w of a.missed_words || []) {
@@ -1605,7 +1619,10 @@ function openMissedWordsModal(data, me, studentUrl) {
       }
     }
   }
-  const slug = (data.title || "assignment").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  if (isFreeSample || !missedWords.length) {
+    missedWords = ["because", "friend", "special", "beautiful", "thought"];
+  }
+  const slug = isFreeSample ? "sample" : (data.title || "assignment").toLowerCase().replace(/[^a-z0-9]+/g, "-");
   showPrintModal({
     title: copy.missedWordsSheetTitle || "Missed Words Practice Sheet",
     filename: `myspellinggame-${slug}-missed-words.pdf`,
@@ -1614,6 +1631,7 @@ function openMissedWordsModal(data, me, studentUrl) {
         assignmentTitle: data.title,
         words: missedWords,
         studentUrl: url,
+        isFreeSample,
         copy,
       }),
     getPdfBytes: () =>
@@ -1621,13 +1639,23 @@ function openMissedWordsModal(data, me, studentUrl) {
         assignmentTitle: data.title,
         words: missedWords,
         studentUrl: url,
+        isFreeSample,
         copy,
       }).bytes,
     telemetryEvent: "print_missed_words_click",
     telemetryParams: {
       plan: me?.plan || "free",
       count: missedWords.length,
+      is_sample: isFreeSample,
     },
+    isFreeSample,
+    upgradeCta: isFreeSample
+      ? {
+          label: copy.unlockMissedWordsCta || "See Teacher Plan · $14.99/mo",
+          href: `${productPagePath("pricing", locale)}?from=print_missed_words&plan=teacher&interval=month&lang=${encodeURIComponent(locale)}`,
+          from: "print_missed_words",
+        }
+      : null,
     copy,
   });
 }
@@ -4724,24 +4752,36 @@ async function renderDetail(me, id, { force = false } = {}) {
         previewReportBtn.className = "button-secondary preview-report-btn";
         previewReportBtn.textContent = copy.previewPrint || "Preview print";
         previewReportBtn.addEventListener("click", (e) => {
+          e.preventDefault();
           e.stopPropagation();
+          e.stopImmediatePropagation();
           openParentReportModal(data, null, me, true);
+        });
+        previewReportBtn.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            openParentReportModal(data, null, me, true);
+          }
         });
         actionCell.append(previewReportBtn, unlockLink);
         row.append(actionCell);
 
         const openUpgrade = (event) => {
-          if (event.target.tagName !== "A") {
-            trackEvent("upgrade_click", {
-              source: "locked_row",
-              plan: "teacher",
-              billing_interval: "month",
-            });
-            location.href = unlockLink.href;
+          if (event.target.closest("button") || event.target.closest("a")) {
+            return;
           }
+          trackEvent("upgrade_click", {
+            source: "locked_row",
+            plan: "teacher",
+            billing_interval: "month",
+          });
+          location.href = unlockLink.href;
         };
         row.addEventListener("click", openUpgrade);
         row.addEventListener("keydown", (e) => {
+          if (e.target.closest("button") || e.target.closest("a")) return;
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             openUpgrade(e);
@@ -4775,7 +4815,7 @@ async function renderDetail(me, id, { force = false } = {}) {
     printMissesBtn.className = "button-secondary print-misses-btn";
     printMissesBtn.textContent = copy.printMissedWords || "Print missed words";
     printMissesBtn.addEventListener("click", () => {
-      openMissedWordsModal(data, me, studentUrl);
+      openMissedWordsModal(data, me, studentUrl, false);
     });
     missesHeader.append(missesTitle, printMissesBtn);
     misses.append(missesHeader);
@@ -4788,6 +4828,27 @@ async function renderDetail(me, id, { force = false } = {}) {
       list.append(chip);
     }
     misses.append(list);
+    main.append(misses);
+  } else {
+    const misses = document.createElement("section");
+    misses.className = "product-card";
+    const missesHeader = document.createElement("div");
+    missesHeader.className = "actions compact-actions";
+    const missesTitle = document.createElement("h2");
+    missesTitle.textContent = copy.commonMisses;
+    const previewMissesBtn = document.createElement("button");
+    previewMissesBtn.type = "button";
+    previewMissesBtn.className = "button-secondary print-misses-preview-btn";
+    previewMissesBtn.textContent = copy.previewPrint || "Preview print";
+    previewMissesBtn.addEventListener("click", () => {
+      openMissedWordsModal(data, me, studentUrl, true);
+    });
+    missesHeader.append(missesTitle, previewMissesBtn);
+    misses.append(missesHeader);
+    const notice = document.createElement("p");
+    notice.className = "notice";
+    notice.textContent = copy.commonMissesFreeNotice || "Class-wide missed words analysis and printable practice sheets are available on the Teacher Plan.";
+    misses.append(notice);
     main.append(misses);
   }
 }

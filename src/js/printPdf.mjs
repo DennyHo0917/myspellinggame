@@ -11,6 +11,8 @@ export function showPrintModal({
   getPdfBytes,
   telemetryEvent,
   telemetryParams = {},
+  isFreeSample = false,
+  upgradeCta = null,
   copy,
 }) {
   const existing = document.querySelector(".print-preview-dialog");
@@ -30,10 +32,27 @@ export function showPrintModal({
   const actions = document.createElement("div");
   actions.className = "actions print-toolbar-actions";
 
+  if (upgradeCta) {
+    const upgradeLink = document.createElement("a");
+    upgradeLink.className = "button-link button-primary print-upgrade-btn";
+    upgradeLink.href = upgradeCta.href;
+    upgradeLink.textContent = upgradeCta.label;
+    upgradeLink.addEventListener("click", () => {
+      trackEvent("upgrade_click", {
+        source: upgradeCta.from || "print_parent_report",
+        plan: "teacher",
+        billing_interval: "month",
+      });
+    });
+    actions.append(upgradeLink);
+  }
+
   const downloadBtn = document.createElement("button");
   downloadBtn.type = "button";
-  downloadBtn.className = "button-primary print-download-btn";
-  downloadBtn.textContent = copy?.downloadPdf || "Download PDF";
+  downloadBtn.className = isFreeSample ? "button-secondary print-download-btn" : "button-primary print-download-btn";
+  downloadBtn.textContent = isFreeSample
+    ? (copy?.downloadSamplePdf || "Download Sample PDF")
+    : (copy?.downloadPdf || "Download PDF");
   downloadBtn.addEventListener("click", () => {
     if (telemetryEvent) trackEvent(telemetryEvent, telemetryParams);
     const bytes = getPdfBytes();
@@ -43,7 +62,9 @@ export function showPrintModal({
   const printBtn = document.createElement("button");
   printBtn.type = "button";
   printBtn.className = "button-secondary print-now-btn";
-  printBtn.textContent = copy?.print || "Print";
+  printBtn.textContent = isFreeSample
+    ? (copy?.printSample || "Print Sample")
+    : (copy?.print || "Print");
   printBtn.addEventListener("click", () => {
     if (telemetryEvent) trackEvent(telemetryEvent, telemetryParams);
     window.print();

@@ -59,6 +59,8 @@ test("P0-1: Take-home PDF generates valid Letter document with dictation lines a
   assert.ok(pdfStr.includes("Unit 3 Spelling List"), "Contains assignment title");
   assert.ok(pdfStr.includes("because"), "Contains spelling words");
   assert.ok(!pdfStr.includes("The teacher wrote the adverb"), "Sanitizes bad adverb sentence template");
+  assert.ok(pdfStr.includes("Due: Friday, Nov 7"), "Due date formatted without {date}");
+  assert.ok(!pdfStr.includes("{date}"), "No unrendered {date} in PDF");
   assert.ok(pdfStr.includes("Students practice free online"), "Contains footer note");
   assert.ok(pdfStr.includes("$14.99/mo"), "Includes Teacher $14.99/mo CTA");
   assert.ok(pdfStr.includes("%%EOF"), "Valid PDF EOF trailer");
@@ -73,7 +75,9 @@ test("P0-1: Take-home PDF generates valid Letter document with dictation lines a
   });
   assert.ok(html.includes("sheet-dictation-line"), "HTML preview includes dictation lines");
   assert.ok(html.includes("<svg"), "HTML preview includes QR code SVG");
+  assert.ok(html.includes("<strong>Due:</strong> Friday, Nov 7"), "HTML due date has clean label without {date}");
   assert.ok(!html.includes("{count}"), "Contains no raw {count} template variable");
+  assert.ok(!html.includes("{date}"), "Contains no raw {date} template variable");
 });
 
 test("P0-2: Parent report PDF distinguishes Free sample watermark vs Paid unwatermarked", () => {
@@ -152,29 +156,45 @@ test("P1-3: Classroom 1-Page Guide PDF generates 3-step cheat sheet", () => {
 
 test("P1-4: Missed Words Sheet PDF generates Look-Cover-Write-Check practice lines", () => {
   const copy = productMessages("en");
-  const result = buildMissedWordsPdf({
+  const paidResult = buildMissedWordsPdf({
     assignmentTitle: "Review List",
     words: ["beautiful", "suddenly", "through"],
     studentUrl: "https://myspellinggame.com/a/review?lang=en",
+    isFreeSample: false,
     copy,
   });
-  assert.equal(result.filename, "myspellinggame-review-list-missed-words.pdf");
+  assert.equal(paidResult.filename, "myspellinggame-review-list-missed-words.pdf");
 
-  const pdfStr = Buffer.from(result.bytes).toString("latin1");
-  assert.ok(pdfStr.includes("Look - Say - Cover - Write - Check"));
-  assert.ok(pdfStr.includes("Practice 1"));
-  assert.ok(pdfStr.includes("Practice 2"));
-  assert.ok(pdfStr.includes("Practice 3"));
-  assert.ok(pdfStr.includes("beautiful"));
+  const paidPdfStr = Buffer.from(paidResult.bytes).toString("latin1");
+  assert.ok(paidPdfStr.includes("Look - Say - Cover - Write - Check"));
+  assert.ok(paidPdfStr.includes("Practice 1"));
+  assert.ok(paidPdfStr.includes("Practice 2"));
+  assert.ok(paidPdfStr.includes("Practice 3"));
+  assert.ok(paidPdfStr.includes("beautiful"));
+  assert.ok(!paidPdfStr.includes("SAMPLE"), "Paid missed words has no watermark");
+
+  const freeResult = buildMissedWordsPdf({
+    assignmentTitle: "Review List",
+    words: ["beautiful", "suddenly"],
+    studentUrl: "https://myspellinggame.com/a/review?lang=en",
+    isFreeSample: true,
+    copy,
+  });
+  assert.equal(freeResult.filename, "myspellinggame-sample-missed-words.pdf");
+  const freePdfStr = Buffer.from(freeResult.bytes).toString("latin1");
+  assert.ok(freePdfStr.includes("SAMPLE"), "Free missed words has watermark");
 
   const html = renderMissedWordsSheetHtml({
     assignmentTitle: "Review List",
     words: ["beautiful", "suddenly"],
     studentUrl: "https://myspellinggame.com/a/review?lang=en",
+    isFreeSample: true,
     copy,
   });
   assert.ok(html.includes("Look — Say — Cover — Write — Check"));
+  assert.ok(html.includes("sheet-watermark"), "Free HTML preview has watermark");
   assert.ok(!html.includes("{count}"));
+  assert.ok(!html.includes("{date}"));
 });
 
 test("Telemetry allowlist retains print parameters and strips sensitive fields", () => {
@@ -199,13 +219,15 @@ test("Telemetry allowlist retains print parameters and strips sensitive fields",
     ...pii,
     plan: "teacher",
     count: 5,
+    is_sample: false,
   });
-  assert.deepEqual(missedWordsEvent, { plan: "teacher", count: 5 });
+  assert.deepEqual(missedWordsEvent, { plan: "teacher", count: 5, is_sample: false });
 });
 
 test("All print copy is complete in all 6 locales without placeholder leaks", () => {
   const requiredKeys = [
     "printTakeHome",
+    "dueLabel",
     "takeHomeTitle",
     "wordListHeader",
     "practiceLinesHeader",
@@ -213,6 +235,12 @@ test("All print copy is complete in all 6 locales without placeholder leaks", ()
     "printFooterTeacherCta",
     "printParentReport",
     "previewPrint",
+    "unlockFullReportsCta",
+    "unlockMissedWordsCta",
+    "downloadSamplePdf",
+    "printSample",
+    "sampleStudentNickname",
+    "commonMissesFreeNotice",
     "parentReportTitle",
     "wordsToReview",
     "reviewAdvice",
@@ -220,6 +248,8 @@ test("All print copy is complete in all 6 locales without placeholder leaks", ()
     "sampleFooterNotice",
     "printMissedWords",
     "missedWordsSheetTitle",
+    "sampleMissedWordsWatermark",
+    "sampleMissedWordsNotice",
     "lookCoverWriteCheck",
     "classroomGuideTitle",
     "classroomGuideBtn",
@@ -236,6 +266,7 @@ test("All print copy is complete in all 6 locales without placeholder leaks", ()
     for (const key of requiredKeys) {
       assert.ok(copy[key]?.length > 0, `${locale}: missing ${key}`);
       assert.ok(!copy[key].includes("{count}"), `${locale}:${key} contains unrendered {count}`);
+      assert.ok(!copy[key].includes("{date}"), `${locale}:${key} contains unrendered {date}`);
     }
   }
 });

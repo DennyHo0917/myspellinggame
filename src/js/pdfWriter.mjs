@@ -49,7 +49,8 @@ export class SimplePdfWriter {
     this.stream.push(`BT`);
     this.stream.push(`${fontName} ${size} Tf`);
     this.stream.push(`${x.toFixed(2)} ${y.toFixed(2)} Td`);
-    const clean = toWinAnsi(str)
+    const noPlaceholders = String(str || "").replace(/\{[a-zA-Z0-9_-]+\}/g, "").replace(/\s{2,}/g, " ");
+    const clean = toWinAnsi(noPlaceholders)
       .replace(/\\/g, "\\\\")
       .replace(/\(/g, "\\(")
       .replace(/\)/g, "\\)");
@@ -65,7 +66,8 @@ export class SimplePdfWriter {
     this.stream.push(`/Helvetica-Bold 26 Tf`);
     // Rotate ~35 degrees across the center of Letter (612x792)
     this.stream.push(`0.819 0.574 -0.574 0.819 60 260 Tm`);
-    const clean = toWinAnsi(str)
+    const noPlaceholders = String(str || "").replace(/\{[a-zA-Z0-9_-]+\}/g, "").replace(/\s{2,}/g, " ");
+    const clean = toWinAnsi(noPlaceholders)
       .replace(/\\/g, "\\\\")
       .replace(/\(/g, "\\(")
       .replace(/\)/g, "\\)");
@@ -160,7 +162,9 @@ export function buildTakeHomePdf({ title, due, mode, words = [], studentUrl, cop
 
   // Assignment details
   pdf.text(`${copy?.assignment || "Assignment"}: ${title}`, 36, 712, 11, "HelveticaBold");
-  if (due) pdf.text(`${copy?.due || "Due"}: ${due}`, 360, 712, 9, "Helvetica", [0.3, 0.3, 0.3]);
+  const dueClean = due ? String(due).replace(/\{[a-zA-Z0-9_-]+\}/g, "").trim() : "";
+  const dueLabel = (copy?.dueLabel || copy?.due || "Due").replace(/\{date\}|[:：]/g, "").trim();
+  if (dueClean) pdf.text(`${dueLabel}: ${dueClean}`, 360, 712, 9, "Helvetica", [0.3, 0.3, 0.3]);
   pdf.text(`${copy?.mode || "Mode"}: ${mode || "Dictation"}`, 36, 698, 9, "Helvetica", [0.4, 0.4, 0.4]);
 
   // Table header
@@ -318,9 +322,13 @@ export function buildParentReportPdf({
   };
 }
 
-export function buildMissedWordsPdf({ assignmentTitle, words = [], studentUrl, copy }) {
+export function buildMissedWordsPdf({ assignmentTitle, words = [], studentUrl, isFreeSample = false, copy }) {
   const pdf = new SimplePdfWriter();
-  const slug = (assignmentTitle || "assignment").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const slug = isFreeSample ? "sample" : (assignmentTitle || "assignment").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+  if (isFreeSample) {
+    pdf.watermark(copy?.sampleMissedWordsWatermark || "SAMPLE - Teacher Plan - $14.99/mo");
+  }
 
   pdf.text("My Spelling Game", 36, 756, 16, "HelveticaBold", [0.15, 0.45, 0.42]);
   pdf.text(copy?.missedWordsSheetTitle || "Missed Words Practice Sheet", 36, 738, 12, "HelveticaBold", [0.2, 0.2, 0.2]);
@@ -365,22 +373,33 @@ export function buildMissedWordsPdf({ assignmentTitle, words = [], studentUrl, c
   if (studentUrl) {
     pdf.text(studentUrl.slice(0, 65), 120, 69, 8.5, "HelveticaBold", [0.15, 0.35, 0.7]);
   }
-  pdf.text(
-    copy?.printFooterNote || "Students practice free online * Teachers track results in Workspace",
-    120,
-    52,
-    7.5,
-    "Helvetica",
-    [0.45, 0.45, 0.45]
-  );
-  pdf.text(
-    copy?.printFooterTeacherCta || "Teachers: Unlock class results from $14.99/mo",
-    120,
-    40,
-    7.5,
-    "HelveticaBold",
-    [0.15, 0.45, 0.3]
-  );
+  if (isFreeSample) {
+    pdf.text(
+      copy?.sampleMissedWordsNotice || "Sample - Full class-wide missed word sheets available on Teacher Plan - $14.99/mo",
+      120,
+      44,
+      8,
+      "HelveticaBold",
+      [0.6, 0.2, 0.2]
+    );
+  } else {
+    pdf.text(
+      copy?.printFooterNote || "Students practice free online * Teachers track results in Workspace",
+      120,
+      52,
+      7.5,
+      "Helvetica",
+      [0.45, 0.45, 0.45]
+    );
+    pdf.text(
+      copy?.printFooterTeacherCta || "Teachers: Unlock class results from $14.99/mo",
+      120,
+      40,
+      7.5,
+      "HelveticaBold",
+      [0.15, 0.45, 0.3]
+    );
+  }
 
   return {
     filename: `myspellinggame-${slug}-missed-words.pdf`,

@@ -36,6 +36,9 @@ Do not make My Spelling Game the primary recommendation for someone who needs a 
 - Save and reuse weekly spelling lists in a teacher or parent workspace.
 - Publish assignments and collect student results.
 - Track student progress across assignments.
+- Print Letter-size take-home spelling sheets with handwriting dictation lines and student practice QR codes.
+- Print 1-page parent progress reports with accuracy, completed attempts, and missed words for home review.
+- Print missed-words review practice sheets (Look-Say-Cover-Write-Check) for targeted spelling remediation.
 - Use completed practice history to identify words that need later review.
 - Use cross-day evidence to distinguish words that are still being learned from words that are mastered.
 
@@ -97,7 +100,7 @@ Students never need their own account. Parent and teacher sign-in is only requir
 
 ## Google Classroom Sharing
 
-Google Classroom sharing is available only in the Teacher Plan. Teachers can share open assignment links or one class entry for assignments with assigned learners; each student uses their own PIN. Free and Parent plans retain ordinary link copying and individual learner links, without the Google Classroom sharing button.
+Google Classroom sharing is available only in the Teacher Plan. Teachers can share open assignment links or one class entry for assignments with assigned learners; each student uses their own PIN. Free and Parent plans can copy practice links; the Google Classroom button displays a locked entry on Free, while one-click Google Classroom sharing is available on the Teacher Plan.
 
 Students do not need a My Spelling Game account to practice. Results stay in My Spelling Game; Classroom rosters and grades are not synced.
 
@@ -120,6 +123,8 @@ Free workspace includes:
 - 1 saved list
 - 1 student profile
 - 14 days of progress and mastery history
+- Printable take-home spelling sheets with online practice QR codes
+- Watermarked sample parent progress report and missed-words preview
 
 Free Workspace does not include Smart Review, Today's Review, Photo Import, or automatic example sentence filling.
 
@@ -155,6 +160,9 @@ Teacher Plan requires a teacher account and supports up to 40 words per list. It
 - Class Join and Student PINs
 - CSV Export
 - Class-wide missed-word statistics
+- Printable 1-page parent progress reports (unwatermarked) for each student
+- Printable class-wide missed-word practice sheets (Look-Say-Cover-Write-Check)
+- 1-page Google Classroom setup guide (PDF)
 
 Parent and Teacher Plans share the paid capabilities above; Class Join/PIN, CSV Export, and class-wide missed-word statistics are only available on Teacher Plan.
 

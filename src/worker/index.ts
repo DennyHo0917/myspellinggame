@@ -806,20 +806,33 @@ async function getPlan(
   );
 }
 
-function isLowQualitySentenceTemplate(sentence: string | null | undefined): boolean {
-  if (!sentence) return false;
+function isLowQualitySentenceTemplate(
+  sentence: string | null | undefined,
+): boolean {
+  if (!sentence || typeof sentence !== "string") return false;
+  const s = sentence.trim();
+  if (!s) return false;
   return (
-    /The teacher wrote (the [a-z\s]+|"[^"]+"|[a-z]+)/i.test(sentence) ||
-    /The teacher asked the (class|students)/i.test(sentence) ||
-    /The class (discussed|compared)/i.test(sentence) ||
-    /After (reading|discussing) the (sentence|verb|adverb|adjective|noun)/i.test(sentence) ||
-    /After reviewing the example/i.test(sentence) ||
-    /can make a description more precise/i.test(sentence) ||
-    /wrote an example that showed they understood/i.test(sentence)
+    /The teacher (wrote|mentioned|asked|pointed|explained|used|showed|reviewed)/i.test(
+      s,
+    ) ||
+    /on the board/i.test(s) ||
+    /during the lesson/i.test(s) ||
+    /The class (discussed|compared|read|reviewed|practiced)/i.test(s) ||
+    /After (reading|discussing|reviewing|examining)/i.test(s) ||
+    /as a (verb|noun|adverb|adjective)/i.test(s) ||
+    /role of "[^"]+"/i.test(s) ||
+    /can make a description more precise/i.test(s) ||
+    /wrote an example that showed they understood/i.test(s) ||
+    /The number [a-z0-9]+ is on the board/i.test(s) ||
+    /The story uses "[^"]+"/i.test(s) ||
+    /The lesson (includes|uses) "[^"]+"/i.test(s)
   );
 }
 
-function sanitizeExampleSentence(sentence: string | null | undefined): string | null {
+function sanitizeExampleSentence(
+  sentence: string | null | undefined,
+): string | null {
   if (!sentence) return null;
   const trimmed = sentence.trim();
   if (!trimmed) return null;
@@ -848,7 +861,10 @@ async function matchSentenceLibrary(
     rows.results.map((row) => {
       const preferred =
         difficulty === "simple" ? row.simple_sentence : row.difficult_sentence;
-      const clean = sanitizeExampleSentence(preferred);
+      const alternative =
+        difficulty === "simple" ? row.difficult_sentence : row.simple_sentence;
+      let clean = sanitizeExampleSentence(preferred);
+      if (!clean) clean = sanitizeExampleSentence(alternative);
       return [normalizeWord(row.word), clean];
     }),
   );
@@ -956,6 +972,9 @@ async function listAssignments(
               (SELECT COUNT(*) FROM attempts all_at WHERE all_at.assignment_id = a.id
                AND all_at.status = 'completed' AND all_at.completed_at >= ?
                AND all_at.retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) AS total_attempt_count,
+              (SELECT COALESCE(ROUND(AVG(all_at.accuracy)), 0) FROM attempts all_at WHERE all_at.assignment_id = a.id
+               AND all_at.status = 'completed' AND all_at.completed_at >= ?
+               AND all_at.retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) AS total_average_accuracy,
               COUNT(CASE WHEN at.status = 'completed' THEN 1 END) AS attempt_count,
               COUNT(DISTINCT at.nickname_key) AS student_count,
               COALESCE(ROUND(AVG(CASE WHEN at.status = 'completed' THEN at.accuracy END)), 0) AS average_accuracy,
@@ -968,7 +987,7 @@ async function listAssignments(
        GROUP BY a.id
        ORDER BY a.created_at DESC`,
     )
-    .bind(cutoff, cutoff, cutoff, cutoff, ownerUserId)
+    .bind(cutoff, cutoff, cutoff, cutoff, cutoff, ownerUserId)
     .all();
   return result.results;
 }
@@ -979,45 +998,53 @@ async function assignmentDetail(
   plan: Plan,
 ) {
   const cutoff = historyCutoff(plan);
-  const [locked, totalSummary, weeklyStats, wordRows, attemptRows, average, assignedLearners, attemptExists] =
-    await Promise.all([
-      db
-        .prepare(
-          `SELECT COUNT(*) AS count FROM attempts at WHERE assignment_id = ?
+  const [
+    locked,
+    totalSummary,
+    weeklyStats,
+    wordRows,
+    attemptRows,
+    average,
+    assignedLearners,
+    attemptExists,
+  ] = await Promise.all([
+    db
+      .prepare(
+        `SELECT COUNT(*) AS count FROM attempts at WHERE assignment_id = ?
          AND status = 'completed' AND completed_at >= ? AND free_result_visible = 0
          AND retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
-        )
-        .bind(assignment.id, cutoff)
-        .first<{ count: number }>(),
-      db
-        .prepare(
-          `SELECT COUNT(CASE WHEN status = 'completed' THEN 1 END) AS total_attempts,
+      )
+      .bind(assignment.id, cutoff)
+      .first<{ count: number }>(),
+    db
+      .prepare(
+        `SELECT COUNT(CASE WHEN status = 'completed' THEN 1 END) AS total_attempts,
                 COUNT(DISTINCT nickname_key) AS total_students,
                 COALESCE(ROUND(AVG(CASE WHEN status = 'completed' THEN accuracy END)), 0) AS total_average_accuracy
          FROM attempts at WHERE assignment_id = ? AND completed_at >= ?
            AND retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
-        )
-        .bind(assignment.id, cutoff)
-        .first<Record<string, number>>(),
-      db
-        .prepare(
-          `SELECT COUNT(CASE WHEN status = 'completed' THEN 1 END) AS weekly_attempts,
+      )
+      .bind(assignment.id, cutoff)
+      .first<Record<string, number>>(),
+    db
+      .prepare(
+        `SELECT COUNT(CASE WHEN status = 'completed' THEN 1 END) AS weekly_attempts,
                 COUNT(DISTINCT nickname_key) AS weekly_students
          FROM attempts at WHERE assignment_id = ?
            AND completed_at >= datetime('now', '-7 days')
            AND retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
-        )
-        .bind(assignment.id)
-        .first<Record<string, number>>(),
-      db
-        .prepare(
-          "SELECT id, position, word, example_sentence FROM assignment_words WHERE assignment_id = ? ORDER BY position",
-        )
-        .bind(assignment.id)
-        .all<AssignmentWord>(),
-      db
-        .prepare(
-          `SELECT at.id, at.nickname, at.attempt_number, at.status, at.score, at.correct_count,
+      )
+      .bind(assignment.id)
+      .first<Record<string, number>>(),
+    db
+      .prepare(
+        "SELECT id, position, word, example_sentence FROM assignment_words WHERE assignment_id = ? ORDER BY position",
+      )
+      .bind(assignment.id)
+      .all<AssignmentWord>(),
+    db
+      .prepare(
+        `SELECT at.id, at.nickname, at.attempt_number, at.status, at.score, at.correct_count,
                 at.incorrect_count, at.accuracy, at.duration_seconds, at.completed_at,
                 GROUP_CONCAT(CASE WHEN ai.is_correct = 0 THEN aw.word END, char(31)) AS missed_words
          FROM attempts at
@@ -1026,33 +1053,33 @@ async function assignmentDetail(
          WHERE at.assignment_id = ? AND at.completed_at >= ? AND ${visibleResult(plan)}
          GROUP BY at.id
          ORDER BY at.completed_at DESC`,
-        )
-        .bind(assignment.id, cutoff)
-        .all<AttemptDetailRow>(),
-      db
-        .prepare(
-          `SELECT COUNT(CASE WHEN status = 'completed' THEN 1 END) AS attempts,
+      )
+      .bind(assignment.id, cutoff)
+      .all<AttemptDetailRow>(),
+    db
+      .prepare(
+        `SELECT COUNT(CASE WHEN status = 'completed' THEN 1 END) AS attempts,
                 COUNT(DISTINCT nickname_key) AS students,
                 COALESCE(ROUND(AVG(CASE WHEN status = 'completed' THEN accuracy END)), 0) AS average_accuracy
          FROM attempts at WHERE assignment_id = ? AND completed_at >= ? AND ${visibleResult(plan)}`,
-        )
-        .bind(assignment.id, cutoff)
-        .first<Record<string, number>>(),
-      db
-        .prepare(
-          `SELECT l.id, l.public_id, l.name FROM assignment_learners al
+      )
+      .bind(assignment.id, cutoff)
+      .first<Record<string, number>>(),
+    db
+      .prepare(
+        `SELECT l.id, l.public_id, l.name FROM assignment_learners al
          JOIN learners l ON l.id = al.learner_id
          WHERE al.assignment_id = ? ORDER BY l.name_key`,
-        )
-        .bind(assignment.id)
-        .all<{ id: string; public_id: string; name: string }>(),
-      db
-        .prepare(
-          "SELECT 1 FROM attempts WHERE assignment_id = ? AND status = 'completed' LIMIT 1",
-        )
-        .bind(assignment.id)
-        .first(),
-    ]);
+      )
+      .bind(assignment.id)
+      .all<{ id: string; public_id: string; name: string }>(),
+    db
+      .prepare(
+        "SELECT 1 FROM attempts WHERE assignment_id = ? AND status = 'completed' LIMIT 1",
+      )
+      .bind(assignment.id)
+      .first(),
+  ]);
   let missedWords: unknown[] | null = null;
   if (PLAN_LIMITS[plan].missedWordStats) {
     missedWords = (
@@ -1073,7 +1100,10 @@ async function assignmentDetail(
   return {
     ...assignment,
     lockedResultCount: plan === "free" ? Number(locked?.count ?? 0) : 0,
-    words: wordRows.results,
+    words: wordRows.results.map((word) => ({
+      ...word,
+      example_sentence: sanitizeExampleSentence(word.example_sentence),
+    })),
     attempts: attemptRows.results.map((attempt) => ({
       ...attempt,
       missed_words: attempt.missed_words
@@ -2058,13 +2088,18 @@ async function publicAssignment(
         throw new HttpError(404, "learner_not_found", "Learner not found.");
     }
   }
-  const words = await db
-    .prepare(
-      "SELECT id, position, word, example_sentence FROM assignment_words WHERE assignment_id = ? ORDER BY position",
-    )
-    .bind(assignment.id)
-    .all<AssignmentWord>();
-  return { ...assignment, words: words.results, learner };
+  const words = (
+    await db
+      .prepare(
+        "SELECT id, position, word, example_sentence FROM assignment_words WHERE assignment_id = ? ORDER BY position",
+      )
+      .bind(assignment.id)
+      .all<AssignmentWord>()
+  ).results.map((word) => ({
+    ...word,
+    example_sentence: sanitizeExampleSentence(word.example_sentence),
+  }));
+  return { ...assignment, words, learner };
 }
 
 // A class-wide URL must never contain a learner bearer identity.

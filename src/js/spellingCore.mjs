@@ -100,7 +100,36 @@ export function exampleSentenceParts(sentence, word) {
   return parts;
 }
 
+export function isLowQualitySentenceTemplate(sentence) {
+  if (!sentence || typeof sentence !== "string") return false;
+  const s = sentence.trim();
+  if (!s) return false;
+  return (
+    /The teacher (wrote|mentioned|asked|pointed|explained|used|showed|reviewed)/i.test(s) ||
+    /on the board/i.test(s) ||
+    /during the lesson/i.test(s) ||
+    /The class (discussed|compared|read|reviewed|practiced)/i.test(s) ||
+    /After (reading|discussing|reviewing|examining)/i.test(s) ||
+    /as a (verb|noun|adverb|adjective)/i.test(s) ||
+    /role of "[^"]+"/i.test(s) ||
+    /can make a description more precise/i.test(s) ||
+    /wrote an example that showed they understood/i.test(s) ||
+    /The number [a-z0-9]+ is on the board/i.test(s) ||
+    /The story uses "[^"]+"/i.test(s) ||
+    /The lesson (includes|uses) "[^"]+"/i.test(s)
+  );
+}
+
+export function sanitizeExampleSentence(sentence) {
+  if (!sentence) return null;
+  const trimmed = String(sentence).trim();
+  if (!trimmed) return null;
+  if (isLowQualitySentenceTemplate(trimmed)) return null;
+  return trimmed;
+}
+
 export function dictationSpeechText(word, sentence) {
+  if (isLowQualitySentenceTemplate(sentence)) return word;
   const cleanSentence = String(sentence || "")
     .trim()
     .replace(/[.!?]+$/, "");

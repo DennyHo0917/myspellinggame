@@ -63,10 +63,13 @@ const PACKS = {
     teacherPlan: "Teacher Plan",
     activeUsage: "{used} of {limit} active assignments",
     lockedResults: "{count} results to unlock",
-    lockedResultsPracticed: "{count} learners practiced. Unlock names, accuracy, and missed words.",
-    weeklyPracticeStats: "This week: {practiced} practiced · {completed} completed",
+    lockedResultsPracticed:
+      "{count} learners practiced. Unlock names, accuracy, and missed words.",
+    weeklyPracticeStats:
+      "This week: {practiced} practiced · {completed} completed",
     deadlineExpiredNote: "Once expired, learners can no longer submit.",
-    assignmentExpiredContact: "This assignment has expired. Please contact your teacher if you need an extension.",
+    assignmentExpiredContact:
+      "This assignment has expired. Please contact your teacher if you need an extension.",
     learnersWaitingCount: "{count} waiting — upgrade to track them",
     learnerWaitingBadge: "Waiting list",
     lockedRowLearner: "Learner {n} (Locked)",
@@ -481,11 +484,16 @@ const PACKS = {
     teacherPlan: "Plan para docentes",
     activeUsage: "{used} de {limit} tareas activas",
     lockedResults: "{count} resultados por desbloquear",
-    lockedResultsPracticed: "{count} estudiantes practicaron. Desbloquea nombres, precisión y palabras fallidas.",
-    weeklyPracticeStats: "Esta semana: {practiced} practicaron · {completed} completaron",
-    deadlineExpiredNote: "Una vez caducada, los estudiantes ya no podrán entregarla.",
-    assignmentExpiredContact: "Esta tarea ha caducado. Contacta a tu profesor si necesitas una extensión.",
-    learnersWaitingCount: "{count} en espera — actualiza para seguir su progreso",
+    lockedResultsPracticed:
+      "{count} estudiantes practicaron. Desbloquea nombres, precisión y palabras fallidas.",
+    weeklyPracticeStats:
+      "Esta semana: {practiced} practicaron · {completed} completaron",
+    deadlineExpiredNote:
+      "Una vez caducada, los estudiantes ya no podrán entregarla.",
+    assignmentExpiredContact:
+      "Esta tarea ha caducado. Contacta a tu profesor si necesitas una extensión.",
+    learnersWaitingCount:
+      "{count} en espera — actualiza para seguir su progreso",
     learnerWaitingBadge: "Lista de espera",
     lockedRowLearner: "Estudiante {n} (Bloqueado)",
     unlock: "Desbloquear",
@@ -902,11 +910,15 @@ const PACKS = {
     teacherPlan: "Plano para Professores",
     activeUsage: "{used} de {limit} tarefas ativas",
     lockedResults: "{count} resultados para desbloquear",
-    lockedResultsPracticed: "{count} alunos praticaram. Desbloqueie nomes, precisão e palavras erradas.",
-    weeklyPracticeStats: "Esta semana: {practiced} praticaram · {completed} concluíram",
+    lockedResultsPracticed:
+      "{count} alunos praticaram. Desbloqueie nomes, precisão e palavras erradas.",
+    weeklyPracticeStats:
+      "Esta semana: {practiced} praticaram · {completed} concluíram",
     deadlineExpiredNote: "Após a expiração, os alunos não poderão mais enviar.",
-    assignmentExpiredContact: "Esta tarefa expirou. Entre em contato com seu professor se precisar de mais tempo.",
-    learnersWaitingCount: "{count} em espera — faça upgrade para acompanhar o progresso",
+    assignmentExpiredContact:
+      "Esta tarefa expirou. Entre em contato com seu professor se precisar de mais tempo.",
+    learnersWaitingCount:
+      "{count} em espera — faça upgrade para acompanhar o progresso",
     learnerWaitingBadge: "Lista de espera",
     lockedRowLearner: "Aluno {n} (Bloqueado)",
     unlock: "Desbloquear",
@@ -1321,11 +1333,16 @@ const PACKS = {
     teacherPlan: "Offre Enseignants",
     activeUsage: "{used} devoirs actifs sur {limit}",
     lockedResults: "{count} résultats à déverrouiller",
-    lockedResultsPracticed: "{count} apprenants se sont entraînés. Débloquez les noms, la précision et les mots manqués.",
-    weeklyPracticeStats: "Cette semaine : {practiced} entraînés · {completed} terminés",
-    deadlineExpiredNote: "Une fois expiré, les apprenants ne peuvent plus soumettre leurs réponses.",
-    assignmentExpiredContact: "Ce devoir a expiré. Veuillez contacter votre enseignant si vous avez besoin d’un délai supplémentaire.",
-    learnersWaitingCount: "{count} en attente — passez au forfait supérieur pour les suivre",
+    lockedResultsPracticed:
+      "{count} apprenants se sont entraînés. Débloquez les noms, la précision et les mots manqués.",
+    weeklyPracticeStats:
+      "Cette semaine : {practiced} entraînés · {completed} terminés",
+    deadlineExpiredNote:
+      "Une fois expiré, les apprenants ne peuvent plus soumettre leurs réponses.",
+    assignmentExpiredContact:
+      "Ce devoir a expiré. Veuillez contacter votre enseignant si vous avez besoin d’un délai supplémentaire.",
+    learnersWaitingCount:
+      "{count} en attente — passez au forfait supérieur pour les suivre",
     learnerWaitingBadge: "En attente",
     lockedRowLearner: "Apprenant {n} (Verrouillé)",
     unlock: "Déverrouiller",
@@ -1745,11 +1762,16 @@ const PACKS = {
     teacherPlan: "Paket Guru",
     activeUsage: "{used} dari {limit} tugas aktif",
     lockedResults: "{count} hasil belum terbuka",
-    lockedResultsPracticed: "{count} siswa telah berlatih. Buka nama, akurasi, dan kata yang salah.",
-    weeklyPracticeStats: "Minggu ini: {practiced} berlatih · {completed} selesai",
-    deadlineExpiredNote: "Setelah kedaluwarsa, siswa tidak dapat lagi mengumpulkan tugas.",
-    assignmentExpiredContact: "Tugas ini sudah kedaluwarsa. Hubungi guru Anda jika memerlukan perpanjangan waktu.",
-    learnersWaitingCount: "{count} menunggu — tingkatkan paket untuk melacak mereka",
+    lockedResultsPracticed:
+      "{count} siswa telah berlatih. Buka nama, akurasi, dan kata yang salah.",
+    weeklyPracticeStats:
+      "Minggu ini: {practiced} berlatih · {completed} selesai",
+    deadlineExpiredNote:
+      "Setelah kedaluwarsa, siswa tidak dapat lagi mengumpulkan tugas.",
+    assignmentExpiredContact:
+      "Tugas ini sudah kedaluwarsa. Hubungi guru Anda jika memerlukan perpanjangan waktu.",
+    learnersWaitingCount:
+      "{count} menunggu — tingkatkan paket untuk melacak mereka",
     learnerWaitingBadge: "Daftar tunggu",
     lockedRowLearner: "Siswa {n} (Terkunci)",
     unlock: "Buka",
@@ -2147,10 +2169,12 @@ const PACKS = {
     teacherPlan: "教师方案",
     activeUsage: "活跃作业 {used}/{limit}",
     lockedResults: "{count} 份结果待解锁",
-    lockedResultsPracticed: "{count} 名学习者已完成练习。升级解锁姓名、正确率与错词分析。",
+    lockedResultsPracticed:
+      "{count} 名学习者已完成练习。升级解锁姓名、正确率与错词分析。",
     weeklyPracticeStats: "本周：{practiced} 人练习 · {completed} 次提交",
     deadlineExpiredNote: "作业截止后，学生将无法再提交答案。",
-    assignmentExpiredContact: "这份作业已截止。如需补交，请联系老师修改截止时间。",
+    assignmentExpiredContact:
+      "这份作业已截止。如需补交，请联系老师修改截止时间。",
     learnersWaitingCount: "{count} 名学习者等待中 — 升级方案即可追踪其进度",
     learnerWaitingBadge: "等待中",
     lockedRowLearner: "学习者 {n}（未解锁）",
@@ -2745,8 +2769,7 @@ const CLASSROOM_COPY = {
   "pt-BR": {
     shareClassroom: "Compartilhar no Google Classroom",
     classroomLockedButton: "Compartilhar no Google Classroom 🔒",
-    classroomModalTitle:
-      "Publique no Classroom e veja as notas de cada aluno",
+    classroomModalTitle: "Publique no Classroom e veja as notas de cada aluno",
     classroomModalBody:
       "No plano Gratuito você pode copiar o link de treino. O Plano Professor libera compartilhamento no Classroom com um clique, resultados por aluno, palavras erradas e CSV.",
     classroomModalCta: "Ver Plano Professor · $149.90/ano",
@@ -2794,8 +2817,7 @@ const CLASSROOM_COPY = {
   id: {
     shareClassroom: "Bagikan ke Google Classroom",
     classroomLockedButton: "Bagikan ke Google Classroom 🔒",
-    classroomModalTitle:
-      "Posting ke Classroom dan lihat nilai setiap siswa",
+    classroomModalTitle: "Posting ke Classroom dan lihat nilai setiap siswa",
     classroomModalBody:
       "Di paket Gratis Anda tetap bisa menyalin tautan latihan. Paket Guru membuka integrasi Classroom sekali klik, hasil per siswa, analisis kata salah, dan ekspor CSV.",
     classroomModalCta: "Lihat Paket Guru · $149.90/thn",

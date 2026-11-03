@@ -475,9 +475,7 @@ function attachSentenceLibraryControls(
 
   const syncMapFromInputs = () => {
     if (!wordsInput || !sentencesInput) return;
-    const words = wordsInput.value
-      .split(/\r?\n/)
-      .map((w) => w.trim());
+    const words = wordsInput.value.split(/\r?\n/).map((w) => w.trim());
     const sentences = sentencesInput.value.split(/\r?\n/);
     words.forEach((word, index) => {
       if (word && sentences[index] !== undefined && sentences[index].trim()) {
@@ -821,6 +819,24 @@ async function loadWorkspaceDetail(path, { force = false } = {}) {
         entry.data = data;
         entry.updatedAt = Date.now();
         workspaceCache.updatedAt = 0;
+        if (workspaceCache.data?.assignments) {
+          const match = workspaceCache.data.assignments.find(
+            (a) => a.id === data.id,
+          );
+          if (match && data.summary) {
+            match.locked_result_count = data.lockedResultCount || 0;
+            match.student_count = data.summary.students;
+            match.total_student_count =
+              data.summary.practicedCount || data.summary.students;
+            match.attempt_count = data.summary.attempts;
+            match.total_attempt_count =
+              data.summary.completedCount || data.summary.attempts;
+            match.average_accuracy = data.summary.averageAccuracy;
+            match.total_average_accuracy =
+              data.summary.overallAverageAccuracy ||
+              data.summary.averageAccuracy;
+          }
+        }
       }
       return data;
     })
@@ -1512,7 +1528,11 @@ function showClassroomLockedModal(studentUrl) {
   upgradeCta.href = `${productPagePath("pricing", locale)}?from=classroom_lock&plan=teacher&interval=year&lang=${encodeURIComponent(locale)}`;
   upgradeCta.textContent = copy.classroomModalCta;
   upgradeCta.addEventListener("click", () => {
-    trackEvent("upgrade_click", { source: "classroom", plan: "teacher", billing_interval: "year" });
+    trackEvent("upgrade_click", {
+      source: "classroom",
+      plan: "teacher",
+      billing_interval: "year",
+    });
   });
 
   const copyLink = document.createElement("button");
@@ -1548,13 +1568,20 @@ function showClassroomLockedModal(studentUrl) {
 function lockedResultsNotice(count, summaryData = null) {
   const notice = document.createElement("div");
   notice.className = "notice locked-results-notice";
-  trackEvent("trial_exhausted_banner_view", { plan: workspaceState?.me?.plan || "free", locked_count: count });
+  trackEvent("trial_exhausted_banner_view", {
+    plan: workspaceState?.me?.plan || "free",
+    locked_count: count,
+  });
   const message = document.createElement("p");
   message.className = "locked-results-message";
-  const practiced = summaryData?.practicedCount || summaryData?.students || count;
+  const practiced =
+    summaryData?.practicedCount || summaryData?.students || count;
   message.textContent = m("lockedResultsPracticed", { count: practiced });
 
-  if (summaryData && (summaryData.weeklyStudents > 0 || summaryData.weeklyAttempts > 0)) {
+  if (
+    summaryData &&
+    (summaryData.weeklyStudents > 0 || summaryData.weeklyAttempts > 0)
+  ) {
     const weekly = document.createElement("small");
     weekly.className = "weekly-stats";
     weekly.textContent = m("weeklyPracticeStats", {
@@ -1569,7 +1596,11 @@ function lockedResultsNotice(count, summaryData = null) {
   unlockBtn.href = `${productPagePath("pricing", locale)}?from=unlock_bar&plan=teacher&interval=year&lang=${encodeURIComponent(locale)}`;
   unlockBtn.textContent = `${copy.unlockResults} · $149.90/yr`;
   unlockBtn.addEventListener("click", () => {
-    trackEvent("upgrade_click", { source: "unlock_bar", plan: "teacher", billing_interval: "year" });
+    trackEvent("upgrade_click", {
+      source: "unlock_bar",
+      plan: "teacher",
+      billing_interval: "year",
+    });
   });
 
   notice.append(message, unlockBtn);
@@ -2514,7 +2545,11 @@ function renderLearners(me, learners) {
     upgradeBtn.href = `${productPagePath("pricing", locale)}?from=waiting_list&plan=teacher&interval=year&lang=${encodeURIComponent(locale)}`;
     upgradeBtn.textContent = copy.teacherPlan || "Teacher Plan";
     upgradeBtn.addEventListener("click", () => {
-      trackEvent("upgrade_click", { source: "waiting_list", plan: "teacher", billing_interval: "year" });
+      trackEvent("upgrade_click", {
+        source: "waiting_list",
+        plan: "teacher",
+        billing_interval: "year",
+      });
     });
     waitingNotice.append(msg, upgradeBtn);
     section.append(waitingNotice);
@@ -2583,6 +2618,25 @@ function renderAssignmentsCard(
         assignment.status === "closed"
           ? copy.statusClosed
           : copy.statusPublished;
+      const isFreeLocked =
+        me.plan === "free" && assignment.locked_result_count > 0;
+      const learnerCount =
+        assignment.total_student_count ||
+        assignment.student_count ||
+        (isFreeLocked ? assignment.locked_result_count : 0);
+      const attemptCount =
+        assignment.total_attempt_count ||
+        assignment.attempt_count ||
+        (isFreeLocked ? assignment.locked_result_count : 0);
+      const displayAccuracy =
+        assignment.average_accuracy > 0
+          ? assignment.average_accuracy
+          : assignment.total_average_accuracy > 0
+            ? assignment.total_average_accuracy
+            : isFreeLocked
+              ? "••"
+              : 0;
+
       for (const text of [
         m(
           me.plan === "free"
@@ -2590,10 +2644,10 @@ function renderAssignmentsCard(
             : isParentPlan(me)
               ? "children"
               : "students",
-          { count: assignment.student_count },
+          { count: learnerCount },
         ),
-        m("attempts", { count: (assignment.locked_result_count > 0 && assignment.attempt_count === 0) ? (assignment.total_attempt_count || assignment.locked_result_count) : assignment.attempt_count }),
-        m("average", { count: (assignment.locked_result_count > 0 && assignment.attempt_count === 0) ? "—" : assignment.average_accuracy }),
+        m("attempts", { count: attemptCount }),
+        m("average", { count: displayAccuracy }),
         m("due", { date: date(assignment.expires_at) }),
         assignment.assigned_learner_names
           ? m("assignedToSummary", {
@@ -2608,7 +2662,12 @@ function renderAssignmentsCard(
       titleRow.append(title, state);
       body.append(titleRow, badges);
       if (assignment.locked_result_count)
-        body.append(lockedResultsNotice(assignment.locked_result_count));
+        body.append(
+          lockedResultsNotice(assignment.locked_result_count, {
+            practicedCount: learnerCount,
+            completedCount: attemptCount,
+          }),
+        );
       const link = document.createElement("a");
       link.className = "button-link button-secondary";
       link.href = `/workspace/assignments/${assignment.id}?lang=${encodeURIComponent(locale)}`;
@@ -4237,7 +4296,7 @@ async function renderDetail(me, id, { force = false } = {}) {
   });
   if (studentUrl) {
     actions.append(copyButton);
-    if (isTeacherPlan(me)) actions.append(classroom);
+    actions.append(classroom);
   } else sharingStatus.textContent = copy.classroomIndividualOnly;
   actions.append(edit, saveList, toggle);
   if (isTeacherPlan(me)) {
@@ -4259,9 +4318,13 @@ async function renderDetail(me, id, { force = false } = {}) {
 
   const isFreeLocked = me.plan === "free" && data.lockedResultCount > 0;
   const practicedLearners =
-    data.summary.practicedCount || data.summary.students || (isFreeLocked ? data.lockedResultCount : 0);
+    data.summary.practicedCount ||
+    data.summary.students ||
+    (isFreeLocked ? data.lockedResultCount : 0);
   const totalSubmissions =
-    data.summary.completedCount || data.summary.attempts || (isFreeLocked ? data.lockedResultCount : 0);
+    data.summary.completedCount ||
+    data.summary.attempts ||
+    (isFreeLocked ? data.lockedResultCount : 0);
   const displayAccuracy =
     data.summary.averageAccuracy > 0
       ? `${data.summary.averageAccuracy}%`
@@ -4443,14 +4506,16 @@ async function renderDetail(me, id, { force = false } = {}) {
         row.className = "locked-attempt-row";
         row.setAttribute("role", "button");
         row.setAttribute("tabindex", "0");
-        const learnerName = m("lockedRowLearner", { n: data.attempts.length + i + 1 });
+        const learnerName = m("lockedRowLearner", {
+          n: data.attempts.length + i + 1,
+        });
         for (const value of [
           `🔒 ${learnerName}`,
           "1",
           copy.statusCompleted,
           "•• / ••",
           "••%",
-          `🔒 ${copy.lockedResults || "Locked"}`,
+          copy.unlock,
           "—",
           "—",
         ]) {
@@ -4468,7 +4533,11 @@ async function renderDetail(me, id, { force = false } = {}) {
 
         const openUpgrade = (event) => {
           if (event.target.tagName !== "A") {
-            trackEvent("upgrade_click", { source: "locked_row", plan: "teacher", billing_interval: "year" });
+            trackEvent("upgrade_click", {
+              source: "locked_row",
+              plan: "teacher",
+              billing_interval: "year",
+            });
             location.href = unlockLink.href;
           }
         };

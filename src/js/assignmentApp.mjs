@@ -12,6 +12,7 @@ import {
   productMessages,
 } from "./productLocale.mjs";
 import { renderExampleHint } from "./exampleSentence.mjs";
+import { isLowQualitySentenceTemplate } from "./spellingCore.mjs";
 import { speechSupported, speakWord as playSpeech } from "./speech.js";
 
 const root = document.getElementById("product-app");
@@ -392,7 +393,10 @@ async function beginAssignment() {
 
 function speakWord(word) {
   if (!speechSupported()) return false;
-  const sentence = word.example_sentence?.trim().replace(/[.!?]+$/, "");
+  const raw = word.example_sentence?.trim();
+  const sentence = isLowQualitySentenceTemplate(raw)
+    ? null
+    : raw?.replace(/[.!?]+$/, "");
   return playSpeech(sentence ? `${word.word}. ${sentence}.` : word.word);
 }
 

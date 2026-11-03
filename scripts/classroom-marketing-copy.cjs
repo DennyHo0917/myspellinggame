@@ -9,7 +9,7 @@ module.exports = {
     teacherDetail:
       "Teacher Plan also lets you share one class entry for an assignment with assigned learners. Each student uses their own PIN.",
     scopeDetail:
-      "Results stay in My Spelling Game; Classroom rosters and grades are not synced. Free and Parent plans keep ordinary link sharing, without the Classroom sharing button.",
+      "Results stay in My Spelling Game; Classroom rosters and grades are not synced. Free and Parent plans can copy practice links, while one-click Classroom sharing is included in Teacher Plan (Free displays a locked Classroom button).",
     question: "Can I share spelling assignments to Google Classroom?",
     studentDetail:
       "Students do not need a My Spelling Game account to practice.",
@@ -32,7 +32,7 @@ module.exports = {
     teacherDetail:
       "El Plan para docentes también permite compartir un único acceso de clase para tareas con estudiantes asignados. Cada estudiante entra con su propio PIN.",
     scopeDetail:
-      "Los resultados quedan en My Spelling Game; no se sincronizan listas de clase ni notas con Classroom. Los planes Gratis y para familias conservan los enlaces habituales, sin el botón de compartir en Classroom.",
+      "Los resultados quedan en My Spelling Game; no se sincronizan listas de clase ni notas con Classroom. Los planes Gratis y Familias pueden copiar enlaces de práctica; compartir en Classroom con un clic se incluye en el Plan Docente (el plan Gratis muestra un acceso bloqueado).",
     question: "¿Puedo compartir tareas de spelling en Google Classroom?",
     studentDetail:
       "El alumnado no necesita una cuenta de My Spelling Game para practicar.",
@@ -56,7 +56,7 @@ module.exports = {
     teacherDetail:
       "O Plano para Professores também permite compartilhar uma única entrada da turma para atividades com alunos atribuídos. Cada aluno usa seu próprio PIN.",
     scopeDetail:
-      "Os resultados ficam no My Spelling Game; listas de alunos e notas não são sincronizadas com o Classroom. Os planos Grátis e para Pais mantêm os links comuns, sem o botão de compartilhar no Classroom.",
+      "Os resultados ficam no My Spelling Game; listas de alunos e notas não são sincronizadas com o Classroom. Os planos Grátis e Pais podem copiar links de treino; o compartilhamento no Classroom com um clique faz parte do Plano Professor (o plano Grátis exibe o botão bloqueado).",
     question: "Posso compartilhar atividades no Google Classroom?",
     studentDetail:
       "Os alunos não precisam de uma conta no My Spelling Game para praticar.",
@@ -80,7 +80,7 @@ module.exports = {
     teacherDetail:
       "L’offre Enseignants permet aussi de partager un accès commun à la classe pour les devoirs avec des élèves affectés. Chaque élève utilise son propre PIN.",
     scopeDetail:
-      "Les résultats restent dans My Spelling Game ; les listes d’élèves et les notes ne sont pas synchronisées avec Classroom. Les offres gratuite et Parents gardent les liens habituels, sans le bouton de partage Classroom.",
+      "Les résultats restent dans My Spelling Game ; les listes d’élèves et les notes ne sont pas synchronisées avec Classroom. Les forfaits Gratuit et Parents peuvent copier les liens d’entraînement ; le partage en un clic vers Classroom est inclus dans l’offre Enseignants (la formule Gratuite affiche un bouton verrouillé).",
     question: "Puis-je partager des devoirs sur Google Classroom ?",
     studentDetail:
       "Les élèves n’ont pas besoin d’un compte My Spelling Game pour pratiquer.",
@@ -104,7 +104,7 @@ module.exports = {
     teacherDetail:
       "Paket Guru juga dapat membagikan satu akses kelas untuk tugas dengan siswa yang sudah ditugaskan. Setiap siswa masuk dengan PIN masing-masing.",
     scopeDetail:
-      "Hasil tetap tersimpan di My Spelling Game; daftar siswa dan nilai tidak disinkronkan dengan Classroom. Paket Gratis dan Orang Tua tetap dapat berbagi tautan biasa, tanpa tombol berbagi ke Classroom.",
+      "Hasil tetap tersimpan di My Spelling Game; daftar siswa dan nilai tidak disinkronkan dengan Classroom. Paket Gratis dan Orang Tua dapat menyalin tautan latihan; berbagi ke Classroom sekali klik tersedia di Paket Guru (paket Gratis menampilkan tombol terkunci).",
     question: "Bisakah saya membagikan tugas ejaan ke Google Classroom?",
     studentDetail:
       "Siswa tidak memerlukan akun My Spelling Game untuk berlatih.",
@@ -127,7 +127,7 @@ module.exports = {
     teacherDetail:
       "教师方案还可为已指派学习者的作业分享统一班级入口，每位学生用自己的 PIN 进入。",
     scopeDetail:
-      "结果保存在 My Spelling Game，不同步 Classroom 班级名单或成绩。免费与家长方案保留普通链接分享，不提供 Classroom 分享按钮。",
+      "结果保存在 My Spelling Game，不同步 Classroom 班级名单或成绩。免费与家长方案可复制练习链接；Classroom 一键分享包含在教师方案中，免费方案显示锁定入口。",
     question: "可以把拼写作业分享到 Google Classroom 吗？",
     studentDetail: "学生练习无需注册 My Spelling Game 账号。",
     accountDetail:

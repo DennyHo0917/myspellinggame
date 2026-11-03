@@ -71,7 +71,7 @@ function validNickname(value) {
 const ERROR_KEYS = {
   assignment_not_found: "assignmentNotFound",
   assignment_closed: "assignmentClosed",
-  assignment_expired: "assignmentExpired",
+  assignment_expired: "assignmentExpiredContact",
   attempt_limit: "attemptLimit",
   monthly_submission_limit: "teacherLimit",
   student_limit: "studentLimit",

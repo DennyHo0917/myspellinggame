@@ -469,6 +469,44 @@ function attachSentenceLibraryControls(
     .querySelector(sentencesSelector)
     ?.closest(".field");
   if (!sentenceField) return;
+  const wordsInput = form.querySelector(wordsSelector);
+  const sentencesInput = form.querySelector(sentencesSelector);
+  const wordSentenceMap = new Map();
+
+  const syncMapFromInputs = () => {
+    if (!wordsInput || !sentencesInput) return;
+    const words = wordsInput.value
+      .split(/\r?\n/)
+      .map((w) => w.trim());
+    const sentences = sentencesInput.value.split(/\r?\n/);
+    words.forEach((word, index) => {
+      if (word && sentences[index] !== undefined && sentences[index].trim()) {
+        wordSentenceMap.set(word.toLowerCase(), sentences[index].trim());
+      }
+    });
+  };
+
+  syncMapFromInputs();
+
+  if (wordsInput && sentencesInput) {
+    wordsInput.addEventListener("input", () => {
+      const currentWords = wordsInput.value.split(/\r?\n/);
+      const newSentences = currentWords.map((word) => {
+        const trimmed = word.trim().toLowerCase();
+        return trimmed && wordSentenceMap.has(trimmed)
+          ? wordSentenceMap.get(trimmed)
+          : "";
+      });
+      if (sentencesInput.value.trim() || wordSentenceMap.size > 0) {
+        sentencesInput.value = newSentences.join("\n");
+      }
+    });
+
+    sentencesInput.addEventListener("input", () => {
+      syncMapFromInputs();
+    });
+  }
+
   const level = document.createElement("select");
   level.id = `${sentencesSelector.slice(1)}-level`;
   level.innerHTML = `<option value="simple">${copy.sentenceSimple}</option><option value="difficult">${copy.sentenceDifficult}</option>`;
@@ -503,15 +541,12 @@ function attachSentenceLibraryControls(
         .split(/\r?\n/)
         .map((word) => word.trim())
         .filter(Boolean);
-      const existing = form
-        .querySelector(sentencesSelector)
-        .value.split(/\r?\n/);
-      form.querySelector(sentencesSelector).value = lines
-        .map(
-          (word, index) =>
-            existing[index]?.trim() || matches[word.toLowerCase()] || "",
-        )
-        .join("\n");
+      const updatedLines = lines.map((word) => {
+        const sentence = matches[word.toLowerCase()] || "";
+        if (sentence) wordSentenceMap.set(word.toLowerCase(), sentence);
+        return sentence;
+      });
+      form.querySelector(sentencesSelector).value = updatedLines.join("\n");
     } catch (error) {
       showSectionError(
         form.closest("section") || form,
@@ -1448,12 +1483,96 @@ function usageCards(data, me, needsReviewCount) {
   return grid;
 }
 
-function lockedResultsNotice(count) {
+function showClassroomLockedModal(studentUrl) {
+  document.querySelector(".classroom-locked-dialog")?.remove();
+  const dialog = document.createElement("dialog");
+  dialog.className = "classroom-locked-dialog";
+  const header = document.createElement("div");
+  header.className = "modal-header";
+  const title = document.createElement("h2");
+  title.className = "modal-title";
+  title.textContent = copy.classroomModalTitle;
+  const close = document.createElement("button");
+  close.type = "button";
+  close.className = "modal-close";
+  close.setAttribute("aria-label", copy.cancel || "Close");
+  close.textContent = "✕";
+  close.addEventListener("click", () => dialog.close());
+  header.append(title, close);
+
+  const body = document.createElement("p");
+  body.className = "modal-body";
+  body.textContent = copy.classroomModalBody;
+
+  const actions = document.createElement("div");
+  actions.className = "modal-actions";
+
+  const upgradeCta = document.createElement("a");
+  upgradeCta.className = "button-link pro classroom-upgrade-cta";
+  upgradeCta.href = `${productPagePath("pricing", locale)}?from=classroom_lock&plan=teacher&interval=year&lang=${encodeURIComponent(locale)}`;
+  upgradeCta.textContent = copy.classroomModalCta;
+  upgradeCta.addEventListener("click", () => {
+    trackEvent("upgrade_click", { source: "classroom", plan: "teacher", billing_interval: "year" });
+  });
+
+  const copyLink = document.createElement("button");
+  copyLink.type = "button";
+  copyLink.className = "button-secondary classroom-copy-link-btn";
+  copyLink.textContent = copy.classroomModalCopyLink;
+  const copyStatus = document.createElement("div");
+  copyStatus.className = "classroom-copy-status";
+  copyStatus.setAttribute("role", "status");
+  copyStatus.setAttribute("aria-live", "polite");
+
+  copyLink.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(studentUrl);
+      copyStatus.textContent = copy.freeLinkCopied || "Copied!";
+      trackEvent("practice_link_copied", { share_type: "modal_fallback" });
+    } catch {
+      copyStatus.textContent = copy.clipboardHelp || "Please copy manually.";
+    }
+  });
+
+  actions.append(upgradeCta, copyLink);
+  dialog.append(header, body, actions, copyStatus);
+
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  dialog.addEventListener("close", () => dialog.remove());
+  document.body.append(dialog);
+  dialog.showModal();
+}
+
+function lockedResultsNotice(count, summaryData = null) {
   const notice = document.createElement("div");
-  notice.className = "notice";
+  notice.className = "notice locked-results-notice";
+  trackEvent("trial_exhausted_banner_view", { plan: workspaceState?.me?.plan || "free", locked_count: count });
   const message = document.createElement("p");
-  message.textContent = m("lockedResults", { count });
-  notice.append(message, upgradeLink("locked_results", true));
+  message.className = "locked-results-message";
+  const practiced = summaryData?.practicedCount || summaryData?.students || count;
+  message.textContent = m("lockedResultsPracticed", { count: practiced });
+
+  if (summaryData && (summaryData.weeklyStudents > 0 || summaryData.weeklyAttempts > 0)) {
+    const weekly = document.createElement("small");
+    weekly.className = "weekly-stats";
+    weekly.textContent = m("weeklyPracticeStats", {
+      practiced: summaryData.weeklyStudents,
+      completed: summaryData.weeklyAttempts,
+    });
+    message.append(document.createElement("br"), weekly);
+  }
+
+  const unlockBtn = document.createElement("a");
+  unlockBtn.className = "button-link pro";
+  unlockBtn.href = `${productPagePath("pricing", locale)}?from=unlock_bar&plan=teacher&interval=year&lang=${encodeURIComponent(locale)}`;
+  unlockBtn.textContent = `${copy.unlockResults} · $149.90/yr`;
+  unlockBtn.addEventListener("click", () => {
+    trackEvent("upgrade_click", { source: "unlock_bar", plan: "teacher", billing_interval: "year" });
+  });
+
+  notice.append(message, unlockBtn);
   return notice;
 }
 
@@ -2385,6 +2504,21 @@ function renderLearners(me, learners) {
     });
     list.append(row);
   }
+  if (me.plan === "free" && learners.filter((l) => !l.archived).length >= 1) {
+    const waitingNotice = document.createElement("div");
+    waitingNotice.className = "notice waiting-learners-notice";
+    const msg = document.createElement("p");
+    msg.textContent = m("learnersWaitingCount", { count: 1 });
+    const upgradeBtn = document.createElement("a");
+    upgradeBtn.className = "button-link pro";
+    upgradeBtn.href = `${productPagePath("pricing", locale)}?from=waiting_list&plan=teacher&interval=year&lang=${encodeURIComponent(locale)}`;
+    upgradeBtn.textContent = copy.teacherPlan || "Teacher Plan";
+    upgradeBtn.addEventListener("click", () => {
+      trackEvent("upgrade_click", { source: "waiting_list", plan: "teacher", billing_interval: "year" });
+    });
+    waitingNotice.append(msg, upgradeBtn);
+    section.append(waitingNotice);
+  }
   section.append(list);
   return section;
 }
@@ -2458,8 +2592,8 @@ function renderAssignmentsCard(
               : "students",
           { count: assignment.student_count },
         ),
-        m("attempts", { count: assignment.attempt_count }),
-        m("average", { count: assignment.average_accuracy }),
+        m("attempts", { count: (assignment.locked_result_count > 0 && assignment.attempt_count === 0) ? (assignment.total_attempt_count || assignment.locked_result_count) : assignment.attempt_count }),
+        m("average", { count: (assignment.locked_result_count > 0 && assignment.attempt_count === 0) ? "—" : assignment.average_accuracy }),
         m("due", { date: date(assignment.expires_at) }),
         assignment.assigned_learner_names
           ? m("assignedToSummary", {
@@ -3087,7 +3221,7 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
       <aside class="assignment-settings-panel">
         <fieldset class="assignment-mode-field"><legend>${copy.mode}</legend><div class="radio-row assignment-mode-options"><label class="assignment-mode-option"><input type="radio" name="mode" value="dictation"><span class="assignment-mode-icon" aria-hidden="true">◉</span><span>${copy.dictation}</span><span class="assignment-target-check" aria-hidden="true">✓</span></label><label class="assignment-mode-option"><input type="radio" name="mode" value="typing"><span class="assignment-mode-icon" aria-hidden="true">⌨</span><span>${copy.typing}</span><span class="assignment-target-check" aria-hidden="true">✓</span></label></div></fieldset>
         <fieldset id="assignment-learners-field"><legend>${m("assignTo")}</legend><div class="radio-row assignment-target-options"><label class="assignment-target-option" data-target-option="all"><input type="radio" name="learnerTarget" value="all"><span class="assignment-target-icon" aria-hidden="true">◉</span><span class="assignment-target-copy"><strong>${m(me.plan === "free" ? "allLearners" : isParentPlan(me) ? "allChildren" : "allStudents")}</strong><small>${m("allLearnersHelp")}</small></span><span class="assignment-target-check" aria-hidden="true">✓</span></label><label class="assignment-target-option" data-target-option="selected"><input type="radio" name="learnerTarget" value="selected"><span class="assignment-target-icon" aria-hidden="true">☷</span><span class="assignment-target-copy"><strong>${m(me.plan === "free" ? "freeSelectedLearners" : isParentPlan(me) ? "selectedChildren" : "selectedStudents")}</strong><small>${m("selectedLearnersHelp")}</small></span><span class="assignment-target-check" aria-hidden="true">✓</span></label><label class="assignment-target-option" data-target-option="anyone"><input type="radio" name="learnerTarget" value="anyone" checked><span class="assignment-target-icon" aria-hidden="true">↗</span><span class="assignment-target-copy"><strong>${m("linkOnly")}</strong><small>${m("linkOnlyHelp")}</small></span><span class="assignment-target-check" aria-hidden="true">✓</span></label></div><div id="assignment-learner-list"></div></fieldset>
-        <div class="assignment-settings-fields"><div class="field"><label for="assignment-deadline">${copy.deadline}</label><input id="assignment-deadline" type="datetime-local" required></div><div class="field"><label for="assignment-max">${copy.maxAttempts}</label><select id="assignment-max">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<option>${n}</option>`).join("")}</select></div></div>
+        <div class="assignment-settings-fields"><div class="field"><label for="assignment-deadline">${copy.deadline}</label><input id="assignment-deadline" type="datetime-local" required><small class="field-help deadline-notice">${copy.deadlineExpiredNote}</small></div><div class="field"><label for="assignment-max">${copy.maxAttempts}</label><select id="assignment-max">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<option>${n}</option>`).join("")}</select></div></div>
         ${me.plan === "free" ? `<p class="notice">${copy.resultViewLimit}</p>` : ""}
         <div class="actions assignment-submit-actions"><button type="submit">${editing ? copy.saveChanges : copy.publish}</button></div>
       </aside>
@@ -4006,56 +4140,66 @@ async function renderDetail(me, id, { force = false } = {}) {
   });
   const classroom = document.createElement("button");
   classroom.type = "button";
-  classroom.className = "button-secondary";
-  classroom.textContent = copy.shareClassroom;
   classroom.disabled = !studentUrl || !active;
-  classroom.addEventListener("click", async () => {
-    classroom.disabled = true;
-    // Open synchronously to survive popup blockers; no completion claim or callback.
-    const popup = window.open("about:blank", "_blank");
-    if (popup) popup.opener = null;
-    else reportDiagnostic("popup_blocked");
-    try {
-      const result = await api(`/api/assignments/${id}/share`, {
-        method: "POST",
-        body: JSON.stringify({
-          channel: "google_classroom",
-          clickId: crypto.randomUUID(),
-        }),
-      });
-      const url = assignmentShareURL(
-        result.path,
-        location.origin,
-        locale,
-        "google_classroom",
-      );
-      if (!url) {
-        reportDiagnostic("invalid_response");
-        throw new Error(copy.error);
+
+  if (isTeacherPlan(me)) {
+    classroom.className = "button-secondary";
+    classroom.textContent = copy.shareClassroom;
+    classroom.addEventListener("click", async () => {
+      trackEvent("classroom_cta_click", { locked: false, plan: "teacher" });
+      classroom.disabled = true;
+      const popup = window.open("about:blank", "_blank");
+      if (popup) popup.opener = null;
+      else reportDiagnostic("popup_blocked");
+      try {
+        const result = await api(`/api/assignments/${id}/share`, {
+          method: "POST",
+          body: JSON.stringify({
+            channel: "google_classroom",
+            clickId: crypto.randomUUID(),
+          }),
+        });
+        const url = assignmentShareURL(
+          result.path,
+          location.origin,
+          locale,
+          "google_classroom",
+        );
+        if (!url) {
+          reportDiagnostic("invalid_response");
+          throw new Error(copy.error);
+        }
+        const share = classroomShareURL(
+          url,
+          data.title,
+          assignedLearners.length ? copy.classroomPinBody : copy.classroomBody,
+        );
+        if (popup && !popup.closed) popup.location.href = share;
+        else {
+          const link = document.createElement("a");
+          link.href = share;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = copy.shareClassroom;
+          sharingStatus.replaceChildren(link);
+        }
+        if (popup && !popup.closed)
+          sharingStatus.textContent = copy.classroomOpened;
+      } catch (error) {
+        popup?.close();
+        sharingStatus.textContent = error.code ? error.message : copy.error;
+      } finally {
+        classroom.disabled = !active;
       }
-      const share = classroomShareURL(
-        url,
-        data.title,
-        assignedLearners.length ? copy.classroomPinBody : copy.classroomBody,
-      );
-      if (popup && !popup.closed) popup.location.href = share;
-      else {
-        const link = document.createElement("a");
-        link.href = share;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.textContent = copy.shareClassroom;
-        sharingStatus.replaceChildren(link);
-      }
-      if (popup && !popup.closed)
-        sharingStatus.textContent = copy.classroomOpened;
-    } catch (error) {
-      popup?.close();
-      sharingStatus.textContent = error.code ? error.message : copy.error;
-    } finally {
-      classroom.disabled = !active;
-    }
-  });
+    });
+  } else {
+    classroom.className = "button-secondary classroom-locked-btn";
+    classroom.innerHTML = `${copy.shareClassroom} <span class="lock-icon" aria-hidden="true">🔒</span>`;
+    classroom.addEventListener("click", () => {
+      trackEvent("classroom_cta_click", { locked: true, plan: me.plan });
+      showClassroomLockedModal(studentUrl);
+    });
+  }
   toggle.addEventListener("click", async () => {
     await api(`/api/assignments/${id}`, {
       method: "PATCH",
@@ -4106,6 +4250,27 @@ async function renderDetail(me, id, { force = false } = {}) {
   actions.append(remove);
   card.append(headingRow, linkLabel, linkPanel, actions, sharingStatus);
   main.append(card);
+  trackEvent("results_view", {
+    plan: me.plan,
+    locked_count: data.lockedResultCount || 0,
+    student_count: data.summary.students,
+    attempt_count: data.summary.attempts,
+  });
+
+  const isFreeLocked = me.plan === "free" && data.lockedResultCount > 0;
+  const practicedLearners =
+    data.summary.practicedCount || data.summary.students || (isFreeLocked ? data.lockedResultCount : 0);
+  const totalSubmissions =
+    data.summary.completedCount || data.summary.attempts || (isFreeLocked ? data.lockedResultCount : 0);
+  const displayAccuracy =
+    data.summary.averageAccuracy > 0
+      ? `${data.summary.averageAccuracy}%`
+      : data.summary.overallAverageAccuracy > 0
+        ? `${data.summary.overallAverageAccuracy}%`
+        : isFreeLocked
+          ? "••%"
+          : "0%";
+
   const summary = document.createElement("section");
   summary.className = "product-card";
   const summaryTitle = document.createElement("h2");
@@ -4122,14 +4287,14 @@ async function renderDetail(me, id, { force = false } = {}) {
         : isParentPlan(me)
           ? copy.familyLearners
           : copy.summaryStudents,
-      data.summary.students,
+      practicedLearners,
     ),
-    statCard(copy.summaryAverage, `${data.summary.averageAccuracy}%`),
-    statCard(copy.summarySubmissions, data.summary.attempts),
+    statCard(copy.summaryAverage, displayAccuracy),
+    statCard(copy.summarySubmissions, totalSubmissions),
   );
   summary.append(summaryTitle, grid);
   if (data.lockedResultCount)
-    summary.append(lockedResultsNotice(data.lockedResultCount));
+    summary.append(lockedResultsNotice(data.lockedResultCount, data.summary));
   main.append(summary);
   const hasMissedWords = data.attempts.some(
     (attempt) => attempt.missed_words?.length,
@@ -4189,7 +4354,10 @@ async function renderDetail(me, id, { force = false } = {}) {
   resultTitle.textContent =
     me.plan === "free" || isParentPlan(me) ? copy.freeProgress : copy.results;
   results.append(resultTitle);
-  if (!data.attempts.length) {
+  const hasLocked = data.lockedResultCount > 0;
+  const hasVisible = data.attempts.length > 0;
+
+  if (!hasVisible && !hasLocked && practicedLearners === 0) {
     const empty = document.createElement("p");
     empty.textContent =
       me.plan === "free"
@@ -4267,6 +4435,54 @@ async function renderDetail(me, id, { force = false } = {}) {
       row.append(actionCell);
       body.append(row);
     }
+
+    if (hasLocked) {
+      const lockedRowCount = Math.max(1, Math.min(data.lockedResultCount, 5));
+      for (let i = 0; i < lockedRowCount; i++) {
+        const row = document.createElement("tr");
+        row.className = "locked-attempt-row";
+        row.setAttribute("role", "button");
+        row.setAttribute("tabindex", "0");
+        const learnerName = m("lockedRowLearner", { n: data.attempts.length + i + 1 });
+        for (const value of [
+          `🔒 ${learnerName}`,
+          "1",
+          copy.statusCompleted,
+          "•• / ••",
+          "••%",
+          `🔒 ${copy.lockedResults || "Locked"}`,
+          "—",
+          "—",
+        ]) {
+          const td = document.createElement("td");
+          td.textContent = value;
+          row.append(td);
+        }
+        const actionCell = document.createElement("td");
+        const unlockLink = document.createElement("a");
+        unlockLink.className = "button-link button-secondary";
+        unlockLink.href = `${productPagePath("pricing", locale)}?from=locked_row&plan=teacher&interval=year&lang=${encodeURIComponent(locale)}`;
+        unlockLink.textContent = copy.unlock;
+        actionCell.append(unlockLink);
+        row.append(actionCell);
+
+        const openUpgrade = (event) => {
+          if (event.target.tagName !== "A") {
+            trackEvent("upgrade_click", { source: "locked_row", plan: "teacher", billing_interval: "year" });
+            location.href = unlockLink.href;
+          }
+        };
+        row.addEventListener("click", openUpgrade);
+        row.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openUpgrade(e);
+          }
+        });
+        body.append(row);
+      }
+    }
+
     table.append(body);
     wrap.append(table);
     results.append(wrap);

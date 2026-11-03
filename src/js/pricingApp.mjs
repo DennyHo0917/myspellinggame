@@ -32,6 +32,7 @@ const renewButton = subscriptionStatus?.querySelector(
 let currentAccount = null;
 let intervalChosen = false;
 const selectionParams = new URLSearchParams(location.search);
+const fromParam = selectionParams.get("from");
 const explicitSelection =
   ["parent", "teacher"].includes(selectionParams.get("plan")) &&
   ["month", "year"].includes(selectionParams.get("interval"))
@@ -39,7 +40,13 @@ const explicitSelection =
         plan: selectionParams.get("plan"),
         interval: selectionParams.get("interval"),
       }
-    : null;
+    : fromParam === "classroom_lock"
+      ? {
+          plan: "teacher",
+          interval:
+            selectionParams.get("interval") === "month" ? "month" : "year",
+        }
+      : null;
 let billingRequestPending = false;
 for (const choice of planChoices)
   choice.dataset.selectPlanLabel = choice.textContent;

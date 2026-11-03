@@ -806,6 +806,27 @@ async function getPlan(
   );
 }
 
+function isLowQualitySentenceTemplate(sentence: string | null | undefined): boolean {
+  if (!sentence) return false;
+  return (
+    /The teacher wrote (the [a-z\s]+|"[^"]+"|[a-z]+)/i.test(sentence) ||
+    /The teacher asked the (class|students)/i.test(sentence) ||
+    /The class (discussed|compared)/i.test(sentence) ||
+    /After (reading|discussing) the (sentence|verb|adverb|adjective|noun)/i.test(sentence) ||
+    /After reviewing the example/i.test(sentence) ||
+    /can make a description more precise/i.test(sentence) ||
+    /wrote an example that showed they understood/i.test(sentence)
+  );
+}
+
+function sanitizeExampleSentence(sentence: string | null | undefined): string | null {
+  if (!sentence) return null;
+  const trimmed = sentence.trim();
+  if (!trimmed) return null;
+  if (isLowQualitySentenceTemplate(trimmed)) return null;
+  return trimmed;
+}
+
 async function matchSentenceLibrary(
   db: D1Database,
   words: string[],
@@ -824,10 +845,12 @@ async function matchSentenceLibrary(
       difficult_sentence: string;
     }>();
   const found = new Map(
-    rows.results.map((row) => [
-      normalizeWord(row.word),
-      difficulty === "simple" ? row.simple_sentence : row.difficult_sentence,
-    ]),
+    rows.results.map((row) => {
+      const preferred =
+        difficulty === "simple" ? row.simple_sentence : row.difficult_sentence;
+      const clean = sanitizeExampleSentence(preferred);
+      return [normalizeWord(row.word), clean];
+    }),
   );
   return Object.fromEntries(
     words.map((word) => [word, found.get(word) ?? null]),
@@ -918,6 +941,7 @@ async function listAssignments(
   ownerUserId: string,
   plan: Plan,
 ) {
+  const cutoff = historyCutoff(plan);
   const result = await db
     .prepare(
       `SELECT a.id, a.public_id, a.title, a.mode, a.status, a.max_attempts,
@@ -926,6 +950,12 @@ async function listAssignments(
                AND locked.status = 'completed' AND locked.completed_at >= ?
                AND locked.retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
                AND locked.free_result_visible = 0 AND ${plan === "free" ? 1 : 0}) AS locked_result_count,
+              (SELECT COUNT(DISTINCT all_at.nickname_key) FROM attempts all_at WHERE all_at.assignment_id = a.id
+               AND all_at.status = 'completed' AND all_at.completed_at >= ?
+               AND all_at.retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) AS total_student_count,
+              (SELECT COUNT(*) FROM attempts all_at WHERE all_at.assignment_id = a.id
+               AND all_at.status = 'completed' AND all_at.completed_at >= ?
+               AND all_at.retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) AS total_attempt_count,
               COUNT(CASE WHEN at.status = 'completed' THEN 1 END) AS attempt_count,
               COUNT(DISTINCT at.nickname_key) AS student_count,
               COALESCE(ROUND(AVG(CASE WHEN at.status = 'completed' THEN at.accuracy END)), 0) AS average_accuracy,
@@ -938,7 +968,7 @@ async function listAssignments(
        GROUP BY a.id
        ORDER BY a.created_at DESC`,
     )
-    .bind(historyCutoff(plan), historyCutoff(plan), ownerUserId)
+    .bind(cutoff, cutoff, cutoff, cutoff, ownerUserId)
     .all();
   return result.results;
 }
@@ -949,16 +979,36 @@ async function assignmentDetail(
   plan: Plan,
 ) {
   const cutoff = historyCutoff(plan);
-  const locked = await db
-    .prepare(
-      `SELECT COUNT(*) AS count FROM attempts at WHERE assignment_id = ?
-     AND status = 'completed' AND completed_at >= ? AND free_result_visible = 0
-     AND retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
-    )
-    .bind(assignment.id, cutoff)
-    .first<{ count: number }>();
-  const [wordRows, attemptRows, average, assignedLearners, attemptExists] =
+  const [locked, totalSummary, weeklyStats, wordRows, attemptRows, average, assignedLearners, attemptExists] =
     await Promise.all([
+      db
+        .prepare(
+          `SELECT COUNT(*) AS count FROM attempts at WHERE assignment_id = ?
+         AND status = 'completed' AND completed_at >= ? AND free_result_visible = 0
+         AND retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+        )
+        .bind(assignment.id, cutoff)
+        .first<{ count: number }>(),
+      db
+        .prepare(
+          `SELECT COUNT(CASE WHEN status = 'completed' THEN 1 END) AS total_attempts,
+                COUNT(DISTINCT nickname_key) AS total_students,
+                COALESCE(ROUND(AVG(CASE WHEN status = 'completed' THEN accuracy END)), 0) AS total_average_accuracy
+         FROM attempts at WHERE assignment_id = ? AND completed_at >= ?
+           AND retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+        )
+        .bind(assignment.id, cutoff)
+        .first<Record<string, number>>(),
+      db
+        .prepare(
+          `SELECT COUNT(CASE WHEN status = 'completed' THEN 1 END) AS weekly_attempts,
+                COUNT(DISTINCT nickname_key) AS weekly_students
+         FROM attempts at WHERE assignment_id = ?
+           AND completed_at >= datetime('now', '-7 days')
+           AND retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+        )
+        .bind(assignment.id)
+        .first<Record<string, number>>(),
       db
         .prepare(
           "SELECT id, position, word, example_sentence FROM assignment_words WHERE assignment_id = ? ORDER BY position",
@@ -1034,6 +1084,11 @@ async function assignmentDetail(
       attempts: Number(average?.attempts ?? 0),
       students: Number(average?.students ?? 0),
       averageAccuracy: Number(average?.average_accuracy ?? 0),
+      practicedCount: Number(totalSummary?.total_students ?? 0),
+      completedCount: Number(totalSummary?.total_attempts ?? 0),
+      overallAverageAccuracy: Number(totalSummary?.total_average_accuracy ?? 0),
+      weeklyStudents: Number(weeklyStats?.weekly_students ?? 0),
+      weeklyAttempts: Number(weeklyStats?.weekly_attempts ?? 0),
     },
     missedWordStats: missedWords,
     assignedLearners: assignedLearners.results,

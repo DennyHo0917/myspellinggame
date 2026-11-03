@@ -79,6 +79,13 @@ const EVENT_PARAMS = {
   upgrade_viewed: [],
   upgrade_clicked: ["plan", "billing_interval"],
   upgrade_cta_clicked: ["cta_location", "plan", "billing_interval"],
+  upgrade_click: ["source", "plan", "billing_interval"],
+  classroom_cta_click: ["locked", "plan"],
+  results_view: ["plan", "locked_count", "student_count", "attempt_count"],
+  trial_exhausted_banner_view: ["plan", "locked_count"],
+  share_link_created: ["mode", "word_count", "locale", "channel"],
+  checkout_start: ["plan", "billing_interval", "source"],
+  subscribe_success: ["plan", "billing_interval"],
   photo_import_clicked: ["locale"],
   photo_import_blocked: ["current_plan", "locale"],
   usage_limit_reached: ["limit_type"],
@@ -191,7 +198,7 @@ export function trackEvent(name, params = {}) {
     return;
   const safeParams = sanitizeEventParams(name, params);
   if (
-    ["upgrade_cta_clicked", "checkout_redirected", "upgrade_clicked"].includes(
+    ["upgrade_cta_clicked", "checkout_redirected", "upgrade_clicked", "upgrade_click", "classroom_cta_click"].includes(
       name,
     )
   )

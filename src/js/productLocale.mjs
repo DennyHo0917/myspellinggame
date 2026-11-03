@@ -63,6 +63,14 @@ const PACKS = {
     teacherPlan: "Teacher Plan",
     activeUsage: "{used} of {limit} active assignments",
     lockedResults: "{count} results to unlock",
+    lockedResultsPracticed: "{count} learners practiced. Unlock names, accuracy, and missed words.",
+    weeklyPracticeStats: "This week: {practiced} practiced · {completed} completed",
+    deadlineExpiredNote: "Once expired, learners can no longer submit.",
+    assignmentExpiredContact: "This assignment has expired. Please contact your teacher if you need an extension.",
+    learnersWaitingCount: "{count} waiting — upgrade to track them",
+    learnerWaitingBadge: "Waiting list",
+    lockedRowLearner: "Learner {n} (Locked)",
+    unlock: "Unlock",
     resultViewLimit:
       "Try one completed result per account, with no monthly reset. Further results require a paid plan and are kept for 14 days. Ordinary practice stays free.",
     submissionUsage: "{used}/{limit} trial result used",
@@ -473,6 +481,14 @@ const PACKS = {
     teacherPlan: "Plan para docentes",
     activeUsage: "{used} de {limit} tareas activas",
     lockedResults: "{count} resultados por desbloquear",
+    lockedResultsPracticed: "{count} estudiantes practicaron. Desbloquea nombres, precisión y palabras fallidas.",
+    weeklyPracticeStats: "Esta semana: {practiced} practicaron · {completed} completaron",
+    deadlineExpiredNote: "Una vez caducada, los estudiantes ya no podrán entregarla.",
+    assignmentExpiredContact: "Esta tarea ha caducado. Contacta a tu profesor si necesitas una extensión.",
+    learnersWaitingCount: "{count} en espera — actualiza para seguir su progreso",
+    learnerWaitingBadge: "Lista de espera",
+    lockedRowLearner: "Estudiante {n} (Bloqueado)",
+    unlock: "Desbloquear",
     resultViewLimit:
       "Prueba un resultado completo por cuenta, sin renovación mensual. Los siguientes requieren un plan de pago y se guardan 14 días. La práctica habitual sigue siendo gratis.",
     submissionUsage: "{used}/{limit} resultado de prueba usado",
@@ -886,6 +902,14 @@ const PACKS = {
     teacherPlan: "Plano para Professores",
     activeUsage: "{used} de {limit} tarefas ativas",
     lockedResults: "{count} resultados para desbloquear",
+    lockedResultsPracticed: "{count} alunos praticaram. Desbloqueie nomes, precisão e palavras erradas.",
+    weeklyPracticeStats: "Esta semana: {practiced} praticaram · {completed} concluíram",
+    deadlineExpiredNote: "Após a expiração, os alunos não poderão mais enviar.",
+    assignmentExpiredContact: "Esta tarefa expirou. Entre em contato com seu professor se precisar de mais tempo.",
+    learnersWaitingCount: "{count} em espera — faça upgrade para acompanhar o progresso",
+    learnerWaitingBadge: "Lista de espera",
+    lockedRowLearner: "Aluno {n} (Bloqueado)",
+    unlock: "Desbloquear",
     resultViewLimit:
       "Experimente um resultado completo por conta, sem renovação mensal. Os próximos exigem um plano pago e ficam salvos por 14 dias. A prática comum continua gratuita.",
     submissionUsage: "{used}/{limit} resultado de teste usado",
@@ -1297,6 +1321,14 @@ const PACKS = {
     teacherPlan: "Offre Enseignants",
     activeUsage: "{used} devoirs actifs sur {limit}",
     lockedResults: "{count} résultats à déverrouiller",
+    lockedResultsPracticed: "{count} apprenants se sont entraînés. Débloquez les noms, la précision et les mots manqués.",
+    weeklyPracticeStats: "Cette semaine : {practiced} entraînés · {completed} terminés",
+    deadlineExpiredNote: "Une fois expiré, les apprenants ne peuvent plus soumettre leurs réponses.",
+    assignmentExpiredContact: "Ce devoir a expiré. Veuillez contacter votre enseignant si vous avez besoin d’un délai supplémentaire.",
+    learnersWaitingCount: "{count} en attente — passez au forfait supérieur pour les suivre",
+    learnerWaitingBadge: "En attente",
+    lockedRowLearner: "Apprenant {n} (Verrouillé)",
+    unlock: "Déverrouiller",
     resultViewLimit:
       "Essayez un résultat complet par compte, sans renouvellement mensuel. Les suivants nécessitent un abonnement et sont conservés 14 jours. L’entraînement classique reste gratuit.",
     submissionUsage: "{used}/{limit} résultat d’essai utilisé",
@@ -1713,6 +1745,14 @@ const PACKS = {
     teacherPlan: "Paket Guru",
     activeUsage: "{used} dari {limit} tugas aktif",
     lockedResults: "{count} hasil belum terbuka",
+    lockedResultsPracticed: "{count} siswa telah berlatih. Buka nama, akurasi, dan kata yang salah.",
+    weeklyPracticeStats: "Minggu ini: {practiced} berlatih · {completed} selesai",
+    deadlineExpiredNote: "Setelah kedaluwarsa, siswa tidak dapat lagi mengumpulkan tugas.",
+    assignmentExpiredContact: "Tugas ini sudah kedaluwarsa. Hubungi guru Anda jika memerlukan perpanjangan waktu.",
+    learnersWaitingCount: "{count} menunggu — tingkatkan paket untuk melacak mereka",
+    learnerWaitingBadge: "Daftar tunggu",
+    lockedRowLearner: "Siswa {n} (Terkunci)",
+    unlock: "Buka",
     resultViewLimit:
       "Coba satu hasil lengkap per akun, tanpa pembaruan bulanan. Hasil berikutnya memerlukan paket berbayar dan disimpan selama 14 hari. Latihan biasa tetap gratis.",
     submissionUsage: "{used}/{limit} hasil uji coba terpakai",
@@ -2107,6 +2147,14 @@ const PACKS = {
     teacherPlan: "教师方案",
     activeUsage: "活跃作业 {used}/{limit}",
     lockedResults: "{count} 份结果待解锁",
+    lockedResultsPracticed: "{count} 名学习者已完成练习。升级解锁姓名、正确率与错词分析。",
+    weeklyPracticeStats: "本周：{practiced} 人练习 · {completed} 次提交",
+    deadlineExpiredNote: "作业截止后，学生将无法再提交答案。",
+    assignmentExpiredContact: "这份作业已截止。如需补交，请联系老师修改截止时间。",
+    learnersWaitingCount: "{count} 名学习者等待中 — 升级方案即可追踪其进度",
+    learnerWaitingBadge: "等待中",
+    lockedRowLearner: "学习者 {n}（未解锁）",
+    unlock: "解锁",
     resultViewLimit:
       "每个账号可免费体验 1 次完整结果追踪，不按月重置。后续结果需付费查看，保留 14 天；普通练习始终免费。",
     submissionUsage: "追踪体验已用 {used}/{limit} 次",
@@ -2649,6 +2697,12 @@ export function productLocale() {
 const CLASSROOM_COPY = {
   en: {
     shareClassroom: "Share to Google Classroom",
+    classroomLockedButton: "Share to Google Classroom 🔒",
+    classroomModalTitle: "Post to Classroom and see every student’s scores",
+    classroomModalBody:
+      "On Free you can still copy a practice link. Teacher Plan unlocks one-click Classroom sharing, per-student results, missed words, and CSV.",
+    classroomModalCta: "See Teacher Plan · $149.90/yr",
+    classroomModalCopyLink: "Copy practice link instead",
     classroomTeacherRequired:
       "Google Classroom sharing requires the Teacher Plan.",
     classroomBody: "Practice this spelling assignment. Open the link to begin.",
@@ -2665,6 +2719,13 @@ const CLASSROOM_COPY = {
   },
   es: {
     shareClassroom: "Compartir en Google Classroom",
+    classroomLockedButton: "Compartir en Google Classroom 🔒",
+    classroomModalTitle:
+      "Publica en Classroom y consulta las notas de cada estudiante",
+    classroomModalBody:
+      "En el plan Gratis puedes copiar un enlace de práctica. El Plan Docente desbloquea compartir en Classroom con un clic, resultados individuales, palabras fallidas y CSV.",
+    classroomModalCta: "Ver Plan Docente · $149.90/año",
+    classroomModalCopyLink: "Copiar enlace de práctica en su lugar",
     classroomTeacherRequired:
       "Para compartir en Google Classroom necesitas el Plan para docentes.",
     classroomBody:
@@ -2683,6 +2744,13 @@ const CLASSROOM_COPY = {
   },
   "pt-BR": {
     shareClassroom: "Compartilhar no Google Classroom",
+    classroomLockedButton: "Compartilhar no Google Classroom 🔒",
+    classroomModalTitle:
+      "Publique no Classroom e veja as notas de cada aluno",
+    classroomModalBody:
+      "No plano Gratuito você pode copiar o link de treino. O Plano Professor libera compartilhamento no Classroom com um clique, resultados por aluno, palavras erradas e CSV.",
+    classroomModalCta: "Ver Plano Professor · $149.90/ano",
+    classroomModalCopyLink: "Copiar link de treino",
     classroomTeacherRequired:
       "O compartilhamento no Google Classroom está disponível no Plano para Professores.",
     classroomBody:
@@ -2700,6 +2768,13 @@ const CLASSROOM_COPY = {
   },
   fr: {
     shareClassroom: "Partager sur Google Classroom",
+    classroomLockedButton: "Partager sur Google Classroom 🔒",
+    classroomModalTitle:
+      "Publiez sur Classroom et consultez les scores de chaque élève",
+    classroomModalBody:
+      "Avec la formule Gratuite, vous pouvez copier un lien d’entraînement. Le forfait Enseignant débloque le partage Classroom en un clic, les résultats par élève, les mots manqués et l’export CSV.",
+    classroomModalCta: "Voir le forfait Enseignant · $149.90/an",
+    classroomModalCopyLink: "Copier le lien d’entraînement",
     classroomTeacherRequired:
       "Le partage sur Google Classroom nécessite l’offre Enseignants.",
     classroomBody:
@@ -2718,6 +2793,13 @@ const CLASSROOM_COPY = {
   },
   id: {
     shareClassroom: "Bagikan ke Google Classroom",
+    classroomLockedButton: "Bagikan ke Google Classroom 🔒",
+    classroomModalTitle:
+      "Posting ke Classroom dan lihat nilai setiap siswa",
+    classroomModalBody:
+      "Di paket Gratis Anda tetap bisa menyalin tautan latihan. Paket Guru membuka integrasi Classroom sekali klik, hasil per siswa, analisis kata salah, dan ekspor CSV.",
+    classroomModalCta: "Lihat Paket Guru · $149.90/thn",
+    classroomModalCopyLink: "Salin tautan latihan saja",
     classroomTeacherRequired:
       "Berbagi ke Google Classroom tersedia pada Paket Guru.",
     classroomBody: "Latih ejaan melalui tugas ini. Buka tautan untuk mulai.",
@@ -2734,6 +2816,12 @@ const CLASSROOM_COPY = {
   },
   zh: {
     shareClassroom: "分享到 Google Classroom",
+    classroomLockedButton: "分享到 Google Classroom 🔒",
+    classroomModalTitle: "发布到 Google Classroom 并查看每位学生的成绩",
+    classroomModalBody:
+      "免费版仍支持复制练习链接。升级教师方案可享 Classroom 一键分享、每位学生独立成绩、班级错词与 CSV 导出。",
+    classroomModalCta: "查看教师方案 · US$149.90/年",
+    classroomModalCopyLink: "改用复制普通练习链接",
     classroomTeacherRequired: "Google Classroom 分享仅限教师方案。",
     classroomBody: "完成这份拼写作业。打开链接即可开始练习。",
     classroomOpened: "已打开 Classroom，请在那里完成分享。",

@@ -242,6 +242,71 @@ test("every public footer uses the five primary practice destinations", () => {
   }
 });
 
+test("every homepage footer has the secondary row and a contact link", () => {
+  const expected = {
+    "": [
+      ["/pricing", "Pricing"],
+      ["/faq", "FAQ"],
+      ["/privacy", "Privacy"],
+      ["/about", "About"],
+      ["/contact", "Contact"],
+    ],
+    es: [
+      ["/es/pricing", "Precios"],
+      ["/es/faq", "Preguntas frecuentes"],
+      ["/es/privacy", "Privacidad"],
+      ["/es/about", "Acerca de"],
+      ["/es/contact", "Contacto"],
+    ],
+    "pt-br": [
+      ["/pt-br/pricing", "Preços"],
+      ["/pt-br/faq", "Perguntas frequentes"],
+      ["/pt-br/privacy", "Privacidade"],
+      ["/pt-br/about", "Sobre"],
+      ["/pt-br/contact", "Contato"],
+    ],
+    fr: [
+      ["/fr/pricing", "Tarifs"],
+      ["/fr/faq", "Questions fréquentes"],
+      ["/fr/privacy", "Confidentialité"],
+      ["/fr/about", "À propos"],
+      ["/fr/contact", "Contact"],
+    ],
+    id: [
+      ["/id/pricing", "Harga"],
+      ["/id/faq", "Pertanyaan umum"],
+      ["/id/privacy", "Privasi"],
+      ["/id/about", "Tentang"],
+      ["/id/contact", "Kontak"],
+    ],
+    zh: [
+      ["/zh/pricing", "价格"],
+      ["/zh/faq", "常见问题"],
+      ["/zh/privacy", "隐私"],
+      ["/zh/about", "关于"],
+      ["/zh/contact", "联系"],
+    ],
+  };
+  for (const [locale, links] of Object.entries(expected)) {
+    const html = fs.readFileSync(path.join(root, locale, "index.html"), "utf8");
+    const footer =
+      html.match(/<footer(?:\s[^>]*)?>[\s\S]*?<\/footer>/)?.[0] || "";
+    const secondary =
+      footer.match(
+        /<span class="footer-secondary-links"\s*>([\s\S]*?)<\/span\s*>/,
+      )?.[1] || "";
+    const actual = [
+      ...secondary.matchAll(
+        /<a href="([^"]+)" aria-label="([^"]+)">([^<]+)<\/a>/g,
+      ),
+    ].map(([, href, aria, label]) => {
+      assert.equal(aria, label, `${locale || "en"} contact row label`);
+      return [href, label];
+    });
+    assert.deepEqual(actual, links, `${locale || "en"} homepage footer`);
+  }
+});
+
 test("home and remaining long-tail pages have one H1 and distinct metadata per locale", () => {
   for (const locale of locales) {
     const files = [

@@ -3615,3 +3615,10 @@ body.assignment-page {
     max-height: none !important;
   }
 }
+
+.workspace-upgrade-link {
+  font-size: 0.8rem;
+  padding-inline: 0.75rem;
+  white-space: nowrap;
+  max-width: 100%;
+}

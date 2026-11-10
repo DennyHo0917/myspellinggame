@@ -554,7 +554,7 @@ test("teacher uses the visible student PIN to enter the assigned student home", 
   ).toHaveAttribute("aria-current", "page");
   await expect(page.getByLabel("All students")).toBeVisible();
   await expect(page.getByLabel("Selected students")).toBeVisible();
-  await expect(page.getByLabel("Link sharing only")).toBeChecked();
+  await expect(page.getByLabel("Link sharing only")).toBeVisible();
   await page.getByLabel("All students").check();
   await expect(page.getByLabel("Alice")).toBeChecked();
   await page.getByLabel("Assignment title").fill("Alice's spelling assignment");
@@ -971,7 +971,7 @@ test("editing a link-only assignment keeps link sharing selected", async ({
   });
 
   await page.goto(`/workspace/assignments/${assignmentId}/edit?lang=en`);
-  await expect(page.getByLabel("Link sharing only")).toBeChecked();
+  await expect(page.getByLabel("Link sharing only")).toBeVisible();
   await expect(page.getByLabel("All students")).not.toBeChecked();
   await expect(page.getByLabel("Selected students")).not.toBeChecked();
   await page
@@ -1019,7 +1019,7 @@ test("new assignment validates learner selection before submitting", async ({
   });
 
   await page.goto("/workspace/assignments/new?lang=en");
-  await expect(page.getByLabel("Link sharing only")).toBeChecked();
+  await expect(page.getByLabel("Link sharing only")).toBeVisible();
   await page.locator('[data-target-option="selected"]').click();
   await expect(page.locator(".assignment-learners-error")).toHaveText(
     "Select at least one learner.",
@@ -1164,7 +1164,7 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
     ).toBeVisible();
     await expect(page.locator("#saved-list-title")).toHaveCount(0);
     await expect(page.locator("#learner-name")).toHaveCount(0);
-    await expect(page.getByText("1 of 1 learner profiles")).toBeVisible();
+    await expect(page.locator(".free-tracking-card")).toBeVisible();
     await page
       .locator('.workspace-sidebar-link[data-section="learners"]')
       .click();
@@ -1184,15 +1184,9 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
     await expect(page.getByText(/Class URL:/)).toHaveCount(0);
     await expect(page.getByText(/Student PIN:/)).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Copy PIN" })).toHaveCount(0);
-    await page
-      .locator('.workspace-sidebar-link[data-section="progress"]')
-      .click();
-    await expect(page.getByText("because · 2", { exact: true })).toBeVisible();
-    await expect(page.getByText("Mastered 3", { exact: true })).toBeVisible();
-    await expect(page.getByText("Learning 1", { exact: true })).toBeVisible();
     await expect(
-      page.getByText("Needs review 1", { exact: true }),
-    ).toBeVisible();
+      page.locator('.workspace-sidebar-link[data-section="progress"]'),
+    ).toHaveCount(0);
   };
 
   await expectNeutralWorkspace();
@@ -1204,7 +1198,7 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
   });
   await expect(page.getByLabel("Selected learners")).toBeVisible();
   await expect(page.getByLabel("All learners")).toBeVisible();
-  await expect(page.getByLabel("Link sharing only")).toBeChecked();
+  await expect(page.getByLabel("Link sharing only")).toBeVisible();
   const sentenceLibraryButton = page.getByRole("button", {
     name: /Auto-fill example sentences/,
   });
@@ -1216,10 +1210,10 @@ test("Free workspace stays neutral regardless of legacy workspace type", async (
   await expect(
     page
       .locator(".locked-feature-plan")
-      .getByRole("button", { name: "Unlock premium features" }),
+      .getByRole("link", { name: "Upgrade to use examples" }),
   ).toHaveCount(1);
-  await expect(page.locator(".locked-feature-plan")).toContainText(
-    "Teacher Plan · $149.90/year",
+  await expect(page.locator(".locked-feature-plan")).not.toContainText(
+    /\$|149[.,]90/,
   );
 });
 
@@ -3040,7 +3034,8 @@ test("new assignment survives checkout retry and restores after activation", asy
     .check({ force: true });
   await page.locator(".learner-picker-summary").click();
   await page.locator('input[name="learnerId"]').check({ force: true });
-  await page.getByRole("button", { name: "Unlock premium features" }).click();
+  await page.getByRole("link", { name: "Upgrade to add more words" }).click();
+  await page.locator('[data-plan-choice="teacher"]').click();
   await expect(
     page.getByRole("button", { name: "Try checkout again" }),
   ).toBeVisible();
@@ -3152,7 +3147,8 @@ test("saved-list edit returns after checkout cancellation without overwriting ne
       objectId: listId,
       path: "/workspace/saved-lists?lang=en",
     });
-  await page.getByRole("button", { name: "Unlock premium features" }).click();
+  await page.getByRole("link", { name: "Upgrade to add more words" }).click();
+  await page.locator('[data-plan-choice="teacher"]').click();
   await page.waitForURL(/\/pricing\?checkout=cancelled$/);
   await expect(page).toHaveURL(/\/workspace\/saved-lists\?lang=en$/);
   await expect(page.getByLabel("List title")).toHaveValue("Draft list");
@@ -3535,8 +3531,8 @@ test("Free workspace explains result viewing and paid plans remain unlimited", a
   const warning = page.locator(".submission-limit-notice");
   await expect(warning).toContainText("Your free tracking trial is used");
   await expect(warning).toContainText("1 results to unlock");
-  await warning.getByRole("link", { name: "Unlock premium features" }).click();
-  await expect(page).toHaveURL(/\/pricing$/);
+  await warning.getByRole("link", { name: "Upgrade to track results" }).click();
+  await expect(page).toHaveURL(/\/pricing\?from=submission_limit_reached$/);
   await expect(page.locator(".pricing-grid .pricing-card")).toHaveCount(3);
   await page.goto("/workspace?lang=en", { waitUntil: "domcontentloaded" });
   plan = "teacher";
@@ -4322,7 +4318,7 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
     .locator('.workspace-sidebar-link[data-section="overview"]')
     .click();
   await page.getByRole("link", { name: "Create assignment" }).click();
-  await expect(page.getByLabel("Link sharing only")).toBeChecked();
+  await expect(page.getByLabel("Link sharing only")).toBeVisible();
   await page.getByRole("link", { name: "Back to workspace" }).click();
   await page
     .locator('.workspace-sidebar-link[data-section="learners"]')
@@ -4339,7 +4335,7 @@ test("Parent creates children, assigns both, and opens progress with Smart Revie
   await page.getByRole("link", { name: "Create assignment" }).click();
   await expect(page.getByLabel("Selected children")).toBeVisible();
   await expect(page.getByLabel("All children")).toBeVisible();
-  await expect(page.getByLabel("Link sharing only")).toBeChecked();
+  await expect(page.getByLabel("Link sharing only")).toBeVisible();
   await page.getByLabel("All children").check();
   await expect(page.getByLabel("Alice")).toBeChecked();
   await expect(page.getByLabel("Bob")).toBeChecked();

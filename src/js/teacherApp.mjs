@@ -11,7 +11,6 @@ import {
   upgradeReturnFor,
   clearUpgradeReturn,
 } from "./upgradeReturn.mjs";
-import { upgradeSelection } from "./upgradeSelection.mjs";
 import {
   installDiagnostics,
   diagnosticFetch,
@@ -455,7 +454,7 @@ function attachWordLimit(form, me, wordsSelector, { locked = false } = {}) {
   const error = document.createElement("small");
   error.className = "word-list-error";
   error.setAttribute("role", "alert");
-  const upgrade = upgradeLink("word_limit", true);
+  const upgrade = upgradeLink("word_limit");
   upgrade.classList.add("word-limit-upgrade");
   field.append(count, advice, error, upgrade);
   const update = () => {
@@ -1195,86 +1194,41 @@ function statusElement(parent) {
   return status;
 }
 
-function upgradeLink(ctaLocation, direct = false) {
-  const label =
-    copy[
-      {
-        locked_results: "unlockResults",
-        submission_limit_reached: "unlockTracking",
-        submission_limit_warning: "unlockTracking",
-        tracking_trial_used: "unlockTracking",
-        monthly_submission_limit: "unlockTracking",
-        word_limit: "unlockWordLimit",
-        active_assignment_limit: "unlockAssignments",
-        saved_list_limit: "unlockSavedLists",
-        learner_limit: "unlockLearners",
-        smart_review: "unlockSmartReview",
-        todays_review: "unlockSmartReview",
-        smart_review_required: "unlockSmartReview",
-        sentence_library: "unlockSentences",
-        sentence_library_required: "unlockSentences",
-      }[ctaLocation]
-    ] || copy.unlockPremium;
-  if (!direct) {
-    const link = document.createElement("a");
-    link.className = "button-link pro";
-    const selection = upgradeSelection(workspaceState?.me);
-    link.href = `${productPagePath("pricing", locale)}?${new URLSearchParams({ plan: selection.plan, interval: selection.interval })}`;
-    link.textContent = label;
-    link.addEventListener("click", () => {
-      prepareWorkspaceDraftReturn();
-      saveUpgradeReturn(ctaLocation, workspaceState?.me?.user?.id);
-      trackEvent("upgrade_cta_clicked", {
-        cta_location: ctaLocation,
-        plan: selection.plan,
-        billing_interval: selection.interval,
-      });
-    });
-    return link;
-  }
-  const controls = document.createElement("span");
-  controls.className = "contextual-paywall-actions";
-  const { plan: recommendedPlan, interval } = upgradeSelection(
-    workspaceState?.me,
-  );
-  if (ctaLocation === "word_limit") {
-    const price = document.createElement("strong");
-    price.className = "contextual-paywall-price";
-    price.textContent = upgradePrice(recommendedPlan, interval);
-    controls.append(price);
-  }
-  const plans =
-    recommendedPlan === "teacher" ? ["teacher"] : ["parent", "teacher"];
-  for (const plan of plans) {
-    const button = document.createElement("button");
-    button.className = "button-secondary pro";
-    button.type = "button";
-    button.classList.toggle("paywall-primary", plan === recommendedPlan);
-    button.textContent =
-      plan === recommendedPlan ? label : upgradePrice(plan, interval);
-    button.addEventListener("click", async () => {
-      trackEvent("upgrade_cta_clicked", {
-        cta_location: ctaLocation,
-        plan,
-        billing_interval: interval,
-      });
-      for (const control of controls.querySelectorAll("button"))
-        control.disabled = true;
-      saveUpgradeReturn(ctaLocation, workspaceState?.me?.user?.id);
-      try {
-        sessionStorage.setItem(PENDING_UPGRADE_FEATURE_KEY, ctaLocation);
-      } catch {}
-      try {
-        await startCheckout(interval, plan);
-      } catch (error) {
-        showCheckoutRetry(interval, plan, error);
-        for (const control of controls.querySelectorAll("button"))
-          control.disabled = false;
-      }
-    });
-    controls.append(button);
-  }
-  return controls;
+function upgradeLink(ctaLocation) {
+  const link = document.createElement("a");
+  link.className = "button-link pro workspace-upgrade-link";
+  link.href = `${productPagePath("pricing", locale)}?${new URLSearchParams({ from: ctaLocation })}`;
+  const key =
+    {
+      locked_results: "upgradeResults",
+      unlock_bar: "upgradeResults",
+      submission_limit_reached: "upgradeTracking",
+      submission_limit_warning: "upgradeTracking",
+      tracking_trial_used: "upgradeTracking",
+      monthly_submission_limit: "upgradeTracking",
+      word_limit: "upgradeWords",
+      active_assignment_limit: "upgradeAssignments",
+      saved_list_limit: "upgradeLists",
+      learner_limit: "upgradeLearners",
+      waiting_list: "upgradeLearners",
+      smart_review: "upgradeReview",
+      todays_review: "upgradeReview",
+      smart_review_required: "upgradeReview",
+      sentence_library: "upgradeSentences",
+      sentence_library_required: "upgradeSentences",
+      classroom_lock: "upgradeClassroom",
+    }[ctaLocation] || "upgradeContinue";
+  link.textContent = copy[key];
+  link.addEventListener("click", () => {
+    prepareWorkspaceDraftReturn();
+    saveUpgradeReturn(ctaLocation, workspaceState?.me?.user?.id);
+    try {
+      sessionStorage.setItem(PENDING_UPGRADE_FEATURE_KEY, ctaLocation);
+    } catch {}
+    trackEvent("upgrade_cta_clicked", { cta_location: ctaLocation });
+    trackEvent("upgrade_click", { source: ctaLocation });
+  });
+  return link;
 }
 
 function showLockedFeaturePlan(host, message, ctaLocation) {
@@ -1285,10 +1239,6 @@ function showLockedFeaturePlan(host, message, ctaLocation) {
   notice.className = "notice locked-feature-plan";
   const text = document.createElement("p");
   text.textContent = message;
-  const price = document.createElement("strong");
-  price.className = "contextual-paywall-price";
-  const { plan, interval } = upgradeSelection(workspaceState?.me);
-  price.textContent = upgradePrice(plan, interval);
   const feature = {
     sentence_library: "example_sentences",
     smart_review: "smart_review",
@@ -1298,7 +1248,7 @@ function showLockedFeaturePlan(host, message, ctaLocation) {
     learner_limit: "learner_limit",
   }[ctaLocation];
   if (feature) trackLockedFeature(feature, workspaceState?.me?.plan || "free");
-  notice.append(text, price, upgradeLink(ctaLocation, true));
+  notice.append(text, upgradeLink(ctaLocation));
   host.append(notice);
 }
 
@@ -1633,8 +1583,8 @@ function openParentReportModal(data, attempt, me, isFreeSample = false) {
     isFreeSample,
     upgradeCta: isFreeSample
       ? {
-          label: copy.unlockFullReportsCta || "See Teacher Plan · $14.99/mo",
-          href: `${productPagePath("pricing", locale)}?from=print_parent_report&plan=teacher&interval=month&lang=${encodeURIComponent(locale)}`,
+          label: copy.upgradeReports,
+          href: `${productPagePath("pricing", locale)}?from=print_parent_report`,
           from: "print_parent_report",
         }
       : null,
@@ -1697,8 +1647,8 @@ function openMissedWordsModal(data, me, studentUrl, isFreeSample = false) {
     isFreeSample,
     upgradeCta: isFreeSample
       ? {
-          label: copy.unlockMissedWordsCta || "See Teacher Plan · $14.99/mo",
-          href: `${productPagePath("pricing", locale)}?from=print_missed_words&plan=teacher&interval=month&lang=${encodeURIComponent(locale)}`,
+          label: copy.upgradeWorksheets,
+          href: `${productPagePath("pricing", locale)}?from=print_missed_words`,
           from: "print_missed_words",
         }
       : null,
@@ -1746,24 +1696,8 @@ function showClassroomLockedModal(studentUrl) {
   const actions = document.createElement("div");
   actions.className = "modal-actions";
 
-  const upgradeCta = document.createElement("a");
-  upgradeCta.className = "button-link pro classroom-upgrade-cta";
-  upgradeCta.href = `${productPagePath("pricing", locale)}?from=classroom_lock&plan=teacher&interval=month&lang=${encodeURIComponent(locale)}`;
-  upgradeCta.textContent = copy.classroomModalCta;
-  upgradeCta.addEventListener("click", () => {
-    trackEvent("upgrade_click", {
-      source: "classroom",
-      plan: "teacher",
-      billing_interval: "month",
-    });
-  });
-
-  const ctaWrap = document.createElement("div");
-  ctaWrap.className = "classroom-cta-wrap";
-  const secondaryNote = document.createElement("small");
-  secondaryNote.className = "cta-secondary-note";
-  secondaryNote.textContent = copy.orTeacherYearly;
-  ctaWrap.append(upgradeCta, secondaryNote);
+  const upgradeCta = upgradeLink("classroom_lock");
+  upgradeCta.classList.add("classroom-upgrade-cta");
 
   const copyLink = document.createElement("button");
   copyLink.type = "button";
@@ -1792,7 +1726,7 @@ function showClassroomLockedModal(studentUrl) {
   guideBtn.addEventListener("click", () => {
     openClassroomGuideModal(workspaceState?.me);
   });
-  actions.append(ctaWrap, copyLink, guideBtn);
+  actions.append(upgradeCta, copyLink, guideBtn);
   dialog.append(header, body, actions, copyStatus);
 
   dialog.addEventListener("click", (event) => {
@@ -1829,26 +1763,7 @@ function lockedResultsNotice(count, summaryData = null) {
     message.append(document.createElement("br"), weekly);
   }
 
-  const unlockBtn = document.createElement("a");
-  unlockBtn.className = "button-link pro";
-  unlockBtn.href = `${productPagePath("pricing", locale)}?from=unlock_bar&plan=teacher&interval=month&lang=${encodeURIComponent(locale)}`;
-  unlockBtn.textContent = `${copy.unlockResults} · ${copy.teacherPriceMonthly || "$14.99/mo"}`;
-  unlockBtn.addEventListener("click", () => {
-    trackEvent("upgrade_click", {
-      source: "unlock_bar",
-      plan: "teacher",
-      billing_interval: "month",
-    });
-  });
-
-  const unlockWrap = document.createElement("div");
-  unlockWrap.className = "unlock-action-wrap";
-  const secondaryNote = document.createElement("small");
-  secondaryNote.className = "cta-secondary-note";
-  secondaryNote.textContent = copy.orTeacherYearly;
-  unlockWrap.append(unlockBtn, secondaryNote);
-
-  notice.append(message, unlockWrap);
+  notice.append(message, upgradeLink("unlock_bar"));
   return notice;
 }
 
@@ -1871,7 +1786,6 @@ function submissionLimitNotice(data) {
     message,
     upgradeLink(
       reached ? "submission_limit_reached" : "submission_limit_warning",
-      true,
     ),
   );
   return notice;
@@ -1885,7 +1799,7 @@ function showSectionError(section, error, ctaLocation) {
   message.textContent = error.message;
   notice.append(message);
   if (ctaLocation && workspaceState?.me?.plan !== "teacher")
-    notice.append(upgradeLink(ctaLocation, ctaLocation === "word_limit"));
+    notice.append(upgradeLink(ctaLocation));
   section.append(notice);
 }
 
@@ -2781,32 +2695,11 @@ function renderLearners(me, learners) {
     list.append(row);
   }
   if (me.plan === "free" && learners.filter((l) => !l.archived).length >= 1) {
-    const { plan: recommendedPlan } = upgradeSelection(me);
     const waitingNotice = document.createElement("div");
     waitingNotice.className = "notice waiting-learners-notice";
     const msg = document.createElement("p");
     msg.textContent = m("learnersWaitingCount", { count: 1 });
-    const upgradeBtn = document.createElement("a");
-    upgradeBtn.className = "button-link pro";
-    upgradeBtn.href = `${productPagePath("pricing", locale)}?from=waiting_list&plan=${recommendedPlan}&interval=month&lang=${encodeURIComponent(locale)}`;
-    upgradeBtn.textContent = upgradePrice(recommendedPlan);
-    upgradeBtn.addEventListener("click", () => {
-      trackEvent("upgrade_click", {
-        source: "waiting_list",
-        plan: recommendedPlan,
-        billing_interval: "month",
-      });
-    });
-
-    const waitingWrap = document.createElement("div");
-    waitingWrap.className = "waiting-action-wrap";
-    const secondaryNote = document.createElement("small");
-    secondaryNote.className = "cta-secondary-note";
-    secondaryNote.textContent =
-      recommendedPlan === "parent" ? copy.orParentYearly : copy.orTeacherYearly;
-    waitingWrap.append(upgradeBtn, secondaryNote);
-
-    waitingNotice.append(msg, waitingWrap);
+    waitingNotice.append(msg, upgradeLink("waiting_list"));
     section.append(waitingNotice);
   }
   section.append(list);
@@ -3999,7 +3892,7 @@ async function renderTrackingPractice(me) {
   ) {
     status.textContent = copy.trackingTrialUsed;
     trackLockedFeature("tracking_trial_used", me.plan);
-    card.append(upgradeLink("tracking_trial_used", true));
+    card.append(upgradeLink("tracking_trial_used"));
     trackEvent("tracking_setup_viewed", {
       current_plan: me.plan,
       entry_point: draft.entryPoint || "workspace",
@@ -4157,7 +4050,7 @@ async function renderTrackingPractice(me) {
         const actions = document.createElement("div");
         actions.className = "tracking-limit-action actions";
         if (workspaceState?.me?.plan !== "teacher") {
-          actions.append(upgradeLink(error.code, true));
+          actions.append(upgradeLink(error.code));
         }
         const manage = document.createElement("a");
         manage.href = `/workspace/assignments?lang=${encodeURIComponent(locale)}`;

@@ -3,7 +3,7 @@ import { productMessages } from "../src/js/productLocale.mjs";
 import { PLAN_LIMITS } from "../src/worker/domain.ts";
 
 for (const locale of ["en", "es", "pt-BR", "fr", "id", "zh"]) {
-  test(`${locale} learner upgrade recommends the matching plan and yearly price`, async ({
+  test(`${locale} workspace upgrades offer one link to choose a plan`, async ({
     page,
   }) => {
     const copy = productMessages(locale);
@@ -21,7 +21,15 @@ for (const locale of ["en", "es", "pt-BR", "fr", "id", "zh"]) {
     await page.route("**/api/assignments*", (route) =>
       route.fulfill({
         json: {
-          assignments: [],
+          assignments: [
+            {
+              id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+              title: "Weekly words",
+              status: "published",
+              locked_result_count: 3,
+              expires_at: "2027-01-01T00:00:00Z",
+            },
+          ],
           savedLists: [],
           learners: [
             {
@@ -33,24 +41,30 @@ for (const locale of ["en", "es", "pt-BR", "fr", "id", "zh"]) {
           usage: {
             limits: PLAN_LIMITS.free,
             learnerProfiles: 1,
-            monthlyAttempts: 0,
+            monthlyAttempts: 1,
+            trackingTrialUsed: true,
+            lockedResultCount: 3,
           },
         },
       }),
     );
     for (const type of [null, "family", "teacher"]) {
       workspaceType = type;
-      const plan = type === "teacher" ? "teacher" : "parent";
       await page.goto(`/workspace/learners?lang=${locale}`);
       const notice = page.locator(".waiting-learners-notice");
       const button = notice.getByRole("link");
-      await expect(button).toHaveText(copy[`${plan}UpgradePrice`]);
-      await expect(button).toHaveAttribute(
-        "href",
-        new RegExp(`plan=${plan}&interval=month`),
+      await expect(button).toHaveCount(1);
+      await expect(button).toHaveText(copy.upgradeLearners);
+      const href = new URL(await button.getAttribute("href"), page.url());
+      expect(href.pathname).toBe(
+        locale === "en" ? "/pricing" : `/${locale.toLowerCase()}/pricing`,
       );
-      await expect(notice.locator("small")).toHaveText(
-        plan === "parent" ? copy.orParentYearly : copy.orTeacherYearly,
+      expect(href.searchParams.get("from")).toBe("waiting_list");
+      expect(href.searchParams.has("plan")).toBe(false);
+      expect(href.searchParams.has("interval")).toBe(false);
+      await expect(notice.locator("small")).toHaveCount(0);
+      await expect(notice).not.toContainText(
+        /14[.,]99|7[.,]99|149[.,]90|79[.,]90/,
       );
       await page.setViewportSize({ width: 360, height: 850 });
       expect(
@@ -76,9 +90,44 @@ for (const locale of ["en", "es", "pt-BR", "fr", "id", "zh"]) {
         ),
       ).toMatchObject({
         source: "waiting_list",
-        plan,
-        billing_interval: "month",
       });
+      await page.goto(`/workspace?lang=${locale}`);
+      for (const selector of [
+        ".free-tracking-card",
+        ".locked-results-notice",
+      ]) {
+        const prompt = page.locator(selector).first();
+        await expect(prompt).toBeVisible();
+        const upgrade = prompt.getByRole("link", {
+          name:
+            selector === ".free-tracking-card"
+              ? copy.upgradeTracking
+              : copy.upgradeResults,
+          exact: true,
+        });
+        await expect(upgrade).toHaveCount(1);
+        await expect(prompt).not.toContainText(
+          /14[.,]99|7[.,]99|149[.,]90|79[.,]90/,
+        );
+        const target = new URL(await upgrade.getAttribute("href"), page.url());
+        expect(target.searchParams.has("plan")).toBe(false);
+        expect(target.searchParams.has("interval")).toBe(false);
+        expect(
+          await upgrade.evaluate((el) => el.scrollWidth <= el.clientWidth),
+        ).toBe(true);
+        expect(
+          await upgrade.evaluate((el) => {
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            return range.getClientRects().length;
+          }),
+        ).toBe(1);
+      }
+      if (type === null)
+        await page.screenshot({
+          path: `test-results/overview-upgrade-${locale}.png`,
+          fullPage: true,
+        });
     }
   });
 }

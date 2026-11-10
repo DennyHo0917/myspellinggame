@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 import { PLAN_LIMITS } from "../src/worker/domain.ts";
 
 async function mock(page, { signedIn = true, plan = "free" } = {}) {
@@ -59,6 +59,7 @@ test("pricing purchase resumes after login exactly once; failure requires retry 
     });
   });
   await page.goto("/pricing");
+  await page.locator('[data-plan-option="year"]').click();
   await page.locator('[data-plan-choice="parent"]').click();
   await page
     .getByRole("button", { name: "Continue with Google", exact: true })
@@ -115,7 +116,7 @@ for (const scenario of ["expired", "selection-only", "paid"])
       ).toBeNull();
   });
 
-test("tracking gate emits a lock event and uses a specific direct annual CTA", async ({
+test("tracking gate opens pricing before selecting a plan", async ({
   page,
 }) => {
   await mock(page);
@@ -128,11 +129,19 @@ test("tracking gate emits a lock event and uses a specific direct annual CTA", a
     });
   });
   await page.goto("/workspace/assignments/new?lang=en&tracking=1");
-  await page
-    .getByRole("button", { name: "Upgrade to keep tracking", exact: true })
-    .click();
-  await expect(page.locator(".checkout-retry-notice")).toBeVisible();
-  expect(request).toMatchObject({ plan: "parent", interval: "year" });
+  const upgrade = page.getByRole("link", {
+    name: "Upgrade to track results",
+    exact: true,
+  });
+  await upgrade.evaluate((el) =>
+    el.addEventListener("click", (event) => event.preventDefault()),
+  );
+  await upgrade.click();
+  expect(request).toBeUndefined();
+  await expect(upgrade).toHaveAttribute(
+    "href",
+    "/pricing?from=tracking_trial_used",
+  );
   const events = await page.evaluate(() =>
     window.dataLayer.map((e) => Array.from(e)).filter((e) => e[0] === "event"),
   );
@@ -144,8 +153,7 @@ test("tracking gate emits a lock event and uses a specific direct annual CTA", a
     ),
   ).toHaveLength(1);
   expect(events.find((e) => e[1] === "upgrade_cta_clicked")[2]).toMatchObject({
-    plan: "parent",
-    billing_interval: "year",
+    cta_location: "tracking_trial_used",
     transport_type: "beacon",
   });
 });
@@ -180,7 +188,7 @@ test("fresh login intent opens the returned checkout URL without a confirmation 
 });
 
 for (const lang of ["en", "es", "pt-br", "fr", "id", "zh"])
-  test(`${lang} tracking upgrade buttons fit mobile and open annual checkout`, async ({
+  test(`${lang} tracking upgrade links fit mobile and open pricing`, async ({
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
@@ -194,7 +202,7 @@ for (const lang of ["en", "es", "pt-br", "fr", "id", "zh"])
       });
     });
     await page.goto(`/workspace?lang=${lang}`);
-    const button = page.locator(".free-tracking-card .paywall-primary");
+    const button = page.locator(".free-tracking-card a.pro");
     await expect(button).toBeVisible();
     const box = await button.boundingBox();
     expect(box.x).toBeGreaterThanOrEqual(0);
@@ -203,6 +211,7 @@ for (const lang of ["en", "es", "pt-br", "fr", "id", "zh"])
       path: `test-results/tracking-upgrade-${lang}.png`,
     });
     await button.click();
-    await expect(page.locator(".checkout-retry-notice")).toBeVisible();
-    expect(request).toMatchObject({ plan: "parent", interval: "year" });
+    await expect(page).toHaveURL(/\/pricing\?from=submission_limit_reached$/);
+    expect(request).toBeUndefined();
+    await expect(page.locator("[data-plan-choice]")).toHaveCount(2);
   });

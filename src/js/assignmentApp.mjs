@@ -3,7 +3,11 @@ import { distributionChannel } from "./assignmentSharing.mjs";
 const channel = distributionChannel(
   new URLSearchParams(location.search).get("channel"),
 );
-import { trackEvent, trackUsageLimit } from "./analytics.mjs";
+import {
+  capturePracticeSource,
+  trackEvent,
+  trackUsageLimit,
+} from "./analytics.mjs";
 import {
   PRODUCT_LOCALES,
   productPagePath,
@@ -738,6 +742,7 @@ function renderResult(result) {
 }
 
 async function init() {
+  capturePracticeSource();
   root.textContent = copy.assignmentLoading;
   try {
     assignment = await request(

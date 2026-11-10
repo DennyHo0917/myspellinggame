@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import {
   cleanPageLocation,
+  capturePracticeSource,
   getAssignmentEntryPoint,
   initReturnVisit,
   sanitizeEventParams,
@@ -12,7 +13,55 @@ import {
   trackLockedFeatureError,
   trackPurchase,
   trackUsageLimit,
+  trackEvent,
 } from "../src/js/analytics.mjs";
+
+test("practice source follows adult conversion events without carrying practice content", () => {
+  const values = new Map();
+  const events = [];
+  globalThis.sessionStorage = {
+    getItem: (k) => values.get(k),
+    setItem: (k, v) => values.set(k, v),
+  };
+  globalThis.window = { gtag: (...args) => events.push(args) };
+  try {
+    assert.equal(
+      capturePracticeSource({
+        pathname: "/",
+        hash: buildShareHash(["apple"], "typing"),
+      }),
+      "shared_link",
+    );
+    trackEvent("tracking_cta_viewed", { mode: "typing", words: "apple" });
+    trackEvent("teacher_auth_completed", { entry_point: "practice_result" });
+    assert.equal(events[0][2].practice_source, "shared_link");
+    assert.equal(events[1][2].practice_source, "shared_link");
+    assert.equal("words" in events[0][2], false);
+    assert.equal(
+      capturePracticeSource({
+        pathname: "/",
+        hash: buildShareHash(["apple"], "typing", {
+          entryPage: "/weekly-spelling-practice",
+        }),
+      }),
+      "launcher",
+    );
+    assert.equal(
+      capturePracticeSource({ pathname: "/a/anything" }),
+      "assignment_link",
+    );
+    assert.equal(capturePracticeSource({ pathname: "/" }), "builder");
+    assert.deepEqual(
+      sanitizeEventParams("game_completed", {
+        practice_source: "student@example.com",
+      }),
+      {},
+    );
+  } finally {
+    delete globalThis.sessionStorage;
+    delete globalThis.window;
+  }
+});
 import { launcherUrl } from "../src/js/landingLauncher.mjs";
 import { buildShareHash, readShareState } from "../src/js/shareState.mjs";
 

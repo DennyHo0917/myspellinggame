@@ -12,11 +12,13 @@ export function safeUpgradePath(value, origin = location.origin) {
     )
       return null;
     const query = new URLSearchParams();
-    for (const key of ["lang", "section", "tracking"]) {
+    for (const key of ["lang", "section", "tracking", "review"]) {
       const value = url.searchParams.get(key);
       if (
         value &&
-        (key === "tracking" ? value === "1" : /^[a-z-]+$/i.test(value))
+        (["tracking", "review"].includes(key)
+          ? value === "1"
+          : /^[a-z-]+$/i.test(value))
       )
         query.set(key, value);
     }

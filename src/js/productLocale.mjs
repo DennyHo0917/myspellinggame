@@ -1,3 +1,72 @@
+const PRACTICE_ENTRY_COPY = {
+  en: {
+    sharedTrackingTitle: "Track shared practice",
+    sharedTrackingHelp:
+      "Create one link for your students. They enter a nickname to practice; you can see who finished and which words they missed.",
+    sharedTrackingCreate: "Create practice link",
+    reviewEntryTitle: "Build a weekly review habit",
+    reviewEntryHelp:
+      "Smart Review uses results from tracked practice across weeks to choose words that need more work. It is included in Parent and Teacher plans. Start a tracked practice to build that history, or view your existing progress.",
+    reviewEntryLocalNote:
+      "Anonymous missed words stay in this browser. Signing in does not import past results. Your saved missed words can be used in the next tracked practice.",
+  },
+  es: {
+    sharedTrackingTitle: "Compartir práctica con seguimiento",
+    sharedTrackingHelp:
+      "Crea un enlace para tus alumnos. Se identifican con un apodo para practicar; tú puedes ver quién terminó y qué palabras falló.",
+    sharedTrackingCreate: "Crear enlace de práctica",
+    reviewEntryTitle: "Repasa cada semana",
+    reviewEntryHelp:
+      "El repaso inteligente usa los resultados de prácticas registradas de distintas semanas para elegir qué palabras reforzar. Está incluido en los planes Familiar y Docente. Empieza una práctica con seguimiento o consulta el progreso que ya tienes.",
+    reviewEntryLocalNote:
+      "Las palabras falladas sin cuenta se guardan en este navegador. Iniciar sesión no importa resultados anteriores. Puedes usarlas en la próxima práctica con seguimiento.",
+  },
+  "pt-BR": {
+    sharedTrackingTitle: "Compartilhe e acompanhe a prática",
+    sharedTrackingHelp:
+      "Crie um link para seus alunos. Eles usam um apelido para praticar, e você vê quem terminou e quais palavras errou.",
+    sharedTrackingCreate: "Criar link de prática",
+    reviewEntryTitle: "Crie uma rotina de revisão semanal",
+    reviewEntryHelp:
+      "A Revisão Inteligente usa resultados de práticas registradas ao longo das semanas para selecionar as palavras que precisam de reforço. Ela faz parte dos planos Família e Professor. Comece uma prática com acompanhamento ou consulte o progresso já registrado.",
+    reviewEntryLocalNote:
+      "Os erros da prática sem conta ficam neste navegador. Entrar não importa resultados anteriores. Você pode usar essas palavras na próxima prática com acompanhamento.",
+  },
+  fr: {
+    sharedTrackingTitle: "Partager un exercice avec suivi",
+    sharedTrackingHelp:
+      "Créez un lien pour vos élèves. Ils choisissent un pseudo pour s’entraîner ; vous voyez qui a terminé et les mots à retravailler.",
+    sharedTrackingCreate: "Créer le lien d’exercice",
+    reviewEntryTitle: "Réviser au fil des semaines",
+    reviewEntryHelp:
+      "La révision intelligente s’appuie sur les résultats des exercices suivis au fil des semaines pour choisir les mots à revoir. Elle est incluse dans les offres Famille et Enseignant. Lancez un exercice avec suivi ou consultez les progrès déjà enregistrés.",
+    reviewEntryLocalNote:
+      "Les erreurs des exercices sans compte restent dans ce navigateur. La connexion n’importe pas les anciens résultats. Vous pouvez réutiliser ces mots dans le prochain exercice avec suivi.",
+  },
+  id: {
+    sharedTrackingTitle: "Bagikan latihan dengan catatan hasil",
+    sharedTrackingHelp:
+      "Buat satu tautan untuk siswa. Mereka berlatih dengan nama panggilan; Anda dapat melihat siapa yang selesai dan kata yang masih salah.",
+    sharedTrackingCreate: "Buat tautan latihan",
+    reviewEntryTitle: "Bangun kebiasaan mengulang tiap minggu",
+    reviewEntryHelp:
+      "Smart Review memilih kata yang perlu dilatih dari hasil latihan tercatat selama beberapa minggu. Fitur ini tersedia di paket Orang Tua dan Guru. Mulai latihan tercatat untuk membangun riwayat, atau lihat kemajuan yang sudah ada.",
+    reviewEntryLocalNote:
+      "Kata yang salah saat berlatih tanpa akun tersimpan di browser ini. Masuk tidak mengimpor hasil lama. Kata tersebut dapat dipakai dalam latihan tercatat berikutnya.",
+  },
+  zh: {
+    sharedTrackingTitle: "创建带成绩记录的分享练习",
+    sharedTrackingHelp:
+      "创建一个链接发给学生。学生填写昵称即可练习，你可以查看谁完成了、哪些词拼错了。",
+    sharedTrackingCreate: "创建练习链接",
+    reviewEntryTitle: "让错词进入每周复习",
+    reviewEntryHelp:
+      "智能复习会根据多周带记录练习的结果，挑选需要巩固的单词，家庭和教师方案均包含此功能。先开始一次带记录练习，逐步积累历史；也可以查看已有进度。",
+    reviewEntryLocalNote:
+      "匿名练习的错词只保存在当前浏览器，登录不会导入过去的成绩。这些错词可以用于下一次带记录练习。",
+  },
+};
+
 const PACKS = {
   en: {
     brand: "My Spelling Game",
@@ -256,7 +325,8 @@ const PACKS = {
     takeHomeTitle: "Take-Home Spelling List",
     wordListHeader: "Spelling Words & Sentences",
     practiceLinesHeader: "Practice Writing (Dictation Lines)",
-    printFooterNote: "Students practice free online · Teachers track results in Workspace",
+    printFooterNote:
+      "Students practice free online · Teachers track results in Workspace",
     printFooterTeacherCta: "Teachers: Unlock class results from $14.99/mo",
     printParentReport: "Parent report",
     previewPrint: "Preview print",
@@ -265,7 +335,8 @@ const PACKS = {
     downloadSamplePdf: "Download Sample PDF",
     printSample: "Print Sample",
     sampleStudentNickname: "Student A (Sample)",
-    commonMissesFreeNotice: "Class-wide missed words analysis and printable practice sheets are available on Teacher Plan.",
+    commonMissesFreeNotice:
+      "Class-wide missed words analysis and printable practice sheets are available on Teacher Plan.",
     parentReportTitle: "Student Spelling Progress Report",
     wordsToReview: "Words to review this week",
     reviewAdvice: "Practice these words 2–3 times this week for mastery.",
@@ -274,7 +345,8 @@ const PACKS = {
     printMissedWords: "Print missed words",
     missedWordsSheetTitle: "Missed Words Practice Sheet",
     sampleMissedWordsWatermark: "SAMPLE · Teacher Plan · $14.99/mo",
-    sampleMissedWordsNotice: "Sample — Full class-wide missed word sheets available on Teacher Plan · $14.99/mo",
+    sampleMissedWordsNotice:
+      "Sample — Full class-wide missed word sheets available on Teacher Plan · $14.99/mo",
     lookCoverWriteCheck: "Look — Say — Cover — Write — Check",
     classroomGuideTitle: "Google Classroom Spelling in 3 Easy Steps",
     classroomGuideBtn: "Classroom 1-Page Guide (PDF)",
@@ -731,8 +803,10 @@ const PACKS = {
     takeHomeTitle: "Lista de ortografía para llevar a casa",
     wordListHeader: "Palabras y oraciones de ejemplo",
     practiceLinesHeader: "Líneas de práctica (dictado)",
-    printFooterNote: "Los estudiantes practican gratis en línea · Los docentes siguen resultados en Workspace",
-    printFooterTeacherCta: "Docentes: Desbloquea resultados de clase desde $14.99/mes",
+    printFooterNote:
+      "Los estudiantes practican gratis en línea · Los docentes siguen resultados en Workspace",
+    printFooterTeacherCta:
+      "Docentes: Desbloquea resultados de clase desde $14.99/mes",
     printParentReport: "Informe para familias",
     previewPrint: "Vista previa de impresión",
     unlockFullReportsCta: "Ver Plan Docente · $14.99/mes",
@@ -740,16 +814,20 @@ const PACKS = {
     downloadSamplePdf: "Descargar PDF de muestra",
     printSample: "Imprimir muestra",
     sampleStudentNickname: "Estudiante A (Muestra)",
-    commonMissesFreeNotice: "El análisis de palabras falladas y las hojas de práctica imprimibles están disponibles en el Plan Docente.",
+    commonMissesFreeNotice:
+      "El análisis de palabras falladas y las hojas de práctica imprimibles están disponibles en el Plan Docente.",
     parentReportTitle: "Informe de progreso de ortografía",
     wordsToReview: "Palabras para repasar esta semana",
-    reviewAdvice: "Practica estas palabras 2 o 3 veces esta semana para dominarlas.",
+    reviewAdvice:
+      "Practica estas palabras 2 o 3 veces esta semana para dominarlas.",
     sampleWatermark: "MUESTRA / VISTA PREVIA · Plan Docente · $14.99/mes",
-    sampleFooterNotice: "Muestra — informes completos en el Plan Docente · $14.99/mes",
+    sampleFooterNotice:
+      "Muestra — informes completos en el Plan Docente · $14.99/mes",
     printMissedWords: "Imprimir palabras falladas",
     missedWordsSheetTitle: "Hoja de práctica de palabras falladas",
     sampleMissedWordsWatermark: "MUESTRA · Plan Docente · $14.99/mes",
-    sampleMissedWordsNotice: "Muestra — Hojas completas de palabras falladas disponibles en el Plan Docente · $14.99/mes",
+    sampleMissedWordsNotice:
+      "Muestra — Hojas completas de palabras falladas disponibles en el Plan Docente · $14.99/mes",
     lookCoverWriteCheck: "Mirar — Decir — Tapar — Escribir — Comprobar",
     classroomGuideTitle: "Ortografía en Google Classroom en 3 sencillos pasos",
     classroomGuideBtn: "Guía de 1 página para Classroom (PDF)",
@@ -1206,8 +1284,10 @@ const PACKS = {
     takeHomeTitle: "Lista de ortografia para levar para casa",
     wordListHeader: "Palavras e frases de exemplo",
     practiceLinesHeader: "Linhas de prática (ditado)",
-    printFooterNote: "Alunos praticam grátis online · Professores acompanham no Workspace",
-    printFooterTeacherCta: "Professores: Desbloqueie resultados da turma a partir de US$ 14,99/mês",
+    printFooterNote:
+      "Alunos praticam grátis online · Professores acompanham no Workspace",
+    printFooterTeacherCta:
+      "Professores: Desbloqueie resultados da turma a partir de US$ 14,99/mês",
     printParentReport: "Boletim para os pais",
     previewPrint: "Prévia de impressão",
     unlockFullReportsCta: "Ver Plano Professor · US$ 14,99/mês",
@@ -1215,16 +1295,20 @@ const PACKS = {
     downloadSamplePdf: "Baixar PDF de amostra",
     printSample: "Imprimir amostra",
     sampleStudentNickname: "Aluno A (Amostra)",
-    commonMissesFreeNotice: "A análise de palavras erradas e as folhas de treino imprimíveis estão disponíveis no Plano Professor.",
+    commonMissesFreeNotice:
+      "A análise de palavras erradas e as folhas de treino imprimíveis estão disponíveis no Plano Professor.",
     parentReportTitle: "Boletim de progresso de ortografia",
     wordsToReview: "Palavras para revisar esta semana",
-    reviewAdvice: "Pratique estas palavras 2 a 3 vezes esta semana para dominar.",
+    reviewAdvice:
+      "Pratique estas palavras 2 a 3 vezes esta semana para dominar.",
     sampleWatermark: "AMOSTRA / PRÉVIA · Plano Professor · US$ 14,99/mês",
-    sampleFooterNotice: "Amostra — relatórios completos no Plano Professor · US$ 14,99/mês",
+    sampleFooterNotice:
+      "Amostra — relatórios completos no Plano Professor · US$ 14,99/mês",
     printMissedWords: "Imprimir palavras erradas",
     missedWordsSheetTitle: "Folha de treino de palavras erradas",
     sampleMissedWordsWatermark: "AMOSTRA · Plano Professor · US$ 14,99/mês",
-    sampleMissedWordsNotice: "Amostra — Folhas completas de treino disponíveis no Plano Professor · US$ 14,99/mês",
+    sampleMissedWordsNotice:
+      "Amostra — Folhas completas de treino disponíveis no Plano Professor · US$ 14,99/mês",
     lookCoverWriteCheck: "Olhar — Falar — Cobrir — Escrever — Conferir",
     classroomGuideTitle: "Ortografia no Google Classroom em 3 passos fáceis",
     classroomGuideBtn: "Guia de 1 página para o Classroom (PDF)",
@@ -1682,8 +1766,10 @@ const PACKS = {
     takeHomeTitle: "Liste d’orthographe à emporter",
     wordListHeader: "Mots et phrases d’exemple",
     practiceLinesHeader: "Lignes de pratique (dictée)",
-    printFooterNote: "Pratique gratuite pour les élèves en ligne · Suivi enseignant dans Workspace",
-    printFooterTeacherCta: "Enseignants : Débloquez les résultats de la classe dès 14,99 $US/mois",
+    printFooterNote:
+      "Pratique gratuite pour les élèves en ligne · Suivi enseignant dans Workspace",
+    printFooterTeacherCta:
+      "Enseignants : Débloquez les résultats de la classe dès 14,99 $US/mois",
     printParentReport: "Bilan parents",
     previewPrint: "Aperçu avant impression",
     unlockFullReportsCta: "Voir le forfait Enseignants · 14,99 $US/mois",
@@ -1691,18 +1777,25 @@ const PACKS = {
     downloadSamplePdf: "Télécharger le PDF d’exemple",
     printSample: "Imprimer l’exemple",
     sampleStudentNickname: "Élève A (Exemple)",
-    commonMissesFreeNotice: "L’analyse des mots manqués et les fiches imprimables sont disponibles avec l’offre Enseignants.",
+    commonMissesFreeNotice:
+      "L’analyse des mots manqués et les fiches imprimables sont disponibles avec l’offre Enseignants.",
     parentReportTitle: "Bilan de progression en orthographe",
     wordsToReview: "Mots à réviser cette semaine",
-    reviewAdvice: "Révisez ces mots 2 à 3 fois cette semaine pour bien les maîtriser.",
-    sampleWatermark: "ÉCHANTILLON / APERÇU · Offre Enseignants · 14,99 $US/mois",
-    sampleFooterNotice: "Échantillon — bilans complets avec l'offre Enseignants · 14,99 $US/mois",
+    reviewAdvice:
+      "Révisez ces mots 2 à 3 fois cette semaine pour bien les maîtriser.",
+    sampleWatermark:
+      "ÉCHANTILLON / APERÇU · Offre Enseignants · 14,99 $US/mois",
+    sampleFooterNotice:
+      "Échantillon — bilans complets avec l'offre Enseignants · 14,99 $US/mois",
     printMissedWords: "Imprimer les mots manqués",
     missedWordsSheetTitle: "Fiche de révision des mots manqués",
-    sampleMissedWordsWatermark: "ÉCHANTILLON · Offre Enseignants · 14,99 $US/mois",
-    sampleMissedWordsNotice: "Échantillon — Fiches complètes disponibles avec l’offre Enseignants · 14,99 $US/mois",
+    sampleMissedWordsWatermark:
+      "ÉCHANTILLON · Offre Enseignants · 14,99 $US/mois",
+    sampleMissedWordsNotice:
+      "Échantillon — Fiches complètes disponibles avec l’offre Enseignants · 14,99 $US/mois",
     lookCoverWriteCheck: "Regarder — Dire — Cacher — Écrire — Vérifier",
-    classroomGuideTitle: "L'orthographe sur Google Classroom en 3 étapes simples",
+    classroomGuideTitle:
+      "L'orthographe sur Google Classroom en 3 étapes simples",
     classroomGuideBtn: "Guide Classroom en 1 page (PDF)",
     downloadPdf: "Télécharger le PDF",
     print: "Imprimer",
@@ -2157,7 +2250,8 @@ const PACKS = {
     takeHomeTitle: "Daftar Ejaan Bawa Pulang",
     wordListHeader: "Kata ejaan & contoh kalimat",
     practiceLinesHeader: "Garis latihan (dikte)",
-    printFooterNote: "Siswa berlatih gratis online · Guru memantau di Workspace",
+    printFooterNote:
+      "Siswa berlatih gratis online · Guru memantau di Workspace",
     printFooterTeacherCta: "Guru: Buka hasil kelas mulai US$14,99/bulan",
     printParentReport: "Laporan orang tua",
     previewPrint: "Pratinjau cetak",
@@ -2166,16 +2260,19 @@ const PACKS = {
     downloadSamplePdf: "Unduh PDF contoh",
     printSample: "Cetak contoh",
     sampleStudentNickname: "Siswa A (Contoh)",
-    commonMissesFreeNotice: "Analisis kata yang sering salah dan lembar latihan cetak tersedia di Paket Guru.",
+    commonMissesFreeNotice:
+      "Analisis kata yang sering salah dan lembar latihan cetak tersedia di Paket Guru.",
     parentReportTitle: "Laporan Perkembangan Ejaan Siswa",
     wordsToReview: "Kata untuk diulas minggu ini",
     reviewAdvice: "Latih kata-kata ini 2–3 kali minggu ini untuk menguasainya.",
     sampleWatermark: "SAMPEL / PRATINJAU · Paket Guru · US$14,99/bulan",
-    sampleFooterNotice: "Sampel — laporan lengkap tersedia di Paket Guru · US$14,99/bulan",
+    sampleFooterNotice:
+      "Sampel — laporan lengkap tersedia di Paket Guru · US$14,99/bulan",
     printMissedWords: "Cetak kata yang salah",
     missedWordsSheetTitle: "Lembar Latihan Kata yang Salah",
     sampleMissedWordsWatermark: "SAMPEL · Paket Guru · US$14,99/bulan",
-    sampleMissedWordsNotice: "Sampel — Lembar lengkap kata yang sering salah tersedia di Paket Guru · US$14,99/bulan",
+    sampleMissedWordsNotice:
+      "Sampel — Lembar lengkap kata yang sering salah tersedia di Paket Guru · US$14,99/bulan",
     lookCoverWriteCheck: "Lihat — Ucapkan — Tutup — Tulis — Periksa",
     classroomGuideTitle: "Ejaan Google Classroom dalam 3 Langkah Mudah",
     classroomGuideBtn: "Panduan 1 Halaman Classroom (PDF)",
@@ -2612,7 +2709,8 @@ const PACKS = {
     downloadSamplePdf: "下载样例 PDF",
     printSample: "打印样例",
     sampleStudentNickname: "学生 A（示例）",
-    commonMissesFreeNotice: "全班错词分析与可打印错词练习单为教师方案专属功能。",
+    commonMissesFreeNotice:
+      "全班错词分析与可打印错词练习单为教师方案专属功能。",
     parentReportTitle: "学生拼写学习进度小报",
     wordsToReview: "本周重点巩固错词",
     reviewAdvice: "建议本周针对错词重新练习 2–3 遍以巩固掌握。",
@@ -2621,7 +2719,8 @@ const PACKS = {
     printMissedWords: "打印错词纸",
     missedWordsSheetTitle: "错词巩固练习纸",
     sampleMissedWordsWatermark: "样例 · 教师方案 · US$14.99/月",
-    sampleMissedWordsNotice: "样例 — 升级教师方案可打印完整错词练习单 · US$14.99/月",
+    sampleMissedWordsNotice:
+      "样例 — 升级教师方案可打印完整错词练习单 · US$14.99/月",
     lookCoverWriteCheck: "看词 — 读词 — 遮盖 — 默写 — 核对",
     classroomGuideTitle: "Google Classroom 拼写作业三步指南",
     classroomGuideBtn: "Classroom 布置一页指南 (PDF)",
@@ -3160,6 +3259,7 @@ const CLASSROOM_COPY = {
 
 export function productMessages(locale = productLocale()) {
   return {
+    ...(PRACTICE_ENTRY_COPY[locale] || PRACTICE_ENTRY_COPY.en),
     ...(PACKS[locale] || PACKS.en),
     ...(CLASSROOM_COPY[locale] || CLASSROOM_COPY.en),
     ...(SENTENCE_LIBRARY_COPY[locale] || SENTENCE_LIBRARY_COPY.en),

@@ -116,6 +116,8 @@ function safeWorkspaceReturnPath(value) {
   try {
     const url = new URL(value, location.origin);
     if (url.origin !== location.origin) return null;
+    if (url.pathname === "/workspace" && url.searchParams.get("review") === "1")
+      return `/workspace?lang=${encodeURIComponent(locale)}&review=1`;
     if (
       url.pathname !== "/workspace/assignments/new" &&
       url.pathname !== "/workspace/saved-lists" &&
@@ -3963,12 +3965,16 @@ async function renderTrackingPractice(me) {
   const main = shell(me, "assignments");
   const card = document.createElement("section");
   card.className = "product-card tracking-practice-card";
-  card.innerHTML = `<h1>${copy.trackingTitle}</h1><p>${copy.trackingExplanation}</p>`;
   main.append(card);
   const status = statusElement(card);
   const path = `/workspace/assignments/new?lang=${encodeURIComponent(locale)}&tracking=1`;
   const incoming = takeTrackingEntry(me.user.id);
   let draft = incoming || readWorkspaceDraft(me, "tracking")?.values || {};
+  const shared = draft.entryPoint === "copy_track";
+  card.insertAdjacentHTML(
+    "afterbegin",
+    `<h1>${shared ? copy.sharedTrackingTitle : copy.trackingTitle}</h1><p>${shared ? copy.sharedTrackingHelp : copy.trackingExplanation}</p>`,
+  );
   const persist = () =>
     writeWorkspaceDraft(me, "tracking", "new", path, { values: draft });
   persist();
@@ -4015,6 +4021,14 @@ async function renderTrackingPractice(me) {
     <div class="field"><label for="tracking-mode">${copy.mode}</label><select id="tracking-mode"><option value="dictation">${copy.dictation}</option><option value="typing">${copy.typing}</option></select></div>
     <div class="actions"><button type="submit">${copy.trackNextPractice}</button></div>`;
   const select = form.querySelector("#tracking-learner");
+  if (shared) {
+    select.closest(".field").hidden = true;
+    select.required = false;
+    form.querySelector("#tracking-name-field").hidden = true;
+    form.querySelector("#tracking-name").required = false;
+    form.querySelector('button[type="submit"]').textContent =
+      copy.sharedTrackingCreate;
+  }
   select.add(new Option(copy.trackingChooseLearner, ""));
   for (const learner of learners)
     select.add(new Option(learner.name, learner.id));
@@ -4034,7 +4048,7 @@ async function renderTrackingPractice(me) {
     ? "typing"
     : "dictation";
   const sync = () => {
-    const adding = select.value === "new";
+    const adding = !shared && select.value === "new";
     form.querySelector("#tracking-name-field").hidden = !adding;
     form.querySelector("#tracking-name").required = adding;
     draft = {
@@ -4071,7 +4085,7 @@ async function renderTrackingPractice(me) {
     try {
       sync();
       let learner = learners.find((item) => item.id === select.value);
-      if (select.value === "new") {
+      if (!shared && select.value === "new") {
         learner = await api("/api/learners", {
           method: "POST",
           body: JSON.stringify({ name: draft.name }),
@@ -4082,23 +4096,25 @@ async function renderTrackingPractice(me) {
         sync();
         trackEvent("learner_created");
       }
-      if (!learner?.public_id) throw new Error(copy.reviewLearnerUnavailable);
+      if (!shared && !learner?.public_id)
+        throw new Error(copy.reviewLearnerUnavailable);
       const result =
         draft.createdAssignment ||
         (await api("/api/assignments", {
           method: "POST",
           body: JSON.stringify({
-            title: m("trackingAssignmentTitle", { name: learner.name }).slice(
-              0,
-              80,
-            ),
+            title: (shared
+              ? copy.sharedTrackingTitle
+              : m("trackingAssignmentTitle", { name: learner.name })
+            ).slice(0, 80),
             words: draft.words,
             exampleSentences: draft.exampleSentences,
             mode: draft.mode,
-            learnerIds: [learner.id],
+            learnerIds: shared ? [] : [learner.id],
             maxAttempts: 10,
             expiresAt: new Date(Date.now() + 7 * 86400000).toISOString(),
             tracking: true,
+            trackingAudience: shared ? "shared" : "individual",
             entryPoint: draft.entryPoint || "workspace",
           }),
         }));
@@ -4118,7 +4134,9 @@ async function renderTrackingPractice(me) {
       });
       clearWorkspaceDraft(me, "tracking");
       clearAssignmentEntryPoint();
-      location.href = `/a/${result.publicId}?learner=${encodeURIComponent(learner.public_id)}&lang=${encodeURIComponent(locale)}`;
+      location.href = shared
+        ? `/workspace/assignments/${result.id}?lang=${encodeURIComponent(locale)}`
+        : `/a/${result.publicId}?learner=${encodeURIComponent(learner.public_id)}&lang=${encodeURIComponent(locale)}`;
     } catch (error) {
       status.textContent =
         error.code === "tracking_trial_used"
@@ -4154,6 +4172,43 @@ async function renderNew(me) {
   if (new URLSearchParams(location.search).get("tracking") === "1")
     return renderTrackingPractice(me);
   return renderAssignmentForm(me);
+}
+
+function renderReviewEntry(me) {
+  const main = shell(me, "progress");
+  const card = document.createElement("section");
+  card.className = "product-card review-entry-card";
+  const title = document.createElement("h1");
+  title.textContent = copy.reviewEntryTitle;
+  const help = document.createElement("p");
+  help.textContent = copy.reviewEntryHelp;
+  const local = document.createElement("p");
+  local.className = "notice";
+  local.textContent = copy.reviewEntryLocalNote;
+  const start = document.createElement("button");
+  start.textContent = copy.trackNextPractice;
+  start.addEventListener("click", () => {
+    // Consume only a fresh, account-bound entry; anonymous history stays local.
+    const draft = takeTrackingEntry(me.user.id);
+    saveTrackingEntry(
+      {
+        ...(draft?.intent === "smart_review" ? draft : { words: "" }),
+        entryPoint: "workspace",
+      },
+      me.user.id,
+    );
+    location.href = `/workspace/assignments/new?lang=${encodeURIComponent(locale)}&tracking=1`;
+  });
+  const progress = document.createElement("a");
+  progress.className = "button-link button-secondary";
+  progress.href = `/workspace/progress?lang=${encodeURIComponent(locale)}`;
+  progress.textContent = copy.progressOverview;
+  const actions = document.createElement("div");
+  actions.className = "actions";
+  actions.append(start, progress);
+  card.append(title, help, local, actions);
+  if (me.plan === "free") card.append(upgradeLink("smart_review"));
+  main.append(card);
 }
 
 async function renderEdit(me, id) {
@@ -5263,6 +5318,11 @@ async function renderTeacherRoute(me) {
     else if (editAssignment) await renderEdit(me, editAssignment[1]);
     else if (detail) await renderDetail(me, detail[1]);
     else if (learner) await renderLearner(me, learner[1]);
+    else if (
+      location.pathname === "/workspace" &&
+      new URLSearchParams(location.search).get("review") === "1"
+    )
+      renderReviewEntry(me);
     else await renderDashboard(me);
   } catch (error) {
     const main = shell(me, "overview");

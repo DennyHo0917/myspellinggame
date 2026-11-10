@@ -296,6 +296,92 @@ beforeEach(async () => {
   await insertTeacher(teacherB);
 });
 
+describe("account-wide photo import allowance", () => {
+  const accept = (
+    importId: string,
+    words = "apple banana",
+    teacher: Teacher | null = teacherA,
+  ) =>
+    call(
+      "/api/photo-import/accept",
+      { method: "POST", body: JSON.stringify({ importId, words }) },
+      teacher,
+    );
+
+  it("requires authentication and does not charge empty or invalid imports", async () => {
+    expect((await accept(crypto.randomUUID(), "apple", null)).status).toBe(401);
+    expect((await accept(crypto.randomUUID(), "")).status).toBe(400);
+    expect((await accept(crypto.randomUUID(), "123")).status).toBe(400);
+    const me = (await (await call("/api/me")).json()) as {
+      photoImportTrialsUsed: number;
+    };
+    expect(me.photoImportTrialsUsed).toBe(0);
+  });
+
+  it("counts accepted previews once, isolates accounts, and blocks a fourth import", async () => {
+    const id = crypto.randomUUID();
+    expect(await (await accept(id)).json()).toMatchObject({
+      used: 1,
+      limit: 3,
+    });
+    expect(await (await accept(id)).json()).toMatchObject({ used: 1 });
+    await accept(crypto.randomUUID());
+    await accept(crypto.randomUUID());
+    expect((await accept(crypto.randomUUID())).status).toBe(403);
+    expect((await accept(id)).status).toBe(200);
+    expect(
+      await (await accept(crypto.randomUUID(), "apple", teacherB)).json(),
+    ).toMatchObject({ used: 1 });
+    const me = (await (await call("/api/me")).json()) as {
+      photoImportTrialsUsed: number;
+    };
+    expect(me.photoImportTrialsUsed).toBe(3);
+  });
+
+  it("enforces the limit for concurrent accepts", async () => {
+    const responses = await Promise.all(
+      Array.from({ length: 6 }, () => accept(crypto.randomUUID())),
+    );
+    expect(responses.filter((r) => r.status === 200)).toHaveLength(3);
+    expect(responses.filter((r) => r.status === 403)).toHaveLength(3);
+  });
+
+  it("does not charge paid accounts", async () => {
+    await insertSubscription({ plan: "parent", status: "active" });
+    for (let i = 0; i < 4; i++)
+      expect((await accept(crypto.randomUUID())).status).toBe(200);
+    const me = (await (await call("/api/me")).json()) as {
+      photoImportTrialsUsed: number;
+    };
+    expect(me.photoImportTrialsUsed).toBe(0);
+  });
+});
+
+describe("shared tracking entry", () => {
+  it("creates an unbound nickname assignment and preserves the free tracking gate", async () => {
+    const created = await createAssignment(teacherA, {
+      tracking: true,
+      trackingAudience: "shared",
+      learnerIds: [],
+    });
+    expect(created.response.status).toBe(201);
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    expect(assignment.learner).toBeUndefined();
+    expect(
+      (await submit(publicId, assignment.words, { nickname: "Student" }))
+        .status,
+    ).toBe(201);
+    const denied = await createAssignment(teacherA, {
+      tracking: true,
+      trackingAudience: "shared",
+      learnerIds: [],
+    });
+    expect(denied.response.status).toBe(403);
+    expect(denied.body.error).toBe("tracking_trial_used");
+  });
+});
+
 describe("teacher auth callback", () => {
   it("starts Microsoft sign-in when Microsoft is the only configured provider", async () => {
     const env = testEnv({

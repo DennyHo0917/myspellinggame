@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 import { PLAN_LIMITS } from "../src/worker/domain.ts";
 import { productMessages } from "../src/js/productLocale.mjs";
 

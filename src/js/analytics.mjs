@@ -1,4 +1,35 @@
 import { captureAdultAcquisition } from "./adultAcquisition.mjs";
+import { readShareState } from "./shareState.mjs";
+
+const PRACTICE_SOURCE_KEY = "mySpellingPracticeSource";
+const PRACTICE_SOURCES = [
+  "builder",
+  "shared_link",
+  "launcher",
+  "assignment_link",
+];
+export function capturePracticeSource(locationLike = window.location) {
+  const share = readShareState(locationLike);
+  const source = /^\/(a|l|join)\//.test(locationLike.pathname || "")
+    ? "assignment_link"
+    : share.entryPage
+      ? "launcher"
+      : share.sharedLink
+        ? "shared_link"
+        : "builder";
+  try {
+    sessionStorage.setItem(PRACTICE_SOURCE_KEY, source);
+  } catch {}
+  return source;
+}
+function practiceSource() {
+  try {
+    const source = sessionStorage.getItem(PRACTICE_SOURCE_KEY);
+    return PRACTICE_SOURCES.includes(source) ? source : undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 const VISIT_KEY = "mySpellingGameVisitHistory";
 const SESSION_KEY = "mySpellingGameReturnVisitSent";
@@ -119,6 +150,31 @@ const EVENT_PARAMS = {
   print_missed_words_click: ["plan", "count", "is_sample"],
 };
 
+for (const name of [
+  "word_list_created",
+  "practice_started",
+  "game_completed",
+  "signup_cta_viewed",
+  "tracking_cta_viewed",
+  "assignment_entry_clicked",
+  "teacher_auth_started",
+  "teacher_auth_completed",
+  "sign_up",
+  "tracking_setup_viewed",
+  "tracking_practice_ready",
+  "assignment_created",
+  "assignment_link_copied",
+  "assignment_opened",
+  "assignment_completed",
+  "results_view",
+  "assignment_results_viewed",
+  "locked_feature_attempted",
+  "upgrade_cta_clicked",
+  "checkout_started",
+  "purchase",
+])
+  EVENT_PARAMS[name].push("practice_source");
+
 const LIMIT_TYPES = {
   active_assignment_limit: "active_assignments",
   monthly_submission_limit: "monthly_submissions",
@@ -156,7 +212,11 @@ export function sanitizeEventParams(name, params = {}) {
   const allowed = EVENT_PARAMS[name] || [];
   return Object.fromEntries(
     allowed
-      .filter((key) => params[key] !== undefined)
+      .filter(
+        (key) =>
+          params[key] !== undefined &&
+          (key !== "practice_source" || PRACTICE_SOURCES.includes(params[key])),
+      )
       .map((key) => [key, params[key]]),
   );
 }
@@ -199,11 +259,18 @@ export function entryPage() {
 export function trackEvent(name, params = {}) {
   if (typeof window === "undefined" || typeof window.gtag !== "function")
     return;
-  const safeParams = sanitizeEventParams(name, params);
+  const safeParams = sanitizeEventParams(name, {
+    practice_source: practiceSource(),
+    ...params,
+  });
   if (
-    ["upgrade_cta_clicked", "checkout_redirected", "upgrade_clicked", "upgrade_click", "classroom_cta_click"].includes(
-      name,
-    )
+    [
+      "upgrade_cta_clicked",
+      "checkout_redirected",
+      "upgrade_clicked",
+      "upgrade_click",
+      "classroom_cta_click",
+    ].includes(name)
   )
     safeParams.transport_type = "beacon";
   window.gtag("event", name, safeParams);

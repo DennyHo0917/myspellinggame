@@ -24,6 +24,7 @@ import {
 import { speakWord as speak } from "./speech.js";
 import {
   entryPage,
+  capturePracticeSource,
   pageLocale,
   setAssignmentEntryPoint,
   trackEvent,
@@ -221,17 +222,56 @@ function showPhotoImportReview(words) {
   use.type = "button";
   use.className = "auto-sentence-btn";
   use.textContent = t("photoImportUse");
-  use.addEventListener("click", () => {
-    textarea().value = input.value
-      .split(/\r?\n/)
-      .map((word) => word.trim())
-      .filter(Boolean)
-      .join("\n");
+  const importId = crypto.randomUUID();
+  use.addEventListener("click", async () => {
+    const analysis = analyzeWords(input.value);
+    if (
+      !analysis.words.length ||
+      analysis.invalid.length ||
+      analysis.tooShort.length ||
+      analysis.tooLong.length
+    ) {
+      help.textContent = t("invalidWords");
+      return;
+    }
+    if (use.disabled) return;
+    use.disabled = true;
+    input.disabled = true;
+    cancel.disabled = true;
+    try {
+      if (!isPlusAccount(accountState)) {
+        const response = await fetch("/api/photo-import/accept", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ importId, words: input.value }),
+        });
+        if (!response.ok) {
+          if (response.status === 403) {
+            if (accountState)
+              accountState.photoImportTrialsUsed = PHOTO_IMPORT_TRIAL_LIMIT;
+            photoImportNotice(accountState);
+            return;
+          }
+          throw new Error("photo_import_accept_failed");
+        }
+        const result = await response.json();
+        if (accountState) accountState.photoImportTrialsUsed = result.used;
+      }
+    } catch {
+      help.textContent = t("photoImportError");
+      use.disabled = false;
+      input.disabled = false;
+      cancel.disabled = false;
+      return;
+    }
+    if (!review.isConnected) return;
+    textarea().value = analysis.words.join("\n");
     textarea().dispatchEvent(new Event("input", { bubbles: true }));
     const count = currentWords().length;
     if (count) trackPremiumFeatureUsed("photo_import", accountState, count);
     if (accountState?.user?.id && !isPlusAccount(accountState)) {
-      const used = incrementPhotoImportTrialsUsed(accountState.user.id);
+      const used = accountState.photoImportTrialsUsed;
       const notice = photoImportStatus(
         t("photoImportTrialStatus", {
           used,
@@ -278,34 +318,10 @@ async function importWordsFromPhoto(file) {
 export const PHOTO_IMPORT_TRIAL_LIMIT = 3;
 export const LAST_MISSED_KEY = "mySpellingLastMissedWords";
 
-export function getPhotoImportTrialsUsed(userId) {
-  if (!userId) return 0;
-  try {
-    const val = parseInt(
-      localStorage.getItem(`mySpellingPhotoTrials_${userId}`) || "0",
-      10,
-    );
-    return Number.isFinite(val) && val >= 0 ? val : 0;
-  } catch {
-    return 0;
-  }
-}
-
-export function incrementPhotoImportTrialsUsed(userId) {
-  if (!userId) return 0;
-  try {
-    const next = getPhotoImportTrialsUsed(userId) + 1;
-    localStorage.setItem(`mySpellingPhotoTrials_${userId}`, String(next));
-    return next;
-  } catch {
-    return 1;
-  }
-}
-
 export function hasPhotoImportAccess(account) {
   if (!account) return false;
   if (isPlusAccount(account)) return true;
-  return getPhotoImportTrialsUsed(account.user?.id) < PHOTO_IMPORT_TRIAL_LIMIT;
+  return Number(account.photoImportTrialsUsed || 0) < PHOTO_IMPORT_TRIAL_LIMIT;
 }
 
 export function saveLastMissedWords(words) {
@@ -359,7 +375,16 @@ export function initLastMissedBanner() {
   smartReviewBtn.className = "last-missed-smart-btn";
   smartReviewBtn.textContent = t("lastMissedSmartReviewBtn");
   smartReviewBtn.addEventListener("click", () => {
-    window.location.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}`;
+    saveTrackingEntry(
+      {
+        words: parseWords(savedMissed.join("\n")).join("\n"),
+        mode: "dictation",
+        entryPoint: "workspace",
+        intent: "smart_review",
+      },
+      accountState?.user?.id,
+    );
+    window.location.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}&review=1`;
   });
 
   const dismissBtn = document.createElement("button");
@@ -703,6 +728,7 @@ function syncModeUI() {
 export function initSpellingMode() {
   const input = textarea();
   if (!input) return;
+  capturePracticeSource();
 
   const shareState = readShareState(window.location);
   const fromUrl = loadWordsFromUrl();
@@ -1156,7 +1182,11 @@ export function renderResultWorkspaceCta({ mode, wordCount, missedCount }) {
       item.textContent = `✓ ${label}`;
       benefits.appendChild(item);
     });
-    button.textContent = productMessage("trackNextPractice", {}, getPageLocale());
+    button.textContent = productMessage(
+      "trackNextPractice",
+      {},
+      getPageLocale(),
+    );
     footnote.textContent = productMessage(
       "trackingExplanation",
       {},
@@ -1254,8 +1284,6 @@ if (typeof window !== "undefined") {
     hasPhotoImportAccess,
     PHOTO_IMPORT_TRIAL_LIMIT,
     LAST_MISSED_KEY,
-    getPhotoImportTrialsUsed,
-    incrementPhotoImportTrialsUsed,
     saveLastMissedWords,
     initLastMissedBanner,
   };

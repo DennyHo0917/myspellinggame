@@ -1734,7 +1734,12 @@ async function createAssignment(env: Env, request: Request, userId: string) {
   const plan = await getPlan(env, userId);
   enforcePlanWordLimit(words, plan);
   const currentUsage = await usage(env.DB, userId, plan);
-  if (body.tracking === true && uniqueLearnerIds.length !== 1)
+  if (
+    body.tracking === true &&
+    (body.trackingAudience === "shared"
+      ? uniqueLearnerIds.length !== 0
+      : uniqueLearnerIds.length !== 1)
+  )
     throw new HttpError(
       400,
       "invalid_learners",
@@ -2860,8 +2865,52 @@ async function handleBusinessRequest(
       cancelAtPeriodEnd: Boolean(subscription?.cancel_at_period_end),
       workspaceType: workspace?.workspace_type ?? null,
       classPublicId,
+      photoImportTrialsUsed: Number(
+        await env.DB.prepare(
+          "SELECT COUNT(*) AS count FROM photo_import_usage WHERE user_id = ?",
+        )
+          .bind(user.id)
+          .first("count"),
+      ),
       ...(await usage(env.DB, user.id, plan)),
     });
+  }
+
+  if (url.pathname === "/api/photo-import/accept" && method === "POST") {
+    requireSameOrigin(request);
+    const user = await requireTeacher(env, request, getSession);
+    const body = await readJson(request, 16384);
+    const importId = validateAttemptId(body.importId);
+    parseWordList(body.words);
+    const plan = await getPlan(env, user.id);
+    if (plan !== "free") return json({ used: 0, limit: 3 });
+    // One atomic statement enforces the account-wide limit across tabs/devices.
+    // A stable preview ID makes retrying a lost response idempotent.
+    await env.DB.prepare(
+      `INSERT OR IGNORE INTO photo_import_usage (user_id, import_id, created_at)
+       SELECT ?, ?, ? WHERE (SELECT COUNT(*) FROM photo_import_usage WHERE user_id = ?) < 3`,
+    )
+      .bind(user.id, importId, new Date().toISOString(), user.id)
+      .run();
+    const accepted = await env.DB.prepare(
+      "SELECT 1 FROM photo_import_usage WHERE user_id = ? AND import_id = ?",
+    )
+      .bind(user.id, importId)
+      .first();
+    if (!accepted)
+      throw new HttpError(
+        403,
+        "photo_import_trial_used",
+        "The free photo import allowance has been used.",
+      );
+    const used = Number(
+      await env.DB.prepare(
+        "SELECT COUNT(*) AS count FROM photo_import_usage WHERE user_id = ?",
+      )
+        .bind(user.id)
+        .first("count"),
+    );
+    return json({ used, limit: 3 });
   }
 
   if (url.pathname === "/api/chase/passage" && method === "GET") {

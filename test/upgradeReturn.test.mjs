@@ -11,6 +11,10 @@ import {
 test("upgrade return only accepts local practice and workspace routes", () => {
   const origin = "https://example.test";
   assert.equal(
+    safeUpgradePath("/workspace?lang=zh&review=1", origin),
+    "/workspace?lang=zh&review=1",
+  );
+  assert.equal(
     safeUpgradePath("/workspace/assignments/new?lang=zh&tracking=1", origin),
     "/workspace/assignments/new?lang=zh&tracking=1",
   );

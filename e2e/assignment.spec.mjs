@@ -1512,7 +1512,7 @@ test("practice records a valid list and start separately", async ({ page }) => {
 
   await expect
     .poll(() => analyticsEvents(page, "practice_started"))
-    .toEqual([{ mode: "typing", word_count: 2 }]);
+    .toEqual([{ mode: "typing", word_count: 2, practice_source: "builder" }]);
   expect(await analyticsEvents(page, "word_list_created")).toHaveLength(1);
 });
 
@@ -1748,7 +1748,12 @@ test("Track results skips anonymous copying and opens the simplified tracking fl
     sentences: "It rained.\nA friend helped.",
     mode: "typing",
     source: "copy_track",
-    event: { mode: "typing", word_count: 2, entry_point: "copy_track" },
+    event: {
+      mode: "typing",
+      word_count: 2,
+      entry_point: "copy_track",
+      practice_source: "builder",
+    },
   });
   expect(
     await page.evaluate(() =>
@@ -1764,16 +1769,19 @@ test("Track results skips anonymous copying and opens the simplified tracking fl
     });
   });
   await page.getByRole("button", { name: "Continue with Google" }).click();
-  await expect(page.locator("#tracking-learner")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Track shared practice", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator("#tracking-learner")).toBeHidden();
   expect(
     await page.evaluate(() =>
       JSON.parse(sessionStorage.getItem("trackAuthEvents") || "[]")
         .filter((entry) => entry[1] === "teacher_auth_started")
         .map((entry) => entry[2]),
     ),
-  ).toEqual([{ entry_point: "copy_track" }]);
+  ).toEqual([{ entry_point: "copy_track", practice_source: "builder" }]);
   expect(await analyticsEvents(page, "teacher_auth_completed")).toEqual([
-    { entry_point: "copy_track" },
+    { entry_point: "copy_track", practice_source: "builder" },
   ]);
 
   await page.evaluate(() => {
@@ -1785,10 +1793,10 @@ test("Track results skips anonymous copying and opens the simplified tracking fl
     });
   });
   await page
-    .getByRole("button", { name: "Start tracked practice", exact: true })
+    .getByRole("button", { name: "Create practice link", exact: true })
     .click();
   await expect(page).toHaveURL(
-    `/a/${publicId}?learner=abcdefghijklmnopqrstuvwx&lang=en`,
+    `/workspace/assignments/${assignmentId}?lang=en`,
   );
   expect(
     await page.evaluate(() =>
@@ -1796,7 +1804,14 @@ test("Track results skips anonymous copying and opens the simplified tracking fl
         .filter((entry) => entry[1] === "assignment_created")
         .map((entry) => entry[2]),
     ),
-  ).toEqual([{ mode: "typing", word_count: 2, entry_point: "copy_track" }]);
+  ).toEqual([
+    {
+      mode: "typing",
+      word_count: 2,
+      entry_point: "copy_track",
+      practice_source: "builder",
+    },
+  ]);
   expect(
     await page.evaluate(() =>
       sessionStorage.getItem("mySpellingAssignmentEntryPoint"),
@@ -1825,7 +1840,7 @@ test("signed-in Track results opens tracking setup directly", async ({
   await expect(page).toHaveURL(
     /\/workspace\/assignments\/new\?lang=en&tracking=1$/,
   );
-  await expect(page.locator("#tracking-learner")).toBeVisible();
+  await expect(page.locator("#tracking-learner")).toBeHidden();
   await expect(page.getByLabel("Spelling words")).toHaveValue(
     "because\nfriend\nbeautiful\nanswer\nenough\nfavorite\nlibrary\nthrough",
   );
@@ -1865,6 +1880,7 @@ test("typing result offers Workspace CTA and keeps the practice draft", async ({
       missed_count: 1,
       replay_round: false,
       cta_location: "practice_result",
+      practice_source: "builder",
     },
   ]);
   await page.evaluate(() => {
@@ -1899,7 +1915,12 @@ test("typing result offers Workspace CTA and keeps the practice draft", async ({
         .map((entry) => entry[2]),
     ),
   ).toEqual([
-    { mode: "typing", word_count: 2, entry_point: "practice_result" },
+    {
+      mode: "typing",
+      word_count: 2,
+      entry_point: "practice_result",
+      practice_source: "builder",
+    },
   ]);
 });
 
@@ -1966,7 +1987,12 @@ test("signed-in result keeps the CTA without signup copy or signup analytics", a
         .map((entry) => entry[2]),
     ),
   ).toEqual([
-    { mode: "dictation", word_count: 1, entry_point: "practice_result" },
+    {
+      mode: "dictation",
+      word_count: 1,
+      entry_point: "practice_result",
+      practice_source: "builder",
+    },
   ]);
 });
 
@@ -1997,6 +2023,7 @@ test("dictation result uses the same Workspace CTA", async ({ page }) => {
       missed_count: 0,
       replay_round: false,
       cta_location: "practice_result",
+      practice_source: "builder",
     },
   ]);
 });

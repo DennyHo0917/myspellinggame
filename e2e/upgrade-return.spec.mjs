@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 import { PLAN_LIMITS } from "../src/worker/domain.ts";
 import { productMessages } from "../src/js/productLocale.mjs";
 
@@ -17,6 +17,7 @@ for (const locale of ["en", "es", "pt-br", "fr", "id", "zh"]) {
         json: {
           user: { id: "buyer", name: "Buyer" },
           plan,
+          photoImportTrialsUsed: 3,
           limits: PLAN_LIMITS[plan],
         },
       }),
@@ -24,7 +25,7 @@ for (const locale of ["en", "es", "pt-br", "fr", "id", "zh"]) {
     await page.route("**/api/billing/checkout", (route) => {
       expect(route.request().postDataJSON()).toMatchObject({
         plan: "parent",
-        interval: "year",
+        interval: "month",
       });
       plan = "parent";
       return route.fulfill({
@@ -207,6 +208,7 @@ test("cancelled photo checkout restores draft without claiming paid access", asy
       json: {
         user: { id: "buyer", name: "Buyer" },
         plan: "free",
+        photoImportTrialsUsed: 3,
         limits: PLAN_LIMITS.free,
       },
     }),

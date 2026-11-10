@@ -27,6 +27,7 @@ import {
   validateTitle,
   parseWordEntries,
   parseWordList,
+  TRACKING_TRIAL_EPOCH,
   type AssignmentWord,
   type Plan,
 } from "./domain";
@@ -899,9 +900,9 @@ async function usage(
     db
       .prepare(
         `SELECT COUNT(*) AS count FROM monthly_submission_usage
-         WHERE user_id = ? AND (? = 'free' OR month_key = ?)`,
+         WHERE user_id = ? AND ((? = 'free' AND created_at >= ?) OR (? != 'free' AND month_key = ?))`,
       )
-      .bind(userId, plan, monthStart(now))
+      .bind(userId, plan, TRACKING_TRIAL_EPOCH, plan, monthStart(now))
       .first<{ count: number }>(),
     db
       .prepare(
@@ -2284,7 +2285,7 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
            END,
             ?, ?, ?, ?, ?, ?, ?, ?, ?,
             (? = 1 OR (SELECT COUNT(*) FROM monthly_submission_usage mu
-              WHERE mu.user_id = a.owner_user_id) < ?)
+              WHERE mu.user_id = a.owner_user_id AND mu.created_at >= ?) < ?)
          FROM assignments a
          WHERE a.public_id = ? AND a.status = 'published' AND a.expires_at > ?
            AND (? = 0 OR (SELECT COUNT(*) FROM attempts x
@@ -2306,6 +2307,7 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       completed ? "completed" : "incomplete",
       learner?.id ?? null,
       plan !== "free" ? 1 : 0,
+      TRACKING_TRIAL_EPOCH,
       PLAN_LIMITS.free.trackingTrialAttempts,
       publicId,
       completedAt,

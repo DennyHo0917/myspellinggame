@@ -9,6 +9,8 @@ const PAID_PLAN_LIMITS = {
   sentenceLibrary: true,
 } as const;
 
+export const TRACKING_TRIAL_EPOCH = "2026-10-29T19:49:12.000Z";
+
 export const PLAN_LIMITS = {
   free: {
     activeAssignments: 1,

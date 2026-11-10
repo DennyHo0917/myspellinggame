@@ -42,6 +42,7 @@ export function clearLocalData() {
     localStorage.removeItem('mySpellingGameReadWords');
     localStorage.removeItem('mySpellingGameEasyMode');
     localStorage.removeItem('mySpellingGameExampleSentences');
+    localStorage.removeItem('mySpellingLastMissedWords');
     alert(successMsg);
     closePrivacyPolicy();
   }

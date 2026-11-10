@@ -973,6 +973,80 @@ a {
   line-height: 1.35;
 }
 
+.practice-share-option-primary {
+  border-color: rgba(47, 111, 115, 0.45);
+  background: #f7fbfa;
+}
+
+.practice-share-option-primary strong {
+  color: #2f6f73;
+}
+
+.last-missed-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 8px 12px;
+  margin: 8px 0 12px;
+  background: #fef8ee;
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  border-radius: var(--radius);
+  color: #92400e;
+  font-size: 0.9rem;
+}
+
+.last-missed-text {
+  font-weight: 500;
+}
+
+.last-missed-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.last-missed-retry-btn {
+  padding: 4px 10px;
+  background: #d97706;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.last-missed-retry-btn:hover {
+  background: #b45309;
+}
+
+.last-missed-smart-btn {
+  padding: 4px 10px;
+  background: transparent;
+  color: #92400e;
+  border: 1px solid rgba(217, 119, 6, 0.4);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.last-missed-smart-btn:hover {
+  background: rgba(217, 119, 6, 0.1);
+}
+
+.last-missed-dismiss-btn {
+  background: none;
+  border: none;
+  color: #92400e;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0 4px;
+  cursor: pointer;
+}
+
 .spelling-actions button,
 .restart-btn,
 .share-score-btn,

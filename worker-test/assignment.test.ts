@@ -1250,6 +1250,21 @@ describe("teacher authorization and quotas", () => {
     expect(detail.lockedResultCount).toBe(2);
   });
 
+  it("does not count historical usage from before the tracking trial epoch against old users", async () => {
+    const oldAttemptId = crypto.randomUUID();
+    await bindings.DB.prepare(
+      `INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at)
+       VALUES (?, ?, '2026-08-01T00:00:00.000Z', '2026-08-15T12:00:00.000Z')`,
+    )
+      .bind(oldAttemptId, teacherA.id)
+      .run();
+
+    const me = (await (await call("/api/me")).json()) as {
+      trackingTrialUsed: boolean;
+    };
+    expect(me.trackingTrialUsed).toBe(false);
+  });
+
   it.each(["parent", "teacher"] as const)(
     "keeps %s monthly submissions unlimited",
     async (plan) => {

@@ -15,11 +15,20 @@ import classroomCopy from "../scripts/classroom-marketing-copy.cjs";
 test("CONV-1 & BUG-5: Classroom locked modal copy is complete in all 6 locales", () => {
   for (const [locale] of PRODUCT_LOCALES) {
     const copy = productMessages(locale);
-    assert.ok(copy.classroomLockedButton?.length, `${locale}:classroomLockedButton`);
-    assert.ok(copy.classroomModalTitle?.length, `${locale}:classroomModalTitle`);
+    assert.ok(
+      copy.classroomLockedButton?.length,
+      `${locale}:classroomLockedButton`,
+    );
+    assert.ok(
+      copy.classroomModalTitle?.length,
+      `${locale}:classroomModalTitle`,
+    );
     assert.ok(copy.classroomModalBody?.length, `${locale}:classroomModalBody`);
     assert.ok(copy.classroomModalCta?.length, `${locale}:classroomModalCta`);
-    assert.ok(copy.classroomModalCopyLink?.length, `${locale}:classroomModalCopyLink`);
+    assert.ok(
+      copy.classroomModalCopyLink?.length,
+      `${locale}:classroomModalCopyLink`,
+    );
   }
 });
 
@@ -42,12 +51,21 @@ test("P0-1: Classroom marketing scope detail updated across all 6 locales", () =
 test("CONV-2 & CONV-3: Locked results and weekly preview copy is complete in all 6 locales", () => {
   for (const [locale] of PRODUCT_LOCALES) {
     const copy = productMessages(locale);
-    assert.ok(copy.lockedResultsPracticed?.length, `${locale}:lockedResultsPracticed`);
-    assert.ok(copy.weeklyPracticeStats?.length, `${locale}:weeklyPracticeStats`);
+    assert.ok(
+      copy.lockedResultsPracticed?.length,
+      `${locale}:lockedResultsPracticed`,
+    );
+    assert.ok(
+      copy.weeklyPracticeStats?.length,
+      `${locale}:weeklyPracticeStats`,
+    );
     assert.ok(copy.lockedRowLearner?.length, `${locale}:lockedRowLearner`);
     assert.ok(copy.unlock?.length, `${locale}:unlock`);
     // Ensure copy.unlock contains no curly braces
-    assert.ok(!copy.unlock.includes("{") && !copy.unlock.includes("}"), `${locale}:unlock template variable`);
+    assert.ok(
+      !copy.unlock.includes("{") && !copy.unlock.includes("}"),
+      `${locale}:unlock template variable`,
+    );
   }
 });
 
@@ -57,18 +75,30 @@ test("P1 BUG-4: Low quality sentence templates are detected and filtered", () =>
     'The teacher wrote the adjective "new" on the board.',
     'The teacher wrote the verb "be" on the board.',
     'The teacher wrote "were" as a verb form.',
-    'The teacher mentioned the time during the lesson.',
-    'The teacher mentioned the room during the lesson.',
+    "The teacher mentioned the time during the lesson.",
+    "The teacher mentioned the room during the lesson.",
     'The teacher asked the class to explain the meaning of "did".',
     'The class discussed how the comparative adjective "more" can make a description more precise.',
     'After reading the sentence, the students explained what extra detail the adverb "not" adds.',
-    'The number one is on the board.',
+    "The number one is on the board.",
   ];
 
   for (const sentence of badTemplates) {
-    assert.equal(isLowQualitySentenceTemplate(sentence), true, `Should detect: ${sentence}`);
-    assert.equal(sanitizeExampleSentence(sentence), null, `Should sanitize to null: ${sentence}`);
-    assert.equal(dictationSpeechText("word", sentence), "word", `Speech should only speak word: ${sentence}`);
+    assert.equal(
+      isLowQualitySentenceTemplate(sentence),
+      true,
+      `Should detect: ${sentence}`,
+    );
+    assert.equal(
+      sanitizeExampleSentence(sentence),
+      null,
+      `Should sanitize to null: ${sentence}`,
+    );
+    assert.equal(
+      dictationSpeechText("word", sentence),
+      "word",
+      `Speech should only speak word: ${sentence}`,
+    );
   }
 
   const goodSentences = [
@@ -79,24 +109,44 @@ test("P1 BUG-4: Low quality sentence templates are detected and filtered", () =>
   ];
 
   for (const sentence of goodSentences) {
-    assert.equal(isLowQualitySentenceTemplate(sentence), false, `Should allow: ${sentence}`);
-    assert.equal(sanitizeExampleSentence(sentence), sentence, `Should keep: ${sentence}`);
+    assert.equal(
+      isLowQualitySentenceTemplate(sentence),
+      false,
+      `Should allow: ${sentence}`,
+    );
+    assert.equal(
+      sanitizeExampleSentence(sentence),
+      sentence,
+      `Should keep: ${sentence}`,
+    );
   }
 });
 
 test("BUG-3: Expired assignment copy and notice is complete in all 6 locales", () => {
   for (const [locale] of PRODUCT_LOCALES) {
     const copy = productMessages(locale);
-    assert.ok(copy.deadlineExpiredNote?.length, `${locale}:deadlineExpiredNote`);
-    assert.ok(copy.assignmentExpiredContact?.length, `${locale}:assignmentExpiredContact`);
+    assert.ok(
+      copy.deadlineExpiredNote?.length,
+      `${locale}:deadlineExpiredNote`,
+    );
+    assert.ok(
+      copy.assignmentExpiredContact?.length,
+      `${locale}:assignmentExpiredContact`,
+    );
   }
 });
 
 test("CONV-5: Learner waiting list copy is complete in all 6 locales", () => {
   for (const [locale] of PRODUCT_LOCALES) {
     const copy = productMessages(locale);
-    assert.ok(copy.learnersWaitingCount?.length, `${locale}:learnersWaitingCount`);
-    assert.ok(copy.learnerWaitingBadge?.length, `${locale}:learnerWaitingBadge`);
+    assert.ok(
+      copy.learnersWaitingCount?.length,
+      `${locale}:learnersWaitingCount`,
+    );
+    assert.ok(
+      copy.learnerWaitingBadge?.length,
+      `${locale}:learnerWaitingBadge`,
+    );
   }
 });
 
@@ -164,37 +214,84 @@ test("Pricing default interval is month and savings badges exist across all 6 lo
   for (const { file } of pricingFiles) {
     const html = fs.readFileSync(path.resolve(file), "utf8");
     // Month toggle active by default
-    assert.ok(html.includes('data-plan-option="month" aria-pressed="true"'), `${file}: month pressed`);
-    assert.ok(html.includes('data-plan-option="year" aria-pressed="false"'), `${file}: year unpressed`);
+    assert.ok(
+      html.includes('data-plan-option="month" aria-pressed="true"'),
+      `${file}: month pressed`,
+    );
+    assert.ok(
+      html.includes('data-plan-option="year" aria-pressed="false"'),
+      `${file}: year unpressed`,
+    );
     // Monthly prices rendered by default (either 7.99 or 7,99)
-    assert.ok(html.includes("7.99") || html.includes("7,99"), `${file}: parent monthly price`);
-    assert.ok(html.includes("14.99") || html.includes("14,99"), `${file}: teacher monthly price`);
+    assert.ok(
+      html.includes("7.99") || html.includes("7,99"),
+      `${file}: parent monthly price`,
+    );
+    assert.ok(
+      html.includes("14.99") || html.includes("14,99"),
+      `${file}: teacher monthly price`,
+    );
     // Savings badges and subtexts exist in markup
     assert.ok(html.includes("data-plan-savings"), `${file}: data-plan-savings`);
     assert.ok(html.includes("17"), `${file}: 17% savings`);
     assert.ok(html.includes("data-plan-subtext"), `${file}: data-plan-subtext`);
-    assert.ok(html.includes("6.66") || html.includes("6,66"), `${file}: 6.66 subtext`);
-    assert.ok(html.includes("12.49") || html.includes("12,49"), `${file}: 12.49 subtext`);
+    assert.ok(
+      html.includes("6.66") || html.includes("6,66"),
+      `${file}: 6.66 subtext`,
+    );
+    assert.ok(
+      html.includes("12.49") || html.includes("12,49"),
+      `${file}: 12.49 subtext`,
+    );
   }
 });
 
 test("CTA monthly pricing and secondary yearly copy is complete in all 6 locales", () => {
   for (const [locale] of PRODUCT_LOCALES) {
     const copy = productMessages(locale);
-    assert.ok(copy.classroomModalCta?.includes("14.99") || copy.classroomModalCta?.includes("14,99"), `${locale}:classroomModalCta month`);
-    assert.ok(copy.teacherPriceMonthly?.includes("14.99") || copy.teacherPriceMonthly?.includes("14,99"), `${locale}:teacherPriceMonthly`);
-    assert.ok(copy.parentPriceMonthly?.includes("7.99") || copy.parentPriceMonthly?.includes("7,99"), `${locale}:parentPriceMonthly`);
-    assert.ok(copy.orTeacherYearly?.includes("149.90") || copy.orTeacherYearly?.includes("149,90"), `${locale}:orTeacherYearly`);
-    assert.ok(copy.orParentYearly?.includes("79.90") || copy.orParentYearly?.includes("79,90"), `${locale}:orParentYearly`);
+    assert.ok(
+      copy.classroomModalCta?.includes("14.99") ||
+        copy.classroomModalCta?.includes("14,99"),
+      `${locale}:classroomModalCta month`,
+    );
+    assert.ok(
+      copy.teacherPriceMonthly?.includes("14.99") ||
+        copy.teacherPriceMonthly?.includes("14,99"),
+      `${locale}:teacherPriceMonthly`,
+    );
+    assert.ok(
+      copy.parentPriceMonthly?.includes("7.99") ||
+        copy.parentPriceMonthly?.includes("7,99"),
+      `${locale}:parentPriceMonthly`,
+    );
+    assert.ok(
+      copy.orTeacherYearly?.includes("149.90") ||
+        copy.orTeacherYearly?.includes("149,90"),
+      `${locale}:orTeacherYearly`,
+    );
+    assert.ok(
+      copy.orParentYearly?.includes("79.90") ||
+        copy.orParentYearly?.includes("79,90"),
+      `${locale}:orParentYearly`,
+    );
   }
 });
 
 test("upgradeSelection targets teacher for parent accounts and respects pending choices", () => {
   assert.equal(upgradeSelection({ plan: "parent" }).plan, "teacher");
-  assert.equal(upgradeSelection({ plan: "parent", billingInterval: "year" }).interval, "year");
-  assert.equal(upgradeSelection({ plan: "parent", billingInterval: "month" }).interval, "month");
+  assert.equal(
+    upgradeSelection({ plan: "parent", billingInterval: "year" }).interval,
+    "year",
+  );
+  assert.equal(
+    upgradeSelection({ plan: "parent", billingInterval: "month" }).interval,
+    "month",
+  );
   assert.equal(upgradeSelection({ plan: "free" }).plan, "parent");
-  assert.equal(upgradeSelection({ plan: "free", workspaceType: "teacher" }).plan, "teacher");
+  assert.equal(
+    upgradeSelection({ plan: "free", workspaceType: "teacher" }).plan,
+    "teacher",
+  );
   assert.equal(upgradeSelection({}).plan, "parent");
 });
 
@@ -211,7 +308,11 @@ test("active assignment and learner limits are localized and plan-aware across a
     const copy = productMessages(locale);
     for (const key of keys) {
       assert.ok(copy[key]?.length > 0, `${locale}: ${key} must exist`);
-      assert.doesNotMatch(copy[key], /\{date\}|\{count\}|\{limit\}/, `${locale}: ${key} has unreplaced placeholder`);
+      assert.doesNotMatch(
+        copy[key],
+        /\{date\}|\{count\}|\{limit\}/,
+        `${locale}: ${key} has unreplaced placeholder`,
+      );
     }
   }
 
@@ -234,3 +335,54 @@ test("active assignment and learner limits are localized and plan-aware across a
   assert.match(zh.learnerLimitTeacher, /教师方案最多 40 个/);
 });
 
+test("Practice & sharing conversion copy is complete across all 6 locales in pageLocale", async () => {
+  const vm = await import("node:vm");
+  const code = fs
+    .readFileSync(path.resolve("src/js/pageLocale.js"), "utf8")
+    .replace(/export\s+/g, "");
+  const sandbox = {
+    window: {},
+    document: { documentElement: { lang: "en" } },
+  };
+  vm.createContext(sandbox);
+  vm.runInContext(code, sandbox);
+
+  const locales = ["en", "es", "pt-BR", "fr", "id", "zh"];
+  const simpleKeys = [
+    "photoImportFreeTrialCta",
+    "recommendedTag",
+    "workspaceSharedCtaTitle",
+    "workspaceSharedCtaBenefit1",
+    "workspaceSharedCtaBenefit2",
+    "workspaceSharedCtaBenefit3",
+    "workspaceSharedCtaButton",
+    "workspaceSharedCtaFootnote",
+    "lastMissedRetryBtn",
+    "lastMissedSmartReviewBtn",
+    "dismiss",
+    "practiceOnlyMeta",
+  ];
+
+  for (const locale of locales) {
+    sandbox.window.pageLocale = locale;
+    const t = sandbox.window.pageLocaleAPI.t;
+
+    for (const key of simpleKeys) {
+      const val = t(key);
+      assert.ok(val && val.length > 0, `${locale}:${key} missing or empty`);
+      assert.notEqual(val, key, `${locale}:${key} returned key itself`);
+    }
+
+    const trialStatus = t("photoImportTrialStatus", { used: 1, total: 3 });
+    assert.ok(
+      trialStatus.includes("1/3"),
+      `${locale}:photoImportTrialStatus contains 1/3`,
+    );
+
+    const missedText = t("lastMissedBannerText", { count: 5 });
+    assert.ok(
+      missedText.includes("5"),
+      `${locale}:lastMissedBannerText contains 5`,
+    );
+  }
+});

@@ -39,6 +39,9 @@ const MESSAGES = {
     photoImportNoWords: "No spelling words found. Try a clearer photo.",
     photoImportError: "We couldn’t read that image. Please try again.",
     photoImportRetry: "Try again",
+    photoImportTrialStatus:
+      "Imported from photo ({used}/{total} free trials used)",
+    photoImportFreeTrialCta: "Sign in for 3 free photo imports",
     sampleLoaded: "{count} sample words loaded",
     wordsInRound: "{count} words in this round",
     anonymousWordLimit:
@@ -58,7 +61,8 @@ const MESSAGES = {
     sharePracticeTitle: "Share this practice",
     practiceOnlyTitle: "Practice only",
     practiceOnlyCopy: "Copy a link they can open and practice immediately.",
-    practiceOnlyMeta: "No login · Results aren't saved",
+    recommendedTag: "Recommended",
+    practiceOnlyMeta: "No login · Results and missed words are not saved",
     trackResultsTitle: "Track results",
     trackResultsCopy: "See completion, score, and missed words.",
     trackResultsMeta: "Free account · No child account required",
@@ -100,6 +104,18 @@ const MESSAGES = {
     workspaceCtaCreate: "Create an assignment from these words",
     workspaceCtaButton: "Continue in Workspace",
     workspaceCtaFootnote: "Free account · Google or Microsoft sign-in",
+    workspaceSharedCtaTitle:
+      "Teachers & Parents: Want to track practice results?",
+    workspaceSharedCtaBenefit1: "See completion status and accuracy",
+    workspaceSharedCtaBenefit2: "Pinpoint which words need more practice",
+    workspaceSharedCtaBenefit3: "Create your own free practice assignments",
+    workspaceSharedCtaButton: "Track Student Results",
+    workspaceSharedCtaFootnote:
+      "Free teacher & parent workspace · No child account required",
+    lastMissedBannerText: "Last practice: {count} words missed.",
+    lastMissedRetryBtn: "Practice missed words",
+    lastMissedSmartReviewBtn: "Smart Review",
+    dismiss: "Dismiss",
     roundTitle: "Practice round",
     returnMenu: "Return to main menu",
     clearConfirm:
@@ -140,6 +156,9 @@ const MESSAGES = {
       "No se encontraron palabras. Prueba con una foto más clara.",
     photoImportError: "No se pudo leer la imagen. Inténtalo de nuevo.",
     photoImportRetry: "Intentar de nuevo",
+    photoImportTrialStatus:
+      "Importado desde foto ({used}/{total} pruebas gratis usadas)",
+    photoImportFreeTrialCta: "Inicia sesión para 3 pruebas gratis",
     sampleLoaded: "{count} palabras de ejemplo cargadas",
     wordsInRound: "{count} palabras en esta ronda",
     anonymousWordLimit:
@@ -159,7 +178,8 @@ const MESSAGES = {
     sharePracticeTitle: "Compartir esta práctica",
     practiceOnlyTitle: "Solo practicar",
     practiceOnlyCopy: "Copia un enlace que pueden abrir y usar de inmediato.",
-    practiceOnlyMeta: "Sin iniciar sesión · Los resultados no se guardan",
+    recommendedTag: "Recomendado",
+    practiceOnlyMeta: "Sin iniciar sesión · No se guardan resultados ni errores",
     trackResultsTitle: "Seguir resultados",
     trackResultsCopy:
       "Consulta si terminaron, la puntuación y las palabras falladas.",
@@ -202,6 +222,18 @@ const MESSAGES = {
     workspaceCtaCreate: "Crea una tarea con estas palabras",
     workspaceCtaButton: "Continuar en el espacio de trabajo",
     workspaceCtaFootnote: "Cuenta gratis · Acceso con Google o Microsoft",
+    workspaceSharedCtaTitle: "¿Docente o familia? Da seguimiento a los resultados",
+    workspaceSharedCtaBenefit1:
+      "Revisa la finalización y el porcentaje de aciertos",
+    workspaceSharedCtaBenefit2: "Identifica qué palabras necesitan más repaso",
+    workspaceSharedCtaBenefit3: "Crea tus propias tareas de práctica gratis",
+    workspaceSharedCtaButton: "Ver informes de práctica",
+    workspaceSharedCtaFootnote:
+      "Espacio gratis para docentes y familias · Sin cuenta para niños",
+    lastMissedBannerText: "Última práctica: {count} palabras con error.",
+    lastMissedRetryBtn: "Repasar errores",
+    lastMissedSmartReviewBtn: "Repaso inteligente",
+    dismiss: "Descartar",
     roundTitle: "Ronda de práctica",
     returnMenu: "Volver al menú principal",
     clearConfirm:
@@ -243,6 +275,9 @@ const MESSAGES = {
       "Nenhuma palavra foi encontrada. Tente uma foto mais nítida.",
     photoImportError: "Não foi possível ler a imagem. Tente novamente.",
     photoImportRetry: "Tentar novamente",
+    photoImportTrialStatus:
+      "Importado de foto ({used}/{total} testes grátis usados)",
+    photoImportFreeTrialCta: "Entre para 3 importações grátis",
     sampleLoaded: "{count} palavras de exemplo carregadas",
     wordsInRound: "{count} palavras nesta rodada",
     anonymousWordLimit:
@@ -263,7 +298,8 @@ const MESSAGES = {
     practiceOnlyTitle: "Somente praticar",
     practiceOnlyCopy:
       "Copie um link que pode ser aberto para praticar na hora.",
-    practiceOnlyMeta: "Sem login · Os resultados não são salvos",
+    recommendedTag: "Recomendado",
+    practiceOnlyMeta: "Sem login · Resultados e erros não são salvos",
     trackResultsTitle: "Acompanhar resultados",
     trackResultsCopy: "Veja a conclusão, a pontuação e as palavras erradas.",
     trackResultsMeta: "Conta grátis · A criança não precisa de conta",
@@ -306,6 +342,19 @@ const MESSAGES = {
     workspaceCtaCreate: "Crie uma tarefa com estas palavras",
     workspaceCtaButton: "Continuar no Espaço de trabalho",
     workspaceCtaFootnote: "Conta grátis · Login com Google ou Microsoft",
+    workspaceSharedCtaTitle:
+      "Professores e famílias: Acompanhe os resultados",
+    workspaceSharedCtaBenefit1: "Veja quem concluiu e a taxa de acertos",
+    workspaceSharedCtaBenefit2:
+      "Identifique as palavras que precisam de mais treino",
+    workspaceSharedCtaBenefit3: "Crie suas próprias atividades gratuitas",
+    workspaceSharedCtaButton: "Acompanhar resultados",
+    workspaceSharedCtaFootnote:
+      "Espaço grátis para professores e famílias · Sem conta para a criança",
+    lastMissedBannerText: "Último treino: {count} palavras erradas.",
+    lastMissedRetryBtn: "Praticar erros",
+    lastMissedSmartReviewBtn: "Revisão inteligente",
+    dismiss: "Fechar",
     roundTitle: "Rodada de prática",
     returnMenu: "Voltar ao menu principal",
     clearConfirm:
@@ -345,6 +394,9 @@ const MESSAGES = {
     photoImportNoWords: "Aucun mot trouvé. Essayez une photo plus nette.",
     photoImportError: "Impossible de lire cette image. Réessayez.",
     photoImportRetry: "Réessayer",
+    photoImportTrialStatus:
+      "Importé depuis une photo ({used}/{total} essais gratuits utilisés)",
+    photoImportFreeTrialCta: "Connectez-vous pour 3 essais gratuits",
     sampleLoaded: "{count} mots d’exemple chargés",
     wordsInRound: "{count} mots dans cette partie",
     anonymousWordLimit:
@@ -364,7 +416,9 @@ const MESSAGES = {
     sharePracticeTitle: "Partager cet entraînement",
     practiceOnlyTitle: "S’entraîner seulement",
     practiceOnlyCopy: "Copiez un lien à ouvrir pour commencer tout de suite.",
-    practiceOnlyMeta: "Sans connexion · Les résultats ne sont pas enregistrés",
+    recommendedTag: "Recommandé",
+    practiceOnlyMeta:
+      "Sans connexion · Les résultats et erreurs ne sont pas enregistrés",
     trackResultsTitle: "Suivre les résultats",
     trackResultsCopy:
       "Consultez la fin de l’exercice, le score et les mots manqués.",
@@ -407,6 +461,19 @@ const MESSAGES = {
     workspaceCtaCreate: "Créez un devoir avec ces mots",
     workspaceCtaButton: "Continuer dans l’espace de travail",
     workspaceCtaFootnote: "Compte gratuit · Connexion Google ou Microsoft",
+    workspaceSharedCtaTitle:
+      "Enseignants et parents : suivez les résultats de cet entraînement",
+    workspaceSharedCtaBenefit1: "Consultez la complétion et le taux de réussite",
+    workspaceSharedCtaBenefit2: "Repérez les mots qui nécessitent une révision",
+    workspaceSharedCtaBenefit3:
+      "Créez gratuitement vos propres devoirs d'orthographe",
+    workspaceSharedCtaButton: "Suivre les résultats",
+    workspaceSharedCtaFootnote:
+      "Espace gratuit enseignants et parents · Aucun compte enfant nécessaire",
+    lastMissedBannerText: "Dernier entraînement : {count} mots manqués.",
+    lastMissedRetryBtn: "Réviser les erreurs",
+    lastMissedSmartReviewBtn: "Révision intelligente",
+    dismiss: "Fermer",
     roundTitle: "Partie de pratique",
     returnMenu: "Retour au menu principal",
     clearConfirm:
@@ -446,6 +513,9 @@ const MESSAGES = {
       "Tidak ada kata yang ditemukan. Coba foto yang lebih jelas.",
     photoImportError: "Gambar tidak dapat dibaca. Coba lagi.",
     photoImportRetry: "Coba lagi",
+    photoImportTrialStatus:
+      "Diimpor dari foto ({used}/{total} uji coba gratis digunakan)",
+    photoImportFreeTrialCta: "Masuk untuk 3 uji coba gratis",
     sampleLoaded: "{count} contoh kata dimuat",
     wordsInRound: "{count} kata di ronde ini",
     anonymousWordLimit:
@@ -465,7 +535,9 @@ const MESSAGES = {
     sharePracticeTitle: "Bagikan latihan ini",
     practiceOnlyTitle: "Hanya latihan",
     practiceOnlyCopy: "Salin link yang bisa langsung dibuka untuk berlatih.",
-    practiceOnlyMeta: "Tanpa login · Hasil tidak disimpan",
+    recommendedTag: "Disarankan",
+    practiceOnlyMeta:
+      "Tanpa login · Hasil dan kata yang salah tidak disimpan",
     trackResultsTitle: "Pantau hasil",
     trackResultsCopy: "Lihat penyelesaian, skor, dan kata yang salah.",
     trackResultsMeta: "Akun gratis · Anak tidak memerlukan akun",
@@ -507,6 +579,17 @@ const MESSAGES = {
     workspaceCtaCreate: "Buat tugas dari kata-kata ini",
     workspaceCtaButton: "Lanjut ke Ruang kerja",
     workspaceCtaFootnote: "Akun gratis · Masuk dengan Google atau Microsoft",
+    workspaceSharedCtaTitle: "Guru & Orang Tua: Ingin memantau hasil latihan?",
+    workspaceSharedCtaBenefit1: "Lihat status penyelesaian dan nilai akurasi",
+    workspaceSharedCtaBenefit2: "Ketahui kata mana yang masih sering salah",
+    workspaceSharedCtaBenefit3: "Buat tugas latihan gratis Anda sendiri",
+    workspaceSharedCtaButton: "Pantau hasil latihan",
+    workspaceSharedCtaFootnote:
+      "Ruang kerja gratis guru & orang tua · Tanpa akun anak",
+    lastMissedBannerText: "Latihan terakhir: {count} kata yang salah.",
+    lastMissedRetryBtn: "Latih kata salah",
+    lastMissedSmartReviewBtn: "Ulasan pintar",
+    dismiss: "Tutup",
     roundTitle: "Ronde latihan",
     returnMenu: "Kembali ke menu utama",
     clearConfirm:
@@ -541,6 +624,9 @@ const MESSAGES = {
     photoImportNoWords: "没有识别到单词，请换一张更清晰的照片。",
     photoImportError: "图片识别失败，请重试。",
     photoImportRetry: "重新识别",
+    photoImportTrialStatus:
+      "已通过拍照导入（已使用 {used}/{total} 次免费体验）",
+    photoImportFreeTrialCta: "免费登录体验 3 次拍照导入",
     sampleLoaded: "已载入 {count} 个示例单词",
     wordsInRound: "本轮 {count} 个单词",
     anonymousWordLimit:
@@ -559,7 +645,8 @@ const MESSAGES = {
     sharePracticeTitle: "分享这次练习",
     practiceOnlyTitle: "仅练习",
     practiceOnlyCopy: "复制链接，对方打开后即可开始练习。",
-    practiceOnlyMeta: "无需登录 · 结果不会保存",
+    recommendedTag: "推荐",
+    practiceOnlyMeta: "无需登录 · 结果与错词均不保存",
     trackResultsTitle: "追踪结果",
     trackResultsCopy: "查看是否完成、得分和错词。",
     trackResultsMeta: "免费账号 · 孩子无需账号",
@@ -600,6 +687,16 @@ const MESSAGES = {
     workspaceCtaCreate: "用这些单词创建作业",
     workspaceCtaButton: "继续进入工作台",
     workspaceCtaFootnote: "免费账号 · 使用 Google 或 Microsoft 登录",
+    workspaceSharedCtaTitle: "老师与家长：想追踪这次练习的成绩吗？",
+    workspaceSharedCtaBenefit1: "查看完成情况与拼写正确率",
+    workspaceSharedCtaBenefit2: "精准定位哪些单词还需要重点重练",
+    workspaceSharedCtaBenefit3: "一键免费布置带记录的拼写作业",
+    workspaceSharedCtaButton: "查看学生练习报告",
+    workspaceSharedCtaFootnote: "免费教师与家长工作台 · 学生无需注册账号",
+    lastMissedBannerText: "上次练习：有 {count} 个词没拼对。",
+    lastMissedRetryBtn: "重练错词",
+    lastMissedSmartReviewBtn: "智能跨周复习",
+    dismiss: "关闭",
     roundTitle: "练习回合",
     returnMenu: "返回主菜单",
     clearConfirm: "要清除这个浏览器里保存的单词表和练习设置吗？",

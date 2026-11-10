@@ -111,7 +111,10 @@ function appendContextualPaywall(
   if (freeCta) {
     const free = document.createElement("a");
     free.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
-    free.textContent = t("continueFree25");
+    free.textContent =
+      feature === "photo_import"
+        ? t("photoImportFreeTrialCta")
+        : t("continueFree25");
     actions.append(free);
   }
   notice.append(benefit, price, actions);
@@ -138,6 +141,7 @@ function photoImportNotice(account = accountState) {
     "photo-import-notice sentence-library-notice contextual-paywall";
   notice.setAttribute("role", "status");
   appendContextualPaywall(notice, "photo_import", t("photoImportValue"), {
+    freeCta: !account,
     account,
   });
   field.append(notice);
@@ -226,6 +230,16 @@ function showPhotoImportReview(words) {
     textarea().dispatchEvent(new Event("input", { bubbles: true }));
     const count = currentWords().length;
     if (count) trackPremiumFeatureUsed("photo_import", accountState, count);
+    if (accountState?.user?.id && !isPlusAccount(accountState)) {
+      const used = incrementPhotoImportTrialsUsed(accountState.user.id);
+      const notice = photoImportStatus(
+        t("photoImportTrialStatus", {
+          used,
+          total: PHOTO_IMPORT_TRIAL_LIMIT,
+        }),
+      );
+      setTimeout(() => notice?.remove(), 4000);
+    }
     review.remove();
   });
   const cancel = document.createElement("button");
@@ -261,6 +275,107 @@ async function importWordsFromPhoto(file) {
   }
 }
 
+export const PHOTO_IMPORT_TRIAL_LIMIT = 3;
+export const LAST_MISSED_KEY = "mySpellingLastMissedWords";
+
+export function getPhotoImportTrialsUsed(userId) {
+  if (!userId) return 0;
+  try {
+    const val = parseInt(
+      localStorage.getItem(`mySpellingPhotoTrials_${userId}`) || "0",
+      10,
+    );
+    return Number.isFinite(val) && val >= 0 ? val : 0;
+  } catch {
+    return 0;
+  }
+}
+
+export function incrementPhotoImportTrialsUsed(userId) {
+  if (!userId) return 0;
+  try {
+    const next = getPhotoImportTrialsUsed(userId) + 1;
+    localStorage.setItem(`mySpellingPhotoTrials_${userId}`, String(next));
+    return next;
+  } catch {
+    return 1;
+  }
+}
+
+export function hasPhotoImportAccess(account) {
+  if (!account) return false;
+  if (isPlusAccount(account)) return true;
+  return getPhotoImportTrialsUsed(account.user?.id) < PHOTO_IMPORT_TRIAL_LIMIT;
+}
+
+export function saveLastMissedWords(words) {
+  try {
+    if (Array.isArray(words) && words.length > 0) {
+      localStorage.setItem(LAST_MISSED_KEY, JSON.stringify(words));
+    } else {
+      localStorage.removeItem(LAST_MISSED_KEY);
+    }
+  } catch {}
+}
+
+export function initLastMissedBanner() {
+  if (readShareState(window.location).sharedLink) return;
+  let savedMissed = [];
+  try {
+    savedMissed = JSON.parse(localStorage.getItem(LAST_MISSED_KEY) || "[]");
+  } catch {}
+  if (!Array.isArray(savedMissed) || !savedMissed.length) return;
+
+  const container = document.querySelector(".spelling-builder");
+  if (!container) return;
+  document.getElementById("last-missed-banner")?.remove();
+
+  const banner = document.createElement("div");
+  banner.id = "last-missed-banner";
+  banner.className = "last-missed-banner";
+
+  const text = document.createElement("span");
+  text.className = "last-missed-text";
+  text.textContent = t("lastMissedBannerText", { count: savedMissed.length });
+
+  const actions = document.createElement("div");
+  actions.className = "last-missed-actions";
+
+  const retryBtn = document.createElement("button");
+  retryBtn.type = "button";
+  retryBtn.className = "last-missed-retry-btn";
+  retryBtn.textContent = t("lastMissedRetryBtn");
+  retryBtn.addEventListener("click", () => {
+    const input = textarea();
+    if (input) {
+      input.value = savedMissed.join("\n");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      banner.remove();
+    }
+  });
+
+  const smartReviewBtn = document.createElement("button");
+  smartReviewBtn.type = "button";
+  smartReviewBtn.className = "last-missed-smart-btn";
+  smartReviewBtn.textContent = t("lastMissedSmartReviewBtn");
+  smartReviewBtn.addEventListener("click", () => {
+    window.location.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}`;
+  });
+
+  const dismissBtn = document.createElement("button");
+  dismissBtn.type = "button";
+  dismissBtn.className = "last-missed-dismiss-btn";
+  dismissBtn.setAttribute("aria-label", t("dismiss") || "Dismiss");
+  dismissBtn.innerHTML = "&times;";
+  dismissBtn.addEventListener("click", () => {
+    banner.remove();
+  });
+
+  actions.append(retryBtn, smartReviewBtn, dismissBtn);
+  banner.append(text, actions);
+  container.prepend(banner);
+}
+
 function initPhotoImport() {
   const button = document.getElementById("photo-import-btn");
   const input = document.getElementById("photo-import-input");
@@ -268,7 +383,7 @@ function initPhotoImport() {
   button.addEventListener("click", () => {
     trackEvent("photo_import_clicked", { locale: getPageLocale() });
     if (accountState !== undefined) {
-      if (isPlusAccount(accountState)) input.click();
+      if (hasPhotoImportAccess(accountState)) input.click();
       else {
         trackLockedFeature("photo_import", accountState?.plan || "anonymous");
         photoImportNotice(accountState);
@@ -276,7 +391,7 @@ function initPhotoImport() {
       return;
     }
     void getAccount().then((account) => {
-      if (isPlusAccount(account)) input.click();
+      if (hasPhotoImportAccess(account)) input.click();
       else {
         trackLockedFeature("photo_import", account?.plan || "anonymous");
         photoImportNotice(account);
@@ -288,7 +403,7 @@ function initPhotoImport() {
     input.value = "";
     if (file)
       void getAccount().then((account) => {
-        if (isPlusAccount(account)) void importWordsFromPhoto(file);
+        if (hasPhotoImportAccess(account)) void importWordsFromPhoto(file);
         else {
           trackLockedFeature("photo_import", account?.plan || "anonymous");
           photoImportNotice(account);
@@ -653,6 +768,7 @@ export function initSpellingMode() {
     .getElementById("auto-example-sentences-btn")
     ?.addEventListener("click", autoFillExampleSentences);
   initPhotoImport();
+  initLastMissedBanner();
   void getAccount().then((account) => {
     const resume = readUpgradeReturn();
     if (
@@ -818,6 +934,7 @@ export function renderSummary() {
   document.getElementById("dictation-final-stats")?.setAttribute("hidden", "");
 
   const missed = gameState.missedWordList || [];
+  saveLastMissedWords(missed);
   document
     .getElementById("game-over-title")
     ?.replaceChildren(document.createTextNode(t("summaryTitle")));
@@ -862,6 +979,7 @@ export function replayMissedWords() {
     return;
   }
   const missed = gameState.missedWordList || [];
+  saveLastMissedWords(missed);
   const input = textarea();
   if (!input || !missed.length) return;
   input.value = missed.join("\n");
@@ -924,12 +1042,20 @@ async function copyAnonymousPracticeLink() {
   closePracticeShareOptions({ restoreFocus: true });
 }
 
-function shareOption(titleKey, copyKey, metaKey, onClick) {
+function shareOption(
+  titleKey,
+  copyKey,
+  metaKey,
+  onClick,
+  { recommended = false } = {},
+) {
   const button = document.createElement("button");
   button.type = "button";
-  button.className = "practice-share-option";
+  button.className = `practice-share-option${recommended ? " practice-share-option-primary" : ""}`;
   const title = document.createElement("strong");
-  title.textContent = t(titleKey);
+  title.textContent = recommended
+    ? `${t(titleKey)} · ${t("recommendedTag") || "Recommended"}`
+    : t(titleKey);
   const description = document.createElement("span");
   description.textContent = t(copyKey);
   const meta = document.createElement("small");
@@ -956,12 +1082,6 @@ export function copyPracticeLink() {
   panel.append(
     heading,
     shareOption(
-      "practiceOnlyTitle",
-      "practiceOnlyCopy",
-      "practiceOnlyMeta",
-      copyAnonymousPracticeLink,
-    ),
-    shareOption(
       "trackResultsTitle",
       "trackResultsCopy",
       "trackResultsMeta",
@@ -969,6 +1089,13 @@ export function copyPracticeLink() {
         closePracticeShareOptions();
         openTeacherAssignment("copy_track");
       },
+      { recommended: true },
+    ),
+    shareOption(
+      "practiceOnlyTitle",
+      "practiceOnlyCopy",
+      "practiceOnlyMeta",
+      copyAnonymousPracticeLink,
     ),
   );
   trigger?.closest(".spelling-actions")?.after(panel);
@@ -991,36 +1118,54 @@ export function renderResultWorkspaceCta({ mode, wordCount, missedCount }) {
   if (!summary) return;
   summary.querySelector(".result-conversion")?.remove();
 
+  const isShared = Boolean(readShareState(window.location).sharedLink);
   const block = document.createElement("section");
   block.className = "result-conversion";
   const message = document.createElement("p");
   message.className = "result-conversion-message";
-  message.textContent = missedCount
-    ? t("workspaceCtaMissed", { count: missedCount })
-    : t("workspaceCtaClean");
   const benefits = document.createElement("ul");
   benefits.className = "result-conversion-benefits";
-  [
-    t("workspaceCtaKeep"),
-    t("workspaceCtaTrack"),
-    t("workspaceCtaCreate"),
-  ].forEach((label) => {
-    const item = document.createElement("li");
-    item.textContent = `✓ ${label}`;
-    benefits.appendChild(item);
-  });
   const button = document.createElement("button");
   button.type = "button";
   button.className = "share-score-btn result-conversion-button";
-  button.textContent = productMessage("trackNextPractice", {}, getPageLocale());
+  const footnote = document.createElement("small");
+
+  if (isShared) {
+    message.textContent = t("workspaceSharedCtaTitle");
+    [
+      t("workspaceSharedCtaBenefit1"),
+      t("workspaceSharedCtaBenefit2"),
+      t("workspaceSharedCtaBenefit3"),
+    ].forEach((label) => {
+      const item = document.createElement("li");
+      item.textContent = `✓ ${label}`;
+      benefits.appendChild(item);
+    });
+    button.textContent = t("workspaceSharedCtaButton");
+    footnote.textContent = t("workspaceSharedCtaFootnote");
+  } else {
+    message.textContent = missedCount
+      ? t("workspaceCtaMissed", { count: missedCount })
+      : t("workspaceCtaClean");
+    [
+      t("workspaceCtaKeep"),
+      t("workspaceCtaTrack"),
+      t("workspaceCtaCreate"),
+    ].forEach((label) => {
+      const item = document.createElement("li");
+      item.textContent = `✓ ${label}`;
+      benefits.appendChild(item);
+    });
+    button.textContent = productMessage("trackNextPractice", {}, getPageLocale());
+    footnote.textContent = productMessage(
+      "trackingExplanation",
+      {},
+      getPageLocale(),
+    );
+  }
+
   button.addEventListener("click", () =>
     openTeacherAssignment("practice_result"),
-  );
-  const footnote = document.createElement("small");
-  footnote.textContent = productMessage(
-    "trackingExplanation",
-    {},
-    getPageLocale(),
   );
   block.append(message, benefits, button, footnote);
   summary.appendChild(block);
@@ -1106,6 +1251,13 @@ if (typeof window !== "undefined") {
     renderResultWorkspaceCta,
     openTeacherAssignment,
     canStartPractice,
+    hasPhotoImportAccess,
+    PHOTO_IMPORT_TRIAL_LIMIT,
+    LAST_MISSED_KEY,
+    getPhotoImportTrialsUsed,
+    incrementPhotoImportTrialsUsed,
+    saveLastMissedWords,
+    initLastMissedBanner,
   };
   window.spellingMode = api;
   Object.assign(window, api);

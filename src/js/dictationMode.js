@@ -12,7 +12,7 @@ import {
 } from './spellingCore.mjs';
 import { speechSupported, speakWord } from './speech.js';
 import { renderExampleHint } from './exampleSentence.mjs';
-import { renderResultWorkspaceCta, track } from './spellingMode.js';
+import { renderResultWorkspaceCta, saveLastMissedWords, track } from './spellingMode.js';
 import { pageLocale } from './analytics.mjs';
 
 let session = null;
@@ -120,6 +120,7 @@ export function renderDictationSummary() {
   element('spelling-result').textContent = summary.missedWords.length
     ? t('dictationMissed', { count: summary.missedWords.length })
     : t('dictationPerfect');
+  saveLastMissedWords(summary.missedWords);
   const list = element('missed-word-list');
   list.textContent = '';
   summary.missedWords.forEach((word) => {

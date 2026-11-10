@@ -3222,6 +3222,7 @@ body.assignment-page {
 
 .waiting-learners-notice {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
@@ -3233,6 +3234,7 @@ body.assignment-page {
 }
 
 .waiting-learners-notice p {
+  flex: 1 1 180px;
   margin: 0;
   color: #166534;
   font-weight: 500;
@@ -3254,6 +3256,16 @@ body.assignment-page {
   align-items: center;
 }
 
+.waiting-action-wrap {
+  flex: 0 0 auto;
+  max-width: 100%;
+}
+
+.waiting-action-wrap .button-link {
+  white-space: nowrap;
+  font-size: 0.8rem;
+  padding-inline: 0.8rem;
+}
 
 /* ==========================================================================
    Print & PDF Sheet Styles (Letter Size: 8.5" x 11", Margin >= 0.5")
@@ -3315,7 +3327,9 @@ body.assignment-page {
   padding: 0.5in;
   position: relative;
   overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
   line-height: 1.35;
 }
 

@@ -2781,18 +2781,19 @@ function renderLearners(me, learners) {
     list.append(row);
   }
   if (me.plan === "free" && learners.filter((l) => !l.archived).length >= 1) {
+    const { plan: recommendedPlan } = upgradeSelection(me);
     const waitingNotice = document.createElement("div");
     waitingNotice.className = "notice waiting-learners-notice";
     const msg = document.createElement("p");
     msg.textContent = m("learnersWaitingCount", { count: 1 });
     const upgradeBtn = document.createElement("a");
     upgradeBtn.className = "button-link pro";
-    upgradeBtn.href = `${productPagePath("pricing", locale)}?from=waiting_list&plan=teacher&interval=month&lang=${encodeURIComponent(locale)}`;
-    upgradeBtn.textContent = `${copy.teacherPlan} · ${copy.teacherPriceMonthly || "$14.99/mo"}`;
+    upgradeBtn.href = `${productPagePath("pricing", locale)}?from=waiting_list&plan=${recommendedPlan}&interval=month&lang=${encodeURIComponent(locale)}`;
+    upgradeBtn.textContent = upgradePrice(recommendedPlan);
     upgradeBtn.addEventListener("click", () => {
       trackEvent("upgrade_click", {
         source: "waiting_list",
-        plan: "teacher",
+        plan: recommendedPlan,
         billing_interval: "month",
       });
     });
@@ -2801,7 +2802,8 @@ function renderLearners(me, learners) {
     waitingWrap.className = "waiting-action-wrap";
     const secondaryNote = document.createElement("small");
     secondaryNote.className = "cta-secondary-note";
-    secondaryNote.textContent = copy.orTeacherYearly;
+    secondaryNote.textContent =
+      recommendedPlan === "parent" ? copy.orParentYearly : copy.orTeacherYearly;
     waitingWrap.append(upgradeBtn, secondaryNote);
 
     waitingNotice.append(msg, waitingWrap);

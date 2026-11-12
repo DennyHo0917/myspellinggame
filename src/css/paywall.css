@@ -41,3 +41,115 @@
 .contextual-paywall-actions > .contextual-paywall-price {
   flex-basis: 100%;
 }
+
+.smart-review-preview {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(47, 111, 115, 0.28);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.smart-review-preview-title,
+.smart-review-preview-help,
+.smart-review-prompt,
+.smart-review-speech,
+.smart-review-feedback,
+.smart-review-up-next p,
+.smart-review-reveal {
+  margin: 0;
+}
+
+.smart-review-preview-title {
+  font-size: 1.05rem;
+}
+
+.smart-review-preview-help,
+.smart-review-prompt,
+.smart-review-speech,
+.smart-review-feedback,
+.smart-review-up-next p {
+  color: #5f6d7a;
+  line-height: 1.4;
+}
+
+.smart-review-progress {
+  margin: 0;
+  color: #2f6f73;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.smart-review-card {
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  padding: 0.9rem 0.75rem;
+  border-radius: 10px;
+  background: #f7fbfa;
+  text-align: center;
+}
+
+.smart-review-form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.smart-review-answer {
+  flex: 1 1 10rem;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #cfded9;
+  border-radius: 8px;
+  background: #fff;
+  color: #17202a;
+  font: inherit;
+}
+
+.smart-review-hear,
+.smart-review-check,
+.smart-review-close {
+  min-height: 44px;
+  padding: 0.45rem 0.8rem;
+  border: 0;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.smart-review-check {
+  background: #2f6f73;
+  color: #fff;
+}
+
+.smart-review-hear,
+.smart-review-close {
+  background: #e6efee;
+  color: #24585b;
+}
+
+.smart-review-speech:empty,
+.smart-review-feedback:empty {
+  display: none;
+}
+
+.smart-review-reveal {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #17202a;
+}
+
+.smart-review-up-next .word-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}

@@ -120,6 +120,7 @@ const EVENT_PARAMS = {
   photo_import_clicked: ["locale"],
   photo_import_previewed: ["locale", "current_plan", "outcome"],
   photo_import_blocked: ["current_plan", "locale"],
+  smart_review_previewed: ["locale", "current_plan", "outcome"],
   usage_limit_reached: ["limit_type"],
   checkout_attempted: ["plan", "billing_interval"],
   checkout_started: ["plan", "billing_interval"],

@@ -10,6 +10,11 @@ for (const locale of ["en", "es", "pt-br", "fr", "id", "zh"]) {
       (locale) => localStorage.setItem("mySpellingGameManualLocale", locale),
       locale,
     );
+    await page.addInitScript(() => {
+      window.Tesseract = {
+        recognize: async () => ({ data: { text: "apple banana" } }),
+      };
+    });
     let plan = "free";
     const prefix = locale === "en" ? "" : `/${locale}`;
     await page.route("**/api/me", (route) =>
@@ -40,7 +45,21 @@ for (const locale of ["en", "es", "pt-br", "fr", "id", "zh"]) {
     await page
       .locator('input[name="practice-mode"][value="typing"]')
       .check({ force: true });
+    const chooser = page.waitForEvent("filechooser");
     await page.locator("#photo-import-btn").click();
+    await (
+      await chooser
+    ).setFiles({
+      name: "words.png",
+      mimeType: "image/png",
+      buffer: Buffer.from("preview"),
+    });
+    await expect(page.locator("#photo-import-review-words")).toHaveValue(
+      "apple\nbanana",
+    );
+    await expect(page.locator("#custom-word-list")).toHaveValue(
+      "elephant\ngiraffe",
+    );
     await page.locator(".photo-import-notice .paywall-primary").click();
     await page.locator('[data-plan-choice="parent"]').click();
     await expect(page).toHaveURL(new RegExp(`${prefix}/$`));
@@ -48,15 +67,18 @@ for (const locale of ["en", "es", "pt-br", "fr", "id", "zh"]) {
     await expect(page.locator("#custom-word-list")).toHaveValue(
       "elephant\ngiraffe",
     );
+    await expect(page.locator("#photo-import-review-words")).toHaveValue(
+      "apple\nbanana",
+    );
     await expect(page.locator("#custom-example-sentences")).toHaveValue(
       "An elephant walks.\nA giraffe eats.",
     );
     await expect(
       page.locator('input[name="practice-mode"][value="typing"]'),
     ).toBeChecked();
-    const chooser = page.waitForEvent("filechooser");
+    const returnChooser = page.waitForEvent("filechooser");
     await page.locator("#photo-import-btn").click();
-    await chooser;
+    await returnChooser;
   });
 }
 
@@ -219,15 +241,33 @@ test("cancelled photo checkout restores draft without claiming paid access", asy
   await page.route("**/api/billing/checkout/cancel", (route) =>
     route.fulfill({ json: { ok: true } }),
   );
+  await page.addInitScript(() => {
+    window.Tesseract = {
+      recognize: async () => ({ data: { text: "apple banana" } }),
+    };
+  });
   await page.goto("/");
   await page.locator("#custom-word-list").fill("elephant");
+  const chooser = page.waitForEvent("filechooser");
   await page.locator("#photo-import-btn").click();
+  await (
+    await chooser
+  ).setFiles({
+    name: "words.png",
+    mimeType: "image/png",
+    buffer: Buffer.from("preview"),
+  });
+  await expect(page.locator("#photo-import-review-words")).toHaveValue(
+    "apple\nbanana",
+  );
   await page.locator(".photo-import-notice .paywall-primary").click();
   await page.locator('[data-plan-choice="parent"]').click();
   await expect(page).toHaveURL(/\/$/);
   await expect(page.locator("#custom-word-list")).toHaveValue("elephant");
   await expect(page.locator(".upgrade-return-notice")).toHaveCount(0);
-  await page.locator("#photo-import-btn").click();
+  await expect(page.locator("#photo-import-review-words")).toHaveValue(
+    "apple\nbanana",
+  );
   await expect(
     page.locator(".photo-import-notice .paywall-primary"),
   ).toBeVisible();

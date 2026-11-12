@@ -642,7 +642,7 @@ test("Microsoft sign-in submits the Microsoft provider", async ({ page }) => {
   });
 });
 
-test("anonymous Photo Import keeps an explicit Teacher choice through OAuth without auto-purchase", async ({
+test("anonymous Photo Import previews words, then a Teacher choice resumes checkout after sign-in", async ({
   page,
 }) => {
   let signedIn = false;
@@ -686,13 +686,35 @@ test("anonymous Photo Import keeps an explicit Teacher choice through OAuth with
     });
   });
 
+  await page.addInitScript(() => {
+    window.Tesseract = {
+      recognize: async () => ({ data: { text: "apple banana" } }),
+    };
+  });
   await page.goto("/");
+  const chooser = page.waitForEvent("filechooser");
   await page.getByRole("button", { name: "Import from photo" }).click();
+  await (
+    await chooser
+  ).setFiles({
+    name: "words.png",
+    mimeType: "image/png",
+    buffer: Buffer.from("preview"),
+  });
   const paywall = page.locator(".photo-import-notice");
+  await expect(page.locator("#photo-import-review-words")).toHaveValue(
+    "apple\nbanana",
+  );
+  await expect(page.locator("#custom-word-list")).toHaveValue(
+    "because\nfriend\nbeautiful\nanswer\nenough\nfavorite\nlibrary\nthrough",
+  );
+  await expect(paywall).toContainText(
+    "Sign in or create an account to keep these words",
+  );
   await expect(paywall).toContainText(
     "Turn a photo of the school list into editable spelling words",
   );
-  await expect(paywall).toContainText("Parent Plan · $79.90/year");
+  await expect(paywall).toContainText("Parent Plan · $7.99/month");
   await expect(
     paywall.getByRole("link", { name: "Unlock Photo Import" }),
   ).toBeVisible();
@@ -700,31 +722,23 @@ test("anonymous Photo Import keeps an explicit Teacher choice through OAuth with
     .getByRole("link", { name: "Teacher Plan", exact: true })
     .click();
 
-  await expect(page).toHaveURL(/\/pricing\?plan=teacher&interval=year$/);
+  await expect(page).toHaveURL(/\/pricing\?plan=teacher&interval=month$/);
   await page.getByRole("button", { name: "Select Teacher Plan" }).click();
   await expect(page).toHaveURL(/\/workspace\?lang=en$/);
   await expect(
     page.getByRole("heading", { name: "Continue with Teacher Plan" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Continue with Google" }).click();
-  await expect(page).toHaveURL(/\/workspace\?lang=en$/);
-  await expect(page.getByText("Teacher Plan · $149.90/year")).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Continue to secure checkout" }),
-  ).toBeVisible();
   expect(checkoutBody).toBeUndefined();
-  await page
-    .getByRole("button", { name: "Continue to secure checkout" })
-    .click();
+  await page.getByRole("button", { name: "Continue with Google" }).click();
   await expect(page).toHaveURL(/#stripe-checkout$/);
   expect(checkoutBody).toEqual({
     plan: "teacher",
-    interval: "year",
+    interval: "month",
     locale: "en",
   });
   expect(
     await page.evaluate(() => sessionStorage.getItem("pendingUpgradeFeature")),
-  ).toBeNull();
+  ).toBe("photo_import");
 });
 
 test("unknown context offers both plans without inferring from email", async ({

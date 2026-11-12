@@ -195,10 +195,16 @@ test("empty photo previews do not use a trial and accepted previews use server c
   await page.locator(".photo-import-review-actions button").first().click();
   await expect(page.locator("#custom-word-list")).toHaveValue("apple\nbanana");
   expect(accepts).toBe(1);
-  await page.locator("#photo-import-btn").click();
+  await page.locator("#photo-import-input").setInputFiles({
+    name: "words.png",
+    mimeType: "image/png",
+    buffer: Buffer.from("image"),
+  });
   await expect(
     page.locator(".photo-import-notice .paywall-primary"),
   ).toBeVisible();
+  await expect(page.locator("#custom-word-list")).toHaveValue("apple\nbanana");
+  expect(accepts).toBe(1);
 });
 
 test("pricing choices wait for their click handlers before becoming usable", async ({

@@ -350,6 +350,10 @@ test("Practice & sharing conversion copy is complete across all 6 locales in pag
   const locales = ["en", "es", "pt-BR", "fr", "id", "zh"];
   const simpleKeys = [
     "photoImportFreeTrialCta",
+    "photoImportPreviewTitle",
+    "photoImportPreviewHelp",
+    "photoImportKeepBenefit",
+    "photoImportKeepCta",
     "recommendedTag",
     "workspaceSharedCtaTitle",
     "workspaceSharedCtaBenefit1",

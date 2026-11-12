@@ -4,6 +4,10 @@ import {
   clearPendingCheckout,
   consumePendingCheckout,
 } from "./pendingCheckout.mjs";
+import {
+  readPendingPhotoImport,
+  savePendingPhotoImport,
+} from "./pendingPhotoImport.mjs";
 import { takeTrackingEntry, saveTrackingEntry } from "./trackingDraft.mjs";
 import {
   saveUpgradeReturn,
@@ -5377,6 +5381,16 @@ async function init() {
       sessionStorage.removeItem(PENDING_TYPING_CHASE_LOCALE_KEY);
     } catch {}
   }
+  try {
+    const pendingPhoto = readPendingPhotoImport();
+    const checkout = new URLSearchParams(location.search).get("checkout");
+    if (pendingPhoto?.resumeAuth && checkout !== "success") {
+      savePendingPhotoImport({ ...pendingPhoto, resumeAuth: false });
+      const pendingLocale = pendingPhoto.locale || locale;
+      location.href = `${productPagePath("", pendingLocale)}?lang=${encodeURIComponent(pendingLocale)}&photo_import=1`;
+      return;
+    }
+  } catch {}
   updateWorkspaceIdentity(me);
   bindWorkspaceNavigation();
   const resume = resumableWorkspaceDraft(me);

@@ -47,6 +47,7 @@ import {
 } from "./analytics.mjs";
 import { buildShareHash, readShareState } from "./shareState.mjs";
 import { productMessage, productPagePath } from "./productLocale.mjs";
+import { featureTrialActive, featureTrialLabel } from "./featureTrial.mjs";
 
 const STORAGE_KEY = "mySpellingGameSpellingWords";
 const SENTENCES_STORAGE_KEY = "mySpellingGameExampleSentences";
@@ -294,7 +295,7 @@ function resumePendingSmartReview(account) {
   const pending = readPendingSmartReview();
   if (!pending || pending.target !== "practice") return;
   if (readShareState(window.location).sharedLink) return;
-  if (isPlusAccount(account)) {
+  if (hasSmartReviewAccess(account)) {
     saveTrackingEntry(
       {
         words: pending.words,
@@ -500,14 +501,19 @@ async function applyPhotoImportWords(rawText, importId) {
       });
       if (!response.ok) {
         if (response.status === 403) {
-          if (accountState)
-            accountState.photoImportTrialsUsed = PHOTO_IMPORT_TRIAL_LIMIT;
+          if (accountState?.featureTrial)
+            accountState.featureTrial = {
+              ...accountState.featureTrial,
+              active: false,
+            };
+          showPracticeFeatureTrial(accountState);
           return { blocked: true };
         }
         return { error: true };
       }
-      const result = await response.json();
-      if (accountState) accountState.photoImportTrialsUsed = result.used;
+      const result = await response.json().catch(() => ({}));
+      if (accountState && result.featureTrial)
+        accountState.featureTrial = result.featureTrial;
     }
   } catch {
     return { error: true };
@@ -519,15 +525,7 @@ async function applyPhotoImportWords(rawText, importId) {
   clearPendingPhotoImport();
   const count = currentWords().length;
   if (count) trackPremiumFeatureUsed("photo_import", accountState, count);
-  if (accountState?.user?.id && !isPlusAccount(accountState)) {
-    const notice = photoImportStatus(
-      t("photoImportTrialStatus", {
-        used: accountState.photoImportTrialsUsed,
-        total: PHOTO_IMPORT_TRIAL_LIMIT,
-      }),
-    );
-    setTimeout(() => notice?.remove(), 4000);
-  }
+  showPracticeFeatureTrial(accountState);
   return { ok: true };
 }
 
@@ -545,6 +543,7 @@ function showPhotoImportReview(
   review.className = "photo-import-review";
   const title = document.createElement("strong");
   title.textContent = t("photoImportReviewTitle");
+  const trialNote = practiceFeatureTrialNote(accountState);
   const help = document.createElement("small");
   help.textContent = t("photoImportReviewHelp");
   const input = document.createElement("textarea");
@@ -594,7 +593,7 @@ function showPhotoImportReview(
     review.remove();
   });
   actions.append(use, cancel);
-  review.append(title, help, input, actions);
+  review.append(title, ...(trialNote ? [trialNote] : []), help, input, actions);
   field.append(review);
 }
 
@@ -665,13 +664,44 @@ async function resumePendingPhotoImport(account) {
     help.textContent = t(result.invalid ? "invalidWords" : "photoImportError");
 }
 
-export const PHOTO_IMPORT_TRIAL_LIMIT = 3;
 export const LAST_MISSED_KEY = "mySpellingLastMissedWords";
+
+function practiceTrialText(account) {
+  return featureTrialLabel(
+    account?.featureTrial,
+    (key, vars) => t(key, vars),
+    t("dateLocale"),
+  );
+}
+
+function practiceFeatureTrialNote(account) {
+  const text = practiceTrialText(account);
+  if (!text) return null;
+  const note = document.createElement("p");
+  note.className = "feature-trial-note";
+  note.textContent = text;
+  return note;
+}
+
+function showPracticeFeatureTrial(account) {
+  document.getElementById("feature-trial-note")?.remove();
+  const note = practiceFeatureTrialNote(account);
+  if (!note) return;
+  note.id = "feature-trial-note";
+  document.getElementById("photo-import-btn")?.closest(".word-field-heading")
+    ?.after(note);
+}
+
+export function hasSmartReviewAccess(account) {
+  if (!account) return false;
+  if (isPlusAccount(account)) return true;
+  return featureTrialActive(account.featureTrial);
+}
 
 export function hasPhotoImportAccess(account) {
   if (!account) return false;
   if (isPlusAccount(account)) return true;
-  return Number(account.photoImportTrialsUsed || 0) < PHOTO_IMPORT_TRIAL_LIMIT;
+  return featureTrialActive(account.featureTrial);
 }
 
 export function saveLastMissedWords(words) {
@@ -729,7 +759,7 @@ export function initLastMissedBanner() {
     if (!words.length || smartReviewBtn.disabled) return;
     smartReviewBtn.disabled = true;
     void getAccount().then((account) => {
-      if (isPlusAccount(account)) {
+      if (hasSmartReviewAccess(account)) {
         saveTrackingEntry(
           {
             words: words.join("\n"),
@@ -1174,6 +1204,7 @@ export function initSpellingMode() {
       target?.focus({ preventScroll: true });
       clearUpgradeReturn();
     }
+    showPracticeFeatureTrial(account);
     void resumePendingPhotoImport(account);
     resumePendingSmartReview(account);
   });
@@ -1622,7 +1653,7 @@ if (typeof window !== "undefined") {
     openTeacherAssignment,
     canStartPractice,
     hasPhotoImportAccess,
-    PHOTO_IMPORT_TRIAL_LIMIT,
+    hasSmartReviewAccess,
     LAST_MISSED_KEY,
     saveLastMissedWords,
     initLastMissedBanner,

@@ -296,7 +296,8 @@ beforeEach(async () => {
   await insertTeacher(teacherB);
 });
 
-describe("account-wide photo import allowance", () => {
+describe("shared 7-day photo import and smart review trial", () => {
+  const day = 86_400_000;
   const accept = (
     importId: string,
     words = "apple banana",
@@ -307,53 +308,163 @@ describe("account-wide photo import allowance", () => {
       { method: "POST", body: JSON.stringify({ importId, words }) },
       teacher,
     );
+  const trialStart = (userId: string) =>
+    bindings.DB.prepare(
+      "SELECT feature_trial_started_at FROM user WHERE id = ?",
+    )
+      .bind(userId)
+      .first<string | null>("feature_trial_started_at");
 
-  it("requires authentication and does not charge empty or invalid imports", async () => {
+  it("requires authentication and does not start a trial for invalid imports", async () => {
     expect((await accept(crypto.randomUUID(), "apple", null)).status).toBe(401);
     expect((await accept(crypto.randomUUID(), "")).status).toBe(400);
     expect((await accept(crypto.randomUUID(), "123")).status).toBe(400);
-    const me = (await (await call("/api/me")).json()) as {
-      photoImportTrialsUsed: number;
-    };
-    expect(me.photoImportTrialsUsed).toBe(0);
+    expect(await trialStart(teacherA.id)).toBeNull();
   });
 
-  it("counts accepted previews once, isolates accounts, and blocks a fourth import", async () => {
-    const id = crypto.randomUUID();
-    expect(await (await accept(id)).json()).toMatchObject({
-      used: 1,
-      limit: 3,
-    });
-    expect(await (await accept(id)).json()).toMatchObject({ used: 1 });
-    await accept(crypto.randomUUID());
-    await accept(crypto.randomUUID());
-    expect((await accept(crypto.randomUUID())).status).toBe(403);
-    expect((await accept(id)).status).toBe(200);
-    expect(
-      await (await accept(crypto.randomUUID(), "apple", teacherB)).json(),
-    ).toMatchObject({ used: 1 });
+  it("starts one clock from first access, ignores old import counts, and does not use createdAt", async () => {
+    await bindings.DB.prepare("UPDATE user SET createdAt = ? WHERE id = ?")
+      .bind("2020-01-01T00:00:00.000Z", teacherA.id)
+      .run();
+    for (let index = 0; index < 3; index += 1) {
+      await bindings.DB.prepare(
+        "INSERT INTO photo_import_usage (user_id, import_id, created_at) VALUES (?, ?, ?)",
+      )
+        .bind(teacherA.id, crypto.randomUUID(), "2020-01-02T00:00:00.000Z")
+        .run();
+    }
+    const before = Date.now();
     const me = (await (await call("/api/me")).json()) as {
-      photoImportTrialsUsed: number;
+      photoImportTrialsUsed?: number;
+      featureTrial: {
+        active: boolean;
+        startedAt: string;
+        endsAt: string;
+      };
     };
-    expect(me.photoImportTrialsUsed).toBe(3);
-  });
-
-  it("enforces the limit for concurrent accepts", async () => {
-    const responses = await Promise.all(
-      Array.from({ length: 6 }, () => accept(crypto.randomUUID())),
+    expect(me.photoImportTrialsUsed).toBeUndefined();
+    expect(me.featureTrial.active).toBe(true);
+    expect(Date.parse(me.featureTrial.startedAt)).toBeGreaterThanOrEqual(
+      before - 5_000,
     );
-    expect(responses.filter((r) => r.status === 200)).toHaveLength(3);
-    expect(responses.filter((r) => r.status === 403)).toHaveLength(3);
+    expect(
+      Date.parse(me.featureTrial.endsAt) -
+        Date.parse(me.featureTrial.startedAt),
+    ).toBe(7 * day);
+    const again = (await (await call("/api/me")).json()) as {
+      featureTrial: { startedAt: string };
+    };
+    expect(again.featureTrial.startedAt).toBe(me.featureTrial.startedAt);
+    for (let index = 0; index < 4; index += 1)
+      expect((await accept(crypto.randomUUID())).status).toBe(200);
+    const other = (await (await call("/api/me", {}, teacherB)).json()) as {
+      featureTrial: { startedAt: string; active: boolean };
+    };
+    expect(other.featureTrial.active).toBe(true);
+    expect(other.featureTrial.startedAt).not.toBe(me.featureTrial.startedAt);
   });
 
-  it("does not charge paid accounts", async () => {
+  it("does not restart an expired trial and blocks photo import", async () => {
+    const started = new Date(Date.now() - 8 * day).toISOString();
+    await bindings.DB.prepare(
+      "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
+    )
+      .bind(started, teacherA.id)
+      .run();
+    const denied = await accept(crypto.randomUUID());
+    expect(denied.status).toBe(403);
+    expect(await denied.json()).toMatchObject({
+      error: "feature_trial_expired",
+    });
+    const me = (await (await call("/api/me")).json()) as {
+      featureTrial: { active: boolean; startedAt: string };
+    };
+    expect(me.featureTrial).toMatchObject({
+      active: false,
+      startedAt: started,
+    });
+  });
+
+  it("lets a trial create a smart review assignment and rejects it after expiry", async () => {
+    const learner = await createLearner("Learner 01");
+    const created = await createAssignment();
+    const words = await publicWords(String(created.body.publicId));
+    await submit(String(created.body.publicId), words.words, {
+      learnerPublicId: String(learner.body.public_id),
+      answers: ["wrong", "banana"],
+    });
+    await bindings.DB.prepare(
+      "UPDATE assignments SET status = 'closed', closed_at = ? WHERE id = ?",
+    )
+      .bind(new Date().toISOString(), created.body.id)
+      .run();
+    const review = await call(`/api/learners/${learner.body.id}/review`, {
+      method: "POST",
+      body: "{}",
+    });
+    expect(review.status).toBe(200);
+    expect(await review.json()).toMatchObject({
+      words: expect.arrayContaining(["apple"]),
+    });
+    const assignmentReview = await call(
+      `/api/assignments/${created.body.id}/review`,
+      { method: "POST", body: "{}" },
+    );
+    expect(assignmentReview.status).toBe(200);
+    const published = await createAssignment(teacherA, {
+      title: "Review: week",
+      words: ["apple"],
+      reviewFeature: "smart_review",
+    });
+    expect(published.response.status).toBe(201);
+
+    const started = new Date(Date.now() - 8 * day).toISOString();
+    await bindings.DB.prepare(
+      "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
+    )
+      .bind(started, teacherA.id)
+      .run();
+    const deniedReview = await call(`/api/learners/${learner.body.id}/review`, {
+      method: "POST",
+      body: "{}",
+    });
+    expect(deniedReview.status).toBe(403);
+    expect(await deniedReview.json()).toMatchObject({
+      error: "feature_trial_expired",
+    });
+    const deniedAssignment = await call(
+      `/api/assignments/${created.body.id}/review`,
+      { method: "POST", body: "{}" },
+    );
+    expect(deniedAssignment.status).toBe(403);
+    await bindings.DB.prepare(
+      "UPDATE assignments SET status = 'closed', closed_at = ? WHERE owner_user_id = ?",
+    )
+      .bind(new Date().toISOString(), teacherA.id)
+      .run();
+    const deniedCreate = await createAssignment(teacherA, {
+      title: "Review: later",
+      words: ["apple"],
+      reviewFeature: "todays_review",
+    });
+    expect(deniedCreate.response.status).toBe(403);
+    expect(deniedCreate.body.error).toBe("feature_trial_expired");
+    const ordinary = await createAssignment(teacherA, {
+      title: "Ordinary practice",
+      words: ["apple"],
+    });
+    expect(ordinary.response.status).toBe(201);
+  });
+
+  it("leaves paid plans unlimited and does not stamp a trial", async () => {
     await insertSubscription({ plan: "parent", status: "active" });
-    for (let i = 0; i < 4; i++)
+    for (let index = 0; index < 4; index += 1)
       expect((await accept(crypto.randomUUID())).status).toBe(200);
     const me = (await (await call("/api/me")).json()) as {
-      photoImportTrialsUsed: number;
+      featureTrial: unknown;
     };
-    expect(me.photoImportTrialsUsed).toBe(0);
+    expect(me.featureTrial).toBeNull();
+    expect(await trialStart(teacherA.id)).toBeNull();
   });
 });
 
@@ -2518,7 +2629,7 @@ describe("cross-assignment mastery", () => {
   });
 
   it.each(["parent", "teacher"] as const)(
-    "shows 14 days on Free, 365 days on %s, and locks Free smart review",
+    "shows 14 days on Free, 365 days on %s, and ends Free smart review with the trial",
     async (plan) => {
       const learner = await createLearner("Learner 01");
       const learnerPublicId = String(learner.body.public_id);
@@ -2537,9 +2648,14 @@ describe("cross-assignment mastery", () => {
 
       const free = (await (
         await call(`/api/learners/${learner.body.id}`)
-      ).json()) as { historyDays: number; words: unknown[] };
+      ).json()) as {
+        historyDays: number;
+        words: unknown[];
+        smartReview: boolean;
+      };
       expect(free.historyDays).toBe(14);
       expect(free.words).toHaveLength(0);
+      expect(free.smartReview).toBe(true);
       const freeWorkspace = (await (
         await call("/api/assignments", {
           headers: { "x-workspace-review-counts": "1" },
@@ -2556,10 +2672,19 @@ describe("cross-assignment mastery", () => {
         `/api/learners/${learner.body.id}/review`,
         { method: "POST", body: "{}" },
       );
-      expect(reviewResponse.status).toBe(403);
-      expect(await reviewResponse.json()).toMatchObject({
-        error: "smart_review_required",
-        message: "Smart Review is included in Parent and Teacher Plans.",
+      expect(reviewResponse.status).toBe(200);
+      await bindings.DB.prepare(
+        "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
+      )
+        .bind(new Date(Date.now() - 8 * 86_400_000).toISOString(), teacherA.id)
+        .run();
+      const expiredReview = await call(
+        `/api/learners/${learner.body.id}/review`,
+        { method: "POST", body: "{}" },
+      );
+      expect(expiredReview.status).toBe(403);
+      expect(await expiredReview.json()).toMatchObject({
+        error: "feature_trial_expired",
       });
 
       await insertSubscription({ plan, status: "active" });
@@ -2644,7 +2769,7 @@ describe("today's review state", () => {
     ).toBeNull();
   });
 
-  it("hides words from Free and returns them to Teacher", async () => {
+  it("shows today's review during the free trial and hides it after expiry", async () => {
     const learner = await createLearner("Learner 01");
     const assignment = await createAssignment(teacherA, {
       words: ["because"],
@@ -2656,12 +2781,33 @@ describe("today's review state", () => {
       answers: ["wrong"],
     });
 
-    const free = (await (
+    const trial = (await (
+      await call(`/api/learners/${learner.body.id}`)
+    ).json()) as {
+      todaysReview: {
+        count: number;
+        words: Array<{ word: string; exampleSentence: string | null }>;
+      };
+    };
+    expect(trial.todaysReview.count).toBe(1);
+    expect(trial.todaysReview.words).toEqual([
+      expect.objectContaining({
+        word: "because",
+        exampleSentence: "I stayed inside because it was raining.",
+      }),
+    ]);
+
+    await bindings.DB.prepare(
+      "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
+    )
+      .bind(new Date(Date.now() - 8 * 86_400_000).toISOString(), teacherA.id)
+      .run();
+    const expired = (await (
       await call(`/api/learners/${learner.body.id}`)
     ).json()) as {
       todaysReview: { count: number; words: null };
     };
-    expect(free.todaysReview).toEqual({ count: 1, words: null });
+    expect(expired.todaysReview).toEqual({ count: 1, words: null });
 
     await insertSubscription({ plan: "teacher", status: "active" });
     const teacher = (await (

@@ -387,11 +387,18 @@ test("Practice & sharing conversion copy is complete across all 6 locales in pag
       assert.notEqual(val, key, `${locale}:${key} returned key itself`);
     }
 
-    const trialStatus = t("photoImportTrialStatus", { used: 1, total: 3 });
-    assert.ok(
-      trialStatus.includes("1/3"),
-      `${locale}:photoImportTrialStatus contains 1/3`,
-    );
+    const trialStatus = t("featureTrialStatus", {
+      time: "6 days",
+      date: "Nov 18",
+    });
+    assert.match(trialStatus, /7/);
+    assert.match(trialStatus, /6 days|6 días|6 dias|6 jours|6 hari|6 天/);
+    assert.match(trialStatus, /Nov 18/);
+    assert.doesNotMatch(t("photoImportKeepCta"), /3/);
+    assert.match(t("photoImportKeepCta"), /7/);
+    assert.match(t("smartReviewKeepCta"), /7/);
+    assert.match(t("photoImportKeepBenefit"), /7/);
+    assert.match(t("smartReviewKeepBenefit"), /7/);
 
     const missedText = t("lastMissedBannerText", { count: 5 });
     assert.ok(

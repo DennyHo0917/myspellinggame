@@ -22,7 +22,7 @@ for (const locale of ["en", "es", "pt-br", "fr", "id", "zh"]) {
         json: {
           user: { id: "buyer", name: "Buyer" },
           plan,
-          photoImportTrialsUsed: 3,
+          featureTrial: { active: false },
           limits: PLAN_LIMITS[plan],
         },
       }),
@@ -230,7 +230,7 @@ test("cancelled photo checkout restores draft without claiming paid access", asy
       json: {
         user: { id: "buyer", name: "Buyer" },
         plan: "free",
-        photoImportTrialsUsed: 3,
+        featureTrial: { active: false },
         limits: PLAN_LIMITS.free,
       },
     }),

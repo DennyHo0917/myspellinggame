@@ -50,6 +50,48 @@ test("paid Smart Review still opens the saved review flow", async ({
   await expect(page.locator("#tracking-words")).toHaveValue("banana");
 });
 
+test("signed-in trial users open the saved Smart Review flow", async ({
+  page,
+}) => {
+  const copy = productMessages("en");
+  await page.addInitScript(() => {
+    localStorage.setItem("mySpellingLastMissedWords", '["banana"]');
+  });
+  await page.route("**/api/me", (route) =>
+    route.fulfill({
+      json: {
+        user: { id: "trial-user", name: "Trial" },
+        plan: "free",
+        limits: PLAN_LIMITS.free,
+        featureTrial: {
+          active: true,
+          startedAt: new Date().toISOString(),
+          endsAt: new Date(Date.now() + 4 * 86400000).toISOString(),
+          remainingMs: 4 * 86400000,
+        },
+      },
+    }),
+  );
+  await page.route("**/api/assignments", (route) =>
+    route.fulfill({
+      json: {
+        assignments: [],
+        learners: [],
+        usage: { trackingTrialUsed: false, monthlyAttempts: 0 },
+      },
+    }),
+  );
+  await page.goto("/");
+  await expect(page.locator("#feature-trial-note")).toContainText("7-day");
+  await page.locator(".last-missed-smart-btn").click();
+  await expect(page).toHaveURL(/review=1/);
+  await expect(page.locator(".smart-review-preview")).toHaveCount(0);
+  await expect(page.locator(".feature-trial-note")).toContainText("7-day");
+  await expect(page.locator(".review-entry-card h1")).toHaveText(
+    copy.reviewEntryTitle,
+  );
+});
+
 test("signed-in free users preview one review card before pricing", async ({
   page,
 }) => {

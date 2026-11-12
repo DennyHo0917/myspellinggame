@@ -31,6 +31,7 @@ import {
   type AssignmentWord,
   type Plan,
 } from "./domain";
+import { featureTrialForFreeAccount } from "./featureTrial";
 import {
   cancelCheckout,
   changeSubscriptionPlan,
@@ -1424,7 +1425,12 @@ async function updateLearner(
   return updated;
 }
 
-async function learnerMastery(db: D1Database, learner: LearnerRow, plan: Plan) {
+async function learnerMastery(
+  db: D1Database,
+  learner: LearnerRow,
+  plan: Plan,
+  smartReview = PLAN_LIMITS[plan].smartReview,
+) {
   const cutoff = historyCutoff(plan);
   const [attempts, itemRows] = await Promise.all([
     db
@@ -1527,10 +1533,10 @@ async function learnerMastery(db: D1Database, learner: LearnerRow, plan: Plan) {
       archived: Boolean(learner.archived),
     },
     historyDays: PLAN_LIMITS[plan].historyDays,
-    smartReview: PLAN_LIMITS[plan].smartReview,
+    smartReview,
     todaysReview: {
       count: reviewWords.length,
-      words: PLAN_LIMITS[plan].smartReview
+      words: smartReview
         ? reviewWords.slice(0, 20).map((word) => ({
             word: word.word,
             recentMissCount: word.reviewState!.recentMissCount,
@@ -1646,18 +1652,28 @@ async function workspaceProgress(
   return result;
 }
 
-function requireSmartReview(plan: Plan) {
-  if (!PLAN_LIMITS[plan].smartReview)
-    throw new HttpError(
-      403,
-      "smart_review_required",
-      "Smart Review is included in Parent and Teacher Plans.",
-    );
+async function accountFeatureTrial(env: Env, userId: string, plan: Plan) {
+  if (plan !== "free") return null;
+  return featureTrialForFreeAccount(env.DB, userId);
 }
 
-async function learnerReview(db: D1Database, learner: LearnerRow, plan: Plan) {
-  requireSmartReview(plan);
-  const mastery = await learnerMastery(db, learner, plan);
+async function smartReviewEnabled(env: Env, userId: string, plan: Plan) {
+  if (PLAN_LIMITS[plan].smartReview) return true;
+  return (await accountFeatureTrial(env, userId, plan))?.active === true;
+}
+
+async function assertSmartReview(env: Env, userId: string, plan: Plan) {
+  if (await smartReviewEnabled(env, userId, plan)) return;
+  throw new HttpError(
+    403,
+    "feature_trial_expired",
+    "The 7-day free trial of Photo Import and Smart Review has ended.",
+  );
+}
+
+async function learnerReview(env: Env, learner: LearnerRow, plan: Plan) {
+  await assertSmartReview(env, learner.owner_user_id, plan);
+  const mastery = await learnerMastery(env.DB, learner, plan, true);
   return {
     words: mastery.words
       .filter((word) => word.incorrectCount > 0 && word.status !== "mastered")
@@ -1672,14 +1688,13 @@ async function learnerReview(db: D1Database, learner: LearnerRow, plan: Plan) {
 }
 
 async function assignmentReview(
-  db: D1Database,
+  env: Env,
   assignment: AssignmentRow,
   plan: Plan,
 ) {
-  requireSmartReview(plan);
-  const rows = await db
-    .prepare(
-      `SELECT aw.word, COUNT(*) AS misses, MAX(at.completed_at) AS last_missed_at
+  await assertSmartReview(env, assignment.owner_user_id, plan);
+  const rows = await env.DB.prepare(
+    `SELECT aw.word, COUNT(*) AS misses, MAX(at.completed_at) AS last_missed_at
        FROM attempt_items ai
        JOIN attempts at ON at.id = ai.attempt_id
        JOIN assignment_words aw ON aw.id = ai.word_id
@@ -1687,7 +1702,7 @@ async function assignmentReview(
          AND ai.is_correct = 0 AND at.completed_at >= ? AND ${visibleResult(plan)}
        GROUP BY lower(aw.word)
        ORDER BY last_missed_at DESC, misses DESC LIMIT 10`,
-    )
+  )
     .bind(assignment.id, historyCutoff(plan))
     .all<{ word: string }>();
   return { words: rows.results.map((row) => row.word) };
@@ -1732,6 +1747,11 @@ async function createAssignment(env: Env, request: Request, userId: string) {
       );
   }
   const plan = await getPlan(env, userId);
+  if (
+    body.reviewFeature === "smart_review" ||
+    body.reviewFeature === "todays_review"
+  )
+    await assertSmartReview(env, userId, plan);
   enforcePlanWordLimit(words, plan);
   const currentUsage = await usage(env.DB, userId, plan);
   if (
@@ -2865,13 +2885,7 @@ async function handleBusinessRequest(
       cancelAtPeriodEnd: Boolean(subscription?.cancel_at_period_end),
       workspaceType: workspace?.workspace_type ?? null,
       classPublicId,
-      photoImportTrialsUsed: Number(
-        await env.DB.prepare(
-          "SELECT COUNT(*) AS count FROM photo_import_usage WHERE user_id = ?",
-        )
-          .bind(user.id)
-          .first("count"),
-      ),
+      featureTrial: await accountFeatureTrial(env, user.id, plan),
       ...(await usage(env.DB, user.id, plan)),
     });
   }
@@ -2880,37 +2894,17 @@ async function handleBusinessRequest(
     requireSameOrigin(request);
     const user = await requireTeacher(env, request, getSession);
     const body = await readJson(request, 16384);
-    const importId = validateAttemptId(body.importId);
+    validateAttemptId(body.importId);
     parseWordList(body.words);
     const plan = await getPlan(env, user.id);
-    if (plan !== "free") return json({ used: 0, limit: 3 });
-    // One atomic statement enforces the account-wide limit across tabs/devices.
-    // A stable preview ID makes retrying a lost response idempotent.
-    await env.DB.prepare(
-      `INSERT OR IGNORE INTO photo_import_usage (user_id, import_id, created_at)
-       SELECT ?, ?, ? WHERE (SELECT COUNT(*) FROM photo_import_usage WHERE user_id = ?) < 3`,
-    )
-      .bind(user.id, importId, new Date().toISOString(), user.id)
-      .run();
-    const accepted = await env.DB.prepare(
-      "SELECT 1 FROM photo_import_usage WHERE user_id = ? AND import_id = ?",
-    )
-      .bind(user.id, importId)
-      .first();
-    if (!accepted)
+    const featureTrial = await accountFeatureTrial(env, user.id, plan);
+    if (featureTrial && !featureTrial.active)
       throw new HttpError(
         403,
-        "photo_import_trial_used",
-        "The free photo import allowance has been used.",
+        "feature_trial_expired",
+        "The 7-day free trial of Photo Import and Smart Review has ended.",
       );
-    const used = Number(
-      await env.DB.prepare(
-        "SELECT COUNT(*) AS count FROM photo_import_usage WHERE user_id = ?",
-      )
-        .bind(user.id)
-        .first("count"),
-    );
-    return json({ used, limit: 3 });
+    return json({ allowed: true, featureTrial });
   }
 
   if (url.pathname === "/api/chase/passage" && method === "GET") {
@@ -3013,7 +3007,7 @@ async function handleBusinessRequest(
       return json({
         learners: await listLearners(env.DB, user.id, plan),
         historyDays: PLAN_LIMITS[plan].historyDays,
-        smartReview: PLAN_LIMITS[plan].smartReview,
+        smartReview: await smartReviewEnabled(env, user.id, plan),
       });
     if (method === "POST") {
       requireSameOrigin(request);
@@ -3035,9 +3029,7 @@ async function handleBusinessRequest(
       learnerReviewMatch[1],
       user.id,
     );
-    return json(
-      await learnerReview(env.DB, learner, await getPlan(env, user.id)),
-    );
+    return json(await learnerReview(env, learner, await getPlan(env, user.id)));
   }
 
   const learnerMatch = url.pathname.match(
@@ -3046,10 +3038,17 @@ async function handleBusinessRequest(
   if (learnerMatch) {
     const user = await requireTeacher(env, request, getSession);
     const learner = await getOwnedLearner(env.DB, learnerMatch[1], user.id);
-    if (method === "GET")
+    if (method === "GET") {
+      const plan = await getPlan(env, user.id);
       return json(
-        await learnerMastery(env.DB, learner, await getPlan(env, user.id)),
+        await learnerMastery(
+          env.DB,
+          learner,
+          plan,
+          await smartReviewEnabled(env, user.id, plan),
+        ),
       );
+    }
     if (method === "PATCH") {
       requireSameOrigin(request);
       const plan = await getPlan(env, user.id);
@@ -3210,7 +3209,7 @@ async function handleBusinessRequest(
       user.id,
     );
     return json(
-      await assignmentReview(env.DB, assignment, await getPlan(env, user.id)),
+      await assignmentReview(env, assignment, await getPlan(env, user.id)),
     );
   }
 

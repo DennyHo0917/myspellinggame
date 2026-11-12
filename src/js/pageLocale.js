@@ -40,13 +40,18 @@ const MESSAGES = {
     photoImportError: "We couldn’t read that image. Please try again.",
     photoImportRetry: "Try again",
     photoImportTrialStatus:
-      "Imported from photo ({used}/{total} free trials used)",
-    photoImportFreeTrialCta: "Sign in for 3 free photo imports",
+      "7-day free trial · {time} left · ends {date}",
+    photoImportFreeTrialCta: "Sign in: 7-day free trial",
     photoImportPreviewTitle: "Words from your photo",
     photoImportPreviewHelp: "Preview only. These words are not in your list yet.",
     photoImportKeepBenefit:
-      "Sign in or create an account to keep these words and get 3 free photo imports.",
-    photoImportKeepCta: "Sign in free",
+      "Signing in starts a 7-day free trial of Photo Import and Smart Review.",
+    photoImportKeepCta: "Sign in: 7-day free trial",
+    featureTrialStatus: "7-day free trial · {time} left · ends {date}",
+    featureTrialDay: "1 day",
+    featureTrialDays: "{count} days",
+    featureTrialHour: "1 hour",
+    featureTrialHours: "{count} hours",
     sampleLoaded: "{count} sample words loaded",
     wordsInRound: "{count} words in this round",
     anonymousWordLimit:
@@ -125,8 +130,8 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Parent and Teacher plans save this list as a review assignment.",
     smartReviewKeepBenefit:
-      "Sign in to return to this preview. Saving the review list is part of Parent and Teacher plans.",
-    smartReviewKeepCta: "Sign in free",
+      "Signing in starts a 7-day free trial of Photo Import and Smart Review.",
+    smartReviewKeepCta: "Sign in: 7-day free trial",
     smartReviewPrompt: "Listen and spell the word",
     smartReviewHear: "Hear word",
     smartReviewCheck: "Check",
@@ -174,13 +179,18 @@ const MESSAGES = {
     photoImportError: "No se pudo leer la imagen. Inténtalo de nuevo.",
     photoImportRetry: "Intentar de nuevo",
     photoImportTrialStatus:
-      "Importado desde foto ({used}/{total} pruebas gratis usadas)",
-    photoImportFreeTrialCta: "Inicia sesión para 3 pruebas gratis",
+      "Prueba de 7 días · quedan {time} · termina el {date}",
+    photoImportFreeTrialCta: "Entra: prueba gratis 7 días",
     photoImportPreviewTitle: "Palabras de tu foto",
     photoImportPreviewHelp: "Solo una vista previa: aún no están en tu lista.",
     photoImportKeepBenefit:
-      "Inicia sesión o crea una cuenta para guardar estas palabras y obtener 3 importaciones gratis.",
-    photoImportKeepCta: "Entrar gratis",
+      "Al iniciar sesión empieza una prueba gratis de 7 días para importar fotos y el repaso inteligente.",
+    photoImportKeepCta: "Entra: prueba gratis 7 días",
+    featureTrialStatus: "Prueba de 7 días · quedan {time} · termina el {date}",
+    featureTrialDay: "1 día",
+    featureTrialDays: "{count} días",
+    featureTrialHour: "1 hora",
+    featureTrialHours: "{count} horas",
     sampleLoaded: "{count} palabras de ejemplo cargadas",
     wordsInRound: "{count} palabras en esta ronda",
     anonymousWordLimit:
@@ -260,8 +270,8 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Los planes Familiar y Docente guardan esta lista como una tarea de repaso.",
     smartReviewKeepBenefit:
-      "Entra para volver a esta vista previa. Guardar el repaso forma parte de los planes Familiar y Docente.",
-    smartReviewKeepCta: "Entrar gratis",
+      "Al iniciar sesión empieza una prueba gratis de 7 días para importar fotos y el repaso inteligente.",
+    smartReviewKeepCta: "Entra: prueba gratis 7 días",
     smartReviewPrompt: "Escucha y escribe la palabra",
     smartReviewHear: "Escuchar",
     smartReviewCheck: "Comprobar",
@@ -310,13 +320,18 @@ const MESSAGES = {
     photoImportError: "Não foi possível ler a imagem. Tente novamente.",
     photoImportRetry: "Tentar novamente",
     photoImportTrialStatus:
-      "Importado de foto ({used}/{total} testes grátis usados)",
-    photoImportFreeTrialCta: "Entre para 3 importações grátis",
+      "Teste de 7 dias · faltam {time} · termina em {date}",
+    photoImportFreeTrialCta: "Entre: teste grátis 7 dias",
     photoImportPreviewTitle: "Palavras da sua foto",
     photoImportPreviewHelp: "Só uma prévia: ainda não entraram na sua lista.",
     photoImportKeepBenefit:
-      "Entre ou crie uma conta para guardar estas palavras e ganhar 3 importações grátis.",
-    photoImportKeepCta: "Entrar grátis",
+      "Entrar inicia um teste grátis de 7 dias da importação por foto e da revisão inteligente.",
+    photoImportKeepCta: "Entre: teste grátis 7 dias",
+    featureTrialStatus: "Teste de 7 dias · faltam {time} · termina em {date}",
+    featureTrialDay: "1 dia",
+    featureTrialDays: "{count} dias",
+    featureTrialHour: "1 hora",
+    featureTrialHours: "{count} horas",
     sampleLoaded: "{count} palavras de exemplo carregadas",
     wordsInRound: "{count} palavras nesta rodada",
     anonymousWordLimit:
@@ -398,8 +413,8 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Os planos Família e Professor salvam esta lista como uma tarefa de revisão.",
     smartReviewKeepBenefit:
-      "Entre para voltar a esta prévia. Salvar a revisão faz parte dos planos Família e Professor.",
-    smartReviewKeepCta: "Entrar grátis",
+      "Entrar inicia um teste grátis de 7 dias da importação por foto e da revisão inteligente.",
+    smartReviewKeepCta: "Entre: teste grátis 7 dias",
     smartReviewPrompt: "Ouça e escreva a palavra",
     smartReviewHear: "Ouvir",
     smartReviewCheck: "Conferir",
@@ -446,13 +461,18 @@ const MESSAGES = {
     photoImportError: "Impossible de lire cette image. Réessayez.",
     photoImportRetry: "Réessayer",
     photoImportTrialStatus:
-      "Importé depuis une photo ({used}/{total} essais gratuits utilisés)",
-    photoImportFreeTrialCta: "Connectez-vous pour 3 essais gratuits",
+      "Essai de 7 jours · plus que {time} · fin le {date}",
+    photoImportFreeTrialCta: "Connexion : essai 7 jours",
     photoImportPreviewTitle: "Mots de votre photo",
     photoImportPreviewHelp: "Aperçu seulement : pas encore dans votre liste.",
     photoImportKeepBenefit:
-      "Connectez-vous ou créez un compte pour garder ces mots et obtenir 3 imports gratuits.",
-    photoImportKeepCta: "Se connecter",
+      "La connexion lance un essai gratuit de 7 jours pour l’import photo et la révision intelligente.",
+    photoImportKeepCta: "Connexion : essai 7 jours",
+    featureTrialStatus: "Essai de 7 jours · plus que {time} · fin le {date}",
+    featureTrialDay: "1 jour",
+    featureTrialDays: "{count} jours",
+    featureTrialHour: "1 heure",
+    featureTrialHours: "{count} heures",
     sampleLoaded: "{count} mots d’exemple chargés",
     wordsInRound: "{count} mots dans cette partie",
     anonymousWordLimit:
@@ -534,8 +554,8 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Les offres Famille et Enseignant enregistrent cette liste comme un devoir de révision.",
     smartReviewKeepBenefit:
-      "Connectez-vous pour retrouver cet aperçu. Enregistrer la révision fait partie des offres Famille et Enseignant.",
-    smartReviewKeepCta: "Se connecter",
+      "La connexion lance un essai gratuit de 7 jours pour l’import photo et la révision intelligente.",
+    smartReviewKeepCta: "Connexion : essai 7 jours",
     smartReviewPrompt: "Écoutez et écrivez le mot",
     smartReviewHear: "Écouter",
     smartReviewCheck: "Vérifier",
@@ -582,13 +602,18 @@ const MESSAGES = {
     photoImportError: "Gambar tidak dapat dibaca. Coba lagi.",
     photoImportRetry: "Coba lagi",
     photoImportTrialStatus:
-      "Diimpor dari foto ({used}/{total} uji coba gratis digunakan)",
-    photoImportFreeTrialCta: "Masuk untuk 3 uji coba gratis",
+      "Uji coba 7 hari · sisa {time} · berakhir {date}",
+    photoImportFreeTrialCta: "Masuk: uji coba 7 hari",
     photoImportPreviewTitle: "Kata dari fotomu",
     photoImportPreviewHelp: "Baru pratinjau, belum masuk daftar latihan.",
     photoImportKeepBenefit:
-      "Masuk atau buat akun untuk menyimpan kata ini dan mendapat 3 impor foto gratis.",
-    photoImportKeepCta: "Masuk gratis",
+      "Masuk memulai uji coba gratis 7 hari untuk impor foto dan ulasan pintar.",
+    photoImportKeepCta: "Masuk: uji coba 7 hari",
+    featureTrialStatus: "Uji coba 7 hari · sisa {time} · berakhir {date}",
+    featureTrialDay: "1 hari",
+    featureTrialDays: "{count} hari",
+    featureTrialHour: "1 jam",
+    featureTrialHours: "{count} jam",
     sampleLoaded: "{count} contoh kata dimuat",
     wordsInRound: "{count} kata di ronde ini",
     anonymousWordLimit:
@@ -667,8 +692,8 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Paket Orang Tua dan Guru menyimpan daftar ini sebagai tugas ulasan.",
     smartReviewKeepBenefit:
-      "Masuk untuk kembali ke pratinjau ini. Menyimpan ulasan ada di paket Orang Tua dan Guru.",
-    smartReviewKeepCta: "Masuk gratis",
+      "Masuk memulai uji coba gratis 7 hari untuk impor foto dan ulasan pintar.",
+    smartReviewKeepCta: "Masuk: uji coba 7 hari",
     smartReviewPrompt: "Dengarkan dan eja katanya",
     smartReviewHear: "Dengarkan",
     smartReviewCheck: "Periksa",
@@ -709,14 +734,17 @@ const MESSAGES = {
     photoImportNoWords: "没有识别到单词，请换一张更清晰的照片。",
     photoImportError: "图片识别失败，请重试。",
     photoImportRetry: "重新识别",
-    photoImportTrialStatus:
-      "已通过拍照导入（已使用 {used}/{total} 次免费体验）",
-    photoImportFreeTrialCta: "免费登录体验 3 次拍照导入",
+    photoImportTrialStatus: "7 天免费试用 · 剩余 {time} · {date} 结束",
+    photoImportFreeTrialCta: "登录开始 7 天试用",
     photoImportPreviewTitle: "照片里的单词",
     photoImportPreviewHelp: "这只是预览，尚未加入练习词表。",
-    photoImportKeepBenefit:
-      "登录或注册账号即可保存这些单词，并获得 3 次免费拍照导入。",
-    photoImportKeepCta: "免费登录",
+    photoImportKeepBenefit: "登录后即可开始拍照导入和智能复习的 7 天免费试用。",
+    photoImportKeepCta: "登录开始 7 天试用",
+    featureTrialStatus: "7 天免费试用 · 剩余 {time} · {date} 结束",
+    featureTrialDay: "1 天",
+    featureTrialDays: "{count} 天",
+    featureTrialHour: "1 小时",
+    featureTrialHours: "{count} 小时",
     sampleLoaded: "已载入 {count} 个示例单词",
     wordsInRound: "本轮 {count} 个单词",
     anonymousWordLimit:
@@ -789,9 +817,8 @@ const MESSAGES = {
     smartReviewPreviewTitle: "智能复习",
     smartReviewPreviewHelp: "这只是预览，这次复习不会保存。",
     smartReviewPreviewValue: "家长方案和教师方案会把这份词表保存为复习作业。",
-    smartReviewKeepBenefit:
-      "登录后可回到这次预览。保存复习词表包含在家长方案和教师方案中。",
-    smartReviewKeepCta: "免费登录",
+    smartReviewKeepBenefit: "登录后即可开始拍照导入和智能复习的 7 天免费试用。",
+    smartReviewKeepCta: "登录开始 7 天试用",
     smartReviewPrompt: "听写这个单词",
     smartReviewHear: "听单词",
     smartReviewCheck: "检查",

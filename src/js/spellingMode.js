@@ -1,4 +1,9 @@
 import { savePendingCheckout } from "./pendingCheckout.mjs";
+import {
+  clearPendingPhotoImport,
+  readPendingPhotoImport,
+  savePendingPhotoImport,
+} from "./pendingPhotoImport.mjs";
 import { saveTrackingEntry } from "./trackingDraft.mjs";
 import {
   saveUpgradeReturn,
@@ -52,9 +57,15 @@ let sentenceFillGeneration = 0;
 
 export { parseWords };
 
-function upgradeLink(feature, plan, interval, primary = true) {
+function upgradeLink(
+  feature,
+  plan,
+  interval,
+  primary = true,
+  prominent = primary,
+) {
   const link = document.createElement("a");
-  link.className = `button-link contextual-paywall-cta${primary ? " paywall-primary" : " button-secondary"}`;
+  link.className = `button-link contextual-paywall-cta${prominent ? " paywall-primary" : " button-secondary"}`;
   const query = new URLSearchParams({ plan, interval });
   link.href = `${productPagePath("pricing", getPageLocale())}?${query}`;
   link.textContent = primary
@@ -129,23 +140,139 @@ function sentenceTextarea() {
   return document.getElementById("custom-example-sentences");
 }
 
-function photoImportNotice(account = accountState) {
+function photoWordsText(value) {
+  return Array.isArray(value) ? value.join("\n") : String(value || "");
+}
+
+function rememberPendingPhotoImport(rawText, importId, resumeAuth) {
+  const text = String(rawText ?? "");
+  if (!text.trim()) {
+    clearPendingPhotoImport();
+    return;
+  }
+  const existing = readPendingPhotoImport();
+  savePendingPhotoImport({
+    words: text,
+    importId,
+    locale: getPageLocale(),
+    resumeAuth,
+    createdAt:
+      existing?.importId === importId ? existing.createdAt : Date.now(),
+  });
+}
+
+function clearPhotoImportQuery() {
+  try {
+    const url = new URL(location.href);
+    if (url.searchParams.get("photo_import") !== "1") return;
+    url.searchParams.delete("photo_import");
+    history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+  } catch {}
+}
+
+function trackPhotoPreview(account, outcome) {
+  trackEvent("photo_import_previewed", {
+    locale: getPageLocale(),
+    current_plan: account?.plan || "anonymous",
+    outcome,
+  });
+}
+
+function appendPhotoImportPaywall(notice, account, readWords, importId) {
+  const { plan, interval } = upgradeSelection(account);
+  const signedOut = !account;
+  if (signedOut) {
+    const keep = document.createElement("span");
+    keep.className = "contextual-paywall-benefit";
+    keep.textContent = t("photoImportKeepBenefit");
+    notice.append(keep);
+  }
+  const benefit = document.createElement("span");
+  benefit.className = "contextual-paywall-benefit";
+  benefit.textContent = t("photoImportValue");
+  const price = document.createElement("strong");
+  price.className = "contextual-paywall-price";
+  price.textContent = productMessage(
+    `${plan}Upgrade${interval === "year" ? "Yearly" : ""}Price`,
+    {},
+    getPageLocale(),
+  );
+  const actions = document.createElement("span");
+  actions.className = "contextual-paywall-actions";
+  if (signedOut) {
+    const signIn = document.createElement("a");
+    signIn.className = "button-link contextual-paywall-cta paywall-primary";
+    signIn.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
+    signIn.textContent = t("photoImportKeepCta");
+    signIn.addEventListener("click", () => {
+      rememberPendingPhotoImport(readWords(), importId, true);
+    });
+    actions.append(signIn);
+    actions.append(upgradeLink("photo_import", plan, interval, true, false));
+  } else actions.append(upgradeLink("photo_import", plan, interval));
+  if (plan === "parent")
+    actions.append(upgradeLink("photo_import", "teacher", interval, false));
+  for (const link of actions.querySelectorAll('a[href*="pricing"]')) {
+    link.addEventListener("click", () => {
+      rememberPendingPhotoImport(readWords(), importId, false);
+    });
+  }
+  notice.append(benefit, price, actions);
+}
+
+function showLockedPhotoPreview(
+  rawText,
+  account,
+  importId = crypto.randomUUID(),
+  { trackPreview = true } = {},
+) {
+  const field = textarea()?.closest(".word-entry-field");
+  if (!field) return;
+  const text = photoWordsText(rawText);
+  field.querySelector(".photo-import-notice, .photo-import-review")?.remove();
+  if (trackPreview) trackPhotoPreview(account, "paywall");
   trackEvent("photo_import_blocked", {
     current_plan: account?.plan || "anonymous",
     locale: getPageLocale(),
   });
-  const field = textarea()?.closest(".word-entry-field");
-  if (!field) return;
-  field.querySelector(".photo-import-notice, .photo-import-review")?.remove();
+  trackLockedFeature("photo_import", account?.plan || "anonymous");
+  const review = document.createElement("div");
+  review.className = "photo-import-review";
+  const title = document.createElement("strong");
+  title.textContent = t("photoImportPreviewTitle");
+  const help = document.createElement("small");
+  help.textContent = t("photoImportPreviewHelp");
+  const input = document.createElement("textarea");
+  input.id = "photo-import-review-words";
+  input.rows = 5;
+  input.value = text;
+  rememberPendingPhotoImport(input.value, importId, false);
+  input.addEventListener("input", () => {
+    const existing = readPendingPhotoImport();
+    rememberPendingPhotoImport(
+      input.value,
+      importId,
+      existing?.importId === importId && existing.resumeAuth,
+    );
+  });
   const notice = document.createElement("small");
   notice.className =
     "photo-import-notice sentence-library-notice contextual-paywall";
   notice.setAttribute("role", "status");
-  appendContextualPaywall(notice, "photo_import", t("photoImportValue"), {
-    freeCta: !account,
-    account,
+  appendPhotoImportPaywall(notice, account, () => input.value, importId);
+  const actions = document.createElement("div");
+  actions.className = "photo-import-review-actions";
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.className = "auto-sentence-btn";
+  cancel.textContent = t("photoImportCancel");
+  cancel.addEventListener("click", () => {
+    clearPendingPhotoImport();
+    review.remove();
   });
-  field.append(notice);
+  actions.append(cancel);
+  review.append(title, help, input, notice, actions);
+  field.append(review);
 }
 
 function photoImportStatus(message) {
@@ -202,10 +329,66 @@ function showPhotoImportRetry(file) {
   notice.append(" ", retry);
 }
 
-function showPhotoImportReview(words) {
+async function applyPhotoImportWords(rawText, importId) {
+  const analysis = analyzeWords(rawText);
+  if (
+    !analysis.words.length ||
+    analysis.invalid.length ||
+    analysis.tooShort.length ||
+    analysis.tooLong.length
+  )
+    return { invalid: true };
+  try {
+    if (!isPlusAccount(accountState)) {
+      const response = await fetch("/api/photo-import/accept", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ importId, words: rawText }),
+      });
+      if (!response.ok) {
+        if (response.status === 403) {
+          if (accountState)
+            accountState.photoImportTrialsUsed = PHOTO_IMPORT_TRIAL_LIMIT;
+          return { blocked: true };
+        }
+        return { error: true };
+      }
+      const result = await response.json();
+      if (accountState) accountState.photoImportTrialsUsed = result.used;
+    }
+  } catch {
+    return { error: true };
+  }
+  const list = textarea();
+  if (!list) return { error: true };
+  list.value = analysis.words.join("\n");
+  list.dispatchEvent(new Event("input", { bubbles: true }));
+  clearPendingPhotoImport();
+  const count = currentWords().length;
+  if (count) trackPremiumFeatureUsed("photo_import", accountState, count);
+  if (accountState?.user?.id && !isPlusAccount(accountState)) {
+    const notice = photoImportStatus(
+      t("photoImportTrialStatus", {
+        used: accountState.photoImportTrialsUsed,
+        total: PHOTO_IMPORT_TRIAL_LIMIT,
+      }),
+    );
+    setTimeout(() => notice?.remove(), 4000);
+  }
+  return { ok: true };
+}
+
+function showPhotoImportReview(
+  rawText,
+  importId = crypto.randomUUID(),
+  { trackPreview = true } = {},
+) {
   const field = textarea()?.closest(".word-entry-field");
   if (!field) return;
+  const text = photoWordsText(rawText);
   field.querySelector(".photo-import-notice, .photo-import-review")?.remove();
+  if (trackPreview) trackPhotoPreview(accountState, "review");
   const review = document.createElement("div");
   review.className = "photo-import-review";
   const title = document.createElement("strong");
@@ -215,70 +398,38 @@ function showPhotoImportReview(words) {
   const input = document.createElement("textarea");
   input.id = "photo-import-review-words";
   input.rows = 5;
-  input.value = words.join("\n");
+  input.value = text;
   const actions = document.createElement("div");
   actions.className = "photo-import-review-actions";
   const use = document.createElement("button");
   use.type = "button";
   use.className = "auto-sentence-btn";
   use.textContent = t("photoImportUse");
-  const importId = crypto.randomUUID();
   use.addEventListener("click", async () => {
-    const analysis = analyzeWords(input.value);
-    if (
-      !analysis.words.length ||
-      analysis.invalid.length ||
-      analysis.tooShort.length ||
-      analysis.tooLong.length
-    ) {
-      help.textContent = t("invalidWords");
-      return;
-    }
     if (use.disabled) return;
     use.disabled = true;
     input.disabled = true;
     cancel.disabled = true;
-    try {
-      if (!isPlusAccount(accountState)) {
-        const response = await fetch("/api/photo-import/accept", {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ importId, words: input.value }),
-        });
-        if (!response.ok) {
-          if (response.status === 403) {
-            if (accountState)
-              accountState.photoImportTrialsUsed = PHOTO_IMPORT_TRIAL_LIMIT;
-            photoImportNotice(accountState);
-            return;
-          }
-          throw new Error("photo_import_accept_failed");
-        }
-        const result = await response.json();
-        if (accountState) accountState.photoImportTrialsUsed = result.used;
-      }
-    } catch {
-      help.textContent = t("photoImportError");
+    const result = await applyPhotoImportWords(input.value, importId);
+    if (result.invalid) {
+      help.textContent = t("invalidWords");
       use.disabled = false;
       input.disabled = false;
       cancel.disabled = false;
       return;
     }
-    if (!review.isConnected) return;
-    textarea().value = analysis.words.join("\n");
-    textarea().dispatchEvent(new Event("input", { bubbles: true }));
-    const count = currentWords().length;
-    if (count) trackPremiumFeatureUsed("photo_import", accountState, count);
-    if (accountState?.user?.id && !isPlusAccount(accountState)) {
-      const used = accountState.photoImportTrialsUsed;
-      const notice = photoImportStatus(
-        t("photoImportTrialStatus", {
-          used,
-          total: PHOTO_IMPORT_TRIAL_LIMIT,
-        }),
-      );
-      setTimeout(() => notice?.remove(), 4000);
+    if (result.blocked) {
+      showLockedPhotoPreview(input.value, accountState, importId, {
+        trackPreview: false,
+      });
+      return;
+    }
+    if (!result.ok) {
+      help.textContent = t("photoImportError");
+      use.disabled = false;
+      input.disabled = false;
+      cancel.disabled = false;
+      return;
     }
     review.remove();
   });
@@ -286,7 +437,10 @@ function showPhotoImportReview(words) {
   cancel.type = "button";
   cancel.className = "auto-sentence-btn";
   cancel.textContent = t("photoImportCancel");
-  cancel.addEventListener("click", () => review.remove());
+  cancel.addEventListener("click", () => {
+    clearPendingPhotoImport();
+    review.remove();
+  });
   actions.append(use, cancel);
   review.append(title, help, input, actions);
   field.append(review);
@@ -295,24 +449,68 @@ function showPhotoImportReview(words) {
 async function importWordsFromPhoto(file) {
   const field = textarea()?.closest(".word-entry-field");
   if (!field) return;
+  clearPendingPhotoImport();
   const notice = photoImportStatus(t("photoImportProcessing"));
   try {
-    const Tesseract = await loadTesseract();
+    const [Tesseract, account] = await Promise.all([
+      loadTesseract(),
+      getAccount(),
+    ]);
     const result = await Tesseract.recognize(file, "eng");
     const words = [
       ...new Set(
         (result.data?.text || "").match(/[A-Za-z]+(?:['’-][A-Za-z]+)?/g) || [],
       ),
     ];
-    notice.remove();
+    notice?.remove();
     if (!words.length) {
       photoImportStatus(t("photoImportNoWords"));
       return;
     }
-    showPhotoImportReview(words);
+    if (hasPhotoImportAccess(account)) showPhotoImportReview(words);
+    else showLockedPhotoPreview(words, account);
   } catch {
     showPhotoImportRetry(file);
   }
+}
+
+async function resumePendingPhotoImport(account) {
+  const pending = readPendingPhotoImport();
+  let applyNow = pending?.resumeAuth === true;
+  try {
+    if (new URLSearchParams(location.search).get("photo_import") === "1")
+      applyNow = true;
+  } catch {}
+  clearPhotoImportQuery();
+  if (!pending) return;
+  if (!hasPhotoImportAccess(account)) {
+    if (pending.resumeAuth)
+      savePendingPhotoImport({ ...pending, resumeAuth: false });
+    showLockedPhotoPreview(pending.words, account, pending.importId, {
+      trackPreview: false,
+    });
+    return;
+  }
+  if (!applyNow) {
+    showPhotoImportReview(pending.words, pending.importId, {
+      trackPreview: false,
+    });
+    return;
+  }
+  const result = await applyPhotoImportWords(pending.words, pending.importId);
+  if (result.ok) return;
+  if (result.blocked) {
+    showLockedPhotoPreview(pending.words, account, pending.importId, {
+      trackPreview: false,
+    });
+    return;
+  }
+  showPhotoImportReview(pending.words, pending.importId, {
+    trackPreview: false,
+  });
+  const help = document.querySelector(".photo-import-review small");
+  if (help)
+    help.textContent = t(result.invalid ? "invalidWords" : "photoImportError");
 }
 
 export const PHOTO_IMPORT_TRIAL_LIMIT = 3;
@@ -407,33 +605,12 @@ function initPhotoImport() {
   if (!button || !input) return;
   button.addEventListener("click", () => {
     trackEvent("photo_import_clicked", { locale: getPageLocale() });
-    if (accountState !== undefined) {
-      if (hasPhotoImportAccess(accountState)) input.click();
-      else {
-        trackLockedFeature("photo_import", accountState?.plan || "anonymous");
-        photoImportNotice(accountState);
-      }
-      return;
-    }
-    void getAccount().then((account) => {
-      if (hasPhotoImportAccess(account)) input.click();
-      else {
-        trackLockedFeature("photo_import", account?.plan || "anonymous");
-        photoImportNotice(account);
-      }
-    });
+    input.click();
   });
   input.addEventListener("change", () => {
     const file = input.files?.[0];
     input.value = "";
-    if (file)
-      void getAccount().then((account) => {
-        if (hasPhotoImportAccess(account)) void importWordsFromPhoto(file);
-        else {
-          trackLockedFeature("photo_import", account?.plan || "anonymous");
-          photoImportNotice(account);
-        }
-      });
+    if (file) void importWordsFromPhoto(file);
   });
 }
 
@@ -797,13 +974,11 @@ export function initSpellingMode() {
   initLastMissedBanner();
   void getAccount().then((account) => {
     const resume = readUpgradeReturn();
-    if (
-      !resume ||
-      resume.path.startsWith("/workspace") ||
-      (resume.userId && resume.userId !== account?.user?.id)
-    )
-      return;
-    if (resume.draft) {
+    const canRestore =
+      resume &&
+      !resume.path.startsWith("/workspace") &&
+      (!resume.userId || resume.userId === account?.user?.id);
+    if (canRestore && resume.draft) {
       input.value = resume.draft.words || "";
       if (sentenceInput) sentenceInput.value = resume.draft.sentences || "";
       const mode = ["dictation", "typing", "chase"].includes(resume.draft.mode)
@@ -816,26 +991,28 @@ export function initSpellingMode() {
       syncModeUI();
       updateWordStatus();
     }
-    if (!upgradeReturnFor(account)) return;
-    const target = document.getElementById(
-      resume.feature === "photo_import"
-        ? "photo-import-btn"
-        : resume.feature === "example_sentences"
-          ? "auto-example-sentences-btn"
-          : "custom-word-list",
-    );
-    const notice = document.createElement("p");
-    notice.className = "notice upgrade-return-notice";
-    notice.setAttribute("role", "status");
-    notice.textContent = productMessage(
-      "upgradeReturnReady",
-      {},
-      getPageLocale(),
-    );
-    input.closest(".word-entry-field")?.prepend(notice);
-    target?.scrollIntoView({ block: "center" });
-    target?.focus({ preventScroll: true });
-    clearUpgradeReturn();
+    if (canRestore && upgradeReturnFor(account)) {
+      const target = document.getElementById(
+        resume.feature === "photo_import"
+          ? "photo-import-btn"
+          : resume.feature === "example_sentences"
+            ? "auto-example-sentences-btn"
+            : "custom-word-list",
+      );
+      const notice = document.createElement("p");
+      notice.className = "notice upgrade-return-notice";
+      notice.setAttribute("role", "status");
+      notice.textContent = productMessage(
+        "upgradeReturnReady",
+        {},
+        getPageLocale(),
+      );
+      input.closest(".word-entry-field")?.prepend(notice);
+      target?.scrollIntoView({ block: "center" });
+      target?.focus({ preventScroll: true });
+      clearUpgradeReturn();
+    }
+    void resumePendingPhotoImport(account);
   });
   if (shareState.autoStart && mode !== "chase")
     queueMicrotask(() => window.startGame?.());

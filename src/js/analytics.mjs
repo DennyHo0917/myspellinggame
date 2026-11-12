@@ -118,6 +118,7 @@ const EVENT_PARAMS = {
   checkout_start: ["plan", "billing_interval", "source"],
   subscribe_success: ["plan", "billing_interval"],
   photo_import_clicked: ["locale"],
+  photo_import_previewed: ["locale", "current_plan", "outcome"],
   photo_import_blocked: ["current_plan", "locale"],
   usage_limit_reached: ["limit_type"],
   checkout_attempted: ["plan", "billing_interval"],

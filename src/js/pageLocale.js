@@ -42,6 +42,11 @@ const MESSAGES = {
     photoImportTrialStatus:
       "Imported from photo ({used}/{total} free trials used)",
     photoImportFreeTrialCta: "Sign in for 3 free photo imports",
+    photoImportPreviewTitle: "Words from your photo",
+    photoImportPreviewHelp: "Preview only. These words are not in your list yet.",
+    photoImportKeepBenefit:
+      "Sign in or create an account to keep these words and get 3 free photo imports.",
+    photoImportKeepCta: "Sign in free",
     sampleLoaded: "{count} sample words loaded",
     wordsInRound: "{count} words in this round",
     anonymousWordLimit:
@@ -159,6 +164,11 @@ const MESSAGES = {
     photoImportTrialStatus:
       "Importado desde foto ({used}/{total} pruebas gratis usadas)",
     photoImportFreeTrialCta: "Inicia sesión para 3 pruebas gratis",
+    photoImportPreviewTitle: "Palabras de tu foto",
+    photoImportPreviewHelp: "Solo una vista previa: aún no están en tu lista.",
+    photoImportKeepBenefit:
+      "Inicia sesión o crea una cuenta para guardar estas palabras y obtener 3 importaciones gratis.",
+    photoImportKeepCta: "Entrar gratis",
     sampleLoaded: "{count} palabras de ejemplo cargadas",
     wordsInRound: "{count} palabras en esta ronda",
     anonymousWordLimit:
@@ -278,6 +288,11 @@ const MESSAGES = {
     photoImportTrialStatus:
       "Importado de foto ({used}/{total} testes grátis usados)",
     photoImportFreeTrialCta: "Entre para 3 importações grátis",
+    photoImportPreviewTitle: "Palavras da sua foto",
+    photoImportPreviewHelp: "Só uma prévia: ainda não entraram na sua lista.",
+    photoImportKeepBenefit:
+      "Entre ou crie uma conta para guardar estas palavras e ganhar 3 importações grátis.",
+    photoImportKeepCta: "Entrar grátis",
     sampleLoaded: "{count} palavras de exemplo carregadas",
     wordsInRound: "{count} palavras nesta rodada",
     anonymousWordLimit:
@@ -397,6 +412,11 @@ const MESSAGES = {
     photoImportTrialStatus:
       "Importé depuis une photo ({used}/{total} essais gratuits utilisés)",
     photoImportFreeTrialCta: "Connectez-vous pour 3 essais gratuits",
+    photoImportPreviewTitle: "Mots de votre photo",
+    photoImportPreviewHelp: "Aperçu seulement : pas encore dans votre liste.",
+    photoImportKeepBenefit:
+      "Connectez-vous ou créez un compte pour garder ces mots et obtenir 3 imports gratuits.",
+    photoImportKeepCta: "Se connecter",
     sampleLoaded: "{count} mots d’exemple chargés",
     wordsInRound: "{count} mots dans cette partie",
     anonymousWordLimit:
@@ -516,6 +536,11 @@ const MESSAGES = {
     photoImportTrialStatus:
       "Diimpor dari foto ({used}/{total} uji coba gratis digunakan)",
     photoImportFreeTrialCta: "Masuk untuk 3 uji coba gratis",
+    photoImportPreviewTitle: "Kata dari fotomu",
+    photoImportPreviewHelp: "Baru pratinjau, belum masuk daftar latihan.",
+    photoImportKeepBenefit:
+      "Masuk atau buat akun untuk menyimpan kata ini dan mendapat 3 impor foto gratis.",
+    photoImportKeepCta: "Masuk gratis",
     sampleLoaded: "{count} contoh kata dimuat",
     wordsInRound: "{count} kata di ronde ini",
     anonymousWordLimit:
@@ -627,6 +652,11 @@ const MESSAGES = {
     photoImportTrialStatus:
       "已通过拍照导入（已使用 {used}/{total} 次免费体验）",
     photoImportFreeTrialCta: "免费登录体验 3 次拍照导入",
+    photoImportPreviewTitle: "照片里的单词",
+    photoImportPreviewHelp: "这只是预览，尚未加入练习词表。",
+    photoImportKeepBenefit:
+      "登录或注册账号即可保存这些单词，并获得 3 次免费拍照导入。",
+    photoImportKeepCta: "免费登录",
     sampleLoaded: "已载入 {count} 个示例单词",
     wordsInRound: "本轮 {count} 个单词",
     anonymousWordLimit:

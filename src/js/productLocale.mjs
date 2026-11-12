@@ -93,7 +93,7 @@ const PRACTICE_ENTRY_COPY = {
     sharedTrackingCreate: "Create practice link",
     reviewEntryTitle: "Build a weekly review habit",
     reviewEntryHelp:
-      "Smart Review uses tracked practice across weeks to choose words that need more work. Free accounts include a 7-day trial of Photo Import and Smart Review; after that, both stay on Parent and Teacher plans.",
+      "Smart Review uses tracked practice across weeks to choose words that need more work. Free accounts include a 7-day trial of Photo Import, Smart Review, and automatic example sentences; after that, those stay on Parent and Teacher plans.",
     reviewEntryLocalNote:
       "Anonymous missed words stay in this browser. Signing in does not import past results. Your saved missed words can be used in the next tracked practice.",
   },
@@ -104,7 +104,7 @@ const PRACTICE_ENTRY_COPY = {
     sharedTrackingCreate: "Crear enlace de práctica",
     reviewEntryTitle: "Repasa cada semana",
     reviewEntryHelp:
-      "El repaso inteligente usa las prácticas registradas de varias semanas para elegir qué palabras reforzar. Las cuentas gratis incluyen 7 días de prueba para importar fotos y el repaso inteligente; después, siguen en los planes Familiar y Docente.",
+      "El repaso inteligente usa las prácticas registradas de varias semanas para elegir qué palabras reforzar. Las cuentas gratis incluyen 7 días de prueba para importar fotos, el repaso inteligente y las frases automáticas; después, siguen en los planes Familiar y Docente.",
     reviewEntryLocalNote:
       "Las palabras falladas sin cuenta se guardan en este navegador. Iniciar sesión no importa resultados anteriores. Puedes usarlas en la próxima práctica con seguimiento.",
   },
@@ -115,7 +115,7 @@ const PRACTICE_ENTRY_COPY = {
     sharedTrackingCreate: "Criar link de prática",
     reviewEntryTitle: "Crie uma rotina de revisão semanal",
     reviewEntryHelp:
-      "A Revisão Inteligente usa práticas registradas ao longo das semanas para escolher as palavras que precisam de reforço. Contas grátis incluem 7 dias de teste da importação por foto e da revisão inteligente; depois, elas seguem nos planos Família e Professor.",
+      "A Revisão Inteligente usa práticas registradas ao longo das semanas para escolher as palavras que precisam de reforço. Contas grátis incluem 7 dias de teste da importação por foto, da revisão inteligente e das frases automáticas; depois, elas seguem nos planos Família e Professor.",
     reviewEntryLocalNote:
       "Os erros da prática sem conta ficam neste navegador. Entrar não importa resultados anteriores. Você pode usar essas palavras na próxima prática com acompanhamento.",
   },
@@ -126,7 +126,7 @@ const PRACTICE_ENTRY_COPY = {
     sharedTrackingCreate: "Créer le lien d’exercice",
     reviewEntryTitle: "Réviser au fil des semaines",
     reviewEntryHelp:
-      "La révision intelligente s’appuie sur les exercices suivis au fil des semaines pour choisir les mots à revoir. Les comptes gratuits incluent un essai de 7 jours pour l’import photo et la révision intelligente ; ensuite, les deux restent dans les offres Famille et Enseignant.",
+      "La révision intelligente s’appuie sur les exercices suivis au fil des semaines pour choisir les mots à revoir. Les comptes gratuits incluent un essai de 7 jours pour l’import photo, la révision intelligente et les phrases automatiques ; ensuite, ces fonctions restent dans les offres Famille et Enseignant.",
     reviewEntryLocalNote:
       "Les erreurs des exercices sans compte restent dans ce navigateur. La connexion n’importe pas les anciens résultats. Vous pouvez réutiliser ces mots dans le prochain exercice avec suivi.",
   },
@@ -137,7 +137,7 @@ const PRACTICE_ENTRY_COPY = {
     sharedTrackingCreate: "Buat tautan latihan",
     reviewEntryTitle: "Bangun kebiasaan mengulang tiap minggu",
     reviewEntryHelp:
-      "Ulasan pintar memilih kata yang perlu dilatih dari hasil latihan tercatat selama beberapa minggu. Akun gratis mendapat uji coba 7 hari untuk impor foto dan ulasan pintar; setelah itu, keduanya tetap di paket Orang Tua dan Guru.",
+      "Ulasan pintar memilih kata yang perlu dilatih dari hasil latihan tercatat selama beberapa minggu. Akun gratis mendapat uji coba 7 hari untuk impor foto, ulasan pintar, dan kalimat otomatis; setelah itu, ketiganya tetap di paket Orang Tua dan Guru.",
     reviewEntryLocalNote:
       "Kata yang salah saat berlatih tanpa akun tersimpan di browser ini. Masuk tidak mengimpor hasil lama. Kata tersebut dapat dipakai dalam latihan tercatat berikutnya.",
   },
@@ -148,7 +148,7 @@ const PRACTICE_ENTRY_COPY = {
     sharedTrackingCreate: "创建练习链接",
     reviewEntryTitle: "让错词进入每周复习",
     reviewEntryHelp:
-      "智能复习会根据多周带记录练习的结果，挑选需要巩固的单词。免费账号可试用拍照导入和智能复习 7 天；试用结束后，这两项保留在家长方案和教师方案中。",
+      "智能复习会根据多周带记录练习的结果，挑选需要巩固的单词。免费账号可试用拍照导入、智能复习和自动填充例句 7 天；试用结束后，这三项保留在家长方案和教师方案中。",
     reviewEntryLocalNote:
       "匿名练习的错词只保存在当前浏览器，登录不会导入过去的成绩。这些错词可以用于下一次带记录练习。",
   },
@@ -632,14 +632,14 @@ const PACKS = {
       "Smart Review is included in Parent and Teacher Plans.",
     featureTrialSignInCta: "Sign in: 7-day free trial",
     featureTrialSignInDetail:
-      "Free accounts include one 7-day trial of Photo Import and Smart Review.",
+      "Free accounts include one 7-day trial of Photo Import, Smart Review, and automatic example sentences.",
     featureTrialStatus: "7-day free trial · {time} left · ends {date}",
     featureTrialDay: "1 day",
     featureTrialDays: "{count} days",
     featureTrialHour: "1 hour",
     featureTrialHours: "{count} hours",
     featureTrialExpired:
-      "Your 7-day free trial of Photo Import and Smart Review has ended.",
+      "Your 7-day free trial of Photo Import, Smart Review, and Auto-fill has ended.",
     proActive:
       "Your paid plan is active. Saved lists, long-term mastery, and Smart Review are now unlocked.",
     rateLimited: "Too many requests. Wait a moment and try again.",
@@ -1138,14 +1138,14 @@ const PACKS = {
       "El repaso inteligente está incluido en los planes para familias y docentes.",
     featureTrialSignInCta: "Entra: prueba gratis 7 días",
     featureTrialSignInDetail:
-      "Las cuentas gratis incluyen una prueba de 7 días para importar fotos y el repaso inteligente.",
+      "Las cuentas gratis incluyen una prueba de 7 días para importar fotos, el repaso inteligente y las frases automáticas.",
     featureTrialStatus: "Prueba de 7 días · quedan {time} · termina el {date}",
     featureTrialDay: "1 día",
     featureTrialDays: "{count} días",
     featureTrialHour: "1 hora",
     featureTrialHours: "{count} horas",
     featureTrialExpired:
-      "Tu prueba gratis de 7 días para importar fotos y el repaso inteligente terminó.",
+      "Tu prueba gratis de 7 días para importar fotos, el repaso inteligente y las frases automáticas terminó.",
     proActive:
       "Tu plan de pago está activo. Ya están disponibles las listas guardadas, el historial de dominio a largo plazo y el repaso inteligente.",
     rateLimited:
@@ -1642,14 +1642,14 @@ const PACKS = {
       "A revisão inteligente está incluída nos planos para Pais e Professores.",
     featureTrialSignInCta: "Entre: teste grátis 7 dias",
     featureTrialSignInDetail:
-      "Contas grátis incluem um teste de 7 dias da importação por foto e da revisão inteligente.",
+      "Contas grátis incluem um teste de 7 dias da importação por foto, da revisão inteligente e das frases automáticas.",
     featureTrialStatus: "Teste de 7 dias · faltam {time} · termina em {date}",
     featureTrialDay: "1 dia",
     featureTrialDays: "{count} dias",
     featureTrialHour: "1 hora",
     featureTrialHours: "{count} horas",
     featureTrialExpired:
-      "Seu teste grátis de 7 dias da importação por foto e da revisão inteligente terminou.",
+      "Seu teste grátis de 7 dias da importação por foto, da revisão inteligente e das frases automáticas terminou.",
     proActive:
       "Seu plano pago está ativo. Listas salvas, histórico de domínio de longo prazo e revisão inteligente já estão liberados.",
     rateLimited: "Muitas solicitações. Aguarde um momento e tente novamente.",
@@ -2154,14 +2154,14 @@ const PACKS = {
       "La révision intelligente est incluse dans les offres Parents et Enseignants.",
     featureTrialSignInCta: "Connexion : essai 7 jours",
     featureTrialSignInDetail:
-      "Les comptes gratuits incluent un essai de 7 jours pour l’import photo et la révision intelligente.",
+      "Les comptes gratuits incluent un essai de 7 jours pour l’import photo, la révision intelligente et les phrases automatiques.",
     featureTrialStatus: "Essai de 7 jours · plus que {time} · fin le {date}",
     featureTrialDay: "1 jour",
     featureTrialDays: "{count} jours",
     featureTrialHour: "1 heure",
     featureTrialHours: "{count} heures",
     featureTrialExpired:
-      "Votre essai gratuit de 7 jours pour l’import photo et la révision intelligente est terminé.",
+      "Votre essai gratuit de 7 jours pour l’import photo, la révision intelligente et les phrases automatiques est terminé.",
     proActive:
       "Votre offre payante est active. Les listes enregistrées, l’historique de maîtrise à long terme et la révision intelligente sont maintenant disponibles.",
     rateLimited: "Trop de demandes. Patientez un instant puis réessayez.",
@@ -2656,14 +2656,14 @@ const PACKS = {
       "Ulasan pintar tersedia pada Paket Orang Tua dan Guru.",
     featureTrialSignInCta: "Masuk: uji coba 7 hari",
     featureTrialSignInDetail:
-      "Akun gratis mendapat satu uji coba 7 hari untuk impor foto dan ulasan pintar.",
+      "Akun gratis mendapat satu uji coba 7 hari untuk impor foto, ulasan pintar, dan kalimat otomatis.",
     featureTrialStatus: "Uji coba 7 hari · sisa {time} · berakhir {date}",
     featureTrialDay: "1 hari",
     featureTrialDays: "{count} hari",
     featureTrialHour: "1 jam",
     featureTrialHours: "{count} jam",
     featureTrialExpired:
-      "Uji coba gratis 7 hari untuk impor foto dan ulasan pintar sudah berakhir.",
+      "Uji coba gratis 7 hari untuk impor foto, ulasan pintar, dan kalimat otomatis sudah berakhir.",
     proActive:
       "Paket berbayar Anda aktif. Daftar tersimpan, riwayat penguasaan jangka panjang, dan ulasan pintar kini terbuka.",
     rateLimited: "Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.",
@@ -3112,13 +3112,14 @@ const PACKS = {
     smartReviewRequired: "智能错词复习包含在家长方案和教师方案中。",
     featureTrialSignInCta: "登录开始 7 天试用",
     featureTrialSignInDetail:
-      "免费账号可试用拍照导入和智能复习 7 天，试用结束后需升级。",
+      "免费账号可试用拍照导入、智能复习和自动填充例句 7 天，试用结束后需升级。",
     featureTrialStatus: "7 天免费试用 · 剩余 {time} · {date} 结束",
     featureTrialDay: "1 天",
     featureTrialDays: "{count} 天",
     featureTrialHour: "1 小时",
     featureTrialHours: "{count} 小时",
-    featureTrialExpired: "拍照导入和智能复习的 7 天免费试用已结束。",
+    featureTrialExpired:
+      "拍照导入、智能复习和自动填充例句的 7 天免费试用已结束。",
     proActive: "你的付费方案已激活。已解锁词表保存、长期掌握度和智能错词复习。",
     rateLimited: "请求过于频繁，请稍后重试。",
     invalidSubmission: "本次提交数据无效，请重新开始作业后再试。",

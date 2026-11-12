@@ -783,7 +783,7 @@ const aboutUpdates = {
     description:
       "About My Spelling Game, a custom spelling practice tool with no-account student practice, photo import, automatic example sentences, and review tools.",
     intro:
-      "My Spelling Game is a spelling practice tool for students, parents, teachers, and homeschool families. Students can practice custom word lists without creating accounts. Parents and teachers can sign in to a workspace to save lists, publish assignments, and track progress. Signed-in free accounts can try Photo Import and Smart Review for 7 days. After that, those features stay on the Parent and Teacher Plans, which also include Today’s Review and automatic example sentences.",
+      "My Spelling Game is a spelling practice tool for students, parents, teachers, and homeschool families. Students can practice custom word lists without creating accounts. Parents and teachers can sign in to a workspace to save lists, publish assignments, and track progress. Signed-in free accounts can try Photo Import, Smart Review, and automatic example sentences for 7 days. After that, those features stay on the Parent and Teacher Plans, which also include Today’s Review.",
     panels: [
       [
         "Mission",
@@ -795,7 +795,7 @@ const aboutUpdates = {
       ],
       [
         "What It Does",
-        "<ul><li>Practice your own spelling words in Spelling Test or Typing Rain.</li><li>Add optional example sentences: the visible sentence blanks the target word while audio reads the word and full sentence.</li><li>Replay missed words immediately after a practice round.</li><li>Save and reuse weekly spelling lists in a workspace.</li><li>Import school lists from a photo and edit the detected words before use. Signed-in free accounts can try this, with Smart Review, for 7 days.</li><li>Fill example sentences from the curated library and use Today’s Review on Parent and Teacher Plans. Those two are not part of the 7-day trial.</li><li>Publish assignments without requiring student accounts.</li><li>Track student progress across assignments.</li><li>Identify missed words that need later review.</li><li>Use cross-day practice history to distinguish learning from mastered words.</li></ul>",
+        "<ul><li>Practice your own spelling words in Spelling Test or Typing Rain.</li><li>Add optional example sentences: the visible sentence blanks the target word while audio reads the word and full sentence.</li><li>Replay missed words immediately after a practice round.</li><li>Save and reuse weekly spelling lists in a workspace.</li><li>Import school lists from a photo and edit the detected words before use. Signed-in free accounts can try this, with Smart Review, for 7 days.</li><li>Fill example sentences from the curated library during the same 7-day trial as Photo Import and Smart Review. Today’s Review stays on Parent and Teacher Plans and is not part of that trial.</li><li>Publish assignments without requiring student accounts.</li><li>Track student progress across assignments.</li><li>Identify missed words that need later review.</li><li>Use cross-day practice history to distinguish learning from mastered words.</li></ul>",
       ],
       [
         "About the Developer",
@@ -807,7 +807,7 @@ const aboutUpdates = {
     description:
       "Sobre My Spelling Game, una herramienta de práctica de spelling sin cuenta con importación por foto, frases automáticas y repaso.",
     intro:
-      "My Spelling Game es una herramienta de práctica de spelling para estudiantes, familias, docentes y hogares que educan en casa. Los estudiantes practican listas propias sin crear cuentas. Las familias y los docentes pueden iniciar sesión en un espacio de trabajo para guardar listas, publicar tareas y seguir el progreso. Una cuenta gratis con sesión iniciada puede probar la importación por foto y el repaso inteligente durante 7 días. Después, siguen en los planes para familias y docentes, que también incluyen el Repaso de hoy y las frases automáticas.",
+      "My Spelling Game es una herramienta de práctica de spelling para estudiantes, familias, docentes y hogares que educan en casa. Los estudiantes practican listas propias sin crear cuentas. Las familias y los docentes pueden iniciar sesión en un espacio de trabajo para guardar listas, publicar tareas y seguir el progreso. Una cuenta gratis con sesión iniciada puede probar la importación por foto, el repaso inteligente y las frases automáticas durante 7 días. Después, siguen en los planes para familias y docentes, que también incluyen el Repaso de hoy.",
     panels: [
       [
         "Misión",
@@ -819,7 +819,7 @@ const aboutUpdates = {
       ],
       [
         "Qué hace",
-        "<ul><li>Practica tus palabras en la prueba de spelling o Typing Rain.</li><li>Añade frases de ejemplo opcionales: la frase visible deja en blanco la palabra objetivo y el audio lee la palabra y la frase completa.</li><li>Repite las palabras falladas al terminar.</li><li>Guarda y reutiliza listas semanales en un espacio de trabajo.</li><li>Importa listas escolares desde una foto y edita las palabras detectadas. Una cuenta gratis con sesión iniciada puede probarlo, junto con el repaso inteligente, durante 7 días.</li><li>Completa frases de ejemplo y usa el Repaso de hoy en los planes para familias y docentes. Esas dos funciones no forman parte de la prueba de 7 días.</li><li>Publica tareas sin cuentas de estudiantes.</li><li>Sigue el progreso entre tareas.</li><li>Identifica palabras que necesitan repaso.</li><li>Usa el historial de distintos días para distinguir aprendizaje y dominio.</li></ul>",
+        "<ul><li>Practica tus palabras en la prueba de spelling o Typing Rain.</li><li>Añade frases de ejemplo opcionales: la frase visible deja en blanco la palabra objetivo y el audio lee la palabra y la frase completa.</li><li>Repite las palabras falladas al terminar.</li><li>Guarda y reutiliza listas semanales en un espacio de trabajo.</li><li>Importa listas escolares desde una foto y edita las palabras detectadas. Una cuenta gratis con sesión iniciada puede probarlo, junto con el repaso inteligente, durante 7 días.</li><li>Completa frases de ejemplo durante la misma prueba de 7 días que la importación por foto y el repaso inteligente. El Repaso de hoy queda en los planes para familias y docentes y no forma parte de esa prueba.</li><li>Publica tareas sin cuentas de estudiantes.</li><li>Sigue el progreso entre tareas.</li><li>Identifica palabras que necesitan repaso.</li><li>Usa el historial de distintos días para distinguir aprendizaje y dominio.</li></ul>",
       ],
       [
         "Desarrollo",
@@ -831,7 +831,7 @@ const aboutUpdates = {
     description:
       "Sobre o My Spelling Game, uma ferramenta de prática de ortografia sem conta com importação por foto, frases automáticas e revisão.",
     intro:
-      "O My Spelling Game é uma ferramenta de prática de ortografia para alunos, responsáveis, professores e famílias que fazem educação domiciliar. Os alunos praticam listas próprias sem criar contas. Professores e responsáveis podem entrar em um espaço de trabalho para salvar listas, publicar tarefas e acompanhar o progresso. Uma conta grátis conectada pode testar a importação por foto e a revisão inteligente por 7 dias. Depois, elas continuam nos planos para Pais e Professores, que também incluem a Revisão de hoje e as frases automáticas.",
+      "O My Spelling Game é uma ferramenta de prática de ortografia para alunos, responsáveis, professores e famílias que fazem educação domiciliar. Os alunos praticam listas próprias sem criar contas. Professores e responsáveis podem entrar em um espaço de trabalho para salvar listas, publicar tarefas e acompanhar o progresso. Uma conta grátis conectada pode testar a importação por foto, a revisão inteligente e as frases automáticas por 7 dias. Depois, elas continuam nos planos para Pais e Professores, que também incluem a Revisão de hoje.",
     panels: [
       [
         "Missão",
@@ -843,7 +843,7 @@ const aboutUpdates = {
       ],
       [
         "O que faz",
-        "<ul><li>Pratica suas palavras no teste de ortografia ou no Typing Rain.</li><li>Adiciona frases de exemplo opcionais: a frase visível deixa a palavra-alvo em branco e o áudio lê a palavra e a frase completa.</li><li>Repete as palavras erradas ao terminar.</li><li>Salva e reutiliza listas semanais no espaço de trabalho.</li><li>Importa listas escolares por foto e edita as palavras reconhecidas. Uma conta grátis conectada pode testar isso, junto com a revisão inteligente, por 7 dias.</li><li>Preenche frases de exemplo e usa a Revisão de hoje nos planos para Pais e Professores. Essas duas funções não fazem parte do teste de 7 dias.</li><li>Publica tarefas sem exigir contas dos alunos.</li><li>Acompanha o progresso entre tarefas.</li><li>Identifica palavras que precisam de revisão.</li><li>Usa o histórico de dias diferentes para distinguir aprendizagem e domínio.</li></ul>",
+        "<ul><li>Pratica suas palavras no teste de ortografia ou no Typing Rain.</li><li>Adiciona frases de exemplo opcionais: a frase visível deixa a palavra-alvo em branco e o áudio lê a palavra e a frase completa.</li><li>Repete as palavras erradas ao terminar.</li><li>Salva e reutiliza listas semanais no espaço de trabalho.</li><li>Importa listas escolares por foto e edita as palavras reconhecidas. Uma conta grátis conectada pode testar isso, junto com a revisão inteligente, por 7 dias.</li><li>Preenche frases de exemplo durante o mesmo teste de 7 dias da importação por foto e da revisão inteligente. A Revisão de hoje fica nos planos para Pais e Professores e não faz parte desse teste.</li><li>Publica tarefas sem exigir contas dos alunos.</li><li>Acompanha o progresso entre tarefas.</li><li>Identifica palavras que precisam de revisão.</li><li>Usa o histórico de dias diferentes para distinguir aprendizagem e domínio.</li></ul>",
       ],
       [
         "Desenvolvimento",
@@ -855,7 +855,7 @@ const aboutUpdates = {
     description:
       "À propos de My Spelling Game, un outil de pratique de l’orthographe sans compte avec import photo, phrases automatiques et révision.",
     intro:
-      "My Spelling Game est un outil de pratique de l’orthographe pour les élèves, les parents, les enseignants et les familles en instruction à domicile. Les élèves utilisent leurs listes sans créer de compte. Les parents et les enseignants peuvent se connecter à un espace de travail pour enregistrer les listes, publier des devoirs et suivre les progrès. Un compte gratuit connecté peut essayer l’import photo et la révision intelligente pendant 7 jours. Ensuite, ces fonctions restent dans les offres Parents et Enseignants, qui incluent aussi la Révision du jour et les phrases automatiques.",
+      "My Spelling Game est un outil de pratique de l’orthographe pour les élèves, les parents, les enseignants et les familles en instruction à domicile. Les élèves utilisent leurs listes sans créer de compte. Les parents et les enseignants peuvent se connecter à un espace de travail pour enregistrer les listes, publier des devoirs et suivre les progrès. Un compte gratuit connecté peut essayer l’import photo, la révision intelligente et les phrases automatiques pendant 7 jours. Ensuite, ces fonctions restent dans les offres Parents et Enseignants, qui incluent aussi la Révision du jour.",
     panels: [
       [
         "Mission",
@@ -867,7 +867,7 @@ const aboutUpdates = {
       ],
       [
         "Ce que fait l’outil",
-        "<ul><li>Pratique vos mots dans le test d’orthographe ou Typing Rain.</li><li>Ajoute des phrases d’exemple facultatives : la phrase visible laisse le mot cible en blanc et l’audio lit le mot et la phrase complète.</li><li>Rejoue les mots manqués à la fin.</li><li>Enregistre et réutilise les listes de la semaine.</li><li>Importe une liste scolaire depuis une photo et modifie les mots détectés. Un compte gratuit connecté peut l’essayer, avec la révision intelligente, pendant 7 jours.</li><li>Complète les phrases d’exemple et utilise la Révision du jour dans les offres Parents et Enseignants. Ces deux fonctions ne font pas partie de l’essai de 7 jours.</li><li>Publie des devoirs sans compte élève.</li><li>Suit les progrès entre les devoirs.</li><li>Repère les mots à revoir.</li><li>Utilise l’historique de plusieurs jours pour distinguer apprentissage et maîtrise.</li></ul>",
+        "<ul><li>Pratique vos mots dans le test d’orthographe ou Typing Rain.</li><li>Ajoute des phrases d’exemple facultatives : la phrase visible laisse le mot cible en blanc et l’audio lit le mot et la phrase complète.</li><li>Rejoue les mots manqués à la fin.</li><li>Enregistre et réutilise les listes de la semaine.</li><li>Importe une liste scolaire depuis une photo et modifie les mots détectés. Un compte gratuit connecté peut l’essayer, avec la révision intelligente, pendant 7 jours.</li><li>Complète les phrases d’exemple pendant le même essai de 7 jours que l’import photo et la révision intelligente. La Révision du jour reste dans les offres Parents et Enseignants et ne fait pas partie de cet essai.</li><li>Publie des devoirs sans compte élève.</li><li>Suit les progrès entre les devoirs.</li><li>Repère les mots à revoir.</li><li>Utilise l’historique de plusieurs jours pour distinguer apprentissage et maîtrise.</li></ul>",
       ],
       [
         "Développement",
@@ -879,7 +879,7 @@ const aboutUpdates = {
     description:
       "Tentang My Spelling Game, alat latihan ejaan tanpa akun dengan impor foto, kalimat otomatis, dan ulasan mingguan.",
     intro:
-      "My Spelling Game adalah alat latihan ejaan untuk siswa, orang tua, guru, dan keluarga homeschool. Siswa dapat berlatih dengan daftar sendiri tanpa membuat akun. Guru dan orang tua dapat masuk ke ruang kerja untuk menyimpan daftar, menerbitkan tugas, dan memantau kemajuan. Akun gratis yang sudah masuk dapat mencoba impor foto dan Ulasan Pintar selama 7 hari. Setelah itu, keduanya ada di Paket Orang Tua dan Guru, yang juga mencakup Ulasan hari ini dan kalimat otomatis.",
+      "My Spelling Game adalah alat latihan ejaan untuk siswa, orang tua, guru, dan keluarga homeschool. Siswa dapat berlatih dengan daftar sendiri tanpa membuat akun. Guru dan orang tua dapat masuk ke ruang kerja untuk menyimpan daftar, menerbitkan tugas, dan memantau kemajuan. Akun gratis yang sudah masuk dapat mencoba impor foto, Ulasan Pintar, dan kalimat otomatis selama 7 hari. Setelah itu, ketiganya ada di Paket Orang Tua dan Guru, yang juga mencakup Ulasan hari ini.",
     panels: [
       [
         "Misi",
@@ -891,7 +891,7 @@ const aboutUpdates = {
       ],
       [
         "Fungsi utama",
-        "<ul><li>Berlatih dengan kata sendiri dalam Spelling Test atau Typing Rain.</li><li>Menambahkan kalimat contoh opsional: kata target pada kalimat yang terlihat dikosongkan, sedangkan audio membacakan kata dan kalimat lengkap.</li><li>Mengulang kata yang salah setelah latihan.</li><li>Menyimpan dan memakai ulang daftar mingguan di ruang kerja.</li><li>Mengimpor daftar ejaan sekolah dari foto dan mengedit kata yang terdeteksi. Akun gratis yang sudah masuk dapat mencobanya, bersama Ulasan Pintar, selama 7 hari.</li><li>Mengisi kalimat contoh dan memakai Ulasan hari ini pada Paket Orang Tua dan Guru. Dua fitur itu bukan bagian dari uji coba 7 hari.</li><li>Menerbitkan tugas tanpa akun siswa.</li><li>Memantau kemajuan di berbagai tugas.</li><li>Menemukan kata yang perlu diulas.</li><li>Menggunakan riwayat lintas hari untuk membedakan belajar dan penguasaan.</li></ul>",
+        "<ul><li>Berlatih dengan kata sendiri dalam Spelling Test atau Typing Rain.</li><li>Menambahkan kalimat contoh opsional: kata target pada kalimat yang terlihat dikosongkan, sedangkan audio membacakan kata dan kalimat lengkap.</li><li>Mengulang kata yang salah setelah latihan.</li><li>Menyimpan dan memakai ulang daftar mingguan di ruang kerja.</li><li>Mengimpor daftar ejaan sekolah dari foto dan mengedit kata yang terdeteksi. Akun gratis yang sudah masuk dapat mencobanya, bersama Ulasan Pintar, selama 7 hari.</li><li>Mengisi kalimat contoh selama uji coba 7 hari yang sama dengan impor foto dan Ulasan Pintar. Ulasan hari ini tetap di Paket Orang Tua dan Guru dan bukan bagian dari uji coba itu.</li><li>Menerbitkan tugas tanpa akun siswa.</li><li>Memantau kemajuan di berbagai tugas.</li><li>Menemukan kata yang perlu diulas.</li><li>Menggunakan riwayat lintas hari untuk membedakan belajar dan penguasaan.</li></ul>",
       ],
       [
         "Pengembang",
@@ -903,7 +903,7 @@ const aboutUpdates = {
     description:
       "关于 My Spelling Game：支持学生免账号练习、拍照导入词表、自动例句和每周复习的英语拼写工具。",
     intro:
-      "My Spelling Game 是一款面向学生、家长、老师和家庭教育的英语拼写练习工具。学生无需创建账号即可练习自己的单词表；家长和老师登录工作台后可以保存词表、发布作业并持续追踪进度。登录后的免费账号可试用拍照导入和智能复习 7 天。之后这两项保留在家长方案和教师方案中，这两个方案还包含今日复习和自动例句。",
+      "My Spelling Game 是一款面向学生、家长、老师和家庭教育的英语拼写练习工具。学生无需创建账号即可练习自己的单词表；家长和老师登录工作台后可以保存词表、发布作业并持续追踪进度。登录后的免费账号可试用拍照导入、智能复习和自动填充例句 7 天。之后这三项保留在家长方案和教师方案中，这两个方案还包含今日复习。",
     panels: [
       [
         "使命",
@@ -915,7 +915,7 @@ const aboutUpdates = {
       ],
       [
         "它能做什么",
-        "<ul><li>在拼写测试或单词雨中练习自己的单词。</li><li>为听写练习添加可选例句：页面会把例句中的目标词挖空，语音仍会读出单词和完整例句。</li><li>练习结束后立即重练错词。</li><li>在工作台保存并重复使用每周词表。</li><li>从学校词表照片中识别单词，并在写入前编辑结果。登录后的免费账号可与智能复习一起试用 7 天。</li><li>家长方案和教师方案可从精选例句库自动填充例句，并使用今日复习回顾到期错词。这两项不属于 7 天试用。</li><li>无需学生账号即可发布作业。</li><li>跨作业追踪学生进度。</li><li>找出之后需要复习的错词。</li><li>利用跨日期练习历史区分学习中和已掌握的单词。</li></ul>",
+        "<ul><li>在拼写测试或单词雨中练习自己的单词。</li><li>为听写练习添加可选例句：页面会把例句中的目标词挖空，语音仍会读出单词和完整例句。</li><li>练习结束后立即重练错词。</li><li>在工作台保存并重复使用每周词表。</li><li>从学校词表照片中识别单词，并在写入前编辑结果。登录后的免费账号可与智能复习一起试用 7 天。</li><li>可在与拍照导入、智能复习相同的 7 天试用期内，从精选例句库自动填充例句。今日复习保留在家长方案和教师方案中，不属于这次试用。</li><li>无需学生账号即可发布作业。</li><li>跨作业追踪学生进度。</li><li>找出之后需要复习的错词。</li><li>利用跨日期练习历史区分学习中和已掌握的单词。</li></ul>",
       ],
       [
         "关于开发者",

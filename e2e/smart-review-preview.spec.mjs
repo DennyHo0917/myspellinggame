@@ -82,7 +82,7 @@ test("signed-in trial users open the saved Smart Review flow", async ({
     }),
   );
   await page.goto("/");
-  await expect(page.locator("#feature-trial-note")).toContainText("7-day");
+  await expect(page.locator("#feature-trial-note")).toHaveCount(0);
   await page.locator(".last-missed-smart-btn").click();
   await expect(page).toHaveURL(/review=1/);
   await expect(page.locator(".smart-review-preview")).toHaveCount(0);

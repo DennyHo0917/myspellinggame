@@ -20,7 +20,10 @@ import {
   upgradeReturnFor,
   clearUpgradeReturn,
 } from "./upgradeReturn.mjs";
-import { upgradeSelection } from "./upgradeSelection.mjs";
+import {
+  trialUpgradeSelection,
+  upgradeSelection,
+} from "./upgradeSelection.mjs";
 import { gameState } from "./gameState.js";
 import { getPageLocale, t } from "./pageLocale.js";
 import {
@@ -84,7 +87,9 @@ function upgradeLink(
           ? "unlockPhotoImport"
           : feature === "smart_review"
             ? "unlockSmartReview"
-            : "unlockWordLimit",
+            : feature === "example_sentences"
+              ? "unlockSentences"
+              : "unlockWordLimit",
         {},
         getPageLocale(),
       )
@@ -112,13 +117,31 @@ function upgradeLink(
   return link;
 }
 
+const TRIAL_PAYWALL_FEATURES = new Set([
+  "photo_import",
+  "smart_review",
+  "example_sentences",
+]);
+
+function paywallSelection(feature, account) {
+  return TRIAL_PAYWALL_FEATURES.has(feature)
+    ? trialUpgradeSelection(account)
+    : upgradeSelection(account);
+}
+
+function appendPlanChoices(actions, feature, plan, interval) {
+  const alternate = plan === "parent" ? "teacher" : "parent";
+  if (plan === "parent" || TRIAL_PAYWALL_FEATURES.has(feature))
+    actions.append(upgradeLink(feature, alternate, interval, false));
+}
+
 function appendContextualPaywall(
   notice,
   feature,
   value,
   { account = accountState, freeCta = false } = {},
 ) {
-  const { plan, interval } = upgradeSelection(account);
+  const { plan, interval } = paywallSelection(feature, account);
   const benefit = document.createElement("span");
   benefit.className = "contextual-paywall-benefit";
   benefit.textContent = value;
@@ -131,10 +154,17 @@ function appendContextualPaywall(
   );
   const actions = document.createElement("span");
   actions.className = "contextual-paywall-actions";
-  actions.append(upgradeLink(feature, plan, interval));
-  if (plan === "parent")
-    actions.append(upgradeLink(feature, "teacher", interval, false));
-  if (freeCta) {
+  const signedOutTrial = !account && TRIAL_PAYWALL_FEATURES.has(feature);
+  if (signedOutTrial) {
+    const signIn = document.createElement("a");
+    signIn.className = "button-link contextual-paywall-cta paywall-primary";
+    signIn.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
+    signIn.textContent = t("photoImportFreeTrialCta");
+    actions.append(signIn);
+    actions.append(upgradeLink(feature, plan, interval, true, false));
+  } else actions.append(upgradeLink(feature, plan, interval));
+  appendPlanChoices(actions, feature, plan, interval);
+  if (freeCta && !signedOutTrial) {
     const free = document.createElement("a");
     free.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
     free.textContent =
@@ -219,7 +249,7 @@ function smartReviewPreviewCopy() {
 }
 
 function appendSmartReviewPaywall(notice, account, words) {
-  const { plan, interval } = upgradeSelection(account);
+  const { plan, interval } = trialUpgradeSelection(account);
   const signedOut = !account;
   if (signedOut) {
     const keep = document.createElement("span");
@@ -250,8 +280,7 @@ function appendSmartReviewPaywall(notice, account, words) {
     actions.append(signIn);
     actions.append(upgradeLink("smart_review", plan, interval, true, false));
   } else actions.append(upgradeLink("smart_review", plan, interval));
-  if (plan === "parent")
-    actions.append(upgradeLink("smart_review", "teacher", interval, false));
+  appendPlanChoices(actions, "smart_review", plan, interval);
   for (const link of actions.querySelectorAll('a[href*="pricing"]')) {
     link.addEventListener("click", () => {
       rememberPendingSmartReview(words.join("\n"), false);
@@ -260,7 +289,11 @@ function appendSmartReviewPaywall(notice, account, words) {
   notice.append(benefit, price, actions);
 }
 
-function showSmartReviewPreview(rawWords, account, { trackPreview = true } = {}) {
+function showSmartReviewPreview(
+  rawWords,
+  account,
+  { trackPreview = true } = {},
+) {
   const host = document.querySelector(".spelling-builder");
   if (!host || readShareState(window.location).sharedLink) return;
   const words = uniquePreviewWords(rawWords, 20);
@@ -332,7 +365,7 @@ function trackPhotoPreview(account, outcome) {
 }
 
 function appendPhotoImportPaywall(notice, account, readWords, importId) {
-  const { plan, interval } = upgradeSelection(account);
+  const { plan, interval } = trialUpgradeSelection(account);
   const signedOut = !account;
   if (signedOut) {
     const keep = document.createElement("span");
@@ -363,8 +396,7 @@ function appendPhotoImportPaywall(notice, account, readWords, importId) {
     actions.append(signIn);
     actions.append(upgradeLink("photo_import", plan, interval, true, false));
   } else actions.append(upgradeLink("photo_import", plan, interval));
-  if (plan === "parent")
-    actions.append(upgradeLink("photo_import", "teacher", interval, false));
+  appendPlanChoices(actions, "photo_import", plan, interval);
   for (const link of actions.querySelectorAll('a[href*="pricing"]')) {
     link.addEventListener("click", () => {
       rememberPendingPhotoImport(readWords(), importId, false);
@@ -421,6 +453,7 @@ function showLockedPhotoPreview(
   cancel.textContent = t("photoImportCancel");
   cancel.addEventListener("click", () => {
     clearPendingPhotoImport();
+    hidePracticeFeatureTrial();
     review.remove();
   });
   actions.append(cancel);
@@ -506,7 +539,7 @@ async function applyPhotoImportWords(rawText, importId) {
               ...accountState.featureTrial,
               active: false,
             };
-          showPracticeFeatureTrial(accountState);
+          hidePracticeFeatureTrial();
           return { blocked: true };
         }
         return { error: true };
@@ -525,7 +558,7 @@ async function applyPhotoImportWords(rawText, importId) {
   clearPendingPhotoImport();
   const count = currentWords().length;
   if (count) trackPremiumFeatureUsed("photo_import", accountState, count);
-  showPracticeFeatureTrial(accountState);
+  hidePracticeFeatureTrial();
   return { ok: true };
 }
 
@@ -590,6 +623,7 @@ function showPhotoImportReview(
   cancel.textContent = t("photoImportCancel");
   cancel.addEventListener("click", () => {
     clearPendingPhotoImport();
+    hidePracticeFeatureTrial();
     review.remove();
   });
   actions.append(use, cancel);
@@ -683,12 +717,29 @@ function practiceFeatureTrialNote(account) {
   return note;
 }
 
-function showPracticeFeatureTrial(account) {
+function hidePracticeFeatureTrial() {
   document.getElementById("feature-trial-note")?.remove();
+}
+
+function showPracticeFeatureTrial(account) {
+  hidePracticeFeatureTrial();
   const note = practiceFeatureTrialNote(account);
   if (!note) return;
   note.id = "feature-trial-note";
-  document.getElementById("photo-import-btn")?.closest(".word-field-heading")
+  document
+    .getElementById("photo-import-btn")
+    ?.closest(".word-field-heading")
+    ?.after(note);
+}
+
+function showExampleSentenceTrial(account) {
+  document.getElementById("example-sentence-trial-note")?.remove();
+  const note = practiceFeatureTrialNote(account);
+  if (!note) return;
+  note.id = "example-sentence-trial-note";
+  document
+    .getElementById("auto-example-sentences-btn")
+    ?.closest(".sentence-field-heading")
     ?.after(note);
 }
 
@@ -699,6 +750,12 @@ export function hasSmartReviewAccess(account) {
 }
 
 export function hasPhotoImportAccess(account) {
+  if (!account) return false;
+  if (isPlusAccount(account)) return true;
+  return featureTrialActive(account.featureTrial);
+}
+
+export function hasExampleSentenceAccess(account) {
   if (!account) return false;
   if (isPlusAccount(account)) return true;
   return featureTrialActive(account.featureTrial);
@@ -797,6 +854,9 @@ function initPhotoImport() {
   if (!button || !input) return;
   button.addEventListener("click", () => {
     trackEvent("photo_import_clicked", { locale: getPageLocale() });
+    void getAccount().then((account) => {
+      if (hasPhotoImportAccess(account)) showPracticeFeatureTrial(account);
+    });
     input.click();
   });
   input.addEventListener("change", () => {
@@ -807,6 +867,7 @@ function initPhotoImport() {
 }
 
 function sentenceLibraryNotice(
+  account = accountState,
   message = productMessage("sentenceLibraryRequired", {}, getPageLocale()),
 ) {
   const field = sentenceTextarea()?.closest(".word-entry-field");
@@ -815,13 +876,19 @@ function sentenceLibraryNotice(
   const notice = document.createElement("small");
   notice.className = "sentence-library-notice contextual-paywall";
   notice.setAttribute("role", "status");
+  if (!account) {
+    const keep = document.createElement("span");
+    keep.className = "contextual-paywall-benefit";
+    keep.textContent = t("exampleSentencesKeepBenefit");
+    notice.append(keep);
+  }
   appendContextualPaywall(
     notice,
     "example_sentences",
     message === productMessage("sentenceLibraryRequired", {}, getPageLocale())
       ? t("exampleSentencesValue")
       : message,
-    { account: accountState },
+    { account },
   );
   field.append(notice);
 }
@@ -850,11 +917,13 @@ async function autoFillExampleSentences() {
   button.disabled = true;
   try {
     const account = await getAccount();
-    if (!isPlusAccount(account)) {
+    if (!hasExampleSentenceAccess(account)) {
       trackLockedFeature("example_sentences", account?.plan || "anonymous");
-      sentenceLibraryNotice();
+      document.getElementById("example-sentence-trial-note")?.remove();
+      sentenceLibraryNotice(account);
       return;
     }
+    showExampleSentenceTrial(account);
     sentenceTextarea()
       ?.closest(".word-entry-field")
       ?.querySelector(".sentence-library-notice")
@@ -881,12 +950,28 @@ async function autoFillExampleSentences() {
     sentenceInput.dispatchEvent(new Event("input", { bubbles: true }));
     previousWordText = wordInput.value;
   } catch (error) {
-    if (error.message === "sentence_library_required")
+    if (
+      error.message === "sentence_library_required" ||
+      error.message === "feature_trial_expired"
+    ) {
       trackLockedFeature("example_sentences", accountState?.plan || "free");
+      if (accountState?.featureTrial)
+        accountState.featureTrial = {
+          ...accountState.featureTrial,
+          active: false,
+        };
+      document.getElementById("example-sentence-trial-note")?.remove();
+      sentenceLibraryNotice(
+        accountState,
+        error.message === "feature_trial_expired"
+          ? productMessage("featureTrialExpired", {}, getPageLocale())
+          : productMessage("sentenceLibraryRequired", {}, getPageLocale()),
+      );
+      return;
+    }
     sentenceLibraryNotice(
-      error.message === "sentence_library_required"
-        ? productMessage("sentenceLibraryRequired", {}, getPageLocale())
-        : productMessage("sentenceLibraryError", {}, getPageLocale()),
+      accountState,
+      productMessage("sentenceLibraryError", {}, getPageLocale()),
     );
   } finally {
     if (generation === sentenceFillGeneration) button.disabled = false;
@@ -1204,7 +1289,6 @@ export function initSpellingMode() {
       target?.focus({ preventScroll: true });
       clearUpgradeReturn();
     }
-    showPracticeFeatureTrial(account);
     void resumePendingPhotoImport(account);
     resumePendingSmartReview(account);
   });

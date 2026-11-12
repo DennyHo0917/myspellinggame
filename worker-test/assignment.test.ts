@@ -417,6 +417,13 @@ describe("shared 7-day photo import and smart review trial", () => {
       reviewFeature: "smart_review",
     });
     expect(published.response.status).toBe(201);
+    const deniedDuringTrial = await createAssignment(teacherA, {
+      title: "Today during trial",
+      words: ["apple"],
+      reviewFeature: "todays_review",
+    });
+    expect(deniedDuringTrial.response.status).toBe(403);
+    expect(deniedDuringTrial.body.error).toBe("todays_review_required");
 
     const started = new Date(Date.now() - 8 * day).toISOString();
     await bindings.DB.prepare(
@@ -448,12 +455,46 @@ describe("shared 7-day photo import and smart review trial", () => {
       reviewFeature: "todays_review",
     });
     expect(deniedCreate.response.status).toBe(403);
-    expect(deniedCreate.body.error).toBe("feature_trial_expired");
+    expect(deniedCreate.body.error).toBe("todays_review_required");
     const ordinary = await createAssignment(teacherA, {
       title: "Ordinary practice",
       words: ["apple"],
     });
     expect(ordinary.response.status).toBe(201);
+  });
+
+  it("shares the same clock with automatic example sentences", async () => {
+    const accepted = await accept(crypto.randomUUID());
+    expect(accepted.status).toBe(200);
+    const started = await trialStart(teacherA.id);
+    await bindings.DB.prepare(
+      `INSERT INTO word_sentences (word, simple_sentence, difficult_sentence)
+       VALUES ('apple', 'I ate an apple.', 'The orchard produced a crisp apple.')`,
+    ).run();
+    const matched = await call("/api/sentence-library/match", {
+      method: "POST",
+      body: JSON.stringify({ words: ["apple"], difficulty: "simple" }),
+    });
+    expect(matched.status).toBe(200);
+    expect(await matched.json()).toMatchObject({
+      matches: { apple: "I ate an apple." },
+    });
+    expect(await trialStart(teacherA.id)).toBe(started);
+    const expiredAt = new Date(Date.now() - 8 * day).toISOString();
+    await bindings.DB.prepare(
+      "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
+    )
+      .bind(expiredAt, teacherA.id)
+      .run();
+    const expired = await call("/api/sentence-library/match", {
+      method: "POST",
+      body: JSON.stringify({ words: ["apple"] }),
+    });
+    expect(expired.status).toBe(403);
+    expect(await expired.json()).toMatchObject({
+      error: "feature_trial_expired",
+    });
+    expect(await trialStart(teacherA.id)).toBe(expiredAt);
   });
 
   it("leaves paid plans unlimited and does not stamp a trial", async () => {
@@ -2769,7 +2810,7 @@ describe("today's review state", () => {
     ).toBeNull();
   });
 
-  it("shows today's review during the free trial and hides it after expiry", async () => {
+  it("keeps today's review paid-only during and after the free trial", async () => {
     const learner = await createLearner("Learner 01");
     const assignment = await createAssignment(teacherA, {
       words: ["because"],
@@ -2790,12 +2831,7 @@ describe("today's review state", () => {
       };
     };
     expect(trial.todaysReview.count).toBe(1);
-    expect(trial.todaysReview.words).toEqual([
-      expect.objectContaining({
-        word: "because",
-        exampleSentence: "I stayed inside because it was raining.",
-      }),
-    ]);
+    expect(trial.todaysReview.words).toBeNull();
 
     await bindings.DB.prepare(
       "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
@@ -3300,10 +3336,25 @@ describe("assignment attempts", () => {
       method: "POST",
       body: JSON.stringify({ words: ["apple"] }),
     });
-    expect(freeSentenceLibrary.status).toBe(403);
-    expect(await freeSentenceLibrary.json()).toMatchObject({
-      error: "sentence_library_required",
-      message: "Sentence library is included in Parent and Teacher Plans.",
+    expect(freeSentenceLibrary.status).toBe(200);
+    const sentenceTrialStart = await bindings.DB.prepare(
+      "SELECT feature_trial_started_at FROM user WHERE id = ?",
+    )
+      .bind(teacherA.id)
+      .first<string | null>("feature_trial_started_at");
+    expect(sentenceTrialStart).toEqual(expect.any(String));
+    await bindings.DB.prepare(
+      "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
+    )
+      .bind(new Date(Date.now() - 8 * 86_400_000).toISOString(), teacherA.id)
+      .run();
+    const expiredSentenceLibrary = await call("/api/sentence-library/match", {
+      method: "POST",
+      body: JSON.stringify({ words: ["apple"] }),
+    });
+    expect(expiredSentenceLibrary.status).toBe(403);
+    expect(await expiredSentenceLibrary.json()).toMatchObject({
+      error: "feature_trial_expired",
     });
     const freeDetail = (await (
       await call(`/api/assignments/${id}`)

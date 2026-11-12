@@ -33,7 +33,7 @@ import {
   upgradeReturnFor,
   clearUpgradeReturn,
 } from "./upgradeReturn.mjs";
-import { upgradeSelection } from "./upgradeSelection.mjs";
+import { trialUpgradeSelection } from "./upgradeSelection.mjs";
 import { speakWord } from "./speech.js";
 import {
   installDiagnostics,
@@ -263,6 +263,7 @@ const ERROR_KEYS = {
   invalid_avatar: "invalidAvatar",
   smart_review_required: "smartReviewRequired",
   feature_trial_expired: "featureTrialExpired",
+  todays_review_required: "todaysReviewUpgrade",
   sentence_library_required: "sentenceLibraryRequired",
   invalid_sentence_level: "invalidSentenceLevel",
   rate_limited: "rateLimited",
@@ -309,6 +310,10 @@ function isPlusPlan(me) {
 }
 
 function hasSmartReviewAccess(me) {
+  return isPlusPlan(me) || featureTrialActive(me?.featureTrial);
+}
+
+function hasSentenceLibraryAccess(me) {
   return isPlusPlan(me) || featureTrialActive(me?.featureTrial);
 }
 
@@ -578,19 +583,26 @@ function attachSentenceLibraryControls(
   const fill = document.createElement("button");
   fill.type = "button";
   fill.className = "button-secondary sentence-library-fill";
-  if (isPlusPlan(me)) {
+  if (hasSentenceLibraryAccess(me)) {
     fill.textContent = copy.fillSentenceLibrary;
   } else {
     fill.textContent = copy.fillSentenceLibraryPlus;
   }
   fill.addEventListener("click", async () => {
-    if (!isPlusPlan(me)) {
+    if (!hasSentenceLibraryAccess(me)) {
+      sentenceField.querySelector(".sentence-trial-note")?.remove();
       showLockedFeaturePlan(
         sentenceField,
         copy.sentenceLibraryRequired,
         "sentence_library",
       );
       return;
+    }
+    const trialNote = featureTrialNote(me);
+    sentenceField.querySelector(".sentence-trial-note")?.remove();
+    if (trialNote) {
+      trialNote.classList.add("sentence-trial-note");
+      sentenceField.prepend(trialNote);
     }
     const words = wordsInput?.value || "";
     const generation = ++fillGeneration;
@@ -613,11 +625,21 @@ function attachSentenceLibraryControls(
       sentencesInput.dispatchEvent(new Event("input", { bubbles: true }));
       syncSentenceBaseline();
     } catch (error) {
-      showSectionError(
-        form.closest("section") || form,
-        error,
-        error.code === "sentence_library_required" ? "sentence_library" : null,
-      );
+      if (
+        error.code === "sentence_library_required" ||
+        error.code === "feature_trial_expired"
+      ) {
+        sentenceField.querySelector(".sentence-trial-note")?.remove();
+        showLockedFeaturePlan(
+          sentenceField,
+          error.code === "feature_trial_expired"
+            ? copy.featureTrialExpired
+            : copy.sentenceLibraryRequired,
+          "sentence_library",
+        );
+        return;
+      }
+      showSectionError(form.closest("section") || form, error);
     } finally {
       if (generation === fillGeneration) fill.disabled = false;
     }
@@ -1329,8 +1351,54 @@ function smartReviewPricingLink(
   return link;
 }
 
+function trialPlanChoices(actions, plan, linkFor) {
+  actions.append(linkFor(plan === "parent" ? "teacher" : "parent", false));
+}
+
+function sentenceLibraryPaywall(me) {
+  const { plan, interval } = trialUpgradeSelection(me);
+  const notice = document.createElement("div");
+  notice.className = "smart-review-paywall contextual-paywall";
+  notice.setAttribute("role", "status");
+  const price = document.createElement("strong");
+  price.className = "contextual-paywall-price";
+  price.textContent = upgradePrice(plan, interval);
+  const actions = document.createElement("span");
+  actions.className = "contextual-paywall-actions";
+  const linkFor = (choice, primary) => {
+    const link = document.createElement("a");
+    link.className = `button-link contextual-paywall-cta${primary ? " paywall-primary" : " button-secondary"}`;
+    link.href = `${productPagePath("pricing", locale)}?${new URLSearchParams({ plan: choice, interval, from: "sentence_library" })}`;
+    link.textContent = primary ? copy.unlockSentences : copy[`${choice}Plan`];
+    link.addEventListener("click", () => {
+      prepareWorkspaceDraftReturn();
+      saveUpgradeReturn("sentence_library", me?.user?.id);
+      savePendingCheckout(choice, interval);
+      try {
+        sessionStorage.setItem("pendingCheckoutLocale", locale);
+        sessionStorage.setItem(PENDING_UPGRADE_FEATURE_KEY, "sentence_library");
+      } catch {}
+      trackEvent("upgrade_cta_clicked", {
+        cta_location: "sentence_library",
+        plan: choice,
+        billing_interval: interval,
+      });
+      trackEvent("upgrade_click", {
+        source: "sentence_library",
+        plan: choice,
+        billing_interval: interval,
+      });
+    });
+    return link;
+  };
+  actions.append(linkFor(plan, true));
+  trialPlanChoices(actions, plan, linkFor);
+  notice.append(price, actions);
+  return notice;
+}
+
 function smartReviewPaywall(me, words = null, target = "") {
-  const { plan, interval } = upgradeSelection(me);
+  const { plan, interval } = trialUpgradeSelection(me);
   const notice = document.createElement("div");
   notice.className = "smart-review-paywall contextual-paywall";
   notice.setAttribute("role", "status");
@@ -1351,16 +1419,15 @@ function smartReviewPaywall(me, words = null, target = "") {
       target,
     }),
   );
-  if (plan === "parent")
-    actions.append(
-      smartReviewPricingLink(me, {
-        plan: "teacher",
-        interval,
-        primary: false,
-        words,
-        target,
-      }),
-    );
+  actions.append(
+    smartReviewPricingLink(me, {
+      plan: plan === "parent" ? "teacher" : "parent",
+      interval,
+      primary: false,
+      words,
+      target,
+    }),
+  );
   notice.append(benefit, price, actions);
   return notice;
 }
@@ -1436,6 +1503,11 @@ function showLockedFeaturePlan(host, message, ctaLocation) {
   if (feature) trackLockedFeature(feature, workspaceState?.me?.plan || "free");
   if (ctaLocation === "smart_review") {
     notice.append(text, smartReviewPaywall(workspaceState?.me));
+  } else if (
+    ctaLocation === "sentence_library" ||
+    ctaLocation === "sentence_library_required"
+  ) {
+    notice.append(text, sentenceLibraryPaywall(workspaceState?.me));
   } else notice.append(text, upgradeLink(ctaLocation));
   host.append(notice);
 }
@@ -2092,7 +2164,7 @@ function renderSavedListsLegacy(me, savedLists) {
       );
       if (sentencesValue === null) return;
       let editedSentences = sentencesValue;
-      if (isPlusPlan(me) && confirm(copy.fillSentenceLibrary)) {
+      if (hasSentenceLibraryAccess(me) && confirm(copy.fillSentenceLibrary)) {
         try {
           const matches = await api("/api/sentence-library/match", {
             method: "POST",
@@ -5230,9 +5302,7 @@ async function renderLearner(me, id, { force = false } = {}) {
     ? m("todaysReviewCount", { count: reviewData.count })
     : copy.todaysReviewEmpty;
   todaysReview.append(todaysReviewTitle, todaysReviewCount);
-  const todayTrial = featureTrialNote(me);
-  if (todayTrial && data.smartReview) todaysReview.append(todayTrial);
-  if (data.smartReview && reviewData.words?.length) {
+  if (isPlusPlan(me) && reviewData.words?.length) {
     const list = document.createElement("div");
     list.className = "word-list";
     for (const item of reviewData.words) {
@@ -5257,7 +5327,7 @@ async function renderLearner(me, id, { force = false } = {}) {
       );
     });
     todaysReview.append(list, button);
-  } else if (!data.smartReview && reviewData.count) {
+  } else if (reviewData.count) {
     const locked = document.createElement("button");
     locked.type = "button";
     locked.className = "button-secondary";

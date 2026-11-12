@@ -709,7 +709,7 @@ test("anonymous Photo Import previews words, then a Teacher choice resumes check
     "because\nfriend\nbeautiful\nanswer\nenough\nfavorite\nlibrary\nthrough",
   );
   await expect(paywall).toContainText(
-    "Signing in starts a 7-day free trial of Photo Import and Smart Review.",
+    "Signing in starts a 7-day free trial of Photo Import, Smart Review, and Auto-fill.",
   );
   await expect(paywall).toContainText(
     "Turn a photo of the school list into editable spelling words",

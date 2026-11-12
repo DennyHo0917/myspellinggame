@@ -61,7 +61,7 @@ for (const locale of ["en", "es", "pt-br", "fr", "id", "zh"]) {
       "elephant\ngiraffe",
     );
     await page.locator(".photo-import-notice .paywall-primary").click();
-    await page.locator('[data-plan-choice="parent"]').click();
+    await page.locator("[data-checkout-cta]").click();
     await expect(page).toHaveURL(new RegExp(`${prefix}/$`));
     await expect(page.locator(".upgrade-return-notice")).toBeVisible();
     await expect(page.locator("#custom-word-list")).toHaveValue(
@@ -261,7 +261,7 @@ test("cancelled photo checkout restores draft without claiming paid access", asy
     "apple\nbanana",
   );
   await page.locator(".photo-import-notice .paywall-primary").click();
-  await page.locator('[data-plan-choice="parent"]').click();
+  await page.locator("[data-checkout-cta]").click();
   await expect(page).toHaveURL(/\/$/);
   await expect(page.locator("#custom-word-list")).toHaveValue("elephant");
   await expect(page.locator(".upgrade-return-notice")).toHaveCount(0);

@@ -3652,7 +3652,7 @@ describe("Stripe checkout", () => {
         `https://example.test/workspace?lang=${expected}&checkout=success&interval=month&plan=teacher&checkout_session_id={CHECKOUT_SESSION_ID}`,
       );
       expect(cancelUrl).toBe(
-        `https://example.test${pricingPath}?checkout=cancelled`,
+        `https://example.test${pricingPath}?checkout=cancelled&plan=teacher&interval=month`,
       );
     },
   );

@@ -52,24 +52,44 @@ test("pricing purchase resumes after login exactly once; failure requires retry 
       interval: "year",
     });
     return route.fulfill({
-      status: calls === 1 ? 401 : 503,
-      json: {
-        error: calls === 1 ? "sign_in_required" : "billing_not_configured",
-      },
+      status: 503,
+      json: { error: "billing_not_configured" },
     });
   });
   await page.goto("/pricing");
   await page.locator('[data-plan-option="year"]').click();
   await page.locator('[data-plan-choice="parent"]').click();
+  await page.locator("[data-checkout-cta]").click();
+  await expect(page).toHaveURL(/\/workspace\?lang=en#teacher-sign-in$/);
+  expect(calls).toBe(0);
   await page
     .getByRole("button", { name: "Continue with Google", exact: true })
     .click();
+  await expect(page).toHaveURL(/\/pricing\?plan=parent&interval=year/);
+  await expect(page.locator('[data-plan-choice="parent"]')).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(page.locator('[data-plan-option="year"]')).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  expect(calls).toBe(0);
+  await page.locator("[data-checkout-cta]").click();
   await expect(page.locator(".checkout-retry-notice")).toBeVisible();
-  expect(calls).toBe(2);
+  expect(calls).toBe(1);
   await expect(page.locator(".pending-checkout-notice")).toHaveCount(0);
   await page.reload();
   await expect(page.locator(".checkout-retry-notice")).toBeVisible();
-  expect(calls).toBe(2);
+  await expect(page.locator('[data-plan-choice="parent"]')).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(page.locator('[data-plan-option="year"]')).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  expect(calls).toBe(1);
   await page
     .locator(".checkout-retry-notice")
     .getByRole("button", { name: "Cancel", exact: true })
@@ -158,7 +178,7 @@ test("tracking gate opens pricing before selecting a plan", async ({
   });
 });
 
-test("fresh login intent opens the returned checkout URL without a confirmation card", async ({
+test("fresh login intent returns to the selected pricing plan without opening checkout", async ({
   page,
 }) => {
   await mock(page);
@@ -180,11 +200,16 @@ test("fresh login intent opens the returned checkout URL without a confirmation 
     ),
   );
   await page.goto("/workspace?lang=en");
-  await expect(page).toHaveURL(/checkout_test=1/);
-  expect(calls).toBe(1);
+  await expect(page).toHaveURL(/\/pricing\?plan=parent&interval=year$/);
+  await expect(page.locator('[data-plan-choice="parent"]')).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(page.locator("[data-checkout-cta]")).toBeEnabled();
+  expect(calls).toBe(0);
   await page.goto("/workspace?lang=en");
   await expect(page.locator(".workspace-loading")).toHaveCount(0);
-  expect(calls).toBe(1);
+  expect(calls).toBe(0);
 });
 
 for (const lang of ["en", "es", "pt-br", "fr", "id", "zh"])

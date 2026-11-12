@@ -1,4 +1,5 @@
 import {
+  CHECKOUT_AUTH_RETURN_KEY,
   readPendingCheckout,
   savePendingCheckout,
   clearPendingCheckout,
@@ -5403,11 +5404,33 @@ async function init() {
   const pending = readPendingCheckout();
   const autoCheckout = consumePendingCheckout();
   let checkoutRetryRequired = false;
+  let authReturn = false;
   try {
     checkoutRetryRequired =
       sessionStorage.getItem(CHECKOUT_RETRY_REQUIRED_KEY) === "1";
+    authReturn = sessionStorage.getItem(CHECKOUT_AUTH_RETURN_KEY) === "1";
   } catch {}
   const params = new URLSearchParams(location.search);
+  if (
+    params.get("checkout") !== "success" &&
+    pending &&
+    me.plan === "free" &&
+    (autoCheckout || authReturn) &&
+    !checkoutRetryRequired
+  ) {
+    try {
+      sessionStorage.removeItem(CHECKOUT_AUTH_RETURN_KEY);
+    } catch {}
+    let pendingLocale = locale;
+    try {
+      pendingLocale =
+        sessionStorage.getItem(PENDING_CHECKOUT_LOCALE_KEY) || locale;
+    } catch {}
+    location.replace(
+      `${productPagePath("pricing", pendingLocale)}?plan=${encodeURIComponent(pending.plan)}&interval=${encodeURIComponent(pending.interval)}`,
+    );
+    return;
+  }
   if (params.get("checkout") === "success") {
     const requestedPlan = params.get("plan");
     const checkoutPlan =
@@ -5430,16 +5453,14 @@ async function init() {
   } else {
     await renderTeacherRoute(me);
   }
-  if (params.get("checkout") !== "success" && pending && me.plan === "free") {
-    if (autoCheckout && !checkoutRetryRequired) {
-      try {
-        await startCheckout(pending.interval, pending.plan);
-      } catch (error) {
-        showCheckoutRetry(pending.interval, pending.plan, error);
-      }
-    } else if (checkoutRetryRequired)
-      showCheckoutRetry(pending.interval, pending.plan, null);
-  } else if (me.plan !== "free") clearPendingCheckout();
+  if (
+    params.get("checkout") !== "success" &&
+    pending &&
+    me.plan === "free" &&
+    checkoutRetryRequired
+  )
+    showCheckoutRetry(pending.interval, pending.plan, null);
+  else if (me.plan !== "free") clearPendingCheckout();
 }
 
 init();

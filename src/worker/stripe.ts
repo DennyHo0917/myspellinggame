@@ -638,7 +638,7 @@ export async function createCheckout(
         mode: "subscription",
         line_items: [{ price, quantity: 1 }],
         success_url: `${origin}/workspace?lang=${locale}&checkout=success&interval=${interval}&plan=${plan}&checkout_session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}${STRIPE_LOCALE_PATHS[locale]}/pricing?checkout=cancelled`,
+        cancel_url: `${origin}${STRIPE_LOCALE_PATHS[locale]}/pricing?checkout=cancelled&plan=${plan}&interval=${interval}`,
         client_reference_id: user.id,
         customer: subscription?.stripe_customer_id || undefined,
         customer_email: subscription?.stripe_customer_id

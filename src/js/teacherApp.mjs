@@ -21,6 +21,7 @@ import {
   renderSmartReviewPreview,
   uniquePreviewWords,
 } from "./smartReviewPreview.mjs";
+import { featureTrialActive, featureTrialLabel } from "./featureTrial.mjs";
 import {
   takeTrackingEntry,
   readTrackingEntry,
@@ -261,6 +262,7 @@ const ERROR_KEYS = {
   tracking_trial_used: "trackingTrialUsed",
   invalid_avatar: "invalidAvatar",
   smart_review_required: "smartReviewRequired",
+  feature_trial_expired: "featureTrialExpired",
   sentence_library_required: "sentenceLibraryRequired",
   invalid_sentence_level: "invalidSentenceLevel",
   rate_limited: "rateLimited",
@@ -304,6 +306,19 @@ async function api(path, options = {}) {
 
 function isPlusPlan(me) {
   return ["parent", "teacher", "plus", "pro"].includes(me.plan);
+}
+
+function hasSmartReviewAccess(me) {
+  return isPlusPlan(me) || featureTrialActive(me?.featureTrial);
+}
+
+function featureTrialNote(me) {
+  if (!me || isPlusPlan(me) || !featureTrialActive(me.featureTrial))
+    return null;
+  const note = document.createElement("p");
+  note.className = "feature-trial-note";
+  note.textContent = featureTrialLabel(me.featureTrial, m, locale);
+  return note;
 }
 
 function isTeacherPlan(me) {
@@ -1237,6 +1252,7 @@ function upgradeLink(ctaLocation) {
       smart_review: "upgradeReview",
       todays_review: "upgradeReview",
       smart_review_required: "upgradeReview",
+      feature_trial_expired: "upgradeReview",
       sentence_library: "upgradeSentences",
       sentence_library_required: "upgradeSentences",
       classroom_lock: "upgradeClassroom",
@@ -1356,7 +1372,7 @@ function mountSmartReviewPreview(
   target,
   { trackPreview = true, limit = 10 } = {},
 ) {
-  if (!host || isPlusPlan(me)) return false;
+  if (!host || hasSmartReviewAccess(me)) return false;
   const list = uniquePreviewWords(words, limit);
   if (!list.length) return false;
   const existing = readPendingSmartReview();
@@ -1390,7 +1406,7 @@ function mountSmartReviewPreview(
 }
 
 function restoreSmartReviewPreview(host, me, target) {
-  if (isPlusPlan(me)) {
+  if (hasSmartReviewAccess(me)) {
     if (readPendingSmartReview()?.target === target) clearPendingSmartReview();
     return false;
   }
@@ -1536,12 +1552,22 @@ async function renderLogin() {
   benefitTitle.textContent = copy.workspaceBenefitTitle;
   const benefitText = document.createElement("p");
   benefitText.textContent = copy.workspaceBenefitCopy;
+  const trialDetail = document.createElement("p");
+  trialDetail.className = "feature-trial-note";
+  trialDetail.textContent = copy.featureTrialSignInDetail;
   const privacyNote = document.createElement("p");
   privacyNote.className = "notice";
   privacyNote.textContent = copy.workspacePrivacyNote;
   const cardCopy = document.createElement("div");
   cardCopy.className = "teacher-login-copy";
-  cardCopy.append(title, text, benefitTitle, benefitText, privacyNote);
+  cardCopy.append(
+    title,
+    text,
+    benefitTitle,
+    benefitText,
+    trialDetail,
+    privacyNote,
+  );
   const status = statusElement(card);
   const buttons = document.createElement("div");
   buttons.className = "social-sign-in-buttons";
@@ -3275,7 +3301,9 @@ async function renderProgressCenter(me, data, main = shell(me, "progress")) {
   const smartReviewCopy = document.createElement("p");
   smartReviewCopy.textContent = copy.smartReviewValue;
   smartReview.append(smartReviewTitle, smartReviewCopy);
-  if (!isPlusPlan(me) && needsReview) {
+  const trialNote = featureTrialNote(me);
+  if (trialNote) smartReview.append(trialNote);
+  if (!hasSmartReviewAccess(me) && needsReview) {
     const preview = document.createElement("p");
     preview.textContent = m("needsReviewWords", { count: needsReview });
     const locked = document.createElement("button");
@@ -3308,7 +3336,7 @@ async function renderProgressCenter(me, data, main = shell(me, "progress")) {
     empty.textContent = copy.noRecentProgress;
     smartReview.append(empty);
   }
-  const showSmartReview = isPlusPlan(me) || needsReview > 0;
+  const showSmartReview = hasSmartReviewAccess(me) || needsReview > 0;
   if (showSmartReview) page.append(smartReview);
   main.append(page);
 }
@@ -3983,6 +4011,13 @@ async function renderAssignmentForm(me, { assignment = null } = {}) {
         ).value;
         body.mode = mode;
       }
+      if (
+        !editing &&
+        ["smart_review", "todays_review"].includes(
+          storedDraft?.values?.reviewFeature,
+        )
+      )
+        body.reviewFeature = storedDraft.values.reviewFeature;
       const result = await api(
         editing ? `/api/assignments/${assignment.id}` : "/api/assignments",
         {
@@ -4264,7 +4299,7 @@ function renderReviewEntry(me) {
   local.textContent = copy.reviewEntryLocalNote;
   const start = document.createElement("button");
   start.type = "button";
-  if (!isPlusPlan(me)) start.className = "button-secondary";
+  if (!hasSmartReviewAccess(me)) start.className = "button-secondary";
   start.textContent = copy.trackNextPractice;
   start.addEventListener("click", () => {
     // Consume only a fresh, account-bound entry; anonymous history stays local.
@@ -4286,8 +4321,10 @@ function renderReviewEntry(me) {
   actions.className = "actions";
   actions.append(start, progress);
   card.append(title);
+  const reviewTrial = featureTrialNote(me);
+  if (reviewTrial) card.append(reviewTrial);
   let previewShown = false;
-  if (!isPlusPlan(me)) {
+  if (!hasSmartReviewAccess(me)) {
     const pending = readPendingSmartReview();
     const draft = readTrackingEntry(me.user.id);
     const returning =
@@ -4303,7 +4340,8 @@ function renderReviewEntry(me) {
   } else if (readPendingSmartReview()?.target === "review-entry")
     clearPendingSmartReview();
   card.append(help, local, actions);
-  if (!isPlusPlan(me) && !previewShown) card.append(smartReviewPaywall(me));
+  if (!hasSmartReviewAccess(me) && !previewShown)
+    card.append(smartReviewPaywall(me));
   main.append(card);
 }
 
@@ -4796,7 +4834,9 @@ async function renderDetail(me, id, { force = false } = {}) {
   const reviewCopy = document.createElement("p");
   reviewCopy.textContent = copy.smartReviewValue;
   review.append(reviewTitle, reviewCopy);
-  if (isPlusPlan(me)) {
+  const assignmentTrial = featureTrialNote(me);
+  if (assignmentTrial) review.append(assignmentTrial);
+  if (hasSmartReviewAccess(me)) {
     const createReview = document.createElement("button");
     createReview.type = "button";
     createReview.textContent = copy.createReview;
@@ -4847,7 +4887,7 @@ async function renderDetail(me, id, { force = false } = {}) {
     review.append(locked);
     restoreSmartReviewPreview(review, me, `assignment:${id}`);
   }
-  if (isPlusPlan(me) || hasMissedWords) main.append(review);
+  if (hasSmartReviewAccess(me) || hasMissedWords) main.append(review);
   const results = document.createElement("section");
   results.className = "product-card";
   const resultTitle = document.createElement("h2");
@@ -5190,6 +5230,8 @@ async function renderLearner(me, id, { force = false } = {}) {
     ? m("todaysReviewCount", { count: reviewData.count })
     : copy.todaysReviewEmpty;
   todaysReview.append(todaysReviewTitle, todaysReviewCount);
+  const todayTrial = featureTrialNote(me);
+  if (todayTrial && data.smartReview) todaysReview.append(todayTrial);
   if (data.smartReview && reviewData.words?.length) {
     const list = document.createElement("div");
     list.className = "word-list";
@@ -5238,6 +5280,8 @@ async function renderLearner(me, id, { force = false } = {}) {
   const reviewCopy = document.createElement("p");
   reviewCopy.textContent = copy.smartReviewValue;
   review.append(reviewTitle, reviewCopy);
+  const learnerTrial = featureTrialNote(me);
+  if (learnerTrial && data.smartReview) review.append(learnerTrial);
   if (data.smartReview) {
     const button = document.createElement("button");
     button.type = "button";
@@ -5616,7 +5660,7 @@ async function init() {
       pendingReview.target === "practice" &&
       checkout !== "success"
     ) {
-      if (isPlusPlan(me)) {
+      if (hasSmartReviewAccess(me)) {
         saveTrackingEntry(
           {
             words: pendingReview.words,

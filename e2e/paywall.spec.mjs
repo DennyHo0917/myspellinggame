@@ -66,6 +66,7 @@ for (const locale of ["en", "es", "pt-br", "fr", "id", "zh"]) {
       "because\nfriend\nbeautiful\nanswer\nenough\nfavorite\nlibrary\nthrough",
     );
     await expect(primary).toBeVisible();
+    await expect(primary).toContainText("7");
     await expect(primary).toHaveAttribute(
       "href",
       `/workspace?lang=${lang}#teacher-sign-in`,
@@ -214,7 +215,12 @@ test("anonymous photo preview signs in, restores the words, and uses one trial",
         ? {
             user: { id: "new-parent", name: "Parent" },
             plan: "free",
-            photoImportTrialsUsed: 0,
+            featureTrial: {
+              active: true,
+              startedAt: new Date().toISOString(),
+              endsAt: new Date(Date.now() + 6 * 86400000).toISOString(),
+              remainingMs: 6 * 86400000,
+            },
           }
         : { error: "sign_in_required" },
     }),
@@ -231,7 +237,15 @@ test("anonymous photo preview signs in, restores the words, and uses one trial",
     expect(body.importId).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
     );
-    await route.fulfill({ json: { used: 1, limit: 3 } });
+    await route.fulfill({
+      json: {
+        allowed: true,
+        featureTrial: {
+          active: true,
+          endsAt: new Date(Date.now() + 6 * 86400000).toISOString(),
+        },
+      },
+    });
   });
   await page.goto("/");
   await page.locator("#custom-word-list").fill("keep-me");
@@ -266,7 +280,10 @@ test("signing in with no trials left keeps the preview behind pricing", async ({
         ? {
             user: { id: "returning", name: "Returning" },
             plan: "free",
-            photoImportTrialsUsed: 3,
+            featureTrial: {
+              active: false,
+              endsAt: new Date(Date.now() - 86400000).toISOString(),
+            },
           }
         : { error: "sign_in_required" },
     }),
@@ -280,7 +297,7 @@ test("signing in with no trials left keeps the preview behind pricing", async ({
     accepts += 1;
     return route.fulfill({
       status: 403,
-      json: { error: "photo_import_trial_used" },
+      json: { error: "feature_trial_expired" },
     });
   });
   await page.goto("/");
@@ -308,13 +325,16 @@ test("signed-in users without trials preview words before the pricing unlock", a
   await mockAccount(page, {
     user: { id: "free-user" },
     plan: "free",
-    photoImportTrialsUsed: 3,
+    featureTrial: {
+      active: false,
+      endsAt: new Date(Date.now() - 86400000).toISOString(),
+    },
   });
   await page.route("**/api/photo-import/accept", (route) => {
     accepts += 1;
     return route.fulfill({
       status: 403,
-      json: { error: "photo_import_trial_used" },
+      json: { error: "feature_trial_expired" },
     });
   });
   await page.goto("/");

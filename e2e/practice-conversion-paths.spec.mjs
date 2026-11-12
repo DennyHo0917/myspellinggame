@@ -8,7 +8,6 @@ const me = {
   user: { id: "adult", name: "Adult" },
   plan: "free",
   limits: PLAN_LIMITS.free,
-  photoImportTrialsUsed: 0,
 };
 const usage = {
   trackingTrialUsed: false,
@@ -115,12 +114,12 @@ for (const locale of ["en", "es", "pt-BR", "fr", "id", "zh"]) {
   }) => {
     const copy = productMessages(locale);
     const keepCta = {
-      en: "Sign in free",
-      es: "Entrar gratis",
-      "pt-BR": "Entrar grátis",
-      fr: "Se connecter",
-      id: "Masuk gratis",
-      zh: "免费登录",
+      en: "Sign in: 7-day free trial",
+      es: "Entra: prueba gratis 7 días",
+      "pt-BR": "Entre: teste grátis 7 dias",
+      fr: "Connexion : essai 7 jours",
+      id: "Masuk: uji coba 7 hari",
+      zh: "登录开始 7 天试用",
     }[locale];
     let signedIn = false;
     await page.addInitScript((locale) => {
@@ -197,21 +196,30 @@ for (const locale of ["en", "es", "pt-BR", "fr", "id", "zh"]) {
   });
 }
 
-test("empty photo previews do not use a trial and accepted previews use server counts", async ({
+test("empty photo previews do not call accept, and an active trial can confirm more than once", async ({
   page,
 }) => {
   let accepts = 0;
+  const trial = {
+    active: true,
+    startedAt: new Date().toISOString(),
+    endsAt: new Date(Date.now() + 5 * 86400000).toISOString(),
+    remainingMs: 5 * 86400000,
+  };
   await page.addInitScript(() => {
     window.Tesseract = {
       recognize: async () => ({ data: { text: "apple banana" } }),
     };
   });
-  await page.route("**/api/me", (route) => route.fulfill({ json: me }));
+  await page.route("**/api/me", (route) =>
+    route.fulfill({ json: { ...me, featureTrial: trial } }),
+  );
   await page.route("**/api/photo-import/accept", (route) => {
     accepts++;
-    return route.fulfill({ json: { used: 3, limit: 3 } });
+    return route.fulfill({ json: { allowed: true, featureTrial: trial } });
   });
   await page.goto("/");
+  await expect(page.locator("#feature-trial-note")).toContainText("7-day");
   await page.locator("#photo-import-input").setInputFiles({
     name: "words.png",
     mimeType: "image/png",
@@ -232,10 +240,11 @@ test("empty photo previews do not use a trial and accepted previews use server c
     buffer: Buffer.from("image"),
   });
   await expect(
-    page.locator(".photo-import-notice .paywall-primary"),
+    page.getByRole("button", { name: "Use these words" }),
   ).toBeVisible();
-  await expect(page.locator("#custom-word-list")).toHaveValue("apple\nbanana");
-  expect(accepts).toBe(1);
+  await expect(page.locator("#feature-trial-note")).toBeVisible();
+  await page.locator(".photo-import-review-actions button").first().click();
+  expect(accepts).toBe(2);
 });
 
 test("pricing choices wait for their click handlers before becoming usable", async ({

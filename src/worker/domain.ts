@@ -10,6 +10,32 @@ const PAID_PLAN_LIMITS = {
 } as const;
 
 export const TRACKING_TRIAL_EPOCH = "2026-10-29T19:49:12.000Z";
+export const FEATURE_TRIAL_MS = 7 * 24 * 60 * 60 * 1000;
+
+export type FeatureTrialState = {
+  active: boolean;
+  startedAt: string | null;
+  endsAt: string | null;
+  remainingMs: number;
+};
+
+export function featureTrialFromStart(
+  startedAt: string | null,
+  now = Date.now(),
+): FeatureTrialState {
+  const start = startedAt ? Date.parse(startedAt) : Number.NaN;
+  if (!Number.isFinite(start)) {
+    return { active: false, startedAt: null, endsAt: null, remainingMs: 0 };
+  }
+  const ends = start + FEATURE_TRIAL_MS;
+  const remainingMs = Math.max(0, ends - now);
+  return {
+    active: remainingMs > 0,
+    startedAt: new Date(start).toISOString(),
+    endsAt: new Date(ends).toISOString(),
+    remainingMs,
+  };
+}
 
 export const PLAN_LIMITS = {
   free: {

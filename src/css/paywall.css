@@ -42,6 +42,17 @@
   flex-basis: 100%;
 }
 
+.feature-trial-note {
+  margin: 0.35rem 0 0.65rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  background: #fff6e8;
+  color: #6b4a12;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
 .smart-review-preview {
   display: grid;
   gap: 0.7rem;

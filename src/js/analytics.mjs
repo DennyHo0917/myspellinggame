@@ -196,6 +196,7 @@ const LOCKED_FEATURE_ERRORS = {
   saved_list_limit: "saved_list_limit",
   learner_limit: "learner_limit",
   smart_review_required: "smart_review",
+  feature_trial_expired: "feature_trial",
   sentence_library_required: "example_sentences",
 };
 

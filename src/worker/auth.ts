@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { sendWelcomeEmail } from "./email";
+import { startFeatureTrialIfMissing } from "./featureTrial";
 import { recordLifecycleEvent } from "./lifecycle";
 
 export interface AuthEnv {
@@ -108,6 +109,18 @@ export function createAuth(env: AuthEnv, request: Request) {
       user: {
         create: {
           after: async (user, context) => {
+            try {
+              const created = new Date(user.createdAt);
+              await startFeatureTrialIfMissing(
+                env.DB,
+                user.id,
+                Number.isNaN(created.getTime())
+                  ? new Date().toISOString()
+                  : created.toISOString(),
+              );
+            } catch (error) {
+              console.error("Failed to start feature trial", error);
+            }
             await recordLifecycleEvent(env.DB, user.id, "signup_created", {
               email_verified: Boolean(user.emailVerified),
             });

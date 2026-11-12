@@ -786,13 +786,28 @@ test("pricing shows the Free, Parent, and Teacher plans in every locale", () => 
     );
     for (const term of terms)
       assert.ok(pricing.includes(term), `${locale || "en"}: ${term}`);
+    const trial = {
+      "": "7-day trial of Photo Import and Smart Review",
+      es: "Prueba de 7 días: foto y repaso inteligente",
+      "pt-br": "Teste de 7 dias: foto e revisão inteligente",
+      fr: "Essai 7 jours : import photo et révision intelligente",
+      id: "Uji coba 7 hari: impor foto dan Ulasan Pintar",
+      zh: "拍照导入和智能复习可试用 7 天",
+    }[locale];
+    assert.ok(pricing.includes(trial), `${locale || "en"}: ${trial}`);
+    assert.doesNotMatch(
+      pricing,
+      /Smart Review not included|Sin repaso inteligente|Sem revisão inteligente|Sans révision intelligente|Tanpa Ulasan Pintar|不含智能复习/,
+      locale || "en",
+    );
     assert.doesNotMatch(
       pricing,
       /Plus|\bPro\b|Family Plus|Teacher Plus/,
       locale || "en",
     );
     assert.equal(
-      (pricing.match(/class="product-card pricing-card(?: selected)?"/g) || []).length,
+      (pricing.match(/class="product-card pricing-card(?: selected)?"/g) || [])
+        .length,
       3,
     );
   }
@@ -999,8 +1014,13 @@ test("llms.txt publishes the current product summary and canonical sources", () 
     "https://myspellinggame.com/privacy",
   ])
     assert.ok(content.includes(text), text);
+  assert.ok(
+    content.includes("one 7-day trial of Photo Import and Smart Review"),
+  );
+  assert.ok(content.includes("not part of the 7-day trial"));
   assert.ok(!content.includes("15 student submissions per month"));
   assert.ok(!content.includes("free trial"));
+  assert.ok(!content.includes("does not include Smart Review"));
   assert.ok(content.includes("up to 20 words"));
   assert.ok(content.includes("up to 40 words"));
   assert.ok(!content.includes("up to 80 words"));

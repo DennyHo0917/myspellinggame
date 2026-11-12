@@ -315,7 +315,11 @@ const faqUpdates = {
       ],
       [
         "What is Today's Review?",
-        "Today's Review is included in Parent and Teacher Plans. It uses completed spelling history to surface previously missed words when they are due for more practice.",
+        "Today's Review is included in Parent and Teacher Plans and is not part of the 7-day Photo Import and Smart Review trial. It uses completed spelling history to surface previously missed words when they are due for more practice.",
+      ],
+      [
+        "What is Smart Review?",
+        "Smart Review builds focused follow-up practice from words a learner has missed. Signed-in free accounts include one 7-day trial of Smart Review and Photo Import. After that, Smart Review stays on the Parent and Teacher Plans.",
       ],
       [
         "How does My Spelling Game decide when a word is mastered?",
@@ -331,7 +335,7 @@ const faqUpdates = {
       ],
       [
         "Can I import spelling words from a photo?",
-        "Yes. Parent and Teacher Plans can read a school spelling list from a photo. You can edit the detected words before adding them to the list.",
+        "Yes. A signed-in free account can read a school spelling list from a photo during a 7-day trial shared with Smart Review. After that, Photo Import is included in the Parent and Teacher Plans. You can edit the detected words before adding them to the list.",
       ],
       [
         "Does My Spelling Game charge per student?",
@@ -359,7 +363,11 @@ const faqUpdates = {
       ],
       [
         "¿Qué es Today's Review?",
-        "Today's Review está incluido en los planes para familias y docentes. Usa el historial de spelling para mostrar palabras falladas cuando toca practicarlas de nuevo.",
+        "Today's Review está incluido en los planes para familias y docentes y no forma parte de la prueba de 7 días de importación por foto y repaso inteligente. Usa el historial de spelling para mostrar palabras falladas cuando toca practicarlas de nuevo.",
+      ],
+      [
+        "¿Qué es el repaso inteligente?",
+        "El repaso inteligente prepara una práctica centrada en las palabras que el estudiante falló. Las cuentas gratis con sesión iniciada incluyen una prueba de 7 días del repaso inteligente y de la importación por foto. Después, el repaso inteligente sigue en los planes para familias y docentes.",
       ],
       [
         "¿Cómo decide My Spelling Game que una palabra está dominada?",
@@ -375,7 +383,7 @@ const faqUpdates = {
       ],
       [
         "¿Puedo importar palabras de ortografía desde una foto?",
-        "Sí. Los planes para familias y docentes pueden leer una lista escolar desde una foto. Puedes editar las palabras detectadas antes de añadirlas a la lista.",
+        "Sí. Una cuenta gratis con sesión iniciada puede leer una lista escolar desde una foto durante una prueba de 7 días compartida con el repaso inteligente. Después, la importación por foto queda en los planes para familias y docentes. Puedes editar las palabras detectadas antes de añadirlas a la lista.",
       ],
       [
         "¿My Spelling Game cobra por estudiante?",
@@ -403,7 +411,11 @@ const faqUpdates = {
       ],
       [
         "O que é o Today's Review?",
-        "Today's Review está incluído nos planos para Pais e Professores. Ele usa o histórico de ortografia para mostrar palavras erradas quando chega a hora de praticá-las novamente.",
+        "Today's Review está incluído nos planos para Pais e Professores e não faz parte do teste de 7 dias da importação por foto e da revisão inteligente. Ele usa o histórico de ortografia para mostrar palavras erradas quando chega a hora de praticá-las novamente.",
+      ],
+      [
+        "O que é a revisão inteligente?",
+        "A revisão inteligente monta uma prática focada nas palavras que o aluno errou. Contas grátis conectadas incluem um teste de 7 dias da revisão inteligente e da importação por foto. Depois, a revisão inteligente continua nos planos para Pais e Professores.",
       ],
       [
         "Como o My Spelling Game decide que uma palavra foi dominada?",
@@ -419,7 +431,7 @@ const faqUpdates = {
       ],
       [
         "Posso importar palavras de ortografia por foto?",
-        "Sim. Os planos para Pais e Professores podem ler uma lista escolar por foto. Você pode editar as palavras detectadas antes de adicioná-las à lista.",
+        "Sim. Uma conta grátis conectada pode ler uma lista escolar por foto durante um teste de 7 dias compartilhado com a revisão inteligente. Depois, a importação por foto fica nos planos para Pais e Professores. Você pode editar as palavras detectadas antes de adicioná-las à lista.",
       ],
       [
         "O My Spelling Game cobra por aluno?",
@@ -447,7 +459,11 @@ const faqUpdates = {
       ],
       [
         "Qu’est-ce que Today's Review ?",
-        "Today's Review est inclus dans les offres Parents et Enseignants. Il utilise l’historique d’orthographe pour proposer les mots manqués lorsqu’ils doivent être revus.",
+        "Today's Review est inclus dans les offres Parents et Enseignants et ne fait pas partie de l’essai de 7 jours pour l’import photo et la révision intelligente. Il utilise l’historique d’orthographe pour proposer les mots manqués lorsqu’ils doivent être revus.",
+      ],
+      [
+        "Qu’est-ce que la révision intelligente ?",
+        "La révision intelligente prépare un exercice ciblé à partir des mots manqués. Un compte gratuit connecté inclut un essai de 7 jours pour la révision intelligente et l’import photo. Ensuite, la révision intelligente reste dans les offres Parents et Enseignants.",
       ],
       [
         "Comment My Spelling Game décide-t-il qu’un mot est maîtrisé ?",
@@ -463,7 +479,7 @@ const faqUpdates = {
       ],
       [
         "Puis-je importer des mots d’orthographe depuis une photo ?",
-        "Oui. Les offres Parents et Enseignants peuvent lire une liste scolaire sur photo. Vous pouvez modifier les mots détectés avant de les ajouter à la liste.",
+        "Oui. Un compte gratuit connecté peut lire une liste scolaire sur photo pendant un essai de 7 jours partagé avec la révision intelligente. Ensuite, l’import photo reste dans les offres Parents et Enseignants. Vous pouvez modifier les mots détectés avant de les ajouter à la liste.",
       ],
       [
         "My Spelling Game facture-t-il par élève ?",
@@ -491,7 +507,11 @@ const faqUpdates = {
       ],
       [
         "Apa itu Today's Review?",
-        "Today's Review tersedia pada Paket Orang Tua dan Guru dan memakai riwayat ejaan untuk menampilkan kata yang salah saat waktunya berlatih lagi.",
+        "Today's Review tersedia pada Paket Orang Tua dan Guru dan bukan bagian dari uji coba 7 hari untuk impor foto dan Ulasan Pintar. Fitur ini memakai riwayat ejaan untuk menampilkan kata yang salah saat waktunya berlatih lagi.",
+      ],
+      [
+        "Apa itu Ulasan Pintar?",
+        "Ulasan Pintar menyusun latihan lanjutan dari kata yang salah. Akun gratis yang sudah masuk mendapat satu uji coba 7 hari untuk Ulasan Pintar dan impor foto. Setelah itu, Ulasan Pintar tetap ada di Paket Orang Tua dan Guru.",
       ],
       [
         "Bagaimana My Spelling Game menentukan kata sudah dikuasai?",
@@ -507,7 +527,7 @@ const faqUpdates = {
       ],
       [
         "Bisakah saya mengimpor kata ejaan dari foto?",
-        "Bisa. Paket Orang Tua dan Guru dapat membaca daftar ejaan sekolah dari foto. Kata yang terdeteksi dapat diedit sebelum ditambahkan ke daftar.",
+        "Bisa. Akun gratis yang sudah masuk dapat membaca daftar ejaan sekolah dari foto selama uji coba 7 hari yang juga mencakup Ulasan Pintar. Setelah itu, impor foto ada di Paket Orang Tua dan Guru. Kata yang terdeteksi dapat diedit sebelum ditambahkan ke daftar.",
       ],
       [
         "Apakah My Spelling Game mengenakan biaya per siswa?",
@@ -535,7 +555,11 @@ const faqUpdates = {
       ],
       [
         "什么是 Today's Review？",
-        "Today's Review 包含在家长方案和教师方案中，会根据学生完成过的拼写历史，在错词需要再次练习时把它们找出来。",
+        "Today's Review 包含在家长方案和教师方案中，不属于拍照导入和智能复习的 7 天试用。它会根据学生完成过的拼写历史，在错词需要再次练习时把它们找出来。",
+      ],
+      [
+        "什么是智能复习？",
+        "智能复习会根据学生错过的单词生成针对性后续练习。登录后的免费账号可试用智能复习和拍照导入 7 天。试用结束后，智能复习保留在家长方案和教师方案中。",
       ],
       [
         "My Spelling Game 如何判断单词已经掌握？",
@@ -551,7 +575,7 @@ const faqUpdates = {
       ],
       [
         "可以从照片导入拼写单词吗？",
-        "可以。家长方案和教师方案支持从学校词表照片中识别单词。识别结果可以编辑，确认后再加入词表。",
+        "可以。登录后的免费账号可以在与智能复习共用的 7 天试用期内，从学校词表照片中识别单词。试用结束后，拍照导入包含在家长方案和教师方案中。识别结果可以编辑，确认后再加入词表。",
       ],
       [
         "My Spelling Game 按学生收费吗？",

@@ -2568,9 +2568,9 @@ const parentLandingCopy = {
   en: {
     title: "Spelling Practice for Parents | My Spelling Game",
     description:
-      "Paste this week's school spelling words and start a no-login listening practice. Paid Parent tools add photo import, automatic example sentences, Today's Review, and long-term progress in Workspace.",
+      "Paste this week's school spelling words and start a no-login listening practice. Signed-in free accounts can try Photo Import and Smart Review for 7 days; the Parent Plan keeps them and adds Today's Review.",
     ogDescription:
-      "Turn this week's school words into independent spelling practice with optional photo import and sentence help, then track results and progress.",
+      "Turn this week's school words into independent spelling practice. Signed-in free accounts can try Photo Import and Smart Review for 7 days.",
     h1: "Spelling Practice Your Child Can Do Independently",
     eyebrow: "For busy parents",
     intro:
@@ -2608,29 +2608,30 @@ const parentLandingCopy = {
       ],
       [
         "Smart Review",
-        "Turn real mistakes into focused follow-up practice instead of repeating the whole list.",
+        "Turn real mistakes into focused follow-up practice instead of repeating the whole list. Signed-in free accounts can try it for 7 days.",
       ],
       [
         "Photo Import",
-        "Bring in a school spelling list from a photo, then review the words before using them.",
+        "Bring in a school spelling list from a photo, then review the words before using them. Signed-in free accounts can try it for 7 days.",
       ],
       [
         "Automatic Example Sentences",
-        "Fill known words with example sentences from the curated library, with editing before use.",
+        "Fill known words with example sentences from the curated library, with editing before use. This stays on the Parent and Teacher Plans.",
       ],
     ],
     planComparisonTitle: "Free Plan vs Parent Plan",
     planComparisonIntro:
-      "Both plans keep practice simple for children. The Parent Plan adds the tools and history that make weekly routines easier to run.",
+      "Both plans keep practice simple for children. A signed-in free account can try Photo Import and Smart Review for 7 days. The Parent Plan keeps those tools without a time limit and adds Today's Review, automatic example sentences, and longer history.",
     freePlanFeatures: [
       "Learner profiles",
       "Learning progress and mastery",
       "Basic assignments and saved lists",
+      "7-day Photo Import and Smart Review trial",
     ],
     paidPlanFeatures: [
       "Everything in Free Workspace",
-      "Smart Review and Today's Review",
-      "Photo Import and automatic example sentences",
+      "Photo Import and Smart Review, without a time limit",
+      "Today's Review and automatic example sentences",
       "Up to 5 children and 365-day history",
     ],
     ctaTitle: "Ready to stop running the spelling test yourself?",
@@ -2656,9 +2657,9 @@ const parentLandingCopy = {
   es: {
     title: "Práctica de ortografía para familias | My Spelling Game",
     description:
-      "Pega las palabras de ortografía de esta semana y empieza una práctica de dictado sin cuenta. Los planes para familias añaden importación por foto, frases automáticas, Repaso de hoy y progreso en el espacio de trabajo.",
+      "Pega las palabras de esta semana y empieza un dictado sin cuenta. Una cuenta gratis puede probar 7 días la importación por foto y el repaso inteligente; el plan familiar los mantiene y añade el Repaso de hoy.",
     ogDescription:
-      "Convierte las palabras de la escuela en práctica independiente con importación por foto y frases de apoyo, y sigue el progreso.",
+      "Convierte las palabras de la escuela en práctica independiente. Las cuentas gratis pueden probar 7 días la importación por foto y el repaso inteligente.",
     h1: "Práctica de ortografía que tu hijo puede hacer solo",
     eyebrow: "Para familias con poco tiempo",
     intro:
@@ -2696,29 +2697,30 @@ const parentLandingCopy = {
       ],
       [
         "Repaso inteligente",
-        "Convierte errores reales en práctica específica sin repetir toda la lista.",
+        "Convierte errores reales en práctica específica sin repetir toda la lista. Las cuentas gratis pueden probarlo durante 7 días.",
       ],
       [
         "Importar desde una foto",
-        "Importa la lista de spelling de la escuela desde una foto y revisa las palabras antes de usarlas.",
+        "Importa la lista de spelling de la escuela desde una foto y revisa las palabras antes de usarlas. Las cuentas gratis pueden probarlo durante 7 días.",
       ],
       [
         "Frases de ejemplo automáticas",
-        "Completa palabras conocidas con frases de la biblioteca seleccionada y edítalas antes de usarlas.",
+        "Completa palabras conocidas con frases de la biblioteca seleccionada y edítalas antes de usarlas. Esta función queda en los planes para familias y docentes.",
       ],
     ],
     planComparisonTitle: "Plan gratuito vs Plan para familias",
     planComparisonIntro:
-      "Ambos planes mantienen la práctica sencilla para los niños. El Plan para familias añade herramientas e historial para facilitar la rutina semanal.",
+      "Ambos planes mantienen la práctica sencilla para los niños. Una cuenta gratis con sesión iniciada puede probar la importación por foto y el repaso inteligente durante 7 días. El Plan para familias los mantiene sin límite de tiempo y añade el Repaso de hoy, frases automáticas y un historial más largo.",
     freePlanFeatures: [
       "Perfiles de estudiantes",
       "Progreso de aprendizaje y dominio",
       "Tareas básicas y listas guardadas",
+      "Prueba de 7 días: foto y repaso inteligente",
     ],
     paidPlanFeatures: [
       "Todo lo incluido en el espacio gratuito",
-      "Repaso inteligente y Repaso de hoy",
-      "Importación por foto y frases automáticas",
+      "Importación por foto y repaso inteligente, sin límite de tiempo",
+      "Repaso de hoy y frases automáticas",
       "Hasta 5 hijos y 365 días de historial",
     ],
     ctaTitle: "¿Quieres dejar de hacer tú el dictado?",
@@ -2744,9 +2746,9 @@ const parentLandingCopy = {
   "pt-BR": {
     title: "Prática de ortografia para pais | My Spelling Game",
     description:
-      "Cole as palavras da escola desta semana e comece um ditado sem conta. O plano para Pais acrescenta importação por foto, frases automáticas, Revisão de hoje e progresso no espaço de trabalho.",
+      "Cole as palavras da escola desta semana e comece um ditado sem conta. Uma conta grátis pode testar por 7 dias a importação por foto e a revisão inteligente; o plano para Pais as mantém e acrescenta a Revisão de hoje.",
     ogDescription:
-      "Transforme as palavras da escola em prática independente com importação por foto e frases de apoio, e acompanhe o progresso.",
+      "Transforme as palavras da escola em prática independente. Contas grátis podem testar por 7 dias a importação por foto e a revisão inteligente.",
     h1: "Prática de ortografia que seu filho faz sozinho",
     eyebrow: "Para responsáveis com pouco tempo",
     intro:
@@ -2784,29 +2786,30 @@ const parentLandingCopy = {
       ],
       [
         "Revisão inteligente",
-        "Transforme erros reais em prática focada sem repetir a lista inteira.",
+        "Transforme erros reais em prática focada sem repetir a lista inteira. Contas grátis podem testar isso por 7 dias.",
       ],
       [
         "Importar por foto",
-        "Importe a lista de ortografia da escola por foto e revise as palavras antes de usá-las.",
+        "Importe a lista de ortografia da escola por foto e revise as palavras antes de usá-las. Contas grátis podem testar isso por 7 dias.",
       ],
       [
         "Frases de exemplo automáticas",
-        "Preencha palavras conhecidas com frases da biblioteca selecionada e edite-as antes de usar.",
+        "Preencha palavras conhecidas com frases da biblioteca selecionada e edite-as antes de usar. Esta função fica nos planos para Pais e Professores.",
       ],
     ],
     planComparisonTitle: "Plano gratuito vs Plano para Pais",
     planComparisonIntro:
-      "Os dois planos mantêm a prática simples para as crianças. O Plano para Pais acrescenta ferramentas e histórico para facilitar a rotina semanal.",
+      "Os dois planos mantêm a prática simples para as crianças. Uma conta grátis conectada pode testar a importação por foto e a revisão inteligente por 7 dias. O Plano para Pais as mantém sem limite de tempo e acrescenta a Revisão de hoje, frases automáticas e um histórico mais longo.",
     freePlanFeatures: [
       "Perfis de alunos",
       "Progresso de aprendizagem e domínio",
       "Atividades básicas e listas salvas",
+      "Teste de 7 dias: foto e revisão inteligente",
     ],
     paidPlanFeatures: [
       "Tudo do Espaço de trabalho gratuito",
-      "Revisão inteligente e Revisão de hoje",
-      "Importação por foto e frases automáticas",
+      "Importação por foto e revisão inteligente, sem limite de tempo",
+      "Revisão de hoje e frases automáticas",
       "Até 5 filhos e histórico de 365 dias",
     ],
     ctaTitle: "Pronto para não precisar mais fazer o ditado?",
@@ -2832,9 +2835,9 @@ const parentLandingCopy = {
   fr: {
     title: "Exercices d’orthographe pour les parents | My Spelling Game",
     description:
-      "Collez les mots de la semaine et lancez une dictée sans compte. L’offre Parents ajoute l’import photo, les phrases automatiques, la Révision du jour et le suivi dans l’espace de travail.",
+      "Collez les mots de la semaine et lancez une dictée sans compte. Un compte gratuit peut essayer 7 jours l’import photo et la révision intelligente ; l’offre Parents les conserve et ajoute la Révision du jour.",
     ogDescription:
-      "Transformez la liste de l’école en exercice autonome avec import photo et phrases d’aide, puis suivez les progrès.",
+      "Transformez la liste de l’école en exercice autonome. Un compte gratuit peut essayer 7 jours l’import photo et la révision intelligente.",
     h1: "Un exercice d’orthographe que votre enfant fait en autonomie",
     eyebrow: "Pour les parents pressés",
     intro:
@@ -2872,29 +2875,30 @@ const parentLandingCopy = {
       ],
       [
         "Révision intelligente",
-        "Transformez les vraies erreurs en exercice ciblé sans refaire toute la liste.",
+        "Transformez les vraies erreurs en exercice ciblé sans refaire toute la liste. Un compte gratuit peut l’essayer pendant 7 jours.",
       ],
       [
         "Import par photo",
-        "Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de les utiliser.",
+        "Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de les utiliser. Un compte gratuit peut l’essayer pendant 7 jours.",
       ],
       [
         "Phrases d’exemple automatiques",
-        "Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant usage.",
+        "Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant usage. Cette fonction reste dans les offres Parents et Enseignants.",
       ],
     ],
     planComparisonTitle: "Offre gratuite vs Offre Parents",
     planComparisonIntro:
-      "Les deux formules gardent l’exercice simple pour les enfants. L’Offre Parents ajoute les outils et l’historique qui facilitent la routine hebdomadaire.",
+      "Les deux formules gardent l’exercice simple pour les enfants. Un compte gratuit connecté peut essayer l’import photo et la révision intelligente pendant 7 jours. L’Offre Parents les conserve sans limite de temps et ajoute la Révision du jour, les phrases automatiques et un historique plus long.",
     freePlanFeatures: [
       "Profils des élèves",
       "Progression et maîtrise",
       "Devoirs de base et listes enregistrées",
+      "Essai 7 jours : import photo et révision intelligente",
     ],
     paidPlanFeatures: [
       "Tout l’Espace de travail gratuit",
-      "Révision intelligente et Révision du jour",
-      "Import par photo et phrases automatiques",
+      "Import photo et révision intelligente, sans limite de temps",
+      "Révision du jour et phrases automatiques",
       "Jusqu’à 5 enfants et historique sur 365 jours",
     ],
     ctaTitle: "Prêt à ne plus faire la dictée vous-même ?",
@@ -2920,9 +2924,9 @@ const parentLandingCopy = {
   id: {
     title: "Latihan ejaan untuk orang tua | My Spelling Game",
     description:
-      "Tempel kata sekolah minggu ini dan mulai latihan dikte tanpa akun. Paket Orang Tua menambahkan impor foto, kalimat otomatis, Ulasan hari ini, dan perkembangan di ruang kerja.",
+      "Tempel kata sekolah minggu ini dan mulai latihan dikte tanpa akun. Akun gratis dapat mencoba impor foto dan Ulasan Pintar selama 7 hari; Paket Orang Tua mempertahankannya dan menambahkan Ulasan hari ini.",
     ogDescription:
-      "Ubah kata dari sekolah menjadi latihan mandiri dengan impor foto dan kalimat bantuan, lalu pantau perkembangannya.",
+      "Ubah kata dari sekolah menjadi latihan mandiri. Akun gratis dapat mencoba impor foto dan Ulasan Pintar selama 7 hari.",
     h1: "Latihan ejaan yang bisa dilakukan anak secara mandiri",
     eyebrow: "Untuk orang tua yang sibuk",
     intro:
@@ -2960,29 +2964,30 @@ const parentLandingCopy = {
       ],
       [
         "Ulasan pintar",
-        "Ubah kesalahan nyata menjadi latihan terarah tanpa mengulang seluruh daftar.",
+        "Ubah kesalahan nyata menjadi latihan terarah tanpa mengulang seluruh daftar. Akun gratis dapat mencobanya selama 7 hari.",
       ],
       [
         "Impor foto",
-        "Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum digunakan.",
+        "Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum digunakan. Akun gratis dapat mencobanya selama 7 hari.",
       ],
       [
         "Kalimat contoh otomatis",
-        "Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum digunakan.",
+        "Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum digunakan. Fitur ini tetap di Paket Orang Tua dan Guru.",
       ],
     ],
     planComparisonTitle: "Paket Gratis vs Paket Orang Tua",
     planComparisonIntro:
-      "Kedua pilihan menjaga latihan tetap sederhana bagi anak. Paket Orang Tua menambahkan alat dan riwayat untuk memudahkan rutinitas mingguan.",
+      "Kedua pilihan menjaga latihan tetap sederhana bagi anak. Akun gratis yang sudah masuk dapat mencoba impor foto dan Ulasan Pintar selama 7 hari. Paket Orang Tua mempertahankannya tanpa batas waktu, lalu menambahkan Ulasan hari ini, kalimat otomatis, dan riwayat yang lebih panjang.",
     freePlanFeatures: [
       "Profil pelajar",
       "Perkembangan belajar dan penguasaan",
       "Tugas dasar dan daftar tersimpan",
+      "Uji coba 7 hari: impor foto dan Ulasan Pintar",
     ],
     paidPlanFeatures: [
       "Semua fitur Ruang Kerja Gratis",
-      "Ulasan pintar dan Ulasan hari ini",
-      "Impor foto dan kalimat contoh otomatis",
+      "Impor foto dan Ulasan Pintar tanpa batas waktu",
+      "Ulasan hari ini dan kalimat contoh otomatis",
       "Hingga 5 anak dan riwayat 365 hari",
     ],
     ctaTitle: "Siap berhenti mendikte sendiri?",
@@ -3008,8 +3013,9 @@ const parentLandingCopy = {
   zh: {
     title: "家长英语拼写练习 | My Spelling Game",
     description:
-      "粘贴学校本周英语单词，无需登录即可开始听写练习；家长方案还支持拍照导入、自动例句、今日复习，并在工作台长期追踪进度。",
-    ogDescription: "把学校本周词表变成孩子可独立完成的英语拼写练习，并支持拍照导入和自动例句。",
+      "粘贴学校本周英语单词，无需登录即可开始听写练习。登录后的免费账号可试用拍照导入和智能复习 7 天；之后这两项保留在家长方案中，今日复习也在该方案里。",
+    ogDescription:
+      "把学校本周词表变成孩子可独立完成的英语拼写练习。登录后的免费账号可试用拍照导入和智能复习 7 天。",
     h1: "孩子可以独立完成的英语拼写练习",
     eyebrow: "为忙碌家长而做",
     intro:
@@ -3035,18 +3041,23 @@ const parentLandingCopy = {
       ["学习者档案", "每个孩子使用固定档案和简单链接，无需儿童账号或密码。"],
       ["学习进度", "查看已完成练习、成绩、错词，以及不同作业之间的进步。"],
       ["掌握度", "分清仍在学习的单词和已经能够稳定掌握的单词。"],
-      ["智能复习", "根据真实错误生成针对性练习，不必反复重练整份词表。"],
-      ["拍照导入", "从学校词表照片中提取单词，确认后再加入练习。"],
-      ["自动生成例句", "使用精选例句库为已知单词补充例句，使用前仍可编辑。"],
+      ["智能复习", "根据真实错误生成针对性练习，不必反复重练整份词表。登录后的免费账号可试用 7 天。"],
+      ["拍照导入", "从学校词表照片中提取单词，确认后再加入练习。登录后的免费账号可试用 7 天。"],
+      ["自动生成例句", "使用精选例句库为已知单词补充例句，使用前仍可编辑。这项功能保留在家长方案和教师方案中。"],
     ],
     planComparisonTitle: "免费方案 vs 家长方案",
     planComparisonIntro:
-      "两种方案都让孩子可以轻松开始练习。家长方案增加了更适合长期家庭学习的工具和历史记录。",
-    freePlanFeatures: ["学习者档案", "学习进度和掌握度", "基础作业和保存词表"],
+      "两种方案都让孩子可以轻松开始练习。登录后的免费账号可试用拍照导入和智能复习 7 天。家长方案不限时保留这两项，并增加今日复习、自动例句和更长的历史记录。",
+    freePlanFeatures: [
+      "学习者档案",
+      "学习进度和掌握度",
+      "基础作业和保存词表",
+      "拍照导入和智能复习可试用 7 天",
+    ],
     paidPlanFeatures: [
       "包含免费工作台全部功能",
-      "智能复习和今日复习",
-      "拍照导入和自动生成例句",
+      "拍照导入和智能复习，不限时",
+      "今日复习和自动生成例句",
       "最多 5 个孩子和 365 天历史记录",
     ],
     ctaTitle: "准备好不再亲自做听写了吗？",
@@ -3074,7 +3085,7 @@ const teacherLandingCopy = {
   en: {
     title: "Spelling Assignments for Teachers | My Spelling Game",
     description:
-      "Paste a spelling list, share one link, and track results without student accounts. Teacher Plan adds photo import, automatic example sentences, Today's Review, Smart Review, mastery, and CSV reports.",
+      "Create spelling assignments and track results. Signed-in free accounts can try Smart Review for 7 days. Teacher Plan adds Google Classroom sharing, class PINs, and CSV reports.",
     ogDescription:
       "Turn any spelling list into a shareable assignment with photo import and sentence help, then track class results without student accounts.",
     h1: "Assign English Spelling Work Without Student Sign-Ups",
@@ -3116,7 +3127,7 @@ const teacherLandingCopy = {
       ],
       [
         "Smart Review",
-        "Build focused follow-up practice from real mistakes instead of repeating every word.",
+        "Build focused follow-up practice from real mistakes instead of repeating every word. Signed-in free accounts can try it for 7 days.",
       ],
       [
         "Class Join/PIN",
@@ -3133,16 +3144,17 @@ const teacherLandingCopy = {
     ],
     planComparisonTitle: "Free Plan vs Teacher Plan",
     planComparisonIntro:
-      "Start with basic assignments and progress tracking. Teacher Plan adds review, import, reporting, and classroom capacity for a complete weekly workflow.",
+      "Start with basic assignments and progress tracking. A signed-in free account can try Photo Import and Smart Review for 7 days. Teacher Plan keeps those tools without a time limit and adds Today's Review, reporting, and classroom capacity.",
     freePlanFeatures: [
       "Basic assignments from your own words",
       "Learner progress and mastery",
       "No student accounts for practice",
+      "7-day Photo Import and Smart Review trial",
     ],
     paidPlanFeatures: [
       "Everything in Free Workspace",
-      "Smart Review and Today's Review",
-      "Photo Import and automatic example sentences",
+      "Photo Import and Smart Review, without a time limit",
+      "Today's Review and automatic example sentences",
       "Class Join/PIN and CSV Export",
       "Class-wide missed-word statistics",
       "Up to 40 students, 10 active assignments, and 365-day history",
@@ -3170,7 +3182,7 @@ const teacherLandingCopy = {
   es: {
     title: "Tareas de ortografía para docentes | My Spelling Game",
     description:
-      "Pega una lista de ortografía, comparte un enlace y sigue los resultados sin cuentas para alumnos. El plan para docentes añade importación por foto, frases automáticas, Repaso de hoy, dominio y CSV.",
+      "Crea tareas de spelling y sigue los resultados. Una cuenta gratis puede probar el repaso inteligente durante 7 días. El Plan para docentes añade Google Classroom, PIN de clase e informes CSV.",
     ogDescription:
       "Convierte cualquier lista de ortografía en una tarea compartida con importación por foto y frases automáticas, y sigue los resultados sin cuentas.",
     h1: "Asigna tareas de ortografía sin registro para el alumnado",
@@ -3212,7 +3224,7 @@ const teacherLandingCopy = {
       ],
       [
         "Repaso inteligente",
-        "Crea prácticas específicas a partir de errores reales sin repetir toda la lista.",
+        "Crea prácticas específicas a partir de errores reales sin repetir toda la lista. Las cuentas gratis pueden probarlo durante 7 días.",
       ],
       [
         "Acceso a clase/PIN",
@@ -3229,16 +3241,17 @@ const teacherLandingCopy = {
     ],
     planComparisonTitle: "Plan gratuito vs Plan para docentes",
     planComparisonIntro:
-      "Empieza con tareas básicas y seguimiento del progreso. El Plan para docentes añade repaso, importación, informes y capacidad para la clase.",
+      "Empieza con tareas básicas y seguimiento del progreso. Una cuenta gratis puede probar 7 días la importación por foto y el repaso inteligente. El Plan para docentes los mantiene sin límite de tiempo y añade el Repaso de hoy, informes y capacidad para la clase.",
     freePlanFeatures: [
       "Tareas básicas con tus propias palabras",
       "Progreso y dominio del alumnado",
       "Práctica sin cuentas para alumnos",
+      "Prueba de 7 días: foto y repaso inteligente",
     ],
     paidPlanFeatures: [
       "Todo lo incluido en el espacio gratuito",
-      "Repaso inteligente y Repaso de hoy",
-      "Importación por foto y frases automáticas",
+      "Importación por foto y repaso inteligente, sin límite de tiempo",
+      "Repaso de hoy y frases automáticas",
       "Acceso a clase/PIN y exportación CSV",
       "Estadísticas de errores de toda la clase",
       "Hasta 40 alumnos, 10 tareas activas y 365 días de historial",
@@ -3266,7 +3279,7 @@ const teacherLandingCopy = {
   "pt-BR": {
     title: "Atividades de ortografia para professores | My Spelling Game",
     description:
-      "Cole uma lista de ortografia, compartilhe um link e acompanhe os resultados sem contas de alunos. O plano para Professores acrescenta importação por foto, frases automáticas, Revisão de hoje, domínio e CSV.",
+      "Crie atividades de spelling e acompanhe os resultados. Uma conta grátis pode testar a revisão inteligente por 7 dias. O Plano para Professores inclui Google Classroom, PIN da turma e CSV.",
     ogDescription:
       "Transforme qualquer lista de ortografia em uma atividade compartilhável com importação por foto e frases automáticas, e acompanhe a turma sem contas.",
     h1: "Crie atividades de ortografia sem cadastro dos alunos",
@@ -3308,7 +3321,7 @@ const teacherLandingCopy = {
       ],
       [
         "Revisão inteligente",
-        "Crie práticas focadas com base nos erros reais sem repetir a lista inteira.",
+        "Crie práticas focadas com base nos erros reais sem repetir a lista inteira. Contas grátis podem testar isso por 7 dias.",
       ],
       [
         "Entrada na turma/PIN",
@@ -3325,16 +3338,17 @@ const teacherLandingCopy = {
     ],
     planComparisonTitle: "Plano gratuito vs Plano para Professores",
     planComparisonIntro:
-      "Comece com atividades básicas e acompanhamento do progresso. O Plano para Professores acrescenta revisão, importação, relatórios e capacidade para a turma.",
+      "Comece com atividades básicas e acompanhamento do progresso. Uma conta grátis pode testar por 7 dias a importação por foto e a revisão inteligente. O Plano para Professores as mantém sem limite de tempo e acrescenta a Revisão de hoje, relatórios e capacidade para a turma.",
     freePlanFeatures: [
       "Atividades básicas com suas próprias palavras",
       "Progresso e domínio dos alunos",
       "Prática sem contas para os alunos",
+      "Teste de 7 dias: foto e revisão inteligente",
     ],
     paidPlanFeatures: [
       "Tudo do Espaço de trabalho gratuito",
-      "Revisão inteligente e Revisão de hoje",
-      "Importação por foto e frases automáticas",
+      "Importação por foto e revisão inteligente, sem limite de tempo",
+      "Revisão de hoje e frases automáticas",
       "Entrada na turma/PIN e exportação CSV",
       "Estatísticas de erros de toda a turma",
       "Até 40 alunos, 10 atividades ativas e histórico de 365 dias",
@@ -3362,7 +3376,7 @@ const teacherLandingCopy = {
   fr: {
     title: "Devoirs d’orthographe pour enseignants | My Spelling Game",
     description:
-      "Collez une liste d’orthographe, partagez un lien et suivez les résultats sans compte élève. L’offre Enseignants ajoute l’import photo, les phrases automatiques, la Révision du jour, la maîtrise et le CSV.",
+      "Créez des devoirs d’orthographe anglaise et suivez les résultats. Un compte gratuit peut essayer la révision intelligente pendant 7 jours. L’offre Enseignants ajoute Google Classroom, les PIN de classe et les rapports CSV.",
     ogDescription:
       "Transformez une liste d’orthographe en devoir à partager avec import photo et phrases automatiques, puis suivez la classe sans compte élève.",
     h1: "Créez des devoirs d’orthographe sans inscription des élèves",
@@ -3404,7 +3418,7 @@ const teacherLandingCopy = {
       ],
       [
         "Révision intelligente",
-        "Créez des exercices ciblés à partir des vraies erreurs sans reprendre toute la liste.",
+        "Créez des exercices ciblés à partir des vraies erreurs sans reprendre toute la liste. Un compte gratuit peut l’essayer pendant 7 jours.",
       ],
       [
         "Accès classe/PIN",
@@ -3421,16 +3435,17 @@ const teacherLandingCopy = {
     ],
     planComparisonTitle: "Offre gratuite vs Offre Enseignants",
     planComparisonIntro:
-      "Commencez avec les devoirs de base et le suivi des progrès. L’Offre Enseignants ajoute la révision, l’import, les rapports et la capacité de classe.",
+      "Commencez avec les devoirs de base et le suivi des progrès. Un compte gratuit peut essayer 7 jours l’import photo et la révision intelligente. L’Offre Enseignants les conserve sans limite de temps et ajoute la Révision du jour, les rapports et la capacité de classe.",
     freePlanFeatures: [
       "Devoirs de base avec vos propres mots",
       "Progression et maîtrise des élèves",
       "Exercices sans compte élève",
+      "Essai 7 jours : import photo et révision intelligente",
     ],
     paidPlanFeatures: [
       "Tout l’Espace de travail gratuit",
-      "Révision intelligente et Révision du jour",
-      "Import par photo et phrases automatiques",
+      "Import photo et révision intelligente, sans limite de temps",
+      "Révision du jour et phrases automatiques",
       "Accès classe/PIN et export CSV",
       "Statistiques des mots manqués de la classe",
       "Jusqu’à 40 élèves, 10 devoirs actifs et historique sur 365 jours",
@@ -3458,7 +3473,7 @@ const teacherLandingCopy = {
   id: {
     title: "Tugas ejaan untuk guru | My Spelling Game",
     description:
-      "Tempel daftar ejaan, bagikan satu link, dan pantau hasil tanpa akun siswa. Paket Guru menambahkan impor foto, kalimat otomatis, Ulasan hari ini, penguasaan, dan CSV.",
+      "Buat tugas ejaan dan pantau hasilnya. Akun gratis dapat mencoba Ulasan Pintar selama 7 hari. Paket Guru menyediakan berbagi ke Google Classroom, PIN kelas, dan laporan CSV.",
     ogDescription:
       "Ubah daftar ejaan menjadi tugas yang mudah dibagikan dengan impor foto dan kalimat otomatis, lalu pantau kelas tanpa akun siswa.",
     h1: "Buat tugas ejaan tanpa pendaftaran siswa",
@@ -3500,7 +3515,7 @@ const teacherLandingCopy = {
       ],
       [
         "Ulasan pintar",
-        "Buat latihan lanjutan dari kesalahan nyata tanpa mengulang seluruh daftar.",
+        "Buat latihan lanjutan dari kesalahan nyata tanpa mengulang seluruh daftar. Akun gratis dapat mencobanya selama 7 hari.",
       ],
       [
         "Gabung kelas/PIN",
@@ -3517,16 +3532,17 @@ const teacherLandingCopy = {
     ],
     planComparisonTitle: "Paket Gratis vs Paket Guru",
     planComparisonIntro:
-      "Mulai dengan tugas dasar dan pemantauan perkembangan. Paket Guru menambahkan ulasan, impor, laporan, dan kapasitas kelas.",
+      "Mulai dengan tugas dasar dan pemantauan perkembangan. Akun gratis dapat mencoba impor foto dan Ulasan Pintar selama 7 hari. Paket Guru mempertahankannya tanpa batas waktu, lalu menambahkan Ulasan hari ini, laporan, dan kapasitas kelas.",
     freePlanFeatures: [
       "Tugas dasar dengan kata-kata Anda sendiri",
       "Perkembangan dan penguasaan siswa",
       "Latihan tanpa akun siswa",
+      "Uji coba 7 hari: impor foto dan Ulasan Pintar",
     ],
     paidPlanFeatures: [
       "Semua fitur Ruang Kerja Gratis",
-      "Ulasan pintar dan Ulasan hari ini",
-      "Impor foto dan kalimat contoh otomatis",
+      "Impor foto dan Ulasan Pintar tanpa batas waktu",
+      "Ulasan hari ini dan kalimat contoh otomatis",
       "Gabung kelas/PIN dan ekspor CSV",
       "Statistik kata salah di seluruh kelas",
       "Hingga 40 siswa, 10 tugas aktif, dan riwayat 365 hari",
@@ -3554,7 +3570,7 @@ const teacherLandingCopy = {
   zh: {
     title: "教师英语拼写作业 | My Spelling Game",
     description:
-      "粘贴英语词表，分享一个链接，无需学生账号即可追踪结果；教师方案还支持拍照导入、自动例句、今日复习、掌握度、智能复习和 CSV。",
+      "创建英语拼写作业并追踪练习结果。登录后的免费账号可试用智能复习 7 天。教师方案提供 Google Classroom 分享、全班 PIN 入口和 CSV 报告。",
     ogDescription: "把任意英语词表变成可分享、可追踪的班级作业，支持拍照导入和自动例句，无需学生账号。",
     h1: "无需学生注册，轻松布置英语拼写作业",
     eyebrow: "为教师而做",
@@ -3583,7 +3599,7 @@ const teacherLandingCopy = {
       ["作业", "用自己的词表创建可追踪作业，并分享给全班学生。"],
       ["学习进度", "查看提交记录、成绩、错词和不同作业之间的进步。"],
       ["掌握度", "分清每位学生仍在学习的单词和已经稳定掌握的单词。"],
-      ["智能复习", "根据真实错词生成针对性后续练习，不必重复整份词表。"],
+      ["智能复习", "根据真实错词生成针对性后续练习，不必重复整份词表。登录后的免费账号可试用 7 天。"],
       [
         "班级加入/PIN",
         "向学生提供班级代码和个人 PIN，方便他们快速回到自己的作业。",
@@ -3596,16 +3612,17 @@ const teacherLandingCopy = {
     ],
     planComparisonTitle: "免费方案 vs 教师方案",
     planComparisonIntro:
-      "先用基础作业和进度追踪开始。教师方案增加复习、导入、报告和班级容量，覆盖完整的每周作业流程。",
+      "先用基础作业和进度追踪开始。登录后的免费账号可试用拍照导入和智能复习 7 天。教师方案不限时保留这两项，并增加今日复习、报告和班级容量。",
     freePlanFeatures: [
       "使用自己的词表创建基础作业",
       "查看学习进度和掌握度",
       "学生练习无需账号",
+      "拍照导入和智能复习可试用 7 天",
     ],
     paidPlanFeatures: [
       "包含免费工作台全部功能",
-      "智能复习和今日复习",
-      "拍照导入和自动生成例句",
+      "拍照导入和智能复习，不限时",
+      "今日复习和自动生成例句",
       "班级加入/PIN 和 CSV 导出",
       "班级错词统计",
       "最多 40 名学生、10 份活跃作业和 365 天历史记录",
@@ -3638,31 +3655,31 @@ const paidLandingFeatures = {
       ["Automatic Example Sentences", "Fill known words with example sentences from the curated library, with editing before use."],
     ],
     teacher: [
-      ["Today's Review", "Open a short session built from missed words that are due for practice today."],
-      ["Photo Import", "Bring in a school spelling list from a photo, then review the words before creating an assignment."],
-      ["Automatic Example Sentences", "Fill known words with example sentences from the curated library, with editing before publishing."],
+      ["Today's Review", "Open a short session built from missed words that are due for practice today. This stays on the Parent and Teacher Plans and is not part of the 7-day trial."],
+      ["Photo Import", "Bring in a school spelling list from a photo, then review the words before creating an assignment. Signed-in free accounts can try it for 7 days."],
+      ["Automatic Example Sentences", "Fill known words with example sentences from the curated library, with editing before publishing. This stays on the Parent and Teacher Plans and is not part of the 7-day trial."],
       ["Class-wide Missed-word Statistics", "See which missed words are most common across the class."],
     ],
   },
   es: {
     parent: [["Importar desde una foto", "Importa la lista de spelling de la escuela desde una foto y revisa las palabras antes de usarlas."], ["Frases de ejemplo automáticas", "Completa palabras conocidas con frases de la biblioteca seleccionada y edítalas antes de usarlas."]],
-    teacher: [["Repaso de hoy", "Abre una sesión corta con las palabras falladas que toca practicar hoy."], ["Importar desde una foto", "Importa la lista de spelling de la escuela desde una foto y revisa las palabras antes de crear la tarea."], ["Frases de ejemplo automáticas", "Completa palabras conocidas con frases de la biblioteca seleccionada y edítalas antes de publicar."], ["Estadísticas de errores de la clase", "Identifica las palabras que más cuesta dominar en toda la clase."]],
+    teacher: [["Repaso de hoy", "Abre una sesión corta con las palabras falladas que toca practicar hoy. Queda en los planes para familias y docentes, fuera de la prueba de 7 días."], ["Importar desde una foto", "Importa la lista de spelling de la escuela desde una foto y revisa las palabras antes de crear la tarea. Las cuentas gratis pueden probarlo durante 7 días."], ["Frases de ejemplo automáticas", "Completa palabras conocidas con frases de la biblioteca seleccionada y edítalas antes de publicar. Esta función queda en los planes para familias y docentes, fuera de la prueba de 7 días."], ["Estadísticas de errores de la clase", "Identifica las palabras que más cuesta dominar en toda la clase."]],
   },
   "pt-BR": {
     parent: [["Importar por foto", "Importe a lista de ortografia da escola por foto e revise as palavras antes de usá-las."], ["Frases de exemplo automáticas", "Preencha palavras conhecidas com frases da biblioteca selecionada e edite-as antes de usar."]],
-    teacher: [["Revisão de hoje", "Abra uma sessão curta com as palavras erradas que já devem ser praticadas hoje."], ["Importar por foto", "Importe a lista de ortografia da escola por foto e revise as palavras antes de criar a atividade."], ["Frases de exemplo automáticas", "Preencha palavras conhecidas com frases da biblioteca selecionada e edite-as antes de publicar."], ["Estatísticas de erros da turma", "Veja quais palavras são mais difíceis para toda a turma."]],
+    teacher: [["Revisão de hoje", "Abra uma sessão curta com as palavras erradas que já devem ser praticadas hoje. Ela fica nos planos para Pais e Professores, fora do teste de 7 dias."], ["Importar por foto", "Importe a lista de ortografia da escola por foto e revise as palavras antes de criar a atividade. Contas grátis podem testar isso por 7 dias."], ["Frases de exemplo automáticas", "Preencha palavras conhecidas com frases da biblioteca selecionada e edite-as antes de publicar. Esta função fica nos planos para Pais e Professores, fora do teste de 7 dias."], ["Estatísticas de erros da turma", "Veja quais palavras são mais difíceis para toda a turma."]],
   },
   fr: {
     parent: [["Import par photo", "Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de les utiliser."], ["Phrases d’exemple automatiques", "Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant usage."]],
-    teacher: [["Révision du jour", "Lancez une courte séance avec les mots manqués qui doivent être revus aujourd’hui."], ["Import par photo", "Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de créer le devoir."], ["Phrases d’exemple automatiques", "Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant publication."], ["Statistiques des mots manqués de la classe", "Repérez les mots qui posent le plus de difficultés dans toute la classe."]],
+    teacher: [["Révision du jour", "Lancez une courte séance avec les mots manqués qui doivent être revus aujourd’hui. Elle reste dans les offres Parents et Enseignants, hors de l’essai de 7 jours."], ["Import par photo", "Importez la liste d’orthographe de l’école depuis une photo et vérifiez les mots avant de créer le devoir. Un compte gratuit peut l’essayer pendant 7 jours."], ["Phrases d’exemple automatiques", "Complétez les mots connus avec la bibliothèque sélectionnée et modifiez les phrases avant publication. Cette fonction reste dans les offres Parents et Enseignants, hors de l’essai de 7 jours."], ["Statistiques des mots manqués de la classe", "Repérez les mots qui posent le plus de difficultés dans toute la classe."]],
   },
   id: {
     parent: [["Impor foto", "Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum digunakan."], ["Kalimat contoh otomatis", "Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum digunakan."]],
-    teacher: [["Ulasan hari ini", "Buka sesi singkat berisi kata salah yang sudah waktunya dilatih hari ini."], ["Impor foto", "Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum membuat tugas."], ["Kalimat contoh otomatis", "Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum diterbitkan."], ["Statistik kata salah di kelas", "Lihat kata yang paling sering salah di seluruh kelas."]],
+    teacher: [["Ulasan hari ini", "Buka sesi singkat berisi kata salah yang sudah waktunya dilatih hari ini. Fitur ini tetap di Paket Orang Tua dan Guru, di luar uji coba 7 hari."], ["Impor foto", "Impor daftar ejaan sekolah dari foto, lalu periksa kata sebelum membuat tugas. Akun gratis dapat mencobanya selama 7 hari."], ["Kalimat contoh otomatis", "Isi kata yang dikenal dengan kalimat dari pustaka pilihan, lalu edit sebelum diterbitkan. Fitur ini tetap di Paket Orang Tua dan Guru, di luar uji coba 7 hari."], ["Statistik kata salah di kelas", "Lihat kata yang paling sering salah di seluruh kelas."]],
   },
   zh: {
     parent: [["拍照导入", "从学校词表照片中提取单词，确认后再加入练习。"], ["自动填充例句", "使用精选例句库为已知单词补充例句，使用前仍可编辑。"]],
-    teacher: [["今日复习", "打开一轮短练习，复习今天正好需要再次练习的错词。"], ["拍照导入", "从学校词表照片中提取单词，确认后再创建作业。"], ["自动填充例句", "使用精选例句库为已知单词补充例句，发布前仍可编辑。"], ["班级错词统计", "查看全班最常出现的错词，找到需要重点练习的内容。"]],
+    teacher: [["今日复习", "打开一轮短练习，复习今天正好需要再次练习的错词。这项功能保留在家长方案和教师方案中，不属于 7 天试用。"], ["拍照导入", "从学校词表照片中提取单词，确认后再创建作业。登录后的免费账号可试用 7 天。"], ["自动填充例句", "使用精选例句库为已知单词补充例句，发布前仍可编辑。这项功能保留在家长方案和教师方案中，不属于 7 天试用。"], ["班级错词统计", "查看全班最常出现的错词，找到需要重点练习的内容。"]],
   },
 };
 
@@ -3671,37 +3688,37 @@ const parentFeatureGroups = {
     freeTitle: "Free Workspace",
     freeIntro: "After a parent signs in, Free Workspace keeps learner profiles, progress, and mastery history connected.",
     paidTitle: "Parent Plan",
-    paidIntro: "The paid Parent Plan adds focused review, list import, sentence help, and longer family history.",
+    paidIntro: "The Parent Plan keeps Photo Import and Smart Review without a time limit, and adds Today's Review, automatic example sentences, and longer family history.",
   },
   es: {
     freeTitle: "Espacio de trabajo gratuito",
     freeIntro: "Al iniciar sesión, el espacio gratuito mantiene unidos los perfiles, el progreso y el dominio de cada estudiante.",
     paidTitle: "Plan para familias",
-    paidIntro: "El Plan para familias de pago añade repaso específico, importación de listas, ayuda con frases y un historial más largo.",
+    paidIntro: "El Plan para familias mantiene la importación por foto y el repaso inteligente sin límite de tiempo, y añade el Repaso de hoy, ayuda con frases y un historial más largo.",
   },
   "pt-BR": {
     freeTitle: "Espaço de trabalho gratuito",
     freeIntro: "Depois de entrar, o espaço gratuito reúne perfis, progresso e domínio de cada aluno.",
     paidTitle: "Plano para Pais",
-    paidIntro: "O Plano para Pais pago acrescenta revisão focada, importação de listas, ajuda com frases e um histórico familiar mais longo.",
+    paidIntro: "O Plano para Pais mantém a importação por foto e a revisão inteligente sem limite de tempo, e acrescenta a Revisão de hoje, ajuda com frases e um histórico mais longo.",
   },
   fr: {
     freeTitle: "Espace de travail gratuit",
     freeIntro: "Après connexion, l’espace gratuit relie les profils, la progression et la maîtrise de chaque élève.",
     paidTitle: "Offre Parents",
-    paidIntro: "L’offre Parents payante ajoute la révision ciblée, l’import de listes, l’aide aux phrases et un historique familial plus long.",
+    paidIntro: "L’offre Parents conserve l’import photo et la révision intelligente sans limite de temps, et ajoute la Révision du jour, l’aide aux phrases et un historique plus long.",
   },
   id: {
     freeTitle: "Ruang Kerja Gratis",
     freeIntro: "Setelah orang tua masuk, Ruang Kerja Gratis menghubungkan profil pelajar, perkembangan, dan penguasaan.",
     paidTitle: "Paket Orang Tua",
-    paidIntro: "Paket Orang Tua berbayar menambahkan ulasan terarah, impor daftar, bantuan kalimat, dan riwayat keluarga yang lebih panjang.",
+    paidIntro: "Paket Orang Tua mempertahankan impor foto dan Ulasan Pintar tanpa batas waktu, lalu menambahkan Ulasan hari ini, bantuan kalimat, dan riwayat keluarga yang lebih panjang.",
   },
   zh: {
     freeTitle: "免费工作台",
     freeIntro: "家长登录后，免费工作台可以保存学习者档案、进度和掌握度记录。",
     paidTitle: "家长方案",
-    paidIntro: "家长方案付费权益增加针对性复习、词表导入、例句帮助和更长的家庭学习历史。",
+    paidIntro: "家长方案不限时保留拍照导入和智能复习，并增加今日复习、例句帮助和更长的家庭学习历史。",
   },
 };
 
@@ -3710,37 +3727,37 @@ const teacherFeatureGroups = {
     freeTitle: "Free Workspace",
     freeIntro: "After a teacher signs in, Free Workspace covers basic assignments, learner progress, and mastery.",
     paidTitle: "Teacher Plan",
-    paidIntro: "The paid Teacher Plan adds review tools, list import, class capacity, history, and reporting.",
+    paidIntro: "The Teacher Plan keeps Photo Import and Smart Review without a time limit, and adds Today's Review, class capacity, history, and reporting.",
   },
   es: {
     freeTitle: "Espacio de trabajo gratuito",
     freeIntro: "Al iniciar sesión, el espacio gratuito cubre las tareas básicas, el progreso y el dominio del alumnado.",
     paidTitle: "Plan para docentes",
-    paidIntro: "El Plan para docentes de pago añade herramientas de repaso, importación de listas, capacidad de clase, historial e informes.",
+    paidIntro: "El Plan para docentes mantiene la importación por foto y el repaso inteligente sin límite de tiempo, y añade el Repaso de hoy, capacidad de clase, historial e informes.",
   },
   "pt-BR": {
     freeTitle: "Espaço de trabalho gratuito",
     freeIntro: "Depois de entrar, o espaço gratuito cobre atividades básicas, progresso e domínio dos alunos.",
     paidTitle: "Plano para Professores",
-    paidIntro: "O Plano para Professores pago acrescenta ferramentas de revisão, importação de listas, capacidade da turma, histórico e relatórios.",
+    paidIntro: "O Plano para Professores mantém a importação por foto e a revisão inteligente sem limite de tempo, e acrescenta a Revisão de hoje, capacidade da turma, histórico e relatórios.",
   },
   fr: {
     freeTitle: "Espace de travail gratuit",
     freeIntro: "Après connexion, l’espace gratuit couvre les devoirs de base, la progression et la maîtrise des élèves.",
     paidTitle: "Offre Enseignants",
-    paidIntro: "L’offre Enseignants payante ajoute les outils de révision, l’import de listes, la capacité de classe, l’historique et les rapports.",
+    paidIntro: "L’offre Enseignants conserve l’import photo et la révision intelligente sans limite de temps, et ajoute la Révision du jour, la capacité de classe, l’historique et les rapports.",
   },
   id: {
     freeTitle: "Ruang Kerja Gratis",
     freeIntro: "Setelah guru masuk, Ruang Kerja Gratis mencakup tugas dasar, perkembangan, dan penguasaan siswa.",
     paidTitle: "Paket Guru",
-    paidIntro: "Paket Guru berbayar menambahkan alat ulasan, impor daftar, kapasitas kelas, riwayat, dan laporan.",
+    paidIntro: "Paket Guru mempertahankan impor foto dan Ulasan Pintar tanpa batas waktu, lalu menambahkan Ulasan hari ini, kapasitas kelas, riwayat, dan laporan.",
   },
   zh: {
     freeTitle: "免费工作台",
     freeIntro: "教师登录后，免费工作台提供基础作业、学习进度和掌握度记录。",
     paidTitle: "教师方案",
-    paidIntro: "教师方案付费权益增加复习工具、词表导入、班级规模、历史记录和结果报告。",
+    paidIntro: "教师方案不限时保留拍照导入和智能复习，并增加今日复习、班级规模、历史记录和结果报告。",
   },
 };
 

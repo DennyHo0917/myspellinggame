@@ -252,7 +252,7 @@ const pages = {
         "Sirve para deberes, tutorías, estudiantes de inglés y práctica en casa.",
         "El repaso se concentra en las palabras que el estudiante falló.",
         "El modo fácil baja la velocidad sin cambiar las reglas de ortografía.",
-        "Los planes para familias y docentes añaden importación por foto, frases automáticas y Repaso de hoy.",
+        "Las cuentas gratis con sesión iniciada pueden probar la importación por foto y el repaso inteligente durante 7 días. Después, siguen en los planes para familias y docentes. Las frases automáticas y el Repaso de hoy quedan solo en esos planes.",
       ],
       seoTitle: "Dos formas de practicar tu lista y un juego de mecanografía",
       seoIntro:
@@ -423,7 +423,7 @@ const pages = {
         "Ajuda em tarefa de casa, reforço, estudantes de inglês e educação em casa.",
         "A revisão foca nas palavras que o aluno errou.",
         "O modo fácil reduz a velocidade sem mudar as regras de ortografia.",
-        "Os planos para Pais e Professores acrescentam importação por foto, frases automáticas e Revisão de hoje.",
+        "Contas grátis conectadas podem testar a importação por foto e a revisão inteligente por 7 dias. Depois, elas continuam nos planos para Pais e Professores. Frases automáticas e a Revisão de hoje ficam só nesses planos.",
       ],
       seoTitle: "Duas formas de praticar sua lista e um jogo de digitação",
       seoIntro:
@@ -594,7 +594,7 @@ const pages = {
         "Pratique pour les devoirs, le soutien, l’apprentissage de l’anglais et l’école à la maison.",
         "La révision se concentre sur les mots réellement manqués.",
         "Le mode facile ralentit la partie sans changer la règle.",
-        "Les offres Parents et Enseignants ajoutent l’import photo, les phrases automatiques et la Révision du jour.",
+        "Un compte gratuit connecté peut essayer l’import photo et la révision intelligente pendant 7 jours. Ensuite, ces fonctions restent dans les offres Parents et Enseignants. Les phrases automatiques et la Révision du jour y sont réservées.",
       ],
       seoTitle: "Deux façons de travailler votre liste, plus un jeu de frappe",
       seoIntro:
@@ -764,7 +764,7 @@ const pages = {
         "Cocok untuk PR, les, pelajar bahasa Inggris, dan belajar di rumah.",
         "Ronde ulang fokus pada kata yang benar-benar salah.",
         "Mode mudah memperlambat permainan tanpa mengubah aturan ejaan.",
-        "Paket Orang Tua dan Guru menambahkan impor foto, kalimat otomatis, dan Ulasan hari ini.",
+        "Akun gratis yang sudah masuk dapat mencoba impor foto dan Ulasan Pintar selama 7 hari. Setelah itu, keduanya ada di Paket Orang Tua dan Guru. Kalimat otomatis dan Ulasan hari ini tetap hanya di paket tersebut.",
       ],
       seoTitle:
         "Dua cara berlatih dengan daftar sendiri dan satu game mengetik terpisah",
@@ -926,7 +926,7 @@ const pages = {
         "适合家庭作业、课后辅导、英语学习和家庭教育场景。",
         "重练只围绕漏掉的词，不浪费时间。",
         "简单模式只降低速度，不改变拼写规则。",
-        "家长方案和教师方案还支持拍照导入、自动填充例句和今日复习。",
+        "登录后的免费账号可试用拍照导入和智能复习 7 天；之后这两项保留在家长方案和教师方案中。自动填充例句和今日复习仍只在这两个方案里。",
       ],
       seoTitle: "两种单词表练习，再加一个打字小游戏",
       seoIntro:

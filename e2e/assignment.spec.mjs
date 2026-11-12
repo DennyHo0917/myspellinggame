@@ -2777,7 +2777,7 @@ test("Parent plan starts Checkout with its plan and interval", async ({
     checkoutBody = route.request().postDataJSON();
     return route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify({ url: "/pricing#parent-checkout" }),
+      body: JSON.stringify({ url: "/pricing?interval=year#parent-checkout" }),
     });
   });
 
@@ -2790,7 +2790,7 @@ test("Parent plan starts Checkout with its plan and interval", async ({
     .poll(() => analyticsEvents(page, "upgrade_viewed"))
     .toHaveLength(1);
   await page.getByRole("button", { name: "Yearly plan" }).click();
-  await parent.click();
+  await page.locator("[data-checkout-cta]").click();
   await expect(page).toHaveURL(/#parent-checkout$/);
   expect(checkoutBody).toEqual({
     plan: "parent",
@@ -2798,7 +2798,7 @@ test("Parent plan starts Checkout with its plan and interval", async ({
     locale: "en",
   });
   expect(await analyticsEvents(page, "upgrade_clicked")).toEqual([
-    { plan: "parent", billing_interval: "year" },
+    { plan: "parent", billing_interval: "year", transport_type: "beacon" },
   ]);
   expect(await analyticsEvents(page, "checkout_attempted")).toEqual([
     { plan: "parent", billing_interval: "year" },
@@ -2807,7 +2807,7 @@ test("Parent plan starts Checkout with its plan and interval", async ({
     { plan: "parent", billing_interval: "year" },
   ]);
   expect(await analyticsEvents(page, "checkout_redirected")).toEqual([
-    { plan: "parent", billing_interval: "year" },
+    { plan: "parent", billing_interval: "year", transport_type: "beacon" },
   ]);
 });
 
@@ -2828,23 +2828,30 @@ test("Teacher plan starts Checkout with its plan and interval", async ({
     checkoutBody = route.request().postDataJSON();
     return route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify({ url: "/pricing#teacher-checkout" }),
+      body: JSON.stringify({
+        url: "/pricing?interval=month&plan=teacher#teacher-checkout",
+      }),
     });
   });
 
   await page.goto("/pricing");
   await page.getByRole("button", { name: "Select Teacher Plan" }).click();
+  await page.locator("[data-checkout-cta]").click();
   await expect(page).toHaveURL(/#teacher-checkout$/);
   expect(checkoutBody).toEqual({
     plan: "teacher",
-    interval: "year",
+    interval: "month",
     locale: "en",
   });
   expect(await analyticsEvents(page, "upgrade_clicked")).toEqual([
-    { plan: "teacher", billing_interval: "year" },
+    {
+      plan: "teacher",
+      billing_interval: "month",
+      transport_type: "beacon",
+    },
   ]);
   expect(await analyticsEvents(page, "checkout_attempted")).toEqual([
-    { plan: "teacher", billing_interval: "year" },
+    { plan: "teacher", billing_interval: "month" },
   ]);
 });
 
@@ -3036,6 +3043,7 @@ test("new assignment survives checkout retry and restores after activation", asy
   await page.locator('input[name="learnerId"]').check({ force: true });
   await page.getByRole("link", { name: "Upgrade to add more words" }).click();
   await page.locator('[data-plan-choice="teacher"]').click();
+  await page.locator("[data-checkout-cta]").click();
   await expect(
     page.getByRole("button", { name: "Try checkout again" }),
   ).toBeVisible();
@@ -3149,6 +3157,7 @@ test("saved-list edit returns after checkout cancellation without overwriting ne
     });
   await page.getByRole("link", { name: "Upgrade to add more words" }).click();
   await page.locator('[data-plan-choice="teacher"]').click();
+  await page.locator("[data-checkout-cta]").click();
   await page.waitForURL(/\/pricing\?checkout=cancelled$/);
   await expect(page).toHaveURL(/\/workspace\/saved-lists\?lang=en$/);
   await expect(page.getByLabel("List title")).toHaveValue("Draft list");

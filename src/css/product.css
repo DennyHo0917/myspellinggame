@@ -779,6 +779,16 @@ th {
   display: flex;
   justify-content: center;
 }
+.pricing-checkout {
+  display: flex;
+  justify-content: center;
+  width: min(100%, 720px);
+  margin: 0 auto;
+}
+.pricing-checkout-cta {
+  width: min(100%, 420px);
+  white-space: nowrap;
+}
 .subscription-status {
   display: flex;
   align-items: center;

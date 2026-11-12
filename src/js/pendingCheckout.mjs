@@ -1,5 +1,6 @@
 const KEY = "mySpellingPendingCheckout";
 const TTL = 15 * 60 * 1000;
+export const CHECKOUT_AUTH_RETURN_KEY = "pendingCheckoutAuthReturn";
 
 export function clearPendingCheckout() {
   try {
@@ -8,6 +9,7 @@ export function clearPendingCheckout() {
       "pendingCheckoutPlan",
       "pendingCheckoutInterval",
       "pendingCheckoutLocale",
+      CHECKOUT_AUTH_RETURN_KEY,
       "pendingCheckoutRetryRequired",
     ])
       sessionStorage.removeItem(key);

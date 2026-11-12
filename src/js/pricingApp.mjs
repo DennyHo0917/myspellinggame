@@ -1,10 +1,15 @@
 import {
+  CHECKOUT_AUTH_RETURN_KEY,
   readPendingCheckout,
   savePendingCheckout,
   clearPendingCheckout,
+  consumePendingCheckout,
 } from "./pendingCheckout.mjs";
 import { bindUpgradeReturn, readUpgradeReturn } from "./upgradeReturn.mjs";
-import { upgradeSelection } from "./upgradeSelection.mjs";
+import {
+  pricingQuerySelection,
+  upgradeSelection,
+} from "./upgradeSelection.mjs";
 import { trackCheckoutCancelled, trackEvent } from "./analytics.mjs";
 import {
   normalizeProductLocale,
@@ -13,7 +18,9 @@ import {
   productMessage,
 } from "./productLocale.mjs";
 
-readPendingCheckout();
+const pendingOnLoad = readPendingCheckout();
+// A stored choice only preselects a plan. Never open Stripe during page load.
+consumePendingCheckout();
 
 const locale = normalizeProductLocale(document.body.dataset.productLocale);
 const copy = productMessages(locale);
@@ -31,36 +38,37 @@ const renewButton = subscriptionStatus?.querySelector(
 );
 let currentAccount = null;
 let intervalChosen = false;
+let canceledSelection = null;
 const selectionParams = new URLSearchParams(location.search);
-const fromParam = selectionParams.get("from");
-const intervalParam = selectionParams.get("interval");
-const planParam = selectionParams.get("plan");
-const explicitSelection =
-  ["parent", "teacher"].includes(planParam) &&
-  ["month", "year"].includes(intervalParam)
-    ? {
-        plan: planParam,
-        interval: intervalParam,
-      }
-    : fromParam === "classroom_lock"
-      ? {
-          plan: "teacher",
-          interval: intervalParam === "year" ? "year" : "month",
-        }
-      : ["month", "year"].includes(intervalParam)
-        ? {
-            plan: ["parent", "teacher"].includes(planParam)
-              ? planParam
-              : "parent",
-            interval: intervalParam,
-          }
-        : null;
+const querySelection = pricingQuerySelection(selectionParams);
+const checkoutButton = document.createElement("button");
+checkoutButton.type = "button";
+checkoutButton.className = "pricing-checkout-cta";
+checkoutButton.dataset.checkoutCta = "true";
+checkoutButton.disabled = true;
+checkoutButton.textContent = productMessage("continueCheckout", {}, locale);
+const checkoutBar = document.createElement("div");
+checkoutBar.className = "pricing-checkout";
+checkoutBar.append(checkoutButton);
+document.querySelector(".pricing-toolbar")?.after(checkoutBar);
 let billingRequestPending = false;
 for (const choice of planChoices)
   choice.dataset.selectPlanLabel = choice.textContent;
 const accountPromise = fetch("/api/me", { credentials: "same-origin" })
   .then((response) => (response.ok ? response.json() : null))
   .catch(() => null);
+
+function restoreCheckoutRetry() {
+  let required = false;
+  try {
+    required = sessionStorage.getItem("pendingCheckoutRetryRequired") === "1";
+  } catch {}
+  if (!required || checkoutCanceled) return;
+  const choice = document.querySelector(
+    `[data-plan-choice="${selectedPlan()}"]`,
+  );
+  if (choice) showCheckoutRetry(choice, null);
+}
 
 function showCheckoutRetry(choice, error) {
   document.querySelector(".checkout-retry-notice")?.remove();
@@ -71,14 +79,15 @@ function showCheckoutRetry(choice, error) {
   message.textContent = productMessage("checkoutRetry", {}, locale);
   const status = document.createElement("p");
   status.className = "status error";
-  status.textContent = error.message;
+  status.textContent = error?.message || "";
+  status.hidden = !error?.message;
   const retry = document.createElement("button");
   retry.type = "button";
   retry.className = "button-secondary";
   retry.textContent = productMessage("retryCheckout", {}, locale);
   retry.addEventListener("click", () => {
     notice.remove();
-    choice.click();
+    void beginCheckout(choice.dataset.planChoice);
   });
   const cancel = document.createElement("button");
   cancel.type = "button";
@@ -124,6 +133,15 @@ try {
       ? sessionStorage.getItem("pendingCheckoutInterval")
       : "unknown";
     trackCheckoutCancelled(canceledCheckoutPlan, canceledCheckoutInterval);
+    if (
+      pendingOnLoad &&
+      ["parent", "teacher"].includes(pendingOnLoad.plan) &&
+      ["month", "year"].includes(pendingOnLoad.interval)
+    )
+      canceledSelection = {
+        plan: pendingOnLoad.plan,
+        interval: pendingOnLoad.interval,
+      };
     clearPendingCheckout();
     sessionStorage.removeItem("pendingCheckoutInterval");
     sessionStorage.removeItem("pendingCheckoutPlan");
@@ -183,7 +201,10 @@ function selectInterval(interval) {
   }
   try {
     const url = new URL(location.href);
-    if (url.searchParams.get("interval") !== interval) {
+    if (
+      url.searchParams.get("checkout") !== "cancelled" &&
+      url.searchParams.get("interval") !== interval
+    ) {
       url.searchParams.set("interval", interval);
       history.replaceState({}, "", url);
     }
@@ -213,6 +234,15 @@ function syncPlanControls() {
     if (current) card?.setAttribute("aria-current", "true");
     else card?.removeAttribute("aria-current");
   }
+  const plan = selectedPlan();
+  const selectedCurrent =
+    currentAccount?.plan === plan &&
+    currentAccount?.billingInterval === interval;
+  checkoutButton.disabled =
+    billingRequestPending ||
+    !["parent", "teacher"].includes(plan) ||
+    !interval ||
+    selectedCurrent;
 }
 
 function confirmPlanChange(me, plan, interval) {
@@ -244,6 +274,11 @@ function confirmPlanChange(me, plan, interval) {
       locale,
     ),
   );
+}
+
+function selectedPlan() {
+  return document.querySelector('[data-plan-choice][aria-pressed="true"]')
+    ?.dataset.planChoice;
 }
 
 function selectPlan(plan) {
@@ -299,13 +334,138 @@ async function openBillingPortal(control) {
   }
 }
 
+function rememberCheckoutChoice(plan, interval) {
+  try {
+    savePendingCheckout(plan, interval);
+    sessionStorage.setItem("pendingCheckoutPlan", plan);
+    sessionStorage.setItem("pendingCheckoutInterval", interval);
+    sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
+    sessionStorage.removeItem("pendingCheckoutRetryRequired");
+  } catch {}
+}
+
+function sendSignedOutToPricingSignIn(plan, interval) {
+  rememberCheckoutChoice(plan, interval);
+  try {
+    sessionStorage.setItem(CHECKOUT_AUTH_RETURN_KEY, "1");
+  } catch {}
+  location.href = `/workspace?lang=${encodeURIComponent(locale)}#teacher-sign-in`;
+}
+
+async function beginCheckout(plan) {
+  if (
+    !["parent", "teacher"].includes(plan) ||
+    billingRequestPending ||
+    checkoutButton.disabled
+  )
+    return;
+  selectPlan(plan);
+  billingRequestPending = true;
+  syncPlanControls();
+  const me = await accountPromise;
+  bindUpgradeReturn(me?.user?.id);
+  const changingPlan = ["parent", "teacher"].includes(me?.plan);
+  const interval = selectedInterval();
+  if (me?.plan === plan && me?.billingInterval === interval) {
+    billingRequestPending = false;
+    syncPlanControls();
+    return;
+  }
+  if (changingPlan && !confirmPlanChange(me, plan, interval)) {
+    billingRequestPending = false;
+    syncPlanControls();
+    return;
+  }
+  trackEvent("upgrade_clicked", { plan, billing_interval: interval });
+  trackEvent("checkout_attempted", { plan, billing_interval: interval });
+  if (!me?.user) {
+    sendSignedOutToPricingSignIn(plan, interval);
+    return;
+  }
+  const label = checkoutButton.textContent;
+  checkoutButton.textContent = productMessage("loading", {}, locale);
+  if (!changingPlan) rememberCheckoutChoice(plan, interval);
+  try {
+    const response = await fetch(
+      changingPlan ? "/api/billing/change-plan" : "/api/billing/checkout",
+      {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ plan, interval, locale }),
+      },
+    );
+    const data = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      sendSignedOutToPricingSignIn(plan, interval);
+      return;
+    }
+    if (response.ok && data.scheduled && data.effectiveAt) {
+      const effectiveDate = formatSubscriptionDate(data.effectiveAt);
+      if (!effectiveDate) throw new Error(productMessage("error", {}, locale));
+      alert(
+        productMessage(
+          "downgradeScheduled",
+          {
+            currentPlan: copy.teacherPlan,
+            targetPlan: copy.parentPlan,
+            date: effectiveDate,
+          },
+          locale,
+        ),
+      );
+      selectPlan(me.plan);
+      checkoutButton.textContent = label;
+      billingRequestPending = false;
+      syncPlanControls();
+      return;
+    }
+    if (!response.ok || !data.url) {
+      const error = new Error(
+        data.error === "billing_not_configured"
+          ? productMessage("billingUnavailable", {}, locale)
+          : data.error === "already_subscribed"
+            ? productMessage("alreadySubscribed", {}, locale)
+            : data.error === "checkout_pending"
+              ? productMessage("checkoutPending", {}, locale)
+              : productMessage("error", {}, locale),
+      );
+      error.code = data.error || "checkout_unavailable";
+      throw error;
+    }
+    trackEvent("checkout_started", { plan, billing_interval: interval });
+    trackEvent("checkout_redirected", { plan, billing_interval: interval });
+    try {
+      sessionStorage.removeItem("pendingCheckoutInterval");
+      sessionStorage.removeItem("pendingCheckoutRetryRequired");
+      sessionStorage.removeItem(CHECKOUT_AUTH_RETURN_KEY);
+    } catch {}
+    location.href = data.url;
+  } catch (error) {
+    try {
+      if (!changingPlan)
+        sessionStorage.setItem("pendingCheckoutRetryRequired", "1");
+    } catch {}
+    trackEvent("checkout_failed", {
+      plan,
+      billing_interval: interval,
+      error_code: error.code || "checkout_unavailable",
+    });
+    checkoutButton.textContent = label;
+    billingRequestPending = false;
+    syncPlanControls();
+    const choice = document.querySelector(`[data-plan-choice="${plan}"]`);
+    if (choice) showCheckoutRetry(choice, error);
+  }
+}
+
 for (const option of planOptions)
   option.addEventListener("click", () => {
     intervalChosen = true;
     selectInterval(option.dataset.planOption);
   });
 for (const choice of planChoices)
-  choice.addEventListener("click", async () => {
+  choice.addEventListener("click", () => {
     const plan = choice.dataset.planChoice;
     if (
       !["parent", "teacher"].includes(plan) ||
@@ -314,107 +474,20 @@ for (const choice of planChoices)
     )
       return;
     selectPlan(plan);
-    billingRequestPending = true;
-    syncPlanControls();
-    const me = await accountPromise;
-    bindUpgradeReturn(me?.user?.id);
-    const changingPlan = ["parent", "teacher"].includes(me?.plan);
-    const interval = selectedInterval();
-    if (me?.plan === plan && me?.billingInterval === interval) {
-      billingRequestPending = false;
-      syncPlanControls();
-      return;
-    }
-    if (changingPlan && !confirmPlanChange(me, plan, interval)) {
-      billingRequestPending = false;
-      syncPlanControls();
-      return;
-    }
-    const label = choice.textContent;
-    choice.textContent = productMessage("loading", {}, locale);
     try {
-      if (!changingPlan) {
-        savePendingCheckout(plan, interval);
-        sessionStorage.setItem("pendingCheckoutPlan", plan);
-        sessionStorage.setItem(PENDING_CHECKOUT_LOCALE_KEY, locale);
-        sessionStorage.removeItem("pendingCheckoutRetryRequired");
+      const url = new URL(location.href);
+      if (url.searchParams.get("plan") !== plan) {
+        url.searchParams.set("plan", plan);
+        history.replaceState({}, "", url);
       }
     } catch {}
-    trackEvent("upgrade_clicked", { plan, billing_interval: interval });
-    trackEvent("checkout_attempted", { plan, billing_interval: interval });
-    try {
-      const response = await fetch(
-        changingPlan ? "/api/billing/change-plan" : "/api/billing/checkout",
-        {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ plan, interval, locale }),
-        },
-      );
-      const data = await response.json().catch(() => ({}));
-      if (response.status === 401) {
-        savePendingCheckout(plan, interval, true);
-        location.href = `/workspace?lang=${encodeURIComponent(locale)}`;
-        return;
-      }
-      if (response.ok && data.scheduled && data.effectiveAt) {
-        const effectiveDate = formatSubscriptionDate(data.effectiveAt);
-        if (!effectiveDate)
-          throw new Error(productMessage("error", {}, locale));
-        alert(
-          productMessage(
-            "downgradeScheduled",
-            {
-              currentPlan: copy.teacherPlan,
-              targetPlan: copy.parentPlan,
-              date: effectiveDate,
-            },
-            locale,
-          ),
-        );
-        selectPlan(me.plan);
-        billingRequestPending = false;
-        syncPlanControls();
-        return;
-      }
-      if (!response.ok || !data.url) {
-        const error = new Error(
-          data.error === "billing_not_configured"
-            ? productMessage("billingUnavailable", {}, locale)
-            : data.error === "already_subscribed"
-              ? productMessage("alreadySubscribed", {}, locale)
-              : data.error === "checkout_pending"
-                ? productMessage("checkoutPending", {}, locale)
-                : productMessage("error", {}, locale),
-        );
-        error.code = data.error || "checkout_unavailable";
-        throw error;
-      }
-      trackEvent("checkout_started", { plan, billing_interval: interval });
-      trackEvent("checkout_redirected", { plan, billing_interval: interval });
-      try {
-        sessionStorage.removeItem("pendingCheckoutInterval");
-        sessionStorage.removeItem("pendingCheckoutRetryRequired");
-      } catch {}
-      location.href = data.url;
-    } catch (error) {
-      try {
-        if (!changingPlan)
-          sessionStorage.setItem("pendingCheckoutRetryRequired", "1");
-      } catch {}
-      trackEvent("checkout_failed", {
-        plan,
-        billing_interval: interval,
-        error_code: error.code || "checkout_unavailable",
-      });
-      choice.textContent = label;
-      billingRequestPending = false;
-      syncPlanControls();
-      showCheckoutRetry(choice, error);
-    }
+    syncPlanControls();
   });
+checkoutButton.addEventListener("click", () => {
+  void beginCheckout(selectedPlan());
+});
 
+const explicitSelection = querySelection || canceledSelection;
 accountPromise
   .then((me) => {
     currentAccount = me;
@@ -443,19 +516,20 @@ accountPromise
     }
     if (!intervalChosen) {
       const selection = upgradeSelection(me);
-      if (["parent", "teacher"].includes(me?.plan)) {
-        selectPlan(me.plan);
-        selectInterval(
-          ["month", "year"].includes(me.billingInterval)
-            ? me.billingInterval
-            : "month",
-        );
-      } else {
-        const preferred = explicitSelection || selection;
-        selectPlan(preferred.plan);
-        selectInterval(preferred.interval);
-      }
+      const preferred = explicitSelection
+        ? explicitSelection
+        : ["parent", "teacher"].includes(me?.plan)
+          ? {
+              plan: me.plan,
+              interval: ["month", "year"].includes(me.billingInterval)
+                ? me.billingInterval
+                : "month",
+            }
+          : selection;
+      selectPlan(preferred.plan);
+      selectInterval(preferred.interval);
     } else syncPlanControls();
+    restoreCheckoutRetry();
     const current = document.querySelector(`[data-plan-cta="${me?.plan}"]`);
     if (current && me?.plan === "free") {
       const currentCard = document.querySelector('[data-plan-card="free"]');

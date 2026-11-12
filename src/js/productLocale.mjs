@@ -1420,7 +1420,7 @@ const PACKS = {
       "Entre para manter sua escolha. Você decide quando abrir o checkout seguro.",
     pendingCheckoutReview:
       "Sua escolha salva aparece abaixo. O checkout só abrirá depois que você continuar.",
-    continueCheckout: "Continuar para o checkout seguro",
+    continueCheckout: "Continuar o checkout",
     activatingPro: "Ativando seu plano…",
     activatingPlan: "Ativando {plan}…",
     activationDelayed:
@@ -1905,7 +1905,7 @@ const PACKS = {
       "Connectez-vous pour conserver votre choix. Vous décidez quand ouvrir le paiement sécurisé.",
     pendingCheckoutReview:
       "Votre choix enregistré apparaît ci-dessous. Le paiement ne s’ouvre qu’après votre confirmation.",
-    continueCheckout: "Continuer vers le paiement sécurisé",
+    continueCheckout: "Continuer le paiement",
     activatingPro: "Activation de votre offre…",
     activatingPlan: "Activation de {plan}…",
     activationDelayed:

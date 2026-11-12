@@ -723,13 +723,24 @@ test("anonymous Photo Import previews words, then a Teacher choice resumes check
     .click();
 
   await expect(page).toHaveURL(/\/pricing\?plan=teacher&interval=month$/);
-  await page.getByRole("button", { name: "Select Teacher Plan" }).click();
-  await expect(page).toHaveURL(/\/workspace\?lang=en$/);
+  await expect(page.locator('[data-plan-choice="teacher"]')).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await page.locator("[data-checkout-cta]").click();
+  await expect(page).toHaveURL(/\/workspace\?lang=en#teacher-sign-in$/);
   await expect(
     page.getByRole("heading", { name: "Continue with Teacher Plan" }),
   ).toBeVisible();
   expect(checkoutBody).toBeUndefined();
   await page.getByRole("button", { name: "Continue with Google" }).click();
+  await expect(page).toHaveURL(/\/pricing\?plan=teacher&interval=month$/);
+  await expect(page.locator('[data-plan-choice="teacher"]')).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  expect(checkoutBody).toBeUndefined();
+  await page.locator("[data-checkout-cta]").click();
   await expect(page).toHaveURL(/#stripe-checkout$/);
   expect(checkoutBody).toEqual({
     plan: "teacher",
@@ -961,14 +972,12 @@ test("failed Pricing checkout records an attempt and shows an explicit Retry CTA
   });
 
   await page.goto("/pricing");
-  await page
-    .getByRole("button", { name: "Photo Import + Smart Review" })
-    .click();
+  await page.locator("[data-checkout-cta]").click();
   await expect(
     page.getByRole("button", { name: "Try checkout again" }),
   ).toBeVisible();
   expect(await analyticsEvents(page, "checkout_attempted")).toEqual([
-    { plan: "parent", billing_interval: "year" },
+    { plan: "parent", billing_interval: "month" },
   ]);
   expect(await analyticsEvents(page, "checkout_started")).toEqual([]);
   expect(
@@ -1070,6 +1079,7 @@ test("paid pricing changes plan through the prorated billing endpoint", async ({
 
   await page.goto("/pricing");
   await page.getByRole("button", { name: "Select Teacher Plan" }).click();
+  await page.locator("[data-checkout-cta]").click();
   await expect(page).toHaveURL(/\/pricing\?plan-change=payment$/);
   expect(changeBody).toEqual({
     plan: "teacher",
@@ -1110,7 +1120,7 @@ test("current monthly plan can switch to yearly after clear proration confirmati
   ).toBeDisabled();
   await page.getByRole("button", { name: "Yearly plan" }).click();
   await expect(parent).toBeEnabled();
-  await parent.click();
+  await page.locator("[data-checkout-cta]").click();
 
   await expect(page).toHaveURL(/interval-change=success/);
   expect(changeBody).toEqual({
@@ -1143,9 +1153,7 @@ test("failed interval change keeps the confirmed subscription UI unchanged", asy
 
   await page.goto("/pricing");
   await page.getByRole("button", { name: "Yearly plan" }).click();
-  await page
-    .getByRole("button", { name: "Photo Import + Smart Review" })
-    .click();
+  await page.locator("[data-checkout-cta]").click();
   await expect(
     page.getByRole("button", { name: "Try checkout again" }),
   ).toBeVisible();
@@ -1177,12 +1185,8 @@ test("canceling an interval change sends no billing request", async ({
 
   await page.goto("/pricing");
   await page.getByRole("button", { name: "Yearly plan" }).click();
-  await page
-    .getByRole("button", { name: "Photo Import + Smart Review" })
-    .click();
-  await expect(
-    page.getByRole("button", { name: "Photo Import + Smart Review" }),
-  ).toBeEnabled();
+  await page.locator("[data-checkout-cta]").click();
+  await expect(page.locator("[data-checkout-cta]")).toBeEnabled();
   expect(changeCalls).toBe(0);
 });
 
@@ -1208,7 +1212,7 @@ test("repeated interval-change clicks send only one request", async ({
 
   await page.goto("/pricing");
   await page.getByRole("button", { name: "Yearly plan" }).click();
-  await page.locator('[data-plan-choice="parent"]').evaluate((button) => {
+  await page.locator("[data-checkout-cta]").evaluate((button) => {
     button.click();
     button.click();
   });
@@ -1249,6 +1253,7 @@ test("Teacher pricing schedules Parent for the renewal date", async ({
   await page
     .getByRole("button", { name: "Photo Import + Smart Review" })
     .click();
+  await page.locator("[data-checkout-cta]").click();
   await expect
     .poll(() => message)
     .toContain("Teacher Plan remains active through September 25, 2026");

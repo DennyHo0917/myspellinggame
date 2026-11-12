@@ -647,6 +647,15 @@ test("photo import analytics keep only aggregate funnel dimensions", () => {
     { locale: "es", current_plan: "anonymous", outcome: "paywall" },
   );
   assert.deepEqual(
+    sanitizeEventParams("smart_review_previewed", {
+      locale: "zh",
+      current_plan: "anonymous",
+      outcome: "paywall",
+      words: ["banana"],
+    }),
+    { locale: "zh", current_plan: "anonymous", outcome: "paywall" },
+  );
+  assert.deepEqual(
     sanitizeEventParams("photo_import_blocked", {
       current_plan: "free",
       locale: "zh",

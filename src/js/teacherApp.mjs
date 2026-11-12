@@ -9,13 +9,31 @@ import {
   readPendingPhotoImport,
   savePendingPhotoImport,
 } from "./pendingPhotoImport.mjs";
-import { takeTrackingEntry, saveTrackingEntry } from "./trackingDraft.mjs";
+import {
+  clearPendingSmartReview,
+  readPendingSmartReview,
+  savePendingSmartReview,
+} from "./pendingSmartReview.mjs";
+import {
+  assignmentReviewPreviewWords,
+  learnerReviewPreviewWords,
+  progressReviewPreviewWords,
+  renderSmartReviewPreview,
+  uniquePreviewWords,
+} from "./smartReviewPreview.mjs";
+import {
+  takeTrackingEntry,
+  readTrackingEntry,
+  saveTrackingEntry,
+} from "./trackingDraft.mjs";
 import {
   saveUpgradeReturn,
   bindUpgradeReturn,
   upgradeReturnFor,
   clearUpgradeReturn,
 } from "./upgradeReturn.mjs";
+import { upgradeSelection } from "./upgradeSelection.mjs";
+import { speakWord } from "./speech.js";
 import {
   installDiagnostics,
   diagnosticFetch,
@@ -1236,6 +1254,153 @@ function upgradeLink(ctaLocation) {
   return link;
 }
 
+function smartReviewPreviewCopy() {
+  return {
+    title: copy.smartReviewSessionTitle,
+    help: copy.smartReviewSessionHelp,
+    prompt: copy.smartReviewSessionPrompt,
+    hear: copy.smartReviewSessionHear,
+    check: copy.smartReviewSessionCheck,
+    progress: (current, total) =>
+      m("smartReviewSessionProgress", { current, total }),
+    correct: copy.smartReviewSessionCorrect,
+    incorrect: (word) => m("smartReviewSessionIncorrect", { word }),
+    required: copy.smartReviewSessionRequired,
+    upNext: copy.smartReviewSessionUpNext,
+    close: copy.smartReviewSessionClose,
+    speechUnsupported: copy.smartReviewSessionSpeech,
+  };
+}
+
+function smartReviewPricingLink(
+  me,
+  { plan, interval, primary = true, words = null, target = "" } = {},
+) {
+  const link = document.createElement("a");
+  link.className = `button-link contextual-paywall-cta${primary ? " paywall-primary" : " button-secondary"}`;
+  link.href = `${productPagePath("pricing", locale)}?${new URLSearchParams({ plan, interval })}`;
+  link.textContent = primary ? copy.unlockSmartReview : copy[`${plan}Plan`];
+  link.addEventListener("click", () => {
+    if (words?.length && target) {
+      const existing = readPendingSmartReview();
+      savePendingSmartReview({
+        words: words.join("\n"),
+        locale,
+        target,
+        resumeAuth: false,
+        createdAt:
+          existing?.target === target ? existing.createdAt : Date.now(),
+      });
+    }
+    prepareWorkspaceDraftReturn();
+    saveUpgradeReturn("smart_review", me?.user?.id);
+    savePendingCheckout(plan, interval);
+    try {
+      sessionStorage.setItem("pendingCheckoutLocale", locale);
+      sessionStorage.setItem(PENDING_UPGRADE_FEATURE_KEY, "smart_review");
+    } catch {}
+    trackEvent("upgrade_cta_clicked", {
+      cta_location: "smart_review",
+      plan,
+      billing_interval: interval,
+    });
+    trackEvent("upgrade_click", {
+      source: "smart_review",
+      plan,
+      billing_interval: interval,
+    });
+  });
+  return link;
+}
+
+function smartReviewPaywall(me, words = null, target = "") {
+  const { plan, interval } = upgradeSelection(me);
+  const notice = document.createElement("div");
+  notice.className = "smart-review-paywall contextual-paywall";
+  notice.setAttribute("role", "status");
+  const benefit = document.createElement("span");
+  benefit.className = "contextual-paywall-benefit";
+  benefit.textContent = copy.smartReviewSessionValue;
+  const price = document.createElement("strong");
+  price.className = "contextual-paywall-price";
+  price.textContent = upgradePrice(plan, interval);
+  const actions = document.createElement("span");
+  actions.className = "contextual-paywall-actions";
+  actions.append(
+    smartReviewPricingLink(me, {
+      plan,
+      interval,
+      primary: true,
+      words,
+      target,
+    }),
+  );
+  if (plan === "parent")
+    actions.append(
+      smartReviewPricingLink(me, {
+        plan: "teacher",
+        interval,
+        primary: false,
+        words,
+        target,
+      }),
+    );
+  notice.append(benefit, price, actions);
+  return notice;
+}
+
+function mountSmartReviewPreview(
+  host,
+  words,
+  me,
+  target,
+  { trackPreview = true, limit = 10 } = {},
+) {
+  if (!host || isPlusPlan(me)) return false;
+  const list = uniquePreviewWords(words, limit);
+  if (!list.length) return false;
+  const existing = readPendingSmartReview();
+  savePendingSmartReview({
+    words: list.join("\n"),
+    locale,
+    target,
+    resumeAuth: false,
+    createdAt: existing?.target === target ? existing.createdAt : Date.now(),
+  });
+  if (trackPreview) {
+    trackEvent("smart_review_previewed", {
+      locale,
+      current_plan: me?.plan || "free",
+      outcome: "paywall",
+    });
+    trackLockedFeature("smart_review", me?.plan || "free");
+  }
+  renderSmartReviewPreview(host, {
+    words: list,
+    copy: smartReviewPreviewCopy(),
+    limit,
+    onHear: speakWord,
+    paywall: smartReviewPaywall(me, list, target),
+    onClose: () => {
+      if (readPendingSmartReview()?.target === target)
+        clearPendingSmartReview();
+    },
+  });
+  return true;
+}
+
+function restoreSmartReviewPreview(host, me, target) {
+  if (isPlusPlan(me)) {
+    if (readPendingSmartReview()?.target === target) clearPendingSmartReview();
+    return false;
+  }
+  const pending = readPendingSmartReview();
+  if (!pending || pending.target !== target || pending.resumeAuth) return false;
+  return mountSmartReviewPreview(host, pending.words, me, target, {
+    trackPreview: false,
+  });
+}
+
 function showLockedFeaturePlan(host, message, ctaLocation) {
   root
     .querySelectorAll(".locked-feature-plan")
@@ -1253,7 +1418,9 @@ function showLockedFeaturePlan(host, message, ctaLocation) {
     learner_limit: "learner_limit",
   }[ctaLocation];
   if (feature) trackLockedFeature(feature, workspaceState?.me?.plan || "free");
-  notice.append(text, upgradeLink(ctaLocation));
+  if (ctaLocation === "smart_review") {
+    notice.append(text, smartReviewPaywall(workspaceState?.me));
+  } else notice.append(text, upgradeLink(ctaLocation));
   host.append(notice);
 }
 
@@ -3115,14 +3282,24 @@ async function renderProgressCenter(me, data, main = shell(me, "progress")) {
     locked.type = "button";
     locked.className = "button-secondary";
     locked.textContent = copy.createReview;
-    locked.addEventListener("click", () =>
+    locked.addEventListener("click", () => {
+      if (
+        mountSmartReviewPreview(
+          smartReview,
+          progressReviewPreviewWords(data),
+          me,
+          "progress",
+        )
+      )
+        return;
       showLockedFeaturePlan(
         smartReview,
         copy.smartReviewUpgrade,
         "smart_review",
-      ),
-    );
+      );
+    });
     smartReview.append(preview, locked);
+    restoreSmartReviewPreview(smartReview, me, "progress");
   } else if (learners.length) {
     smartReview.append(progressLearnerRows(learners, { reviewActions: true }));
   } else {
@@ -4086,6 +4263,8 @@ function renderReviewEntry(me) {
   local.className = "notice";
   local.textContent = copy.reviewEntryLocalNote;
   const start = document.createElement("button");
+  start.type = "button";
+  if (!isPlusPlan(me)) start.className = "button-secondary";
   start.textContent = copy.trackNextPractice;
   start.addEventListener("click", () => {
     // Consume only a fresh, account-bound entry; anonymous history stays local.
@@ -4106,8 +4285,25 @@ function renderReviewEntry(me) {
   const actions = document.createElement("div");
   actions.className = "actions";
   actions.append(start, progress);
-  card.append(title, help, local, actions);
-  if (me.plan === "free") card.append(upgradeLink("smart_review"));
+  card.append(title);
+  let previewShown = false;
+  if (!isPlusPlan(me)) {
+    const pending = readPendingSmartReview();
+    const draft = readTrackingEntry(me.user.id);
+    const returning =
+      pending?.target === "review-entry" && pending.resumeAuth !== true;
+    const words = returning
+      ? pending.words
+      : draft?.intent === "smart_review"
+        ? draft.words
+        : "";
+    previewShown = returning
+      ? restoreSmartReviewPreview(card, me, "review-entry")
+      : mountSmartReviewPreview(card, words, me, "review-entry");
+  } else if (readPendingSmartReview()?.target === "review-entry")
+    clearPendingSmartReview();
+  card.append(help, local, actions);
+  if (!isPlusPlan(me) && !previewShown) card.append(smartReviewPaywall(me));
   main.append(card);
 }
 
@@ -4636,10 +4832,20 @@ async function renderDetail(me, id, { force = false } = {}) {
     locked.type = "button";
     locked.className = "button-secondary";
     locked.textContent = copy.createReview;
-    locked.addEventListener("click", () =>
-      showLockedFeaturePlan(review, copy.smartReviewUpgrade, "smart_review"),
-    );
+    locked.addEventListener("click", () => {
+      if (
+        mountSmartReviewPreview(
+          review,
+          assignmentReviewPreviewWords(data.attempts),
+          me,
+          `assignment:${id}`,
+        )
+      )
+        return;
+      showLockedFeaturePlan(review, copy.smartReviewUpgrade, "smart_review");
+    });
     review.append(locked);
+    restoreSmartReviewPreview(review, me, `assignment:${id}`);
   }
   if (isPlusPlan(me) || hasMissedWords) main.append(review);
   const results = document.createElement("section");
@@ -5069,10 +5275,20 @@ async function renderLearner(me, id, { force = false } = {}) {
       locked.type = "button";
       locked.className = "button-secondary";
       locked.textContent = copy.createReview;
-      locked.addEventListener("click", () =>
-        showLockedFeaturePlan(review, copy.smartReviewUpgrade, "smart_review"),
-      );
+      locked.addEventListener("click", () => {
+        if (
+          mountSmartReviewPreview(
+            review,
+            learnerReviewPreviewWords(data.words),
+            me,
+            `learner:${id}`,
+          )
+        )
+          return;
+        showLockedFeaturePlan(review, copy.smartReviewUpgrade, "smart_review");
+      });
       review.append(locked);
+      restoreSmartReviewPreview(review, me, `learner:${id}`);
     }
   }
   if (data.smartReview || data.summary.needsReview) main.append(review);
@@ -5389,6 +5605,34 @@ async function init() {
       savePendingPhotoImport({ ...pendingPhoto, resumeAuth: false });
       const pendingLocale = pendingPhoto.locale || locale;
       location.href = `${productPagePath("", pendingLocale)}?lang=${encodeURIComponent(pendingLocale)}&photo_import=1`;
+      return;
+    }
+  } catch {}
+  try {
+    const pendingReview = readPendingSmartReview();
+    const checkout = new URLSearchParams(location.search).get("checkout");
+    if (
+      pendingReview?.resumeAuth &&
+      pendingReview.target === "practice" &&
+      checkout !== "success"
+    ) {
+      if (isPlusPlan(me)) {
+        saveTrackingEntry(
+          {
+            words: pendingReview.words,
+            mode: "dictation",
+            entryPoint: "workspace",
+            intent: "smart_review",
+          },
+          me.user.id,
+        );
+        clearPendingSmartReview();
+        location.href = `/workspace?lang=${encodeURIComponent(locale)}&review=1`;
+        return;
+      }
+      savePendingSmartReview({ ...pendingReview, resumeAuth: false });
+      const pendingLocale = pendingReview.locale || locale;
+      location.href = `${productPagePath("", pendingLocale)}?lang=${encodeURIComponent(pendingLocale)}&smart_review=1`;
       return;
     }
   } catch {}

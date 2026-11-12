@@ -110,10 +110,18 @@ for (const locale of ["en", "es", "pt-BR", "fr", "id", "zh"]) {
     expect(copied).not.toContain("learner=");
   });
 
-  test(`${locale} local missed words retain review intent through sign-in`, async ({
+  test(`${locale} local missed words preview Smart Review before sign-in`, async ({
     page,
   }) => {
     const copy = productMessages(locale);
+    const keepCta = {
+      en: "Sign in free",
+      es: "Entrar gratis",
+      "pt-BR": "Entrar grátis",
+      fr: "Se connecter",
+      id: "Masuk gratis",
+      zh: "免费登录",
+    }[locale];
     let signedIn = false;
     await page.addInitScript((locale) => {
       localStorage.setItem("mySpellingGameManualLocale", locale);
@@ -127,7 +135,7 @@ for (const locale of ["en", "es", "pt-BR", "fr", "id", "zh"]) {
     );
     await page.route("**/api/auth/sign-in/social", async (route) => {
       const body = route.request().postDataJSON();
-      expect(body.callbackURL).toContain("review=1");
+      expect(body.callbackURL).not.toContain("review=1");
       signedIn = true;
       await route.fulfill({
         json: { url: `http://127.0.0.1:5173${body.callbackURL}` },
@@ -138,31 +146,54 @@ for (const locale of ["en", "es", "pt-BR", "fr", "id", "zh"]) {
     );
     const prefix = locale === "en" ? "" : `/${locale.toLowerCase()}`;
     await page.goto(`${prefix}/`);
+    await expect(page.locator(".smart-review-preview")).toHaveCount(0);
     await page.locator(".last-missed-smart-btn").click();
-    await expect(page).toHaveURL(/review=1/);
-    await page.locator(".social-sign-in").first().click();
-    await expect(page.locator(".review-entry-card h1")).toHaveText(
-      copy.reviewEntryTitle,
+    const preview = page.locator(".smart-review-preview");
+    await expect(preview).toBeVisible();
+    await expect(page).not.toHaveURL(/review=1/);
+    await expect(page.locator("#custom-word-list")).toHaveValue(/because/);
+    await expect(preview).not.toContainText("banana");
+    await page.locator(".smart-review-answer").fill("nope");
+    await page.locator(".smart-review-check").click();
+    await expect(preview.locator(".smart-review-feedback")).toContainText(
+      "banana",
     );
-    await expect(page.locator(".review-entry-card")).toContainText(
-      copy.reviewEntryLocalNote,
+    const primary = preview.locator(".paywall-primary");
+    await expect(primary).toHaveText(keepCta);
+    await expect(primary).toHaveAttribute(
+      "href",
+      `/workspace?lang=${locale}#teacher-sign-in`,
     );
+    await expect(
+      preview.locator('a[href*="/pricing"]').first(),
+    ).toHaveAttribute("href", `${prefix}/pricing?plan=parent&interval=month`);
     await page.setViewportSize({ width: 360, height: 850 });
+    await primary.scrollIntoViewIfNeeded();
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
     await page.screenshot({
-      path: `test-results/review-entry-${locale}.png`,
+      path: `test-results/smart-review-preview-${locale}.png`,
       fullPage: true,
       animations: "disabled",
     });
-    await page
-      .getByRole("button", { name: copy.trackNextPractice, exact: true })
-      .click();
-    await expect(page.locator("#tracking-words")).toHaveValue("banana");
-    await expect(page.locator("#tracking-name")).toBeVisible();
+    await primary.click();
+    await page.locator(".social-sign-in").first().click();
+    await expect(preview).toBeVisible();
+    await expect(page).not.toHaveURL(/smart_review=1/);
+    await expect(preview.locator(".paywall-primary")).toHaveText(
+      copy.unlockSmartReview,
+    );
+    await expect(preview.locator(".paywall-primary")).toHaveAttribute(
+      "href",
+      `${prefix}/pricing?plan=parent&interval=month`,
+    );
+    await expect(page.locator("#custom-word-list")).toHaveValue(/because/);
+    expect(
+      await page.evaluate(() => sessionStorage.getItem("pendingSmartReview")),
+    ).toContain("banana");
   });
 }
 

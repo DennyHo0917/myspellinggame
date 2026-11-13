@@ -787,12 +787,13 @@ test("pricing shows the Free, Parent, and Teacher plans in every locale", () => 
     for (const term of terms)
       assert.ok(pricing.includes(term), `${locale || "en"}: ${term}`);
     const trial = {
-      "": "7-day trial of Photo Import and Smart Review",
-      es: "Prueba de 7 días: foto y repaso inteligente",
-      "pt-br": "Teste de 7 dias: foto e revisão inteligente",
-      fr: "Essai 7 jours : import photo et révision intelligente",
-      id: "Uji coba 7 hari: impor foto dan Ulasan Pintar",
-      zh: "拍照导入和智能复习可试用 7 天",
+      "": "7-day trial: Photo Import, auto-fill sentences, tracked results, and Smart Review",
+      es: "Prueba de 7 días: foto, frases automáticas, seguimiento de resultados y repaso inteligente",
+      "pt-br":
+        "Teste de 7 dias: foto, frases automáticas, acompanhamento de resultados e revisão inteligente",
+      fr: "Essai 7 jours : photo, phrases automatiques, suivi des résultats et révision intelligente",
+      id: "Uji coba 7 hari: impor foto, kalimat otomatis, lacak hasil, dan Ulasan Pintar",
+      zh: "7 天试用：拍照导入、自动配例句、作业结果追踪与智能复习",
     }[locale];
     assert.ok(pricing.includes(trial), `${locale || "en"}: ${trial}`);
     assert.doesNotMatch(
@@ -1015,7 +1016,9 @@ test("llms.txt publishes the current product summary and canonical sources", () 
   ])
     assert.ok(content.includes(text), text);
   assert.ok(
-    content.includes("one 7-day trial of Photo Import and Smart Review"),
+    content.includes(
+      "one 7-day trial of Photo Import, Smart Review, automatic example sentences, and tracked assignment results",
+    ),
   );
   assert.ok(content.includes("not part of the 7-day trial"));
   assert.ok(!content.includes("15 student submissions per month"));

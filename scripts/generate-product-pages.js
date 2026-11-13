@@ -106,7 +106,7 @@ const copy = {
       "1 learner",
       "1 tracked result per account, once",
       "14-day progress history",
-      "7-day trial of Photo Import and Smart Review",
+      "7-day trial: Photo Import, auto-fill sentences, tracked results, and Smart Review",
     ],
     parent: "Parent Plan",
     parentMonth: "$7.99 / month",
@@ -141,14 +141,14 @@ const copy = {
       "CSV export",
       "Class-wide missed-word statistics",
     ],
-    monthly: "Monthly plan",
-    yearly: "Yearly plan",
+    monthly: "Monthly",
+    yearly: "Yearly",
     parentSavings: "Save ~17%",
     parentSubtext: "$6.66/mo billed yearly",
     teacherSavings: "Save ~17%",
     teacherSubtext: "$12.49/mo billed yearly",
     billingPeriod: "Billing period",
-    selectParent: "Photo Import + Smart Review",
+    selectParent: "Select Parent Plan",
     selectTeacher: "Select Teacher Plan",
     signIn: "Workspace",
     practice: "Home",
@@ -157,6 +157,12 @@ const copy = {
     secureCheckout: "Secure checkout by Stripe · Cancel anytime",
     language: "Language",
     note: "Parents and teachers sign in. Students need no account or password. Anonymous practice needs no account, supports up to 20 words per list, and does not save Workspace tracking history.",
+    freeNote:
+      "1 tracked result with no monthly reset. Ordinary practice stays free; students need no account.",
+    parentNote:
+      "Children practice by link with no account or password required.",
+    teacherNote:
+      "Students use a link or PIN with no account. Results stay here (no Classroom roster or grade sync).",
   },
   es: {
     title: "Planes y precios para tareas | My Spelling Game",
@@ -177,7 +183,7 @@ const copy = {
       "1 estudiante",
       "1 resultado de prueba por cuenta, una sola vez",
       "14 días de historial de progreso",
-      "Prueba de 7 días: foto y repaso inteligente",
+      "Prueba de 7 días: foto, frases automáticas, seguimiento de resultados y repaso inteligente",
     ],
     parent: "Plan para familias",
     parentMonth: "$7.99 al mes",
@@ -212,14 +218,14 @@ const copy = {
       "Exportación CSV",
       "Estadísticas de errores de toda la clase",
     ],
-    monthly: "Plan mensual",
-    yearly: "Plan anual",
+    monthly: "Mensual",
+    yearly: "Anual",
     parentSavings: "Ahorra ~17%",
     parentSubtext: "$6.66/mes facturado al año",
     teacherSavings: "Ahorra ~17%",
     teacherSubtext: "$12.49/mes facturado al año",
     billingPeriod: "Periodo de facturación",
-    selectParent: "Fotos + repaso inteligente",
+    selectParent: "Elegir plan familiar",
     selectTeacher: "Elegir plan para docentes",
     signIn: "Espacio de trabajo",
     practice: "Inicio",
@@ -228,6 +234,12 @@ const copy = {
     secureCheckout: "Pago seguro con Stripe · Cancela cuando quieras",
     language: "Idioma",
     note: "Las familias y los docentes inician sesión. Los estudiantes no necesitan cuenta ni contraseña. La práctica anónima no requiere cuenta, admite hasta 20 palabras por lista y no guarda el historial de seguimiento del espacio de trabajo.",
+    freeNote:
+      "1 resultado completo sin renovación mensual. La práctica habitual sigue siendo gratis y el alumnado no necesita cuenta.",
+    parentNote:
+      "Tus hijos practican desde el enlace sin cuenta ni contraseña.",
+    teacherNote:
+      "El alumnado entra con enlace o PIN sin cuenta. Los resultados quedan aquí (no se sincronizan listas ni notas con Classroom).",
   },
   "pt-BR": {
     title: "Planos e preços para tarefas | My Spelling Game",
@@ -248,7 +260,7 @@ const copy = {
       "1 aluno",
       "1 resultado de teste por conta, uma única vez",
       "14 dias de histórico de progresso",
-      "Teste de 7 dias: foto e revisão inteligente",
+      "Teste de 7 dias: foto, frases automáticas, acompanhamento de resultados e revisão inteligente",
     ],
     parent: "Plano para Pais",
     parentMonth: "$7.99 por mês",
@@ -283,14 +295,14 @@ const copy = {
       "Exportação CSV",
       "Estatísticas de erros da turma",
     ],
-    monthly: "Plano mensal",
-    yearly: "Plano anual",
+    monthly: "Mensal",
+    yearly: "Anual",
     parentSavings: "Economize ~17%",
     parentSubtext: "US$ 6,66/mês cobrado ao ano",
     teacherSavings: "Economize ~17%",
     teacherSubtext: "US$ 12,49/mês cobrado ao ano",
     billingPeriod: "Periodicidade",
-    selectParent: "Fotos + revisão inteligente",
+    selectParent: "Escolher Plano Família",
     selectTeacher: "Escolher Plano para Professores",
     signIn: "Espaço de trabalho",
     practice: "Início",
@@ -299,6 +311,12 @@ const copy = {
     secureCheckout: "Checkout seguro pelo Stripe · Cancele quando quiser",
     language: "Idioma",
     note: "Responsáveis e professores entram com sua conta. Os alunos não precisam de conta nem senha. A prática anônima não exige conta, aceita até 20 palavras por lista e não salva o histórico de acompanhamento do espaço de trabalho.",
+    freeNote:
+      "1 resultado completo sem renovação mensal. A prática comum continua grátis e os alunos não precisam de conta.",
+    parentNote:
+      "Seus filhos praticam pelo link sem precisar de conta nem senha.",
+    teacherNote:
+      "Os alunos entram por link ou PIN sem criar conta. Os resultados ficam aqui (sem sincronizar turmas ou notas com o Classroom).",
   },
   fr: {
     title: "Offres et tarifs pour les devoirs | My Spelling Game",
@@ -319,7 +337,7 @@ const copy = {
       "1 élève",
       "1 résultat d’essai par compte, une seule fois",
       "14 jours d’historique de progression",
-      "Essai 7 jours : import photo et révision intelligente",
+      "Essai 7 jours : photo, phrases automatiques, suivi des résultats et révision intelligente",
     ],
     parent: "Offre Parents",
     parentMonth: "7,99 $ par mois",
@@ -358,10 +376,10 @@ const copy = {
       "Export CSV",
       "Statistiques des mots manqués de la classe",
     ],
-    monthly: "Offre mensuelle",
-    yearly: "Offre annuelle",
+    monthly: "Mensuel",
+    yearly: "Annuel",
     billingPeriod: "Période de facturation",
-    selectParent: "Photos + révision ciblée",
+    selectParent: "Choisir l’offre Famille",
     selectTeacher: "Choisir l’offre Enseignants",
     signIn: "Espace de travail",
     practice: "Accueil",
@@ -370,6 +388,12 @@ const copy = {
     secureCheckout: "Paiement sécurisé par Stripe · Résiliable à tout moment",
     language: "Langue",
     note: "Les parents et les enseignants se connectent. Les élèves n’ont besoin ni de compte ni de mot de passe. La pratique anonyme ne demande aucun compte, accepte jusqu’à 20 mots par liste et n’enregistre pas l’historique de suivi de l’espace de travail.",
+    freeNote:
+      "1 résultat complet sans renouvellement mensuel. L’entraînement classique reste gratuit et les élèves n’ont besoin d’aucun compte.",
+    parentNote:
+      "Vos enfants s’entraînent via le lien sans compte ni mot de passe.",
+    teacherNote:
+      "Les élèves accèdent par lien ou PIN sans compte. Les résultats restent ici (sans synchro des listes ni des notes Classroom).",
   },
   id: {
     title: "Paket dan harga tugas | My Spelling Game",
@@ -390,7 +414,7 @@ const copy = {
       "1 siswa",
       "1 hasil uji coba per akun, hanya sekali",
       "Riwayat perkembangan 14 hari",
-      "Uji coba 7 hari: impor foto dan Ulasan Pintar",
+      "Uji coba 7 hari: impor foto, kalimat otomatis, lacak hasil, dan Ulasan Pintar",
     ],
     parent: "Paket Orang Tua",
     parentMonth: "$7.99 per bulan",
@@ -425,14 +449,14 @@ const copy = {
       "Ekspor CSV",
       "Statistik kata yang salah untuk seluruh kelas",
     ],
-    monthly: "Paket bulanan",
-    yearly: "Paket tahunan",
+    monthly: "Bulanan",
+    yearly: "Tahunan",
     parentSavings: "Hemat ~17%",
     parentSubtext: "US$6,66/bln ditagih tahunan",
     teacherSavings: "Hemat ~17%",
     teacherSubtext: "US$12,49/bln ditagih tahunan",
     billingPeriod: "Periode tagihan",
-    selectParent: "Impor foto + Ulasan Pintar",
+    selectParent: "Pilih Paket Orang Tua",
     selectTeacher: "Pilih Paket Guru",
     signIn: "Ruang kerja",
     practice: "Beranda",
@@ -441,6 +465,12 @@ const copy = {
     secureCheckout: "Checkout aman oleh Stripe · Batalkan kapan saja",
     language: "Bahasa",
     note: "Orang tua dan guru masuk ke akun mereka. Siswa tidak memerlukan akun atau kata sandi. Latihan anonim tidak memerlukan akun, mendukung hingga 20 kata per daftar, dan tidak menyimpan riwayat pelacakan ruang kerja.",
+    freeNote:
+      "1 hasil lengkap tanpa pembaruan bulanan. Latihan biasa tetap gratis dan siswa tidak memerlukan akun.",
+    parentNote:
+      "Anak berlatih lewat tautan tanpa perlu akun atau kata sandi.",
+    teacherNote:
+      "Siswa masuk lewat tautan atau PIN tanpa akun. Hasil tetap di sini (tanpa sinkronisasi daftar kelas atau nilai Classroom).",
   },
   zh: {
     title: "作业方案与价格 | My Spelling Game",
@@ -460,7 +490,7 @@ const copy = {
       "创建 1 个学习者档案",
       "每账号 1 次结果追踪体验，不重复发放",
       "查看 14 天学习记录",
-      "拍照导入和智能复习可试用 7 天",
+      "7 天试用：拍照导入、自动配例句、作业结果追踪与智能复习",
     ],
     parent: "家长方案",
     parentMonth: "每月 $7.99",
@@ -495,14 +525,14 @@ const copy = {
       "导出 CSV",
       "查看班级错词统计",
     ],
-    monthly: "月付方案",
-    yearly: "年付方案",
+    monthly: "月付",
+    yearly: "年付",
     parentSavings: "年付立省 ~17%",
     parentSubtext: "每月约 $6.66，按年结算",
     teacherSavings: "年付立省 ~17%",
     teacherSubtext: "每月约 $12.49，按年结算",
     billingPeriod: "计费周期",
-    selectParent: "解锁拍照导入 + 智能复习",
+    selectParent: "选择家长方案",
     selectTeacher: "选择教师方案",
     signIn: "工作台",
     practice: "首页",
@@ -511,11 +541,20 @@ const copy = {
     secureCheckout: "Stripe 安全结账 · 可随时取消",
     language: "语言",
     note: "家长和教师登录，学生无需账号或密码。匿名练习无需账号，每份最多 20 个词，也不会保存 Workspace 追踪历史。",
+    freeNote:
+      "1 次完整结果追踪不按月重置；普通练习始终免费，学生无需账号。",
+    parentNote:
+      "孩子通过链接即可练习，无需注册账号或密码。",
+    teacherNote:
+      "学生通过链接或 PIN 即可练习，无需账号；结果保留在本站（不同步 Classroom 名单或成绩）。",
   },
 };
 
 function pagePath(locale) {
   return locale.dir ? `/${locale.dir}/pricing` : "/pricing";
+}
+function intervalToggle(c, plan) {
+  return `<div class="plan-selector" role="group" aria-label="${escape(c.billingPeriod)}"><button type="button" class="plan-option" disabled data-plan-for="${plan}" data-plan-option="month" aria-pressed="true">${escape(c.monthly)}</button><button type="button" class="plan-option" disabled data-plan-for="${plan}" data-plan-option="year" aria-pressed="false">${escape(c.yearly)}</button></div>`;
 }
 function escape(value) {
   return String(value)
@@ -582,7 +621,7 @@ function render(locale) {
   <link rel="alternate" hreflang="x-default" href="${baseUrl}/pricing">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="stylesheet" href="/src/css/main.css">
-  <link rel="stylesheet" href="/src/css/product.css?v=pricing-header2">
+  <link rel="stylesheet" href="/src/css/product.css?v=pricing-header6">
   <script src="/src/js/localeRedirect.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VYF1V40KVS"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-VYF1V40KVS',{page_location: window.location.origin + window.location.pathname,page_path: window.location.pathname});</script>
@@ -592,16 +631,13 @@ function render(locale) {
   <div class="product-shell">
     <header class="top-right-nav"><a class="brand-link" href="${locale.dir ? `/${locale.dir}/` : "/"}" aria-label="My Spelling Game home"><img class="brand-logo" src="/images/icon-64.png" width="32" height="32" alt=""><span class="brand-name">My Spelling Game</span></a><details class="language-switcher"><summary class="lang-btn" aria-label="${escape(c.language)}">${escape(c.language)}</summary><div class="lang-menu">${languageOptions}</div></details><a class="teacher-nav-link" href="/workspace?lang=${encodeURIComponent(locale.code)}">${escape(c.signIn)}</a><a class="header-home-link" href="${locale.dir ? `/${locale.dir}/` : "/"}">${escape(c.practice)}</a></header>
     <main class="product-main">
-      <section class="product-card"><h1>${escape(c.heading)}</h1><p>${escape(c.intro)}</p><p class="notice">${escape(c.note)} ${escape(classroom.accountDetail)}</p></section>
+      <header class="pricing-hero"><h1>${escape(c.heading)}</h1><p>${escape(c.intro)}</p></header>
       <div class="subscription-status" data-subscription-status hidden role="status"><span data-subscription-message></span><button type="button" class="button-secondary" data-renew-subscription hidden></button></div>
-      <div class="pricing-toolbar"><div class="plan-selector" role="group" aria-label="${escape(c.billingPeriod)}"><button type="button" class="plan-option" disabled data-plan-option="month" aria-pressed="true">${escape(c.monthly)}</button><button type="button" class="plan-option" disabled data-plan-option="year" aria-pressed="false">${escape(c.yearly)}</button></div></div>
-      <p class="notice">${escape(c.resultViewNote)}</p>
       <div class="pricing-grid">
-        <section class="product-card pricing-card" data-plan-card="free"><div class="pricing-card-heading"><h2>${escape(c.free)}</h2></div><div class="selected-plan"><p class="price">${escape(c.freePrice)}</p><p class="plan-description">${escape(c.freeBilling)}</p></div><ul>${c.freeItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><a class="button-link button-secondary" data-plan-cta="free" data-free-teacher-cta data-current-plan-label="${escape(c.currentPlan)}" href="/workspace?lang=${encodeURIComponent(locale.code)}#teacher-sign-in">${escape(c.freeTeacher)}</a></section>
-        <section class="product-card pricing-card selected" data-plan-card="parent"><div class="pricing-card-heading"><h2>${escape(c.parent)}</h2></div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.parentMonth)}" data-year="${escape(c.parentYear)}">${escape(c.parentMonth)}</p><p class="plan-savings" data-plan-savings data-month="" data-year="${escape(c.parentSavings)}" hidden>${escape(c.parentSavings)}</p><p class="plan-subtext" data-plan-subtext data-month="" data-year="${escape(c.parentSubtext)}" hidden>${escape(c.parentSubtext)}</p></div><ul>${c.parentItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><button type="button" class="plan-choice" disabled data-plan-choice="parent" data-plan-cta="parent" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="true">${escape(c.selectParent)}</button></section>
-        <section class="product-card pricing-card" data-plan-card="teacher"><div class="pricing-card-heading"><h2>${escape(c.teacher)}</h2></div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.teacherMonth)}" data-year="${escape(c.teacherYear)}">${escape(c.teacherMonth)}</p><p class="plan-savings" data-plan-savings data-month="" data-year="${escape(c.teacherSavings)}" hidden>${escape(c.teacherSavings)}</p><p class="plan-subtext" data-plan-subtext data-month="" data-year="${escape(c.teacherSubtext)}" hidden>${escape(c.teacherSubtext)}</p></div><ul>${c.teacherItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><button type="button" class="button-secondary plan-choice" disabled data-plan-choice="teacher" data-plan-cta="teacher" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="false">${escape(c.selectTeacher)}</button></section>
+        <section class="product-card pricing-card" data-plan-card="free"><div class="pricing-card-heading"><h2>${escape(c.free)}</h2></div><div class="selected-plan"><p class="price">${escape(c.freePrice)}</p><p class="plan-description">${escape(c.freeBilling)}</p></div><ul>${c.freeItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><p class="plan-card-note">${escape(c.freeNote)}</p><a class="button-link button-secondary" data-plan-cta="free" data-free-teacher-cta data-current-plan-label="${escape(c.currentPlan)}" href="/workspace?lang=${encodeURIComponent(locale.code)}#teacher-sign-in">${escape(c.freeTeacher)}</a></section>
+        <section class="product-card pricing-card" data-plan-card="parent"><div class="pricing-card-heading"><h2>${escape(c.parent)}</h2>${intervalToggle(c, "parent")}</div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.parentMonth)}" data-year="${escape(c.parentYear)}">${escape(c.parentMonth)}</p><p class="plan-savings" data-plan-savings data-month="" data-year="${escape(c.parentSavings)}" hidden>${escape(c.parentSavings)}</p><p class="plan-subtext" data-plan-subtext data-month="" data-year="${escape(c.parentSubtext)}" hidden>${escape(c.parentSubtext)}</p></div><ul>${c.parentItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><p class="plan-card-note">${escape(c.parentNote)}</p><button type="button" class="button-secondary plan-choice" disabled data-plan-for="parent" data-plan-choice="parent" data-plan-cta="parent" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="true">${escape(c.selectParent)}</button></section>
+        <section class="product-card pricing-card" data-plan-card="teacher"><div class="pricing-card-heading"><h2>${escape(c.teacher)}</h2>${intervalToggle(c, "teacher")}</div><div class="selected-plan" aria-live="polite"><p class="price" data-plan-price data-month="${escape(c.teacherMonth)}" data-year="${escape(c.teacherYear)}">${escape(c.teacherMonth)}</p><p class="plan-savings" data-plan-savings data-month="" data-year="${escape(c.teacherSavings)}" hidden>${escape(c.teacherSavings)}</p><p class="plan-subtext" data-plan-subtext data-month="" data-year="${escape(c.teacherSubtext)}" hidden>${escape(c.teacherSubtext)}</p></div><ul>${c.teacherItems.map((item) => `<li>${escape(item)}</li>`).join("")}</ul><p class="plan-card-note">${escape(c.teacherNote)}</p><button type="button" class="button-secondary plan-choice" disabled data-plan-for="teacher" data-plan-choice="teacher" data-plan-cta="teacher" data-current-plan-label="${escape(c.currentPlan)}" aria-pressed="false">${escape(c.selectTeacher)}</button></section>
       </div>
-      <section class="product-card" aria-labelledby="classroom-sharing"><h2 id="classroom-sharing">${escape(classroom.heading)}</h2><p>${escape(classroom.openLinkDetail)}</p><p>${escape(classroom.teacherDetail)}</p><p class="notice">${escape(classroom.scopeDetail)}</p></section>
     </main>
     <footer class="product-footer"><p><span class="footer-links">${links}</span><br><span class="footer-secondary-links">${secondaryLinks}</span><br>&copy; 2026 My Spelling Game ${footerRights[locale.code]}</p></footer>
   </div>

@@ -18,7 +18,7 @@ module.exports = {
     pricingDescription:
       "Compare Free, Parent, and Teacher spelling plans. Teacher Plan includes Google Classroom sharing and class PINs.",
     teacherDescription:
-      "Create spelling assignments and track results. Signed-in free accounts can try Smart Review for 7 days. Teacher Plan adds Google Classroom sharing, class PINs, and CSV reports.",
+      "Create spelling assignments and track results. Signed-in free accounts get a 7-day trial of Photo Import, auto-fill sentences, tracked results, and Smart Review. Teacher Plan adds Google Classroom sharing, class PINs, and CSV reports.",
     teacherIntro:
       "Create assignments from the exact words your class is learning and follow results in Workspace. Teacher Plan also lets you share assignments to Google Classroom.",
     faqIntro: "Teacher Plan also includes sharing to Google Classroom.",
@@ -41,7 +41,7 @@ module.exports = {
     pricingDescription:
       "Compara los planes Gratis, para familias y para docentes. El Plan para docentes incluye Google Classroom y acceso de clase con PIN.",
     teacherDescription:
-      "Crea tareas de spelling y sigue los resultados. Una cuenta gratis puede probar el repaso inteligente durante 7 días. El Plan para docentes añade Google Classroom, PIN de clase e informes CSV.",
+      "Crea tareas de spelling y sigue los resultados. Una cuenta gratis con sesión iniciada incluye 7 días de prueba de foto, frases automáticas, seguimiento y repaso inteligente. El Plan para docentes añade Google Classroom, PIN de clase e informes CSV.",
     teacherIntro:
       "Crea tareas con las palabras que está aprendiendo tu clase y consulta los resultados en tu espacio de trabajo. Con el Plan para docentes también puedes compartirlas en Google Classroom.",
     faqIntro:
@@ -65,7 +65,7 @@ module.exports = {
     pricingDescription:
       "Compare os planos Grátis, para Pais e para Professores. O Plano para Professores inclui Google Classroom e acesso da turma com PIN.",
     teacherDescription:
-      "Crie atividades de spelling e acompanhe os resultados. Uma conta grátis pode testar a revisão inteligente por 7 dias. O Plano para Professores inclui Google Classroom, PIN da turma e CSV.",
+      "Crie atividades de spelling e acompanhe os resultados. Uma conta grátis conectada inclui teste de 7 dias de foto, frases automáticas, acompanhamento e revisão inteligente. O Plano para Professores inclui Google Classroom, PIN da turma e CSV.",
     teacherIntro:
       "Crie atividades com as palavras que sua turma está aprendendo e acompanhe os resultados no espaço de trabalho. O Plano para Professores também permite compartilhá-las no Google Classroom.",
     faqIntro:
@@ -89,7 +89,7 @@ module.exports = {
     pricingDescription:
       "Comparez les offres gratuite, Parents et Enseignants. L’offre Enseignants inclut Google Classroom et l’accès de classe par PIN.",
     teacherDescription:
-      "Créez des devoirs d’orthographe anglaise et suivez les résultats. Un compte gratuit peut essayer la révision intelligente pendant 7 jours. L’offre Enseignants ajoute Google Classroom, les PIN de classe et les rapports CSV.",
+      "Créez des devoirs d’orthographe anglaise et suivez les résultats. Un compte gratuit connecté inclut 7 jours d’essai pour l’import photo, les phrases automatiques, le suivi et la révision intelligente. L’offre Enseignants ajoute Google Classroom, les PIN de classe et les rapports CSV.",
     teacherIntro:
       "Créez des devoirs avec les mots étudiés en classe et suivez les résultats dans votre espace de travail. L’offre Enseignants permet aussi de les partager sur Google Classroom.",
     faqIntro:
@@ -113,7 +113,7 @@ module.exports = {
     pricingDescription:
       "Bandingkan Paket Gratis, Orang Tua, dan Guru. Paket Guru menyediakan berbagi ke Google Classroom dan akses kelas dengan PIN.",
     teacherDescription:
-      "Buat tugas ejaan dan pantau hasilnya. Akun gratis dapat mencoba Ulasan Pintar selama 7 hari. Paket Guru menyediakan berbagi ke Google Classroom, PIN kelas, dan laporan CSV.",
+      "Buat tugas ejaan dan pantau hasilnya. Akun gratis yang masuk mendapat uji coba 7 hari untuk impor foto, kalimat otomatis, lacak hasil, dan Ulasan Pintar. Paket Guru menyediakan berbagi ke Google Classroom, PIN kelas, dan laporan CSV.",
     teacherIntro:
       "Buat tugas dari kata yang sedang dipelajari siswa dan pantau hasilnya di ruang kerja. Paket Guru juga dapat membagikan tugas ke Google Classroom.",
     faqIntro: "Paket Guru juga menyediakan berbagi ke Google Classroom.",
@@ -135,7 +135,7 @@ module.exports = {
     pricingDescription:
       "对比 My Spelling Game 免费、家长和教师方案。教师方案包含 Google Classroom 作业分享和全班 PIN 入口。",
     teacherDescription:
-      "创建英语拼写作业并追踪练习结果。登录后的免费账号可试用智能复习 7 天。教师方案提供 Google Classroom 分享、全班 PIN 入口和 CSV 报告。",
+      "创建英语拼写作业并追踪练习结果。登录后的免费账号可享 7 天试用：拍照导入、自动配例句、作业结果追踪与智能复习。教师方案提供 Google Classroom 分享、全班 PIN 入口和 CSV 报告。",
     teacherIntro:
       "用班级正在学习的单词创建作业，在工作台追踪练习结果。教师方案还可将作业分享到 Google Classroom。",
     faqIntro: "教师方案还支持分享到 Google Classroom。",

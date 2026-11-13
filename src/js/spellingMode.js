@@ -5,6 +5,11 @@ import {
   savePendingPhotoImport,
 } from "./pendingPhotoImport.mjs";
 import {
+  clearPendingSentenceFill,
+  readPendingSentenceFill,
+  savePendingSentenceFill,
+} from "./pendingSentenceFill.mjs";
+import {
   clearPendingSmartReview,
   readPendingSmartReview,
   savePendingSmartReview,
@@ -63,7 +68,9 @@ let tesseractPromise;
 let wordLimitHitTracked = false;
 let copyToastTimer;
 let previousWordText = "";
+let photoImportGeneration = 0;
 let sentenceFillGeneration = 0;
+let photoDialogOnClose = null;
 
 export { parseWords };
 
@@ -84,7 +91,9 @@ function upgradeLink(
           ? "unlockPhotoImport"
           : feature === "smart_review"
             ? "unlockSmartReview"
-            : "unlockWordLimit",
+            : feature === "example_sentences"
+              ? "unlockSentences"
+              : "unlockWordLimit",
         {},
         getPageLocale(),
       )
@@ -223,7 +232,7 @@ function appendSmartReviewPaywall(notice, account, words) {
   const signedOut = !account;
   if (signedOut) {
     const keep = document.createElement("span");
-    keep.className = "contextual-paywall-benefit";
+    keep.className = "contextual-paywall-benefit feature-trial-note";
     keep.textContent = t("smartReviewKeepBenefit");
     notice.append(keep);
   }
@@ -331,18 +340,21 @@ function trackPhotoPreview(account, outcome) {
   });
 }
 
-function appendPhotoImportPaywall(notice, account, readWords, importId) {
+function appendFeatureTrialPaywall(
+  notice,
+  { account, feature, keepBenefit, value, onSignIn, onPricing },
+) {
   const { plan, interval } = upgradeSelection(account);
   const signedOut = !account;
   if (signedOut) {
     const keep = document.createElement("span");
-    keep.className = "contextual-paywall-benefit";
-    keep.textContent = t("photoImportKeepBenefit");
+    keep.className = "contextual-paywall-benefit feature-trial-note";
+    keep.textContent = keepBenefit;
     notice.append(keep);
   }
   const benefit = document.createElement("span");
   benefit.className = "contextual-paywall-benefit";
-  benefit.textContent = t("photoImportValue");
+  benefit.textContent = value;
   const price = document.createElement("strong");
   price.className = "contextual-paywall-price";
   price.textContent = productMessage(
@@ -357,20 +369,116 @@ function appendPhotoImportPaywall(notice, account, readWords, importId) {
     signIn.className = "button-link contextual-paywall-cta paywall-primary";
     signIn.href = `/workspace?lang=${encodeURIComponent(getPageLocale())}#teacher-sign-in`;
     signIn.textContent = t("photoImportKeepCta");
-    signIn.addEventListener("click", () => {
-      rememberPendingPhotoImport(readWords(), importId, true);
-    });
+    if (onSignIn) signIn.addEventListener("click", onSignIn);
     actions.append(signIn);
-    actions.append(upgradeLink("photo_import", plan, interval, true, false));
-  } else actions.append(upgradeLink("photo_import", plan, interval));
-  if (plan === "parent")
-    actions.append(upgradeLink("photo_import", "teacher", interval, false));
-  for (const link of actions.querySelectorAll('a[href*="pricing"]')) {
-    link.addEventListener("click", () => {
-      rememberPendingPhotoImport(readWords(), importId, false);
-    });
+    actions.append(upgradeLink(feature, plan, interval, true, false));
+  } else actions.append(upgradeLink(feature, plan, interval));
+  if (onPricing) {
+    for (const link of actions.querySelectorAll('a[href*="pricing"]')) {
+      link.addEventListener("click", onPricing);
+    }
   }
   notice.append(benefit, price, actions);
+}
+
+function appendPhotoImportPaywall(notice, account, readWords, importId) {
+  appendFeatureTrialPaywall(notice, {
+    account,
+    feature: "photo_import",
+    keepBenefit: t("photoImportKeepBenefit"),
+    value: t("photoImportValue"),
+    onSignIn: () => rememberPendingPhotoImport(readWords(), importId, true),
+    onPricing: () => rememberPendingPhotoImport(readWords(), importId, false),
+  });
+}
+
+function photoImportDialogElements() {
+  let dialog = document.getElementById("photo-import-dialog");
+  if (!dialog) {
+    dialog = document.createElement("dialog");
+    dialog.id = "photo-import-dialog";
+    dialog.className = "photo-import-dialog";
+    dialog.setAttribute("aria-labelledby", "photo-import-dialog-title");
+
+    const header = document.createElement("div");
+    header.className = "photo-import-modal-header";
+
+    const title = document.createElement("h3");
+    title.id = "photo-import-dialog-title";
+    title.className = "photo-import-modal-title";
+
+    const closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.className = "photo-import-modal-close";
+    closeBtn.setAttribute("aria-label", t("dismiss"));
+    closeBtn.innerHTML = "&times;";
+    closeBtn.addEventListener("click", () => {
+      closePhotoImportDialog({ clearPending: true });
+    });
+
+    header.append(title, closeBtn);
+
+    const body = document.createElement("div");
+    body.className = "photo-import-modal-body";
+
+    dialog.append(header, body);
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      closePhotoImportDialog({ clearPending: true });
+    });
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) {
+        closePhotoImportDialog({ clearPending: true });
+      }
+    });
+    document.body.append(dialog);
+  }
+  return {
+    dialog,
+    titleEl: dialog.querySelector(".photo-import-modal-title"),
+    bodyEl: dialog.querySelector(".photo-import-modal-body"),
+  };
+}
+
+function openPhotoImportDialog(
+  titleText,
+  contentNodes,
+  { onClose = null } = {},
+) {
+  photoDialogOnClose = onClose;
+  const { dialog, titleEl, bodyEl } = photoImportDialogElements();
+  if (titleEl) titleEl.textContent = titleText;
+  bodyEl?.replaceChildren(...contentNodes);
+  if (!dialog.open) {
+    if (typeof dialog.showModal === "function") dialog.showModal();
+    else dialog.setAttribute("open", "");
+  }
+  return dialog;
+}
+
+function closePhotoImportDialog({ clearPending = false } = {}) {
+  photoImportGeneration += 1;
+  if (clearPending) {
+    clearPendingPhotoImport();
+    photoDialogOnClose?.();
+  }
+  photoDialogOnClose = null;
+  const dialog = document.getElementById("photo-import-dialog");
+  if (!dialog) return;
+  if (dialog.open && typeof dialog.close === "function") dialog.close();
+  else dialog.removeAttribute("open");
+  dialog.querySelector(".photo-import-modal-body")?.replaceChildren();
+}
+
+function createPhotoPickerButton(label = t("photoImportChooseAnother")) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "auto-sentence-btn";
+  button.textContent = label;
+  button.addEventListener("click", () => {
+    document.getElementById("photo-import-input")?.click();
+  });
+  return button;
 }
 
 function showLockedPhotoPreview(
@@ -379,10 +487,8 @@ function showLockedPhotoPreview(
   importId = crypto.randomUUID(),
   { trackPreview = true } = {},
 ) {
-  const field = textarea()?.closest(".word-entry-field");
-  if (!field) return;
+  if (!textarea()) return;
   const text = photoWordsText(rawText);
-  field.querySelector(".photo-import-notice, .photo-import-review")?.remove();
   if (trackPreview) trackPhotoPreview(account, "paywall");
   trackEvent("photo_import_blocked", {
     current_plan: account?.plan || "anonymous",
@@ -391,13 +497,11 @@ function showLockedPhotoPreview(
   trackLockedFeature("photo_import", account?.plan || "anonymous");
   const review = document.createElement("div");
   review.className = "photo-import-review";
-  const title = document.createElement("strong");
-  title.textContent = t("photoImportPreviewTitle");
   const help = document.createElement("small");
   help.textContent = t("photoImportPreviewHelp");
   const input = document.createElement("textarea");
   input.id = "photo-import-review-words";
-  input.rows = 5;
+  input.rows = 6;
   input.value = text;
   rememberPendingPhotoImport(input.value, importId, false);
   input.addEventListener("input", () => {
@@ -415,29 +519,60 @@ function showLockedPhotoPreview(
   appendPhotoImportPaywall(notice, account, () => input.value, importId);
   const actions = document.createElement("div");
   actions.className = "photo-import-review-actions";
+  const chooseAnother = createPhotoPickerButton();
   const cancel = document.createElement("button");
   cancel.type = "button";
   cancel.className = "auto-sentence-btn";
   cancel.textContent = t("photoImportCancel");
   cancel.addEventListener("click", () => {
-    clearPendingPhotoImport();
-    review.remove();
+    closePhotoImportDialog({ clearPending: true });
   });
-  actions.append(cancel);
-  review.append(title, help, input, notice, actions);
-  field.append(review);
+  actions.append(chooseAnother, cancel);
+  review.append(help, input, notice, actions);
+  openPhotoImportDialog(t("photoImportPreviewTitle"), [review]);
 }
 
-function photoImportStatus(message) {
-  const field = textarea()?.closest(".word-entry-field");
-  if (!field) return;
-  field.querySelector(".photo-import-notice, .photo-import-review")?.remove();
-  const notice = document.createElement("small");
-  notice.className = "photo-import-notice sentence-library-notice";
-  notice.setAttribute("role", "status");
-  notice.textContent = message;
-  field.append(notice);
-  return notice;
+function photoImportStatus(
+  message,
+  { loading = false, allowPick = false } = {},
+) {
+  if (!textarea()) return null;
+  const nodes = [];
+  if (loading) {
+    const box = document.createElement("div");
+    box.className = "photo-import-loading";
+    const spinner = document.createElement("span");
+    spinner.className = "photo-import-spinner";
+    spinner.setAttribute("aria-hidden", "true");
+    const text = document.createElement("p");
+    text.className = "photo-import-notice";
+    text.setAttribute("role", "status");
+    text.textContent = message;
+    box.append(spinner, text);
+    nodes.push(box);
+  } else {
+    const notice = document.createElement("p");
+    notice.className = "photo-import-notice sentence-library-notice";
+    notice.setAttribute("role", "status");
+    notice.textContent = message;
+    nodes.push(notice);
+  }
+  const actions = document.createElement("div");
+  actions.className = "photo-import-review-actions";
+  if (allowPick) {
+    actions.append(createPhotoPickerButton());
+  }
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.className = "auto-sentence-btn";
+  cancel.textContent = t("photoImportCancel");
+  cancel.addEventListener("click", () => {
+    closePhotoImportDialog({ clearPending: true });
+  });
+  actions.append(cancel);
+  nodes.push(actions);
+  openPhotoImportDialog(t("photoImport"), nodes);
+  return actions;
 }
 
 function loadTesseract() {
@@ -472,14 +607,14 @@ function loadTesseract() {
 }
 
 function showPhotoImportRetry(file) {
-  const notice = photoImportStatus(t("photoImportError"));
-  if (!notice) return;
+  const actions = photoImportStatus(t("photoImportError"), { allowPick: true });
+  if (!actions) return;
   const retry = document.createElement("button");
   retry.type = "button";
-  retry.className = "auto-sentence-btn photo-import-retry";
+  retry.className = "auto-sentence-btn photo-import-btn-primary photo-import-retry";
   retry.textContent = t("photoImportRetry");
   retry.addEventListener("click", () => void importWordsFromPhoto(file));
-  notice.append(" ", retry);
+  actions.prepend(retry);
 }
 
 async function applyPhotoImportWords(rawText, importId) {
@@ -506,7 +641,6 @@ async function applyPhotoImportWords(rawText, importId) {
               ...accountState.featureTrial,
               active: false,
             };
-          showPracticeFeatureTrial(accountState);
           return { blocked: true };
         }
         return { error: true };
@@ -524,8 +658,11 @@ async function applyPhotoImportWords(rawText, importId) {
   list.dispatchEvent(new Event("input", { bubbles: true }));
   clearPendingPhotoImport();
   const count = currentWords().length;
-  if (count) trackPremiumFeatureUsed("photo_import", accountState, count);
-  showPracticeFeatureTrial(accountState);
+  if (count) {
+    trackPremiumFeatureUsed("photo_import", accountState, count);
+    showCopyToast(t("wordsReady", { count }));
+  }
+  closePhotoImportDialog();
   return { ok: true };
 }
 
@@ -534,39 +671,45 @@ function showPhotoImportReview(
   importId = crypto.randomUUID(),
   { trackPreview = true } = {},
 ) {
-  const field = textarea()?.closest(".word-entry-field");
-  if (!field) return;
+  if (!textarea()) return;
   const text = photoWordsText(rawText);
-  field.querySelector(".photo-import-notice, .photo-import-review")?.remove();
   if (trackPreview) trackPhotoPreview(accountState, "review");
   const review = document.createElement("div");
   review.className = "photo-import-review";
-  const title = document.createElement("strong");
-  title.textContent = t("photoImportReviewTitle");
   const trialNote = practiceFeatureTrialNote(accountState);
+  if (trialNote) {
+    trialNote.id = "feature-trial-note";
+  }
   const help = document.createElement("small");
   help.textContent = t("photoImportReviewHelp");
   const input = document.createElement("textarea");
   input.id = "photo-import-review-words";
-  input.rows = 5;
+  input.rows = 6;
   input.value = text;
   const actions = document.createElement("div");
   actions.className = "photo-import-review-actions";
   const use = document.createElement("button");
   use.type = "button";
-  use.className = "auto-sentence-btn";
+  use.className = "auto-sentence-btn photo-import-btn-primary";
   use.textContent = t("photoImportUse");
+  const chooseAnother = createPhotoPickerButton();
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.className = "auto-sentence-btn";
+  cancel.textContent = t("photoImportCancel");
+  const setBusy = (busy) => {
+    use.disabled = busy;
+    input.disabled = busy;
+    chooseAnother.disabled = busy;
+    cancel.disabled = busy;
+  };
   use.addEventListener("click", async () => {
     if (use.disabled) return;
-    use.disabled = true;
-    input.disabled = true;
-    cancel.disabled = true;
+    setBusy(true);
     const result = await applyPhotoImportWords(input.value, importId);
     if (result.invalid) {
       help.textContent = t("invalidWords");
-      use.disabled = false;
-      input.disabled = false;
-      cancel.disabled = false;
+      setBusy(false);
       return;
     }
     if (result.blocked) {
@@ -577,50 +720,44 @@ function showPhotoImportReview(
     }
     if (!result.ok) {
       help.textContent = t("photoImportError");
-      use.disabled = false;
-      input.disabled = false;
-      cancel.disabled = false;
+      setBusy(false);
       return;
     }
-    review.remove();
   });
-  const cancel = document.createElement("button");
-  cancel.type = "button";
-  cancel.className = "auto-sentence-btn";
-  cancel.textContent = t("photoImportCancel");
   cancel.addEventListener("click", () => {
-    clearPendingPhotoImport();
-    review.remove();
+    closePhotoImportDialog({ clearPending: true });
   });
-  actions.append(use, cancel);
-  review.append(title, ...(trialNote ? [trialNote] : []), help, input, actions);
-  field.append(review);
+  actions.append(use, chooseAnother, cancel);
+  review.append(...(trialNote ? [trialNote] : []), help, input, actions);
+  openPhotoImportDialog(t("photoImportReviewTitle"), [review]);
 }
 
 async function importWordsFromPhoto(file) {
-  const field = textarea()?.closest(".word-entry-field");
-  if (!field) return;
+  if (!textarea()) return;
+  const generation = ++photoImportGeneration;
   clearPendingPhotoImport();
-  const notice = photoImportStatus(t("photoImportProcessing"));
+  photoImportStatus(t("photoImportProcessing"), { loading: true });
   try {
     const [Tesseract, account] = await Promise.all([
       loadTesseract(),
       getAccount(),
     ]);
+    if (generation !== photoImportGeneration) return;
     const result = await Tesseract.recognize(file, "eng");
+    if (generation !== photoImportGeneration) return;
     const words = [
       ...new Set(
         (result.data?.text || "").match(/[A-Za-z]+(?:['’-][A-Za-z]+)?/g) || [],
       ),
     ];
-    notice?.remove();
     if (!words.length) {
-      photoImportStatus(t("photoImportNoWords"));
+      photoImportStatus(t("photoImportNoWords"), { allowPick: true });
       return;
     }
     if (hasPhotoImportAccess(account)) showPhotoImportReview(words);
     else showLockedPhotoPreview(words, account);
   } catch {
+    if (generation !== photoImportGeneration) return;
     showPhotoImportRetry(file);
   }
 }
@@ -667,8 +804,9 @@ async function resumePendingPhotoImport(account) {
 export const LAST_MISSED_KEY = "mySpellingLastMissedWords";
 
 function practiceTrialText(account) {
+  if (!account || isPlusAccount(account)) return "";
   return featureTrialLabel(
-    account?.featureTrial,
+    account.featureTrial,
     (key, vars) => t(key, vars),
     t("dateLocale"),
   );
@@ -683,15 +821,6 @@ function practiceFeatureTrialNote(account) {
   return note;
 }
 
-function showPracticeFeatureTrial(account) {
-  document.getElementById("feature-trial-note")?.remove();
-  const note = practiceFeatureTrialNote(account);
-  if (!note) return;
-  note.id = "feature-trial-note";
-  document.getElementById("photo-import-btn")?.closest(".word-field-heading")
-    ?.after(note);
-}
-
 export function hasSmartReviewAccess(account) {
   if (!account) return false;
   if (isPlusAccount(account)) return true;
@@ -702,6 +831,10 @@ export function hasPhotoImportAccess(account) {
   if (!account) return false;
   if (isPlusAccount(account)) return true;
   return featureTrialActive(account.featureTrial);
+}
+
+export function hasExampleSentenceAccess(account) {
+  return hasPhotoImportAccess(account);
 }
 
 export function saveLastMissedWords(words) {
@@ -806,24 +939,65 @@ function initPhotoImport() {
   });
 }
 
+function rememberPendingSentenceFill(resumeAuth) {
+  const words = textarea()?.value || "";
+  if (!words.trim()) {
+    clearPendingSentenceFill();
+    return;
+  }
+  savePendingSentenceFill({
+    words,
+    sentences: sentenceTextarea()?.value || "",
+    locale: getPageLocale(),
+    resumeAuth,
+  });
+}
+
+function clearSentenceFillQuery() {
+  try {
+    const url = new URL(location.href);
+    if (url.searchParams.get("sentence_fill") !== "1") return;
+    url.searchParams.delete("sentence_fill");
+    history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+  } catch {}
+}
+
 function sentenceLibraryNotice(
   message = productMessage("sentenceLibraryRequired", {}, getPageLocale()),
+  account = accountState,
 ) {
-  const field = sentenceTextarea()?.closest(".word-entry-field");
-  if (!field) return;
-  field.querySelector(".sentence-library-notice")?.remove();
+  if (!sentenceTextarea()) return;
+  const panel = document.createElement("div");
+  panel.className = "photo-import-review";
   const notice = document.createElement("small");
   notice.className = "sentence-library-notice contextual-paywall";
   notice.setAttribute("role", "status");
-  appendContextualPaywall(
-    notice,
-    "example_sentences",
-    message === productMessage("sentenceLibraryRequired", {}, getPageLocale())
-      ? t("exampleSentencesValue")
-      : message,
-    { account: accountState },
-  );
-  field.append(notice);
+  appendFeatureTrialPaywall(notice, {
+    account,
+    feature: "example_sentences",
+    keepBenefit: t("exampleSentencesKeepBenefit"),
+    value:
+      message === productMessage("sentenceLibraryRequired", {}, getPageLocale())
+        ? t("exampleSentencesValue")
+        : message,
+    onSignIn: () => rememberPendingSentenceFill(true),
+    onPricing: () => rememberPendingSentenceFill(false),
+  });
+  const actions = document.createElement("div");
+  actions.className = "photo-import-review-actions";
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.className = "auto-sentence-btn";
+  cancel.textContent = t("photoImportCancel");
+  cancel.addEventListener("click", () => {
+    clearPendingSentenceFill();
+    closePhotoImportDialog();
+  });
+  actions.append(cancel);
+  panel.append(notice, actions);
+  openPhotoImportDialog(t("exampleSentencesTitle"), [panel], {
+    onClose: () => clearPendingSentenceFill(),
+  });
 }
 
 function realignExampleSentences() {
@@ -850,15 +1024,11 @@ async function autoFillExampleSentences() {
   button.disabled = true;
   try {
     const account = await getAccount();
-    if (!isPlusAccount(account)) {
+    if (!hasExampleSentenceAccess(account)) {
       trackLockedFeature("example_sentences", account?.plan || "anonymous");
-      sentenceLibraryNotice();
+      sentenceLibraryNotice(undefined, account);
       return;
     }
-    sentenceTextarea()
-      ?.closest(".word-entry-field")
-      ?.querySelector(".sentence-library-notice")
-      ?.remove();
     const response = await fetch("/api/sentence-library/match", {
       method: "POST",
       credentials: "same-origin",
@@ -880,17 +1050,58 @@ async function autoFillExampleSentences() {
     );
     sentenceInput.dispatchEvent(new Event("input", { bubbles: true }));
     previousWordText = wordInput.value;
+    clearPendingSentenceFill();
   } catch (error) {
-    if (error.message === "sentence_library_required")
+    const locked =
+      error.message === "sentence_library_required" ||
+      error.message === "feature_trial_expired";
+    if (locked) {
+      if (accountState?.featureTrial)
+        accountState.featureTrial = {
+          ...accountState.featureTrial,
+          active: false,
+        };
       trackLockedFeature("example_sentences", accountState?.plan || "free");
+    }
     sentenceLibraryNotice(
-      error.message === "sentence_library_required"
+      locked
         ? productMessage("sentenceLibraryRequired", {}, getPageLocale())
         : productMessage("sentenceLibraryError", {}, getPageLocale()),
+      accountState,
     );
   } finally {
     if (generation === sentenceFillGeneration) button.disabled = false;
   }
+}
+
+async function resumePendingSentenceFill(account) {
+  const pending = readPendingSentenceFill();
+  let applyNow = pending?.resumeAuth === true;
+  try {
+    if (new URLSearchParams(location.search).get("sentence_fill") === "1")
+      applyNow = true;
+  } catch {}
+  clearSentenceFillQuery();
+  if (!pending) return;
+  const wordInput = textarea();
+  const sentenceInput = sentenceTextarea();
+  if (wordInput) {
+    wordInput.value = pending.words;
+    previousWordText = pending.words;
+    wordInput.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+  if (sentenceInput && pending.sentences) {
+    sentenceInput.value = pending.sentences;
+    sentenceInput.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+  if (!hasExampleSentenceAccess(account)) {
+    if (pending.resumeAuth)
+      savePendingSentenceFill({ ...pending, resumeAuth: false });
+    sentenceLibraryNotice(undefined, account);
+    return;
+  }
+  clearPendingSentenceFill();
+  if (applyNow) await autoFillExampleSentences();
 }
 
 function status(text) {
@@ -1204,8 +1415,8 @@ export function initSpellingMode() {
       target?.focus({ preventScroll: true });
       clearUpgradeReturn();
     }
-    showPracticeFeatureTrial(account);
     void resumePendingPhotoImport(account);
+    void resumePendingSentenceFill(account);
     resumePendingSmartReview(account);
   });
   if (shareState.autoStart && mode !== "chase")

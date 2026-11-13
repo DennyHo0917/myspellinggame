@@ -10,6 +10,10 @@ import {
   savePendingPhotoImport,
 } from "./pendingPhotoImport.mjs";
 import {
+  readPendingSentenceFill,
+  savePendingSentenceFill,
+} from "./pendingSentenceFill.mjs";
+import {
   clearPendingSmartReview,
   readPendingSmartReview,
   savePendingSmartReview,
@@ -2187,10 +2191,12 @@ function usageCards(data, me, needsReviewCount) {
     [
       data.limits.monthlyAttempts === null
         ? copy.unlimited
-        : m("submissionUsage", {
-            used: Math.min(data.monthlyAttempts, data.limits.monthlyAttempts),
-            limit: data.limits.monthlyAttempts,
-          }),
+        : featureTrialActive(me.featureTrial)
+          ? copy.unlimitedTrial
+          : m("submissionUsage", {
+              used: Math.min(data.monthlyAttempts, data.limits.monthlyAttempts),
+              limit: data.limits.monthlyAttempts,
+            }),
       "",
     ],
     [
@@ -2505,10 +2511,12 @@ function lockedResultsNotice(count, summaryData = null) {
   return notice;
 }
 
-function submissionLimitNotice(data) {
+function submissionLimitNotice(data, me = workspaceState?.me) {
   const { monthlyAttempts: used, limits } = data;
   const limit = limits.monthlyAttempts;
   if (limit === null) return null;
+  if (featureTrialActive(me?.featureTrial) && !data.lockedResultCount)
+    return null;
   const reached = used >= limit;
   const notice = document.createElement("div");
   notice.className = "notice submission-limit-notice";
@@ -3953,16 +3961,19 @@ async function renderDashboard(me, { force = false } = {}) {
     card.className = "product-card free-tracking-card";
     const heading = document.createElement("h1");
     heading.textContent = copy.freeTrackingTitle;
+    const inTrial = featureTrialActive(me.featureTrial);
+    const trialNote = inTrial ? featureTrialNote(me) : null;
     const intro = document.createElement("p");
     intro.textContent = copy.resultViewLimit;
-    card.append(heading, intro);
+    card.append(heading, ...(trialNote ? [trialNote] : []), intro);
     const used =
-      data.usage.trackingTrialUsed ?? data.usage.monthlyAttempts >= 1;
-    intro.hidden = used;
+      !inTrial &&
+      (data.usage.trackingTrialUsed ?? data.usage.monthlyAttempts >= 1);
+    intro.hidden = used || inTrial;
     const actions = document.createElement("div");
     actions.className = "actions free-tracking-actions";
     if (used) {
-      card.append(submissionLimitNotice(data.usage));
+      card.append(submissionLimitNotice(data.usage, me));
     } else {
       const learner = (data.learners || []).find((item) => !item.archived);
       const start = document.createElement("button");
@@ -3976,6 +3987,9 @@ async function renderDashboard(me, { force = false } = {}) {
         location.href = `/workspace/assignments/new?lang=${encodeURIComponent(locale)}&tracking=1`;
       });
       actions.append(start);
+      const explorePlans = upgradeLink("free_overview");
+      explorePlans.className = "button-link button-secondary";
+      actions.append(explorePlans);
     }
     const practice = document.createElement("a");
     practice.className = "button-link button-secondary";
@@ -4645,6 +4659,7 @@ async function renderTrackingPractice(me) {
   card.append(practice);
   if (
     me.plan === "free" &&
+    !featureTrialActive(me.featureTrial) &&
     (data.usage?.trackingTrialUsed || data.usage?.monthlyAttempts >= 1)
   ) {
     status.textContent = copy.trackingTrialUsed;
@@ -4658,10 +4673,15 @@ async function renderTrackingPractice(me) {
     return;
   }
   if (me.plan === "free") {
-    const trial = document.createElement("p");
-    trial.className = "notice";
-    trial.textContent = copy.resultViewLimit;
-    card.insertBefore(trial, status);
+    const trialNote = featureTrialNote(me);
+    if (trialNote) {
+      card.insertBefore(trialNote, status);
+    } else {
+      const trial = document.createElement("p");
+      trial.className = "notice";
+      trial.textContent = copy.resultViewLimit;
+      card.insertBefore(trial, status);
+    }
   }
   const learners = (data.learners || []).filter((learner) => !learner.archived);
   const form = document.createElement("form");
@@ -6189,6 +6209,16 @@ async function init() {
       savePendingPhotoImport({ ...pendingPhoto, resumeAuth: false });
       const pendingLocale = pendingPhoto.locale || locale;
       location.href = `${productPagePath("", pendingLocale)}?lang=${encodeURIComponent(pendingLocale)}&photo_import=1`;
+      return;
+    }
+  } catch {}
+  try {
+    const pendingSentence = readPendingSentenceFill();
+    const checkout = new URLSearchParams(location.search).get("checkout");
+    if (pendingSentence?.resumeAuth && checkout !== "success") {
+      savePendingSentenceFill({ ...pendingSentence, resumeAuth: false });
+      const pendingLocale = pendingSentence.locale || locale;
+      location.href = `${productPagePath("", pendingLocale)}?lang=${encodeURIComponent(pendingLocale)}&sentence_fill=1`;
       return;
     }
   } catch {}

@@ -11,6 +11,7 @@ import {
   calculateReviewState,
   csvCell,
   enforcePlanWordLimit,
+  featureTrialFromStart,
   masteryEvidence,
   monthStart,
   normalizeWord,
@@ -33,6 +34,7 @@ import {
 } from "./domain";
 import {
   featureTrialForFreeAccount,
+  readFeatureTrialStart,
   startFeatureTrialIfMissing,
 } from "./featureTrial";
 import { sendVerificationCodeEmail } from "./email";
@@ -896,51 +898,57 @@ async function usage(
   plan: Plan,
   now = new Date(),
 ) {
-  const [active, monthly, savedLists, learners, locked] = await Promise.all([
-    db
-      .prepare(
-        `SELECT COUNT(*) AS count FROM assignments
-         WHERE owner_user_id = ? AND status = 'published' AND expires_at > ?`,
-      )
-      .bind(userId, now.toISOString())
-      .first<{ count: number }>(),
-    db
-      .prepare(
-        `SELECT COUNT(*) AS count FROM monthly_submission_usage
-         WHERE user_id = ? AND ((? = 'free' AND created_at >= ?) OR (? != 'free' AND month_key = ?))`,
-      )
-      .bind(userId, plan, TRACKING_TRIAL_EPOCH, plan, monthStart(now))
-      .first<{ count: number }>(),
-    db
-      .prepare(
-        "SELECT COUNT(*) AS count FROM saved_lists WHERE owner_user_id = ?",
-      )
-      .bind(userId)
-      .first<{ count: number }>(),
-    db
-      .prepare(
-        "SELECT COUNT(*) AS count FROM learners WHERE owner_user_id = ? AND archived = 0",
-      )
-      .bind(userId)
-      .first<{ count: number }>(),
-    db
-      .prepare(
-        `SELECT COUNT(*) AS count FROM attempts at
-      JOIN assignments a ON a.id = at.assignment_id
-      WHERE a.owner_user_id = ? AND at.status = 'completed'
-      AND at.free_result_visible = 0 AND at.completed_at >= ?
-      AND at.retention_expires_at > ?`,
-      )
-      .bind(userId, historyCutoff(plan, now), now.toISOString())
-      .first<{ count: number }>(),
-  ]);
+  const [active, monthly, savedLists, learners, locked, trialStartedAt] =
+    await Promise.all([
+      db
+        .prepare(
+          `SELECT COUNT(*) AS count FROM assignments
+           WHERE owner_user_id = ? AND status = 'published' AND expires_at > ?`,
+        )
+        .bind(userId, now.toISOString())
+        .first<{ count: number }>(),
+      db
+        .prepare(
+          `SELECT COUNT(*) AS count FROM monthly_submission_usage
+           WHERE user_id = ? AND ((? = 'free' AND created_at >= ?) OR (? != 'free' AND month_key = ?))`,
+        )
+        .bind(userId, plan, TRACKING_TRIAL_EPOCH, plan, monthStart(now))
+        .first<{ count: number }>(),
+      db
+        .prepare(
+          "SELECT COUNT(*) AS count FROM saved_lists WHERE owner_user_id = ?",
+        )
+        .bind(userId)
+        .first<{ count: number }>(),
+      db
+        .prepare(
+          "SELECT COUNT(*) AS count FROM learners WHERE owner_user_id = ? AND archived = 0",
+        )
+        .bind(userId)
+        .first<{ count: number }>(),
+      db
+        .prepare(
+          `SELECT COUNT(*) AS count FROM attempts at
+        JOIN assignments a ON a.id = at.assignment_id
+        WHERE a.owner_user_id = ? AND at.status = 'completed'
+        AND at.free_result_visible = 0 AND at.completed_at >= ?
+        AND at.retention_expires_at > ?`,
+        )
+        .bind(userId, historyCutoff(plan, now), now.toISOString())
+        .first<{ count: number }>(),
+      readFeatureTrialStart(db, userId),
+    ]);
+  const trialActive =
+    plan === "free" &&
+    featureTrialFromStart(trialStartedAt, now.getTime()).active;
   return {
     lockedResultCount: plan === "free" ? Number(locked?.count ?? 0) : 0,
     plan,
     limits: PLAN_LIMITS[plan],
     activeAssignments: Number(active?.count ?? 0),
     monthlyAttempts: Number(monthly?.count ?? 0),
-    trackingTrialUsed: plan === "free" && Number(monthly?.count ?? 0) > 0,
+    trackingTrialUsed:
+      plan === "free" && !trialActive && Number(monthly?.count ?? 0) > 0,
     savedLists: Number(savedLists?.count ?? 0),
     learnerProfiles: Number(learners?.count ?? 0),
   };
@@ -1668,12 +1676,30 @@ async function smartReviewEnabled(env: Env, userId: string, plan: Plan) {
   return (await accountFeatureTrial(env, userId, plan))?.active === true;
 }
 
+async function featureTrialActiveForUser(
+  env: Env,
+  userId: string,
+  plan: Plan,
+) {
+  if (plan !== "free") return false;
+  const startedAt = await readFeatureTrialStart(env.DB, userId);
+  return featureTrialFromStart(startedAt).active;
+}
+
+async function sentenceLibraryEnabled(env: Env, userId: string, plan: Plan) {
+  if (PLAN_LIMITS[plan].sentenceLibrary) return { allowed: true, expired: false };
+  const startedAt = await readFeatureTrialStart(env.DB, userId);
+  if (!startedAt) return { allowed: false, expired: false };
+  const trial = featureTrialFromStart(startedAt);
+  return { allowed: trial.active, expired: !trial.active };
+}
+
 async function assertSmartReview(env: Env, userId: string, plan: Plan) {
   if (await smartReviewEnabled(env, userId, plan)) return;
   throw new HttpError(
     403,
     "feature_trial_expired",
-    "The 7-day free trial of Photo Import and Smart Review has ended.",
+    "The 7-day free trial of Photo Import, Smart Review, Auto-fill Example Sentences, and Tracked Results has ended.",
   );
 }
 
@@ -2285,6 +2311,11 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
   const completed = body.completed !== false;
   const result = scoreAnswers(words, body.answers, completed);
   const plan = await getPlan(env, assignment.owner_user_id);
+  const trialActive = await featureTrialActiveForUser(
+    env,
+    assignment.owner_user_id,
+    plan,
+  );
   const limits = PLAN_LIMITS[plan];
   const now = new Date();
   const completedAt = now.toISOString();
@@ -2337,7 +2368,7 @@ async function submitAttempt(env: Env, request: Request, publicId: string) {
       retentionExpiresAt,
       completed ? "completed" : "incomplete",
       learner?.id ?? null,
-      plan !== "free" ? 1 : 0,
+      plan !== "free" || trialActive ? 1 : 0,
       TRACKING_TRIAL_EPOCH,
       PLAN_LIMITS.free.trackingTrialAttempts,
       publicId,
@@ -3448,7 +3479,7 @@ async function handleBusinessRequest(
       throw new HttpError(
         403,
         "feature_trial_expired",
-        "The 7-day free trial of Photo Import and Smart Review has ended.",
+        "The 7-day free trial of Photo Import, Smart Review, Auto-fill Example Sentences, and Tracked Results has ended.",
       );
     return json({ allowed: true, featureTrial });
   }
@@ -3499,12 +3530,20 @@ async function handleBusinessRequest(
     requireSameOrigin(request);
     const user = await requireTeacher(env, request, getSession);
     const plan = await getPlan(env, user.id);
-    if (!PLAN_LIMITS[plan].sentenceLibrary)
+    const sentenceAccess = await sentenceLibraryEnabled(env, user.id, plan);
+    if (!sentenceAccess.allowed) {
+      if (sentenceAccess.expired)
+        throw new HttpError(
+          403,
+          "feature_trial_expired",
+          "The 7-day free trial of Photo Import, Smart Review, Auto-fill Example Sentences, and Tracked Results has ended.",
+        );
       throw new HttpError(
         403,
         "sentence_library_required",
         "Sentence library is included in Parent and Teacher Plans.",
       );
+    }
     const body = await readJson(request);
     const words = parseWordList(body.words);
     const difficulty =

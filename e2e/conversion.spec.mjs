@@ -709,25 +709,21 @@ test("anonymous Photo Import previews words, then a Teacher choice resumes check
     "because\nfriend\nbeautiful\nanswer\nenough\nfavorite\nlibrary\nthrough",
   );
   await expect(paywall).toContainText(
-    "Signing in starts a 7-day free trial of Photo Import and Smart Review.",
+    "Signing in starts a 7-day free trial of Photo Import, Smart Review, and Auto-fill Example Sentences.",
   );
   await expect(paywall).toContainText(
     "Turn a photo of the school list into editable spelling words",
   );
   await expect(paywall).toContainText("Parent Plan · $7.99/month");
   await expect(
-    paywall.getByRole("link", { name: "Unlock Photo Import" }),
-  ).toBeVisible();
+    paywall.getByRole("link", { name: "Teacher Plan", exact: true }),
+  ).toHaveCount(0);
   await paywall
-    .getByRole("link", { name: "Teacher Plan", exact: true })
+    .getByRole("link", { name: "Unlock Photo Import" })
     .click();
 
-  await expect(page).toHaveURL(/\/pricing\?plan=teacher&interval=month$/);
-  await expect(page.locator('[data-plan-choice="teacher"]')).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await page.locator("[data-checkout-cta]").click();
+  await expect(page).toHaveURL(/\/pricing\?plan=parent&interval=month$/);
+  await page.locator('[data-plan-choice="teacher"]').click();
   await expect(page).toHaveURL(/\/workspace\?lang=en#teacher-sign-in$/);
   await expect(
     page.getByRole("heading", { name: "Continue with Teacher Plan" }),
@@ -740,7 +736,7 @@ test("anonymous Photo Import previews words, then a Teacher choice resumes check
     "true",
   );
   expect(checkoutBody).toBeUndefined();
-  await page.locator("[data-checkout-cta]").click();
+  await page.locator('[data-plan-choice="teacher"]').click();
   await expect(page).toHaveURL(/#stripe-checkout$/);
   expect(checkoutBody).toEqual({
     plan: "teacher",
@@ -932,23 +928,21 @@ test("signed-out pricing switches yearly and monthly plan prices", async ({
   );
   await page.goto("/pricing");
   await expect(page.locator(".pricing-grid .pricing-card")).toHaveCount(3);
-  const monthly = page.getByRole("button", { name: "Monthly plan" });
-  const yearly = page.getByRole("button", { name: "Yearly plan" });
-  const parentPrice = page.locator(
-    '[data-plan-card="parent"] [data-plan-price]',
-  );
-  const teacherPrice = page.locator(
-    '[data-plan-card="teacher"] [data-plan-price]',
-  );
-  await expect(yearly).toHaveAttribute("aria-pressed", "true");
+  const parentCard = page.locator('[data-plan-card="parent"]');
+  const teacherCard = page.locator('[data-plan-card="teacher"]');
+  const parentMonthly = parentCard.getByRole("button", { name: "Monthly" });
+  const parentYearly = parentCard.getByRole("button", { name: "Yearly" });
+  const parentPrice = parentCard.locator("[data-plan-price]");
+  const teacherPrice = teacherCard.locator("[data-plan-price]");
+  await expect(parentMonthly).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator('[data-plan-choice="parent"]')).toHaveAttribute(
     "aria-pressed",
     "true",
   );
-  await expect(parentPrice).toHaveText("$79.90 / year");
-  await expect(teacherPrice).toHaveText("$149.90 / year");
-  await monthly.click();
   await expect(parentPrice).toHaveText("$7.99 / month");
+  await expect(teacherPrice).toHaveText("$14.99 / month");
+  await parentYearly.click();
+  await expect(parentPrice).toHaveText("$79.90 / year");
   await expect(teacherPrice).toHaveText("$14.99 / month");
 });
 
@@ -972,7 +966,7 @@ test("failed Pricing checkout records an attempt and shows an explicit Retry CTA
   });
 
   await page.goto("/pricing");
-  await page.locator("[data-checkout-cta]").click();
+  await page.locator('[data-plan-choice="parent"]').click();
   await expect(
     page.getByRole("button", { name: "Try checkout again" }),
   ).toBeVisible();
@@ -1079,7 +1073,6 @@ test("paid pricing changes plan through the prorated billing endpoint", async ({
 
   await page.goto("/pricing");
   await page.getByRole("button", { name: "Select Teacher Plan" }).click();
-  await page.locator("[data-checkout-cta]").click();
   await expect(page).toHaveURL(/\/pricing\?plan-change=payment$/);
   expect(changeBody).toEqual({
     plan: "teacher",
@@ -1113,14 +1106,17 @@ test("current monthly plan can switch to yearly after clear proration confirmati
 
   await page.goto("/pricing");
   const parent = page.getByRole("button", {
-    name: "Photo Import + Smart Review",
+    name: "Select Parent Plan",
   });
   await expect(
     page.getByRole("button", { name: "Current plan" }),
   ).toBeDisabled();
-  await page.getByRole("button", { name: "Yearly plan" }).click();
+  await page
+    .locator('[data-plan-card="parent"]')
+    .getByRole("button", { name: "Yearly" })
+    .click();
   await expect(parent).toBeEnabled();
-  await page.locator("[data-checkout-cta]").click();
+  await parent.click();
 
   await expect(page).toHaveURL(/interval-change=success/);
   expect(changeBody).toEqual({
@@ -1152,8 +1148,11 @@ test("failed interval change keeps the confirmed subscription UI unchanged", asy
   );
 
   await page.goto("/pricing");
-  await page.getByRole("button", { name: "Yearly plan" }).click();
-  await page.locator("[data-checkout-cta]").click();
+  await page
+    .locator('[data-plan-card="parent"]')
+    .getByRole("button", { name: "Yearly" })
+    .click();
+  await page.locator('[data-plan-choice="parent"]').click();
   await expect(
     page.getByRole("button", { name: "Try checkout again" }),
   ).toBeVisible();
@@ -1161,7 +1160,10 @@ test("failed interval change keeps the confirmed subscription UI unchanged", asy
     "aria-current",
     "true",
   );
-  await page.getByRole("button", { name: "Monthly plan" }).click();
+  await page
+    .locator('[data-plan-card="parent"]')
+    .getByRole("button", { name: "Monthly" })
+    .click();
   await expect(
     page.getByRole("button", { name: "Current plan" }),
   ).toBeDisabled();
@@ -1184,9 +1186,12 @@ test("canceling an interval change sends no billing request", async ({
   });
 
   await page.goto("/pricing");
-  await page.getByRole("button", { name: "Yearly plan" }).click();
-  await page.locator("[data-checkout-cta]").click();
-  await expect(page.locator("[data-checkout-cta]")).toBeEnabled();
+  await page
+    .locator('[data-plan-card="parent"]')
+    .getByRole("button", { name: "Yearly" })
+    .click();
+  await page.locator('[data-plan-choice="parent"]').click();
+  await expect(page.locator('[data-plan-choice="parent"]')).toBeEnabled();
   expect(changeCalls).toBe(0);
 });
 
@@ -1211,8 +1216,11 @@ test("repeated interval-change clicks send only one request", async ({
   });
 
   await page.goto("/pricing");
-  await page.getByRole("button", { name: "Yearly plan" }).click();
-  await page.locator("[data-checkout-cta]").evaluate((button) => {
+  await page
+    .locator('[data-plan-card="parent"]')
+    .getByRole("button", { name: "Yearly" })
+    .click();
+  await page.locator('[data-plan-choice="parent"]').evaluate((button) => {
     button.click();
     button.click();
   });
@@ -1251,9 +1259,8 @@ test("Teacher pricing schedules Parent for the renewal date", async ({
 
   await page.goto("/pricing");
   await page
-    .getByRole("button", { name: "Photo Import + Smart Review" })
+    .getByRole("button", { name: "Select Parent Plan" })
     .click();
-  await page.locator("[data-checkout-cta]").click();
   await expect
     .poll(() => message)
     .toContain("Teacher Plan remains active through September 25, 2026");

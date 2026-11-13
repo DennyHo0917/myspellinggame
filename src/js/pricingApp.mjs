@@ -25,7 +25,6 @@ consumePendingCheckout();
 const locale = normalizeProductLocale(document.body.dataset.productLocale);
 const copy = productMessages(locale);
 const planOptions = document.querySelectorAll("[data-plan-option]");
-const planPrices = document.querySelectorAll("[data-plan-price]");
 const planChoices = document.querySelectorAll("[data-plan-choice]");
 const pricingGrid = document.querySelector(".pricing-grid");
 const freeChoice = document.querySelector('[data-plan-cta="free"]');
@@ -36,22 +35,25 @@ const subscriptionMessage = subscriptionStatus?.querySelector(
 const renewButton = subscriptionStatus?.querySelector(
   "[data-renew-subscription]",
 );
+const PAID_PLANS = ["parent", "teacher"];
 let currentAccount = null;
-let intervalChosen = false;
+const intervalChosen = { parent: false, teacher: false };
 let canceledSelection = null;
 const selectionParams = new URLSearchParams(location.search);
 const querySelection = pricingQuerySelection(selectionParams);
-const checkoutButton = document.createElement("button");
-checkoutButton.type = "button";
-checkoutButton.className = "pricing-checkout-cta";
-checkoutButton.dataset.checkoutCta = "true";
-checkoutButton.disabled = true;
-checkoutButton.textContent = productMessage("continueCheckout", {}, locale);
-const checkoutBar = document.createElement("div");
-checkoutBar.className = "pricing-checkout";
-checkoutBar.append(checkoutButton);
-document.querySelector(".pricing-toolbar")?.after(checkoutBar);
+let returningFromAuth = false;
+try {
+  returningFromAuth =
+    sessionStorage.getItem(CHECKOUT_AUTH_RETURN_KEY) === "1" &&
+    Boolean(pendingOnLoad);
+} catch {}
+const authReturnNotice = document.createElement("p");
+authReturnNotice.className = "notice pricing-auth-notice";
+authReturnNotice.setAttribute("role", "status");
+authReturnNotice.hidden = true;
+pricingGrid?.before(authReturnNotice);
 let billingRequestPending = false;
+let pendingPlanChoice = null;
 for (const choice of planChoices)
   choice.dataset.selectPlanLabel = choice.textContent;
 const accountPromise = fetch("/api/me", { credentials: "same-origin" })
@@ -151,6 +153,31 @@ try {
   }
 } catch {}
 
+function showCheckoutCanceledNotice(returnPath) {
+  if (!pricingGrid || document.querySelector(".checkout-cancelled-notice"))
+    return;
+  const notice = document.createElement("div");
+  notice.className = "notice checkout-cancelled-notice";
+  notice.setAttribute("role", "status");
+  const message = document.createElement("p");
+  message.textContent = productMessage("checkoutCanceledNotice", {}, locale);
+  notice.append(message);
+  if (returnPath) {
+    const backLink = document.createElement("a");
+    backLink.className = "button-link button-secondary";
+    backLink.href = returnPath;
+    backLink.textContent = productMessage(
+      returnPath.startsWith("/workspace")
+        ? "checkoutCanceledReturnWorkspace"
+        : "checkoutCanceledReturnPractice",
+      {},
+      locale,
+    );
+    notice.append(backLink);
+  }
+  pricingGrid.before(notice);
+}
+
 if (checkoutCanceled) {
   void fetch("/api/billing/checkout/cancel", {
     method: "POST",
@@ -159,9 +186,11 @@ if (checkoutCanceled) {
   }).catch(() => null);
   void accountPromise.then((me) => {
     const origin = readUpgradeReturn();
-    if (origin && (!origin.userId || origin.userId === me?.user?.id))
-      location.replace(origin.path);
-    else if (canceledWorkspaceReturn) location.replace(canceledWorkspaceReturn);
+    const returnPath =
+      origin && (!origin.userId || origin.userId === me?.user?.id)
+        ? origin.path
+        : canceledWorkspaceReturn;
+    showCheckoutCanceledNotice(returnPath);
   });
 }
 
@@ -174,87 +203,207 @@ if (pricingGrid && "IntersectionObserver" in window) {
   observer.observe(pricingGrid);
 }
 
-function selectInterval(interval) {
-  for (const option of planOptions)
+function cardForPlan(plan) {
+  return PAID_PLANS.includes(plan)
+    ? document.querySelector(`[data-plan-card="${plan}"]`)
+    : null;
+}
+
+function optionPlan(option) {
+  return (
+    option.dataset.planFor ||
+    option.closest("[data-plan-card]")?.dataset.planCard ||
+    null
+  );
+}
+
+const priceAnimations = new WeakMap();
+
+function prefersReducedMotion() {
+  return Boolean(
+    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches,
+  );
+}
+
+function replayClass(element, className) {
+  element.classList.remove(className);
+  void element.offsetWidth;
+  element.classList.add(className);
+}
+
+function animatePriceText(priceEl, fromText, toText) {
+  const prevFrame = priceAnimations.get(priceEl);
+  if (prevFrame) cancelAnimationFrame(prevFrame);
+  priceAnimations.delete(priceEl);
+  const fromMatch = String(fromText || "").match(/(\d+(?:[.,]\d+)?)/);
+  const toMatch = String(toText || "").match(/(\d+(?:[.,]\d+)?)/);
+  if (!fromMatch || !toMatch || prefersReducedMotion()) {
+    priceEl.textContent = toText;
+    return;
+  }
+  const fromValue = Number(fromMatch[1].replace(",", "."));
+  const toValue = Number(toMatch[1].replace(",", "."));
+  if (!Number.isFinite(fromValue) || !Number.isFinite(toValue) || fromValue === toValue) {
+    priceEl.textContent = toText;
+    return;
+  }
+  const decimalSeparator = toMatch[1].includes(",") ? "," : ".";
+  const decimals = (toMatch[1].split(/[.,]/)[1] || "").length;
+  const prefix = toText.slice(0, toMatch.index);
+  const suffix = toText.slice(toMatch.index + toMatch[1].length);
+  const duration = 280;
+  const start = performance.now();
+  replayClass(priceEl, "is-updating");
+  const step = (now) => {
+    const progress = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = (fromValue + (toValue - fromValue) * eased).toFixed(decimals);
+    priceEl.textContent =
+      prefix +
+      (decimalSeparator === "," ? current.replace(".", ",") : current) +
+      suffix;
+    if (progress < 1) {
+      priceAnimations.set(priceEl, requestAnimationFrame(step));
+    } else {
+      priceAnimations.delete(priceEl);
+      priceEl.textContent = toText;
+    }
+  };
+  priceAnimations.set(priceEl, requestAnimationFrame(step));
+}
+
+function syncCardInterval(card, interval, { animate = false } = {}) {
+  if (!card) return;
+  for (const selector of card.querySelectorAll(".plan-selector"))
+    selector.dataset.activeInterval = interval;
+  for (const option of card.querySelectorAll("[data-plan-option]"))
     option.setAttribute(
       "aria-pressed",
       String(option.dataset.planOption === interval),
     );
-  for (const price of planPrices) price.textContent = price.dataset[interval];
-  for (const savings of document.querySelectorAll("[data-plan-savings]")) {
+  for (const price of card.querySelectorAll("[data-plan-price]")) {
+    const targetText = price.dataset[interval];
+    if (animate) animatePriceText(price, price.textContent, targetText);
+    else {
+      const prevFrame = priceAnimations.get(price);
+      if (prevFrame) {
+        cancelAnimationFrame(prevFrame);
+        priceAnimations.delete(price);
+      }
+      price.textContent = targetText;
+    }
+  }
+  for (const savings of card.querySelectorAll("[data-plan-savings]")) {
     const text = savings.dataset[interval];
+    const wasHidden = savings.hidden;
     if (text) {
       savings.textContent = text;
       savings.hidden = false;
+      if (animate && wasHidden) replayClass(savings, "is-entering");
     } else {
       savings.hidden = true;
+      savings.classList.remove("is-entering");
     }
   }
-  for (const subtext of document.querySelectorAll("[data-plan-subtext]")) {
+  for (const subtext of card.querySelectorAll("[data-plan-subtext]")) {
     const text = subtext.dataset[interval];
+    const wasHidden = subtext.hidden;
     if (text) {
       subtext.textContent = text;
       subtext.hidden = false;
+      if (animate && wasHidden) replayClass(subtext, "is-entering");
     } else {
       subtext.hidden = true;
+      subtext.classList.remove("is-entering");
     }
   }
-  try {
-    const url = new URL(location.href);
-    if (
-      url.searchParams.get("checkout") !== "cancelled" &&
-      url.searchParams.get("interval") !== interval
-    ) {
-      url.searchParams.set("interval", interval);
-      history.replaceState({}, "", url);
-    }
-  } catch {}
+}
+
+function selectInterval(
+  interval,
+  targetPlan = null,
+  { updateUrl = true, animate = false } = {},
+) {
+  const plans = PAID_PLANS.includes(targetPlan) ? [targetPlan] : PAID_PLANS;
+  for (const plan of plans)
+    syncCardInterval(cardForPlan(plan), interval, { animate });
+  if (updateUrl) {
+    try {
+      const url = new URL(location.href);
+      if (
+        url.searchParams.get("checkout") !== "cancelled" &&
+        (!targetPlan || targetPlan === selectedPlan()) &&
+        url.searchParams.get("interval") !== interval
+      ) {
+        url.searchParams.set("interval", interval);
+        history.replaceState({}, "", url);
+      }
+    } catch {}
+  }
   syncPlanControls();
 }
 
-function selectedInterval() {
-  return document.querySelector('[data-plan-option][aria-pressed="true"]')
-    ?.dataset.planOption;
+function selectedInterval(plan = selectedPlan() || "parent") {
+  const card = cardForPlan(plan);
+  return (
+    card?.querySelector('[data-plan-option][aria-pressed="true"]')?.dataset
+      .planOption || "month"
+  );
 }
 
 function syncPlanControls() {
-  const interval = selectedInterval();
   for (const option of planOptions) option.disabled = billingRequestPending;
   for (const choice of planChoices) {
+    const plan = choice.dataset.planChoice;
+    const interval = selectedInterval(plan);
     const current =
-      currentAccount?.plan === choice.dataset.planChoice &&
+      currentAccount?.plan === plan &&
       currentAccount?.billingInterval === interval;
     choice.disabled = billingRequestPending || current;
-    choice.textContent = current
-      ? choice.dataset.currentPlanLabel
-      : choice.dataset.selectPlanLabel;
+    choice.textContent =
+      billingRequestPending && pendingPlanChoice === plan
+        ? productMessage("loading", {}, locale)
+        : current
+          ? choice.dataset.currentPlanLabel
+          : choice.dataset.selectPlanLabel;
     choice.classList.toggle("current-plan-cta", current);
+    choice.classList.toggle("button-secondary", !current);
+    const showAuthFocus =
+      returningFromAuth &&
+      currentAccount?.user &&
+      currentAccount.plan === "free" &&
+      !billingRequestPending &&
+      choice.dataset.planChoice === selectedPlan() &&
+      !current;
+    choice.classList.toggle("auth-return-cta", showAuthFocus);
     const card = choice.closest("[data-plan-card]");
     card?.classList.toggle("current-plan", current);
     if (current) card?.setAttribute("aria-current", "true");
     else card?.removeAttribute("aria-current");
   }
-  const plan = selectedPlan();
-  const selectedCurrent =
-    currentAccount?.plan === plan &&
-    currentAccount?.billingInterval === interval;
-  checkoutButton.disabled =
-    billingRequestPending ||
-    !["parent", "teacher"].includes(plan) ||
-    !interval ||
-    selectedCurrent;
+  if (returningFromAuth && currentAccount?.user && currentAccount.plan === "free") {
+    authReturnNotice.textContent = productMessage(
+      "pendingCheckoutReview",
+      {},
+      locale,
+    );
+    authReturnNotice.hidden = false;
+  } else {
+    authReturnNotice.hidden = true;
+  }
 }
 
 function confirmPlanChange(me, plan, interval) {
-  const targetCard = document.querySelector(`[data-plan-card="${plan}"]`);
+  const targetCard = cardForPlan(plan);
+  const currentCard = cardForPlan(me.plan) || targetCard;
   const targetPrice =
     targetCard?.querySelector("[data-plan-price]")?.textContent;
   const currentPlan = copy[`${me.plan}Plan`] || me.plan;
   const targetPlan = copy[`${plan}Plan`] || plan;
-  const currentInterval = document.querySelector(
+  const currentInterval = currentCard?.querySelector(
     `[data-plan-option="${me.billingInterval}"]`,
   )?.textContent;
-  const targetInterval = document.querySelector(
+  const targetInterval = targetCard?.querySelector(
     `[data-plan-option="${interval}"]`,
   )?.textContent;
   const scheduled = me.plan === "teacher" && plan === "parent";
@@ -287,13 +436,6 @@ function selectPlan(plan) {
       "aria-pressed",
       String(choice.dataset.planChoice === plan),
     );
-  for (const choice of planChoices)
-    choice.classList.toggle(
-      "button-secondary",
-      choice.dataset.planChoice !== plan,
-    );
-  for (const card of document.querySelectorAll("[data-plan-card]"))
-    card.classList.toggle("selected", card.dataset.planCard === plan);
 }
 
 function formatSubscriptionDate(value) {
@@ -353,25 +495,25 @@ function sendSignedOutToPricingSignIn(plan, interval) {
 }
 
 async function beginCheckout(plan) {
-  if (
-    !["parent", "teacher"].includes(plan) ||
-    billingRequestPending ||
-    checkoutButton.disabled
-  )
-    return;
+  if (!["parent", "teacher"].includes(plan) || billingRequestPending) return;
+  const choice = document.querySelector(`[data-plan-choice="${plan}"]`);
+  if (choice?.disabled) return;
   selectPlan(plan);
+  pendingPlanChoice = plan;
   billingRequestPending = true;
   syncPlanControls();
   const me = await accountPromise;
   bindUpgradeReturn(me?.user?.id);
-  const changingPlan = ["parent", "teacher"].includes(me?.plan);
-  const interval = selectedInterval();
+  const changingPlan = PAID_PLANS.includes(me?.plan);
+  const interval = selectedInterval(plan);
   if (me?.plan === plan && me?.billingInterval === interval) {
+    pendingPlanChoice = null;
     billingRequestPending = false;
     syncPlanControls();
     return;
   }
   if (changingPlan && !confirmPlanChange(me, plan, interval)) {
+    pendingPlanChoice = null;
     billingRequestPending = false;
     syncPlanControls();
     return;
@@ -382,8 +524,6 @@ async function beginCheckout(plan) {
     sendSignedOutToPricingSignIn(plan, interval);
     return;
   }
-  const label = checkoutButton.textContent;
-  checkoutButton.textContent = productMessage("loading", {}, locale);
   if (!changingPlan) rememberCheckoutChoice(plan, interval);
   try {
     const response = await fetch(
@@ -415,7 +555,7 @@ async function beginCheckout(plan) {
         ),
       );
       selectPlan(me.plan);
-      checkoutButton.textContent = label;
+      pendingPlanChoice = null;
       billingRequestPending = false;
       syncPlanControls();
       return;
@@ -451,29 +591,30 @@ async function beginCheckout(plan) {
       billing_interval: interval,
       error_code: error.code || "checkout_unavailable",
     });
-    checkoutButton.textContent = label;
+    pendingPlanChoice = null;
     billingRequestPending = false;
     syncPlanControls();
-    const choice = document.querySelector(`[data-plan-choice="${plan}"]`);
     if (choice) showCheckoutRetry(choice, error);
   }
 }
 
 for (const option of planOptions)
   option.addEventListener("click", () => {
-    intervalChosen = true;
-    selectInterval(option.dataset.planOption);
+    const plan = optionPlan(option);
+    if (!PAID_PLANS.includes(plan)) return;
+    if (option.getAttribute("aria-pressed") === "true") return;
+    intervalChosen[plan] = true;
+    selectInterval(option.dataset.planOption, plan, { animate: true });
   });
 for (const choice of planChoices)
   choice.addEventListener("click", () => {
     const plan = choice.dataset.planChoice;
     if (
-      !["parent", "teacher"].includes(plan) ||
+      !PAID_PLANS.includes(plan) ||
       choice.disabled ||
       billingRequestPending
     )
       return;
-    selectPlan(plan);
     try {
       const url = new URL(location.href);
       if (url.searchParams.get("plan") !== plan) {
@@ -481,18 +622,15 @@ for (const choice of planChoices)
         history.replaceState({}, "", url);
       }
     } catch {}
-    syncPlanControls();
+    void beginCheckout(plan);
   });
-checkoutButton.addEventListener("click", () => {
-  void beginCheckout(selectedPlan());
-});
 
 const explicitSelection = querySelection || canceledSelection;
 accountPromise
   .then((me) => {
     currentAccount = me;
     const endDate = formatSubscriptionDate(me?.currentPeriodEnd);
-    if (subscriptionStatus && ["parent", "teacher"].includes(me?.plan)) {
+    if (subscriptionStatus && PAID_PLANS.includes(me?.plan)) {
       const planLabel = copy[`${me.plan}Plan`] || me.plan;
       if (endDate && subscriptionMessage)
         subscriptionMessage.textContent = productMessage(
@@ -514,21 +652,21 @@ accountPromise
       }
       subscriptionStatus.hidden = false;
     }
-    if (!intervalChosen) {
-      const selection = upgradeSelection(me);
-      const preferred = explicitSelection
-        ? explicitSelection
-        : ["parent", "teacher"].includes(me?.plan)
-          ? {
-              plan: me.plan,
-              interval: ["month", "year"].includes(me.billingInterval)
-                ? me.billingInterval
-                : "month",
-            }
-          : selection;
-      selectPlan(preferred.plan);
-      selectInterval(preferred.interval);
-    } else syncPlanControls();
+    const selection = upgradeSelection(me);
+    const preferred = explicitSelection
+      ? explicitSelection
+      : PAID_PLANS.includes(me?.plan)
+        ? {
+            plan: me.plan,
+            interval: ["month", "year"].includes(me.billingInterval)
+              ? me.billingInterval
+              : "month",
+          }
+        : selection;
+    if (!Object.values(intervalChosen).some(Boolean)) selectPlan(preferred.plan);
+    if (!intervalChosen[preferred.plan])
+      selectInterval(preferred.interval, preferred.plan, { updateUrl: false });
+    else syncPlanControls();
     restoreCheckoutRetry();
     const current = document.querySelector(`[data-plan-cta="${me?.plan}"]`);
     if (current && me?.plan === "free") {
@@ -536,11 +674,12 @@ accountPromise
       currentCard?.classList.add("current-plan");
       currentCard?.setAttribute("aria-current", "true");
       current.textContent = current.dataset.currentPlanLabel;
+      current.classList.remove("button-secondary");
       current.classList.add("current-plan-cta");
       current.removeAttribute("href");
       current.setAttribute("aria-disabled", "true");
     }
-    if (["parent", "teacher"].includes(me?.plan) && freeChoice) {
+    if (PAID_PLANS.includes(me?.plan) && freeChoice) {
       freeChoice.textContent = productMessage("manageBilling", {}, locale);
       freeChoice.addEventListener("click", (event) => {
         event.preventDefault();
@@ -552,4 +691,6 @@ accountPromise
 
 const initialSelection = explicitSelection || upgradeSelection(null);
 selectPlan(initialSelection.plan);
-selectInterval(initialSelection.interval);
+selectInterval(initialSelection.interval, initialSelection.plan, {
+  updateUrl: false,
+});

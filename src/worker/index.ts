@@ -1542,7 +1542,7 @@ async function learnerMastery(
     smartReview,
     todaysReview: {
       count: reviewWords.length,
-      words: smartReview
+      words: PLAN_LIMITS[plan].smartReview
         ? reviewWords.slice(0, 20).map((word) => ({
             word: word.word,
             recentMissCount: word.reviewState!.recentMissCount,
@@ -1673,7 +1673,16 @@ async function assertSmartReview(env: Env, userId: string, plan: Plan) {
   throw new HttpError(
     403,
     "feature_trial_expired",
-    "The 7-day free trial of Photo Import and Smart Review has ended.",
+    "The 7-day free trial of Photo Import, Smart Review, and automatic example sentences has ended.",
+  );
+}
+
+function assertTodaysReview(plan: Plan) {
+  if (PLAN_LIMITS[plan].smartReview) return;
+  throw new HttpError(
+    403,
+    "todays_review_required",
+    "Today's Review is included in Parent and Teacher Plans.",
   );
 }
 
@@ -1753,11 +1762,9 @@ async function createAssignment(env: Env, request: Request, userId: string) {
       );
   }
   const plan = await getPlan(env, userId);
-  if (
-    body.reviewFeature === "smart_review" ||
-    body.reviewFeature === "todays_review"
-  )
+  if (body.reviewFeature === "smart_review")
     await assertSmartReview(env, userId, plan);
+  if (body.reviewFeature === "todays_review") assertTodaysReview(plan);
   enforcePlanWordLimit(words, plan);
   const currentUsage = await usage(env.DB, userId, plan);
   if (
@@ -3448,7 +3455,7 @@ async function handleBusinessRequest(
       throw new HttpError(
         403,
         "feature_trial_expired",
-        "The 7-day free trial of Photo Import and Smart Review has ended.",
+        "The 7-day free trial of Photo Import, Smart Review, and automatic example sentences has ended.",
       );
     return json({ allowed: true, featureTrial });
   }
@@ -3498,13 +3505,6 @@ async function handleBusinessRequest(
   if (url.pathname === "/api/sentence-library/match" && method === "POST") {
     requireSameOrigin(request);
     const user = await requireTeacher(env, request, getSession);
-    const plan = await getPlan(env, user.id);
-    if (!PLAN_LIMITS[plan].sentenceLibrary)
-      throw new HttpError(
-        403,
-        "sentence_library_required",
-        "Sentence library is included in Parent and Teacher Plans.",
-      );
     const body = await readJson(request);
     const words = parseWordList(body.words);
     const difficulty =
@@ -3515,8 +3515,21 @@ async function handleBusinessRequest(
         "invalid_sentence_level",
         "Choose simple or difficult sentences.",
       );
+    const plan = await getPlan(env, user.id);
+    const featureTrial = PLAN_LIMITS[plan].sentenceLibrary
+      ? null
+      : await accountFeatureTrial(env, user.id, plan);
+    if (!PLAN_LIMITS[plan].sentenceLibrary && !featureTrial?.active)
+      throw new HttpError(
+        403,
+        featureTrial ? "feature_trial_expired" : "sentence_library_required",
+        featureTrial
+          ? "The 7-day free trial of Photo Import, Smart Review, and automatic example sentences has ended."
+          : "Sentence library is included in Parent and Teacher Plans.",
+      );
     return json({
       matches: await matchSentenceLibrary(env.DB, words, difficulty),
+      ...(featureTrial ? { featureTrial } : {}),
     });
   }
 

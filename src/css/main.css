@@ -902,6 +902,30 @@ a {
   line-height: 1.45;
 }
 
+.photo-import-locked,
+.photo-import-locked * {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+.photo-import-locked textarea {
+  cursor: default;
+  background: #f7faf9;
+  color: var(--ink);
+  pointer-events: none;
+}
+
+.photo-import-locked .photo-import-review-actions,
+.photo-import-locked .photo-import-notice,
+.photo-import-locked a,
+.photo-import-locked button {
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
 .photo-import-dialog .photo-import-review-actions {
   gap: 8px;
   margin-top: 2px;

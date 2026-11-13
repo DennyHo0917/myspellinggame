@@ -481,6 +481,153 @@ function createPhotoPickerButton(label = t("photoImportChooseAnother")) {
   return button;
 }
 
+let photoClipboardGuardsInstalled = false;
+
+function installLockedPhotoClipboardGuards() {
+  if (photoClipboardGuardsInstalled || typeof window === "undefined") return;
+  photoClipboardGuardsInstalled = true;
+
+  const isLockedOpen = () =>
+    Boolean(document.querySelector(".photo-import-locked"));
+
+  window.addEventListener(
+    "copy",
+    (e) => {
+      if (isLockedOpen()) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        if (e.clipboardData) {
+          e.clipboardData.clearData();
+          e.clipboardData.setData("text/plain", "");
+        }
+      }
+    },
+    true,
+  );
+
+  window.addEventListener(
+    "cut",
+    (e) => {
+      if (isLockedOpen()) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    },
+    true,
+  );
+
+  window.addEventListener(
+    "contextmenu",
+    (e) => {
+      if (e.target?.closest?.(".photo-import-locked")) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    },
+    true,
+  );
+
+  window.addEventListener(
+    "selectstart",
+    (e) => {
+      if (e.target?.closest?.(".photo-import-locked")) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    },
+    true,
+  );
+
+  window.addEventListener(
+    "dragstart",
+    (e) => {
+      if (e.target?.closest?.(".photo-import-locked")) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    },
+    true,
+  );
+
+  document.addEventListener("selectionchange", () => {
+    if (isLockedOpen()) {
+      const sel = window.getSelection();
+      if (sel && sel.toString().length > 0) {
+        sel.removeAllRanges();
+      }
+    }
+  });
+
+  window.addEventListener(
+    "keydown",
+    (e) => {
+      if (!isLockedOpen()) return;
+      const isDevTools =
+        e.key === "F12" ||
+        ((e.ctrlKey || e.metaKey) &&
+          e.shiftKey &&
+          ["I", "i", "J", "j", "C", "c"].includes(e.key)) ||
+        ((e.ctrlKey || e.metaKey) && (e.key === "u" || e.key === "U"));
+      if (isDevTools) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return;
+      }
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        ["c", "C", "a", "A", "x", "X", "Insert"].includes(e.key)
+      ) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    },
+    true,
+  );
+
+  if (typeof navigator !== "undefined" && navigator.clipboard) {
+    const rawWriteText = navigator.clipboard.writeText?.bind(
+      navigator.clipboard,
+    );
+    if (rawWriteText) {
+      navigator.clipboard.writeText = async function (data) {
+        if (isLockedOpen()) {
+          return Promise.reject(
+            new DOMException(
+              "Clipboard disabled in locked preview",
+              "NotAllowedError",
+            ),
+          );
+        }
+        return rawWriteText(data);
+      };
+    }
+    const rawWrite = navigator.clipboard.write?.bind(navigator.clipboard);
+    if (rawWrite) {
+      navigator.clipboard.write = async function (data) {
+        if (isLockedOpen()) {
+          return Promise.reject(
+            new DOMException(
+              "Clipboard disabled in locked preview",
+              "NotAllowedError",
+            ),
+          );
+        }
+        return rawWrite(data);
+      };
+    }
+  }
+
+  if (typeof document !== "undefined" && document.execCommand) {
+    const rawExecCommand = document.execCommand.bind(document);
+    document.execCommand = function (commandId, ...args) {
+      if (isLockedOpen() && /copy|cut/i.test(commandId)) {
+        return false;
+      }
+      return rawExecCommand(commandId, ...args);
+    };
+  }
+}
+
 function showLockedPhotoPreview(
   rawText,
   account,
@@ -488,6 +635,7 @@ function showLockedPhotoPreview(
   { trackPreview = true } = {},
 ) {
   if (!textarea()) return;
+  installLockedPhotoClipboardGuards();
   const text = photoWordsText(rawText);
   if (trackPreview) trackPhotoPreview(account, "paywall");
   trackEvent("photo_import_blocked", {
@@ -496,13 +644,39 @@ function showLockedPhotoPreview(
   });
   trackLockedFeature("photo_import", account?.plan || "anonymous");
   const review = document.createElement("div");
-  review.className = "photo-import-review";
+  review.className = "photo-import-review photo-import-locked";
   const help = document.createElement("small");
   help.textContent = t("photoImportPreviewHelp");
   const input = document.createElement("textarea");
   input.id = "photo-import-review-words";
+  input.className = "photo-import-locked-words";
+  input.readOnly = true;
+  input.setAttribute("readonly", "readonly");
+  input.setAttribute("tabindex", "-1");
   input.rows = 6;
   input.value = text;
+  input.addEventListener("copy", (e) => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    e.clipboardData?.clearData();
+    e.clipboardData?.setData("text/plain", "");
+  });
+  input.addEventListener("cut", (e) => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  });
+  input.addEventListener("selectstart", (e) => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  });
+  input.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  });
+  input.addEventListener("keydown", (e) => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  });
   rememberPendingPhotoImport(input.value, importId, false);
   input.addEventListener("input", () => {
     const existing = readPendingPhotoImport();

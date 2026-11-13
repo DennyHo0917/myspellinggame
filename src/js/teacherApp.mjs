@@ -1509,18 +1509,19 @@ function teacherNewUserCallbackURL() {
 
 function focusTeacherSignIn() {
   const card = document.getElementById("teacher-sign-in");
-  const button = card?.querySelector(
-    ".social-sign-in:not(:disabled), .social-sign-in",
+  const input = card?.querySelector(
+    "input[name='email'], .social-sign-in:not(:disabled)",
   );
-  if (!card || !button) return;
+  if (!card) return;
   card.scrollIntoView({ behavior: "smooth", block: "center" });
-  button.focus({ preventScroll: true });
+  input?.focus({ preventScroll: true });
 }
 
 async function renderLogin() {
   const config = await api("/api/config").catch(() => ({
     googleAuthConfigured: false,
     microsoftAuthConfigured: false,
+    emailAuthConfigured: true,
   }));
   root.innerHTML = "";
   const wrapper = document.createElement("div");
@@ -1528,10 +1529,7 @@ async function renderLogin() {
   wrapper.append(nav());
   const main = document.createElement("main");
   main.className = "product-main teacher-main teacher-login-main";
-  const card = document.createElement("section");
-  card.id = "teacher-sign-in";
-  card.className = "product-card auth-card";
-  const title = document.createElement("h1");
+
   let pendingPlan = null;
   try {
     const plan = sessionStorage.getItem("pendingCheckoutPlan");
@@ -1543,34 +1541,62 @@ async function renderLogin() {
     )
       pendingPlan = plan;
   } catch {}
-  title.textContent = pendingPlan
+
+  const layout = document.createElement("div");
+  layout.className = "teacher-login-layout";
+
+  // Left marketing / benefits column
+  const marketingSide = document.createElement("section");
+  marketingSide.className = "auth-marketing-side";
+
+  const badge = document.createElement("div");
+  badge.className = "auth-trial-badge";
+  badge.innerHTML = `<span class="badge-icon">🎁</span><span>${copy.featureTrialSignInDetail}</span>`;
+
+  const heroTitle = document.createElement("h1");
+  heroTitle.className = "auth-hero-title";
+  heroTitle.textContent = pendingPlan
     ? m("pendingUpgradeTitle", { plan: checkoutPlanLabel(pendingPlan) })
-    : copy.signInTitle;
-  const text = document.createElement("p");
-  text.textContent = pendingPlan ? copy.pendingUpgradeCopy : copy.signInCopy;
-  const benefitTitle = document.createElement("h2");
-  benefitTitle.textContent = copy.workspaceBenefitTitle;
-  const benefitText = document.createElement("p");
-  benefitText.textContent = copy.workspaceBenefitCopy;
-  const trialDetail = document.createElement("p");
-  trialDetail.className = "feature-trial-note";
-  trialDetail.textContent = copy.featureTrialSignInDetail;
-  const privacyNote = document.createElement("p");
-  privacyNote.className = "notice";
-  privacyNote.textContent = copy.workspacePrivacyNote;
-  const cardCopy = document.createElement("div");
-  cardCopy.className = "teacher-login-copy";
-  cardCopy.append(
-    title,
-    text,
-    benefitTitle,
-    benefitText,
-    trialDetail,
-    privacyNote,
-  );
+    : copy.workspaceBenefitTitle;
+
+  const heroDesc = document.createElement("p");
+  heroDesc.className = "auth-hero-desc";
+  heroDesc.textContent = pendingPlan
+    ? copy.pendingUpgradeCopy
+    : copy.workspaceBenefitCopy;
+
+  const benefitsList = document.createElement("ul");
+  benefitsList.className = "auth-benefits-list";
+  const benefits = [
+    copy.authBenefit1,
+    copy.authBenefit2,
+    copy.authBenefit3,
+    copy.authBenefit4,
+  ];
+  for (const benefit of benefits) {
+    const li = document.createElement("li");
+    li.innerHTML = `<svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span>${benefit}</span>`;
+    benefitsList.append(li);
+  }
+
+  const privacyBox = document.createElement("div");
+  privacyBox.className = "auth-privacy-box";
+  privacyBox.innerHTML = `<svg class="shield-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clip-rule="evenodd"/></svg><span>${copy.workspacePrivacyNote}</span>`;
+
+  marketingSide.append(badge, heroTitle, heroDesc, benefitsList, privacyBox);
+
+  // Right auth card
+  const card = document.createElement("section");
+  card.id = "teacher-sign-in";
+  card.className = "product-card auth-card";
+
+  // Status element
   const status = statusElement(card);
-  const buttons = document.createElement("div");
-  buttons.className = "social-sign-in-buttons";
+
+  // Social sign-in buttons (Always displayed)
+  const socialSection = document.createElement("div");
+  socialSection.className = "social-sign-in-buttons";
+
   const providers = [
     {
       id: "google",
@@ -1585,13 +1611,18 @@ async function renderLogin() {
       icon: `<svg class="provider-logo" viewBox="0 0 18 18" aria-hidden="true"><path fill="#F25022" d="M0 0h8.5v8.5H0z"/><path fill="#7FBA00" d="M9.5 0H18v8.5H9.5z"/><path fill="#00A4EF" d="M0 9.5h8.5V18H0z"/><path fill="#FFB900" d="M9.5 9.5H18V18H9.5z"/></svg>`,
     },
   ];
+
   for (const provider of providers) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = `social-sign-in ${provider.id}-sign-in`;
     button.innerHTML = `${provider.icon}<span>${provider.label}</span>`;
-    button.disabled = !provider.configured;
     button.addEventListener("click", async () => {
+      if (!provider.configured) {
+        status.textContent = copy.authMissing;
+        status.className = "status error";
+        return;
+      }
       const entryPoint = getAssignmentEntryPoint();
       trackEvent(
         "teacher_auth_started",
@@ -1599,6 +1630,7 @@ async function renderLogin() {
       );
       button.disabled = true;
       status.textContent = copy.loading;
+      status.className = "status";
       try {
         const response = await api("/api/auth/sign-in/social", {
           method: "POST",
@@ -1620,16 +1652,524 @@ async function renderLogin() {
         button.disabled = false;
       }
     });
-    buttons.append(button);
+    socialSection.append(button);
   }
-  card.append(cardCopy, status, buttons);
-  if (!config.googleAuthConfigured && !config.microsoftAuthConfigured) {
-    status.textContent = copy.authMissing;
-    status.className = "status error";
+
+  // Divider
+  const divider = document.createElement("div");
+  divider.className = "auth-divider";
+  divider.innerHTML = `<span>${copy.authDividerOr}</span>`;
+
+  // Segmented Tabs: Register vs Sign In
+  const tabs = document.createElement("div");
+  tabs.className = "auth-tabs";
+  tabs.setAttribute("role", "tablist");
+
+  const tabRegister = document.createElement("button");
+  tabRegister.type = "button";
+  tabRegister.className = "auth-tab active";
+  tabRegister.setAttribute("role", "tab");
+  tabRegister.textContent = copy.authTabRegister;
+
+  const tabSignIn = document.createElement("button");
+  tabSignIn.type = "button";
+  tabSignIn.className = "auth-tab";
+  tabSignIn.setAttribute("role", "tab");
+  tabSignIn.textContent = copy.authTabSignIn;
+
+  tabs.append(tabRegister, tabSignIn);
+
+  // Forms wrapper
+  const formsWrapper = document.createElement("div");
+  formsWrapper.className = "auth-forms-wrapper";
+
+  // Reusable send code timer logic
+  function setupSendCode(button, getEmail, getType) {
+    let countdownTimer = null;
+    button.addEventListener("click", async () => {
+      const email = getEmail();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        status.textContent = copy.authInvalidEmail;
+        status.className = "status error";
+        return;
+      }
+      status.textContent = "";
+      status.className = "status";
+      button.disabled = true;
+      button.textContent = copy.authSendingCode;
+      try {
+        await api("/api/auth/email/send-code", {
+          method: "POST",
+          body: JSON.stringify({ email, type: getType() }),
+        });
+        status.textContent = copy.authCodeSent;
+        status.className = "status success";
+        let remaining = 60;
+        button.textContent = copy.authResendCode.replace(
+          "{seconds}",
+          remaining,
+        );
+        countdownTimer = setInterval(() => {
+          remaining -= 1;
+          if (remaining <= 0) {
+            clearInterval(countdownTimer);
+            button.disabled = false;
+            button.textContent = copy.authSendCode;
+          } else {
+            button.textContent = copy.authResendCode.replace(
+              "{seconds}",
+              remaining,
+            );
+          }
+        }, 1000);
+      } catch (error) {
+        status.textContent = error.message || copy.error;
+        status.className = "status error";
+        button.disabled = false;
+        button.textContent = copy.authSendCode;
+      }
+    });
   }
-  main.append(card);
+
+  // Form 1: Registration Form
+  const regForm = document.createElement("form");
+  regForm.className = "auth-form";
+  regForm.id = "auth-form-register";
+
+  const regEmailField = document.createElement("div");
+  regEmailField.className = "auth-field";
+  regEmailField.innerHTML = `
+    <label for="reg-email">${copy.authEmailLabel}</label>
+    <input type="email" id="reg-email" class="auth-input" name="email" required autocomplete="email" placeholder="${copy.authEmailPlaceholder}">
+  `;
+
+  const regCodeField = document.createElement("div");
+  regCodeField.className = "auth-field";
+  regCodeField.innerHTML = `
+    <label for="reg-code">${copy.authCodeLabel}</label>
+    <div class="auth-code-group">
+      <input type="text" id="reg-code" class="auth-input auth-code-input" name="code" maxlength="6" inputmode="numeric" required placeholder="${copy.authCodePlaceholder}">
+      <button type="button" class="auth-send-code-btn" id="reg-send-code">${copy.authSendCode}</button>
+    </div>
+  `;
+
+  const regPassField = document.createElement("div");
+  regPassField.className = "auth-field";
+  regPassField.innerHTML = `
+    <label for="reg-password">${copy.authPasswordLabel}</label>
+    <input type="password" id="reg-password" class="auth-input" name="password" minlength="8" required autocomplete="new-password" placeholder="${copy.authPasswordPlaceholder}">
+  `;
+
+  const regSubmit = document.createElement("button");
+  regSubmit.type = "submit";
+  regSubmit.className = "auth-submit-btn";
+  regSubmit.textContent = copy.authRegisterButton;
+
+  const regSwitch = document.createElement("div");
+  regSwitch.className = "auth-switch";
+  const regSwitchLink = document.createElement("a");
+  regSwitchLink.href = "#signin";
+  regSwitchLink.className = "auth-switch-link";
+  regSwitchLink.textContent = copy.authSwitchToSignIn;
+  regSwitchLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    switchToSignIn();
+  });
+  regSwitch.append(regSwitchLink);
+
+  regForm.append(
+    regEmailField,
+    regCodeField,
+    regPassField,
+    regSubmit,
+    regSwitch,
+  );
+
+  setupSendCode(
+    regCodeField.querySelector("#reg-send-code"),
+    () => regEmailField.querySelector("input").value.trim(),
+    () => "register",
+  );
+
+  regForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = regEmailField.querySelector("input").value.trim();
+    const code = regCodeField.querySelector("input").value.trim();
+    const password = regPassField.querySelector("input").value;
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      status.textContent = copy.authInvalidEmail;
+      status.className = "status error";
+      return;
+    }
+    if (!code || !/^\d{6}$/.test(code)) {
+      status.textContent = copy.authInvalidCode;
+      status.className = "status error";
+      return;
+    }
+    if (!password || password.length < 8) {
+      status.textContent = copy.authInvalidPassword;
+      status.className = "status error";
+      return;
+    }
+
+    regSubmit.disabled = true;
+    status.textContent = copy.loading;
+    status.className = "status";
+
+    const entryPoint = getAssignmentEntryPoint() || "workspace";
+    trackEvent("teacher_auth_started", {
+      entry_point: entryPoint,
+      provider: "email",
+    });
+
+    try {
+      await api("/api/auth/email/register", {
+        method: "POST",
+        body: JSON.stringify({ email, code, password }),
+      });
+      try {
+        await api("/api/lifecycle/signup", {
+          method: "POST",
+          body: JSON.stringify({
+            source: entryPoint,
+            intent: SIGNUP_INTENTS[entryPoint] || SIGNUP_INTENTS.workspace,
+            provider: "email",
+          }),
+        });
+      } catch {}
+      trackEvent("teacher_auth_success", {
+        entry_point: entryPoint,
+        provider: "email",
+      });
+      location.href = teacherCallbackURL();
+    } catch (error) {
+      status.textContent = error.message || copy.error;
+      status.className = "status error";
+      regSubmit.disabled = false;
+    }
+  });
+
+  // Form 2: Sign In Form
+  const signForm = document.createElement("form");
+  signForm.className = "auth-form";
+  signForm.id = "auth-form-signin";
+  signForm.style.display = "none";
+
+  let signInWithCode = false;
+
+  const submodes = document.createElement("div");
+  submodes.className = "auth-submodes";
+  const btnPassMode = document.createElement("button");
+  btnPassMode.type = "button";
+  btnPassMode.className = "auth-submode-btn active";
+  btnPassMode.textContent = copy.authUsePasswordSignIn;
+
+  const btnCodeMode = document.createElement("button");
+  btnCodeMode.type = "button";
+  btnCodeMode.className = "auth-submode-btn";
+  btnCodeMode.textContent = copy.authUseCodeSignIn;
+
+  submodes.append(btnPassMode, btnCodeMode);
+
+  const signEmailField = document.createElement("div");
+  signEmailField.className = "auth-field";
+  signEmailField.innerHTML = `
+    <label for="sign-email">${copy.authEmailLabel}</label>
+    <input type="email" id="sign-email" class="auth-input" name="email" required autocomplete="email" placeholder="${copy.authEmailPlaceholder}">
+  `;
+
+  const signPassField = document.createElement("div");
+  signPassField.className = "auth-field";
+  signPassField.innerHTML = `
+    <label for="sign-password">
+      <span>${copy.authPasswordLabel}</span>
+      <a href="#reset" class="auth-forgot-link" id="sign-forgot-link">${copy.authForgotPassword}</a>
+    </label>
+    <input type="password" id="sign-password" class="auth-input" name="password" required autocomplete="current-password" placeholder="${copy.authPasswordPlaceholder}">
+  `;
+
+  const signCodeField = document.createElement("div");
+  signCodeField.className = "auth-field";
+  signCodeField.style.display = "none";
+  signCodeField.innerHTML = `
+    <label for="sign-code">${copy.authCodeLabel}</label>
+    <div class="auth-code-group">
+      <input type="text" id="sign-code" class="auth-input auth-code-input" name="code" maxlength="6" inputmode="numeric" placeholder="${copy.authCodePlaceholder}">
+      <button type="button" class="auth-send-code-btn" id="sign-send-code">${copy.authSendCode}</button>
+    </div>
+  `;
+
+  const signSubmit = document.createElement("button");
+  signSubmit.type = "submit";
+  signSubmit.className = "auth-submit-btn";
+  signSubmit.textContent = copy.authSignInButton;
+
+  const signSwitch = document.createElement("div");
+  signSwitch.className = "auth-switch";
+  const signSwitchLink = document.createElement("a");
+  signSwitchLink.href = "#register";
+  signSwitchLink.className = "auth-switch-link";
+  signSwitchLink.textContent = copy.authSwitchToRegister;
+  signSwitchLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    switchToRegister();
+  });
+  signSwitch.append(signSwitchLink);
+
+  signForm.append(
+    submodes,
+    signEmailField,
+    signPassField,
+    signCodeField,
+    signSubmit,
+    signSwitch,
+  );
+
+  setupSendCode(
+    signCodeField.querySelector("#sign-send-code"),
+    () => signEmailField.querySelector("input").value.trim(),
+    () => "sign-in",
+  );
+
+  btnPassMode.addEventListener("click", () => {
+    signInWithCode = false;
+    btnPassMode.className = "auth-submode-btn active";
+    btnCodeMode.className = "auth-submode-btn";
+    signPassField.style.display = "";
+    signCodeField.style.display = "none";
+    status.textContent = "";
+  });
+
+  btnCodeMode.addEventListener("click", () => {
+    signInWithCode = true;
+    btnCodeMode.className = "auth-submode-btn active";
+    btnPassMode.className = "auth-submode-btn";
+    signPassField.style.display = "none";
+    signCodeField.style.display = "";
+    status.textContent = "";
+  });
+
+  signPassField
+    .querySelector("#sign-forgot-link")
+    .addEventListener("click", (e) => {
+      e.preventDefault();
+      switchToReset();
+    });
+
+  signForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = signEmailField.querySelector("input").value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      status.textContent = copy.authInvalidEmail;
+      status.className = "status error";
+      return;
+    }
+
+    const payload = { email };
+    if (signInWithCode) {
+      const code = signCodeField.querySelector("input").value.trim();
+      if (!code || !/^\d{6}$/.test(code)) {
+        status.textContent = copy.authInvalidCode;
+        status.className = "status error";
+        return;
+      }
+      payload.code = code;
+    } else {
+      const password = signPassField.querySelector("input").value;
+      if (!password) {
+        status.textContent = copy.authInvalidPassword;
+        status.className = "status error";
+        return;
+      }
+      payload.password = password;
+    }
+
+    signSubmit.disabled = true;
+    status.textContent = copy.loading;
+    status.className = "status";
+
+    const entryPoint = getAssignmentEntryPoint() || "workspace";
+    trackEvent("teacher_auth_started", {
+      entry_point: entryPoint,
+      provider: "email",
+    });
+
+    try {
+      await api("/api/auth/email/sign-in", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      trackEvent("teacher_auth_success", {
+        entry_point: entryPoint,
+        provider: "email",
+      });
+      location.href = teacherCallbackURL();
+    } catch (error) {
+      status.textContent = error.message || copy.error;
+      status.className = "status error";
+      signSubmit.disabled = false;
+    }
+  });
+
+  // Form 3: Reset Password Form
+  const resetForm = document.createElement("form");
+  resetForm.className = "auth-form";
+  resetForm.id = "auth-form-reset";
+  resetForm.style.display = "none";
+
+  const resetHeading = document.createElement("div");
+  resetHeading.className = "auth-reset-heading";
+  resetHeading.innerHTML = `
+    <h3 class="auth-reset-title">${copy.authResetPasswordTitle}</h3>
+    <p class="auth-reset-subtitle">${copy.authResetPasswordSubtitle}</p>
+  `;
+
+  const resetEmailField = document.createElement("div");
+  resetEmailField.className = "auth-field";
+  resetEmailField.innerHTML = `
+    <label for="reset-email">${copy.authEmailLabel}</label>
+    <input type="email" id="reset-email" class="auth-input" name="email" required autocomplete="email" placeholder="${copy.authEmailPlaceholder}">
+  `;
+
+  const resetCodeField = document.createElement("div");
+  resetCodeField.className = "auth-field";
+  resetCodeField.innerHTML = `
+    <label for="reset-code">${copy.authCodeLabel}</label>
+    <div class="auth-code-group">
+      <input type="text" id="reset-code" class="auth-input auth-code-input" name="code" maxlength="6" inputmode="numeric" required placeholder="${copy.authCodePlaceholder}">
+      <button type="button" class="auth-send-code-btn" id="reset-send-code">${copy.authSendCode}</button>
+    </div>
+  `;
+
+  const resetPassField = document.createElement("div");
+  resetPassField.className = "auth-field";
+  resetPassField.innerHTML = `
+    <label for="reset-password">${copy.authPasswordLabel}</label>
+    <input type="password" id="reset-password" class="auth-input" name="password" minlength="8" required autocomplete="new-password" placeholder="${copy.authPasswordPlaceholder}">
+  `;
+
+  const resetSubmit = document.createElement("button");
+  resetSubmit.type = "submit";
+  resetSubmit.className = "auth-submit-btn";
+  resetSubmit.textContent = copy.authResetPasswordButton;
+
+  const resetSwitch = document.createElement("div");
+  resetSwitch.className = "auth-switch";
+  const resetSwitchLink = document.createElement("a");
+  resetSwitchLink.href = "#signin";
+  resetSwitchLink.className = "auth-switch-link";
+  resetSwitchLink.textContent = copy.authBackToSignIn;
+  resetSwitchLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    switchToSignIn();
+  });
+  resetSwitch.append(resetSwitchLink);
+
+  resetForm.append(
+    resetHeading,
+    resetEmailField,
+    resetCodeField,
+    resetPassField,
+    resetSubmit,
+    resetSwitch,
+  );
+
+  setupSendCode(
+    resetCodeField.querySelector("#reset-send-code"),
+    () => resetEmailField.querySelector("input").value.trim(),
+    () => "reset-password",
+  );
+
+  resetForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = resetEmailField.querySelector("input").value.trim();
+    const code = resetCodeField.querySelector("input").value.trim();
+    const password = resetPassField.querySelector("input").value;
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      status.textContent = copy.authInvalidEmail;
+      status.className = "status error";
+      return;
+    }
+    if (!code || !/^\d{6}$/.test(code)) {
+      status.textContent = copy.authInvalidCode;
+      status.className = "status error";
+      return;
+    }
+    if (!password || password.length < 8) {
+      status.textContent = copy.authInvalidPassword;
+      status.className = "status error";
+      return;
+    }
+
+    resetSubmit.disabled = true;
+    status.textContent = copy.loading;
+    status.className = "status";
+
+    try {
+      await api("/api/auth/email/reset-password", {
+        method: "POST",
+        body: JSON.stringify({ email, code, password }),
+      });
+      location.href = teacherCallbackURL();
+    } catch (error) {
+      status.textContent = error.message || copy.error;
+      status.className = "status error";
+      resetSubmit.disabled = false;
+    }
+  });
+
+  formsWrapper.append(regForm, signForm, resetForm);
+
+  function switchToRegister() {
+    tabRegister.className = "auth-tab active";
+    tabSignIn.className = "auth-tab";
+    tabs.style.display = "";
+    regForm.style.display = "";
+    signForm.style.display = "none";
+    resetForm.style.display = "none";
+    status.textContent = "";
+  }
+
+  function switchToSignIn() {
+    tabRegister.className = "auth-tab";
+    tabSignIn.className = "auth-tab active";
+    tabs.style.display = "";
+    regForm.style.display = "none";
+    signForm.style.display = "";
+    resetForm.style.display = "none";
+    status.textContent = "";
+  }
+
+  function switchToReset() {
+    tabs.style.display = "none";
+    regForm.style.display = "none";
+    signForm.style.display = "none";
+    resetForm.style.display = "";
+    status.textContent = "";
+  }
+
+  tabRegister.addEventListener("click", switchToRegister);
+  tabSignIn.addEventListener("click", switchToSignIn);
+
+  // Assemble Card: tabs on top -> status -> forms -> divider -> social buttons at bottom
+  card.append(tabs, status, formsWrapper, divider, socialSection);
+
+  // Assemble Left-Right Layout
+  layout.append(marketingSide, card);
+  main.append(layout);
   wrapper.append(main, footer());
   root.append(wrapper);
+
+  if (location.hash === "#signin") {
+    switchToSignIn();
+  } else if (location.hash === "#reset") {
+    switchToReset();
+  } else {
+    switchToRegister();
+  }
+
   if (location.hash === "#teacher-sign-in") focusTeacherSignIn();
 }
 

@@ -2,7 +2,9 @@ import { describe, expect, it, vi } from "vitest";
 import {
   buildWelcomeEmail,
   buildPriceChangeEmail,
+  buildVerificationCodeEmail,
   resolveWelcomeLocale,
+  sendVerificationCodeEmail,
   sendWelcomeEmail,
 } from "../src/worker/email";
 
@@ -36,6 +38,54 @@ describe("welcome email", () => {
     expect(url).toBe("https://api.resend.com/emails");
     expect(body.to).toEqual(["user@example.com"]);
     expect(body.subject).toBe("Welcome to MySpellingGame");
+  });
+});
+
+describe("verification code email", () => {
+  it("formats verification code clearly in html and text", () => {
+    const email = buildVerificationCodeEmail("123456", "en-US,en;q=0.9");
+    expect(email.from).toBe("MySpellingGame <hello@myspellinggame.com>");
+    expect(email.subject).toBe("Your verification code is 123456");
+    expect(email.text).toContain("123456");
+    expect(email.html).toContain("123456");
+    expect(email.html).toContain(
+      "https://myspellinggame.com/images/icon-64.png",
+    );
+    expect(email.text).toContain("10 minutes");
+  });
+
+  it.each([
+    ["en-US", "Your verification code is 654321"],
+    ["es-ES", "Tu código de verificación es 654321 - MySpellingGame"],
+    ["pt-BR", "Seu código de verificação é 654321 - MySpellingGame"],
+    ["fr-FR", "Votre code de vérification est 654321 - MySpellingGame"],
+    ["id-ID", "Kode verifikasi Anda adalah 654321 - MySpellingGame"],
+    ["zh-CN", "验证码：654321 - MySpellingGame"],
+  ])("localizes subject for %s", (locale, expectedSubject) => {
+    const email = buildVerificationCodeEmail("654321", locale);
+    expect(email.subject).toBe(expectedSubject);
+  });
+
+  it("posts the verification code template to Resend", async () => {
+    const fetchEmail = vi.fn(async (_url: string, _init: RequestInit) =>
+      Response.json({ id: "resend-msg-123" }, { status: 200 }),
+    );
+    await expect(
+      sendVerificationCodeEmail(
+        "resend-secret",
+        "teacher@example.com",
+        "888999",
+        "zh-CN",
+        fetchEmail,
+      ),
+    ).resolves.toEqual({ id: "resend-msg-123" });
+
+    const [url, init] = fetchEmail.mock.calls[0];
+    const body = JSON.parse(String(init.body));
+    expect(url).toBe("https://api.resend.com/emails");
+    expect(body.to).toEqual(["teacher@example.com"]);
+    expect(body.subject).toBe("验证码：888999 - MySpellingGame");
+    expect(body.text).toContain("888999");
   });
 });
 

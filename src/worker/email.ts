@@ -391,3 +391,144 @@ export async function sendWelcomeEmail(
   }
   return (await response.json()) as { id: string };
 }
+
+const OTP_COPY = {
+  en: {
+    lang: "en",
+    subject: (code: string) => `Your verification code is ${code}`,
+    title: "Verification code",
+    greeting: "Hi,",
+    intro:
+      "Enter this verification code to complete your registration or verify your email on MySpellingGame:",
+    expiry:
+      "This code is valid for 10 minutes. If you did not request this email, you can safely ignore it.",
+    thanks: "Thanks,",
+  },
+  es: {
+    lang: "es",
+    subject: (code: string) =>
+      `Tu código de verificación es ${code} - MySpellingGame`,
+    title: "Código de verificación",
+    greeting: "Hola:",
+    intro:
+      "Introduce este código de verificación para completar tu registro o verificar tu correo en MySpellingGame:",
+    expiry:
+      "Este código caduca en 10 minutos. Si no has solicitado este correo, puedes ignorarlo con total tranquilidad.",
+    thanks: "Gracias,",
+  },
+  "pt-BR": {
+    lang: "pt-BR",
+    subject: (code: string) =>
+      `Seu código de verificação é ${code} - MySpellingGame`,
+    title: "Código de verificação",
+    greeting: "Olá,",
+    intro:
+      "Digite este código de verificação para concluir seu cadastro ou verificar seu e-mail no MySpellingGame:",
+    expiry:
+      "Este código expira em 10 minutos. Se você não solicitou este e-mail, pode ignorá-lo com segurança.",
+    thanks: "Obrigado,",
+  },
+  fr: {
+    lang: "fr",
+    subject: (code: string) =>
+      `Votre code de vérification est ${code} - MySpellingGame`,
+    title: "Code de vérification",
+    greeting: "Bonjour,",
+    intro:
+      "Saisissez ce code de vérification pour finaliser votre inscription ou vérifier votre e-mail sur MySpellingGame :",
+    expiry:
+      "Ce code expire dans 10 minutes. Si vous n'avez pas demandé cet e-mail, vous pouvez l'ignorer en toute sécurité.",
+    thanks: "Merci,",
+  },
+  id: {
+    lang: "id",
+    subject: (code: string) =>
+      `Kode verifikasi Anda adalah ${code} - MySpellingGame`,
+    title: "Kode verifikasi",
+    greeting: "Halo,",
+    intro:
+      "Masukkan kode verifikasi ini untuk menyelesaikan pendaftaran atau memverifikasi email Anda di MySpellingGame:",
+    expiry:
+      "Kode ini berlaku selama 10 menit. Jika Anda tidak meminta email ini, Anda dapat mengabaikannya.",
+    thanks: "Terima kasih,",
+  },
+  "zh-CN": {
+    lang: "zh-CN",
+    subject: (code: string) => `验证码：${code} - MySpellingGame`,
+    title: "验证码",
+    greeting: "你好，",
+    intro: "请在页面中输入以下验证码以完成注册或验证你的邮箱：",
+    expiry: "此验证码 10 分钟内有效。如非本人操作，请忽略此邮件。",
+    thanks: "感谢使用，",
+  },
+} as const;
+
+export function buildVerificationCodeEmail(
+  code: string,
+  acceptLanguage?: string | null,
+) {
+  const locale = resolveWelcomeLocale(acceptLanguage);
+  const copy = OTP_COPY[locale];
+  const subject = copy.subject(code);
+
+  const text = `${copy.greeting}\n\n${copy.intro}\n\n${code}\n\n${copy.expiry}\n\n${copy.thanks}\nMySpellingGame\n${SITE_URL}`;
+
+  const html = `<!doctype html>
+<html lang="${locale}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${subject}</title>
+</head>
+<body style="margin:0;padding:24px;background:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1f2937">
+  <div style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:32px 28px;box-shadow:0 1px 3px rgba(0,0,0,0.05)">
+    <div style="text-align:center;margin-bottom:20px">
+      <img src="${LOGO_URL}" width="48" height="48" alt="MySpellingGame" style="display:inline-block">
+    </div>
+    <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#111827;text-align:center">${copy.title}</h1>
+    <p style="margin:0 0 12px;font-size:15px;line-height:1.6;color:#374151">${copy.greeting}</p>
+    <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#374151">${copy.intro}</p>
+    <div style="text-align:center;margin:28px 0">
+      <div style="display:inline-block;padding:14px 28px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:8px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:32px;font-weight:700;letter-spacing:6px;color:#2563eb">
+        ${code}
+      </div>
+    </div>
+    <p style="margin:24px 0 0;font-size:13px;line-height:1.5;color:#6b7280;text-align:center">${copy.expiry}</p>
+    <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
+    <p style="margin:0;font-size:13px;line-height:1.5;color:#9ca3af;text-align:center"><a href="${SITE_URL}" style="color:#6b7280;text-decoration:none">MySpellingGame</a></p>
+  </div>
+</body>
+</html>`;
+
+  return {
+    from: FROM,
+    subject,
+    text,
+    html,
+  };
+}
+
+export async function sendVerificationCodeEmail(
+  apiKey: string,
+  to: string,
+  code: string,
+  acceptLanguage?: string | null,
+  fetchEmail: EmailFetch = fetch,
+) {
+  const email = buildVerificationCodeEmail(code, acceptLanguage);
+  const response = await fetchEmail("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${apiKey}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({ ...email, to: [to] }),
+  });
+  if (!response.ok) {
+    const errorBody = await response.text().catch(() => "");
+    throw new Error(
+      `Resend verification email failed (${response.status}): ${errorBody}`,
+    );
+  }
+  return (await response.json()) as { id: string };
+}

@@ -31,7 +31,13 @@ import {
   type AssignmentWord,
   type Plan,
 } from "./domain";
-import { featureTrialForFreeAccount } from "./featureTrial";
+import {
+  featureTrialForFreeAccount,
+  startFeatureTrialIfMissing,
+} from "./featureTrial";
+import { sendVerificationCodeEmail } from "./email";
+import { hashPassword, verifyPassword } from "@better-auth/utils/password";
+import { serializeSignedCookie } from "better-call";
 import {
   cancelCheckout,
   changeSubscriptionPlan,
@@ -2485,6 +2491,531 @@ async function serveShell(
   return new Response(response.body, { status: response.status, headers });
 }
 
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+async function sessionCookieHeader(
+  request: Request,
+  token: string,
+  secret: string,
+): Promise<string> {
+  const secure = new URL(request.url).protocol === "https:";
+  const cookieName = secure
+    ? "__Secure-better-auth.session_token"
+    : "better-auth.session_token";
+  return await serializeSignedCookie(cookieName, token, secret, {
+    path: "/",
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 30 * 24 * 3600,
+    secure,
+  });
+}
+
+async function handleEmailSendCode(
+  env: Env,
+  request: Request,
+): Promise<Response> {
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const allowed = await env.CREATE_LIMITER.limit({ key: `email-code:${ip}` });
+  if (!allowed.success) {
+    throw new HttpError(
+      429,
+      "rate_limited",
+      "Too many requests. Please wait a moment.",
+    );
+  }
+
+  const body = (await request.json().catch(() => null)) as {
+    email?: string;
+    type?: string;
+  } | null;
+  const email = body?.email?.toLowerCase().trim();
+  if (!email || !isValidEmail(email)) {
+    throw new HttpError(
+      400,
+      "invalid_email",
+      "Please provide a valid email address.",
+    );
+  }
+
+  const code = String(Math.floor(100000 + Math.random() * 900000));
+  const identifier = `email-otp:${email}`;
+  const now = new Date().toISOString();
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+  await env.DB.prepare("DELETE FROM verification WHERE identifier = ?")
+    .bind(identifier)
+    .run();
+  await env.DB.prepare(
+    `INSERT INTO verification (id, identifier, value, expiresAt, createdAt, updatedAt)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+  )
+    .bind(crypto.randomUUID(), identifier, code, expiresAt, now, now)
+    .run();
+
+  if (env.RESEND_API_KEY && env.RESEND_API_KEY !== "re_replace_me") {
+    try {
+      await sendVerificationCodeEmail(
+        env.RESEND_API_KEY,
+        email,
+        code,
+        request.headers.get("accept-language"),
+      );
+    } catch (err) {
+      console.error("Resend send verification code error:", err);
+      throw new HttpError(
+        500,
+        "email_send_failed",
+        "Failed to send verification email. Please try again.",
+      );
+    }
+  } else {
+    console.log(
+      `[LOCAL DEV EMAIL CODE] Verification code for ${email}: ${code}`,
+    );
+  }
+
+  return json({ success: true });
+}
+
+async function handleEmailRegister(
+  env: Env,
+  request: Request,
+): Promise<Response> {
+  const body = (await request.json().catch(() => null)) as {
+    email?: string;
+    code?: string;
+    password?: string;
+    name?: string;
+  } | null;
+
+  const email = body?.email?.toLowerCase().trim();
+  const code = body?.code?.trim();
+  const password = body?.password;
+  const name = body?.name?.trim();
+
+  if (!email || !isValidEmail(email)) {
+    throw new HttpError(
+      400,
+      "invalid_email",
+      "Please provide a valid email address.",
+    );
+  }
+  if (!code || !/^\d{6}$/.test(code)) {
+    throw new HttpError(
+      400,
+      "invalid_code",
+      "Please provide a valid 6-digit verification code.",
+    );
+  }
+  if (!password || password.length < 8) {
+    throw new HttpError(
+      400,
+      "invalid_password",
+      "Password must be at least 8 characters long.",
+    );
+  }
+
+  const existing = await env.DB.prepare("SELECT id FROM user WHERE email = ?")
+    .bind(email)
+    .first();
+  if (existing) {
+    throw new HttpError(
+      400,
+      "user_already_exists",
+      "This email is already registered. Please sign in instead.",
+    );
+  }
+
+  const identifier = `email-otp:${email}`;
+  const record = await env.DB.prepare(
+    "SELECT value, expiresAt FROM verification WHERE identifier = ?",
+  )
+    .bind(identifier)
+    .first<{ value: string; expiresAt: string }>();
+
+  if (
+    !record ||
+    record.value !== code ||
+    new Date(record.expiresAt).getTime() < Date.now()
+  ) {
+    throw new HttpError(
+      400,
+      "invalid_code",
+      "Verification code is invalid or has expired.",
+    );
+  }
+
+  await env.DB.prepare("DELETE FROM verification WHERE identifier = ?")
+    .bind(identifier)
+    .run();
+
+  const hash = await hashPassword(password);
+  const userId = crypto.randomUUID();
+  const now = new Date().toISOString();
+  const userName = name || email.split("@")[0];
+  const sessionId = crypto.randomUUID();
+  const token = crypto.randomUUID();
+  const sessionExpiresAt = new Date(
+    Date.now() + 30 * 24 * 3600 * 1000,
+  ).toISOString();
+
+  await env.DB.batch([
+    env.DB.prepare(
+      `INSERT INTO user (id, name, email, emailVerified, createdAt, updatedAt, last_login_at, last_active_at)
+       VALUES (?, ?, ?, 1, ?, ?, ?, ?)`,
+    ).bind(userId, userName, email, now, now, now, now),
+    env.DB.prepare(
+      `INSERT INTO account (id, issuer, accountId, providerId, userId, password, createdAt, updatedAt)
+       VALUES (?, 'credential', ?, 'credential', ?, ?, ?, ?)`,
+    ).bind(crypto.randomUUID(), userId, userId, hash, now, now),
+    env.DB.prepare(
+      `INSERT INTO session (id, expiresAt, token, createdAt, updatedAt, userId)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+    ).bind(sessionId, sessionExpiresAt, token, now, now, userId),
+  ]);
+
+  try {
+    await startFeatureTrialIfMissing(env.DB, userId, now);
+  } catch (error) {
+    console.error(
+      "Failed to start feature trial on email registration:",
+      error,
+    );
+  }
+  await recordLifecycleEvent(env.DB, userId, "signup_created", {
+    email_verified: true,
+    method: "email",
+  });
+  await recordLifecycleEvent(
+    env.DB,
+    userId,
+    "login",
+    { session_id: sessionId, method: "email" },
+    `session:${sessionId}`,
+  );
+
+  const cookie = await sessionCookieHeader(
+    request,
+    token,
+    env.BETTER_AUTH_SECRET,
+  );
+  return new Response(
+    JSON.stringify({
+      success: true,
+      user: { id: userId, email, name: userName },
+    }),
+    {
+      status: 200,
+      headers: {
+        "content-type": "application/json",
+        "set-cookie": cookie,
+      },
+    },
+  );
+}
+
+async function handleEmailSignIn(
+  env: Env,
+  request: Request,
+): Promise<Response> {
+  const body = (await request.json().catch(() => null)) as {
+    email?: string;
+    password?: string;
+    code?: string;
+  } | null;
+
+  const email = body?.email?.toLowerCase().trim();
+  const password = body?.password;
+  const code = body?.code?.trim();
+
+  if (!email || !isValidEmail(email)) {
+    throw new HttpError(
+      400,
+      "invalid_email",
+      "Please provide a valid email address.",
+    );
+  }
+
+  const now = new Date().toISOString();
+  let user = await env.DB.prepare(
+    "SELECT id, name, email, emailVerified FROM user WHERE email = ?",
+  )
+    .bind(email)
+    .first<{
+      id: string;
+      name: string;
+      email: string;
+      emailVerified: number;
+    }>();
+
+  if (code) {
+    if (!/^\d{6}$/.test(code)) {
+      throw new HttpError(
+        400,
+        "invalid_code",
+        "Please provide a valid 6-digit verification code.",
+      );
+    }
+    const identifier = `email-otp:${email}`;
+    const record = await env.DB.prepare(
+      "SELECT value, expiresAt FROM verification WHERE identifier = ?",
+    )
+      .bind(identifier)
+      .first<{ value: string; expiresAt: string }>();
+
+    if (
+      !record ||
+      record.value !== code ||
+      new Date(record.expiresAt).getTime() < Date.now()
+    ) {
+      throw new HttpError(
+        400,
+        "invalid_code",
+        "Verification code is invalid or has expired.",
+      );
+    }
+
+    await env.DB.prepare("DELETE FROM verification WHERE identifier = ?")
+      .bind(identifier)
+      .run();
+
+    if (!user) {
+      const userId = crypto.randomUUID();
+      const userName = email.split("@")[0];
+      await env.DB.prepare(
+        `INSERT INTO user (id, name, email, emailVerified, createdAt, updatedAt, last_login_at, last_active_at)
+         VALUES (?, ?, ?, 1, ?, ?, ?, ?)`,
+      )
+        .bind(userId, userName, email, now, now, now, now)
+        .run();
+      try {
+        await startFeatureTrialIfMissing(env.DB, userId, now);
+      } catch (err) {
+        console.error("Failed to start feature trial:", err);
+      }
+      await recordLifecycleEvent(env.DB, userId, "signup_created", {
+        email_verified: true,
+        method: "email_otp",
+      });
+      user = { id: userId, name: userName, email, emailVerified: 1 };
+    }
+  } else if (password) {
+    if (!user) {
+      throw new HttpError(
+        400,
+        "invalid_credentials",
+        "Incorrect email or password.",
+      );
+    }
+    const account = await env.DB.prepare(
+      "SELECT password FROM account WHERE userId = ? AND providerId = 'credential'",
+    )
+      .bind(user.id)
+      .first<{ password: string }>();
+
+    if (!account?.password) {
+      throw new HttpError(
+        400,
+        "invalid_credentials",
+        "Incorrect email or password. If you registered without a password, please sign in with a verification code.",
+      );
+    }
+
+    const valid = await verifyPassword(account.password, password);
+    if (!valid) {
+      throw new HttpError(
+        400,
+        "invalid_credentials",
+        "Incorrect email or password.",
+      );
+    }
+  } else {
+    throw new HttpError(
+      400,
+      "missing_auth_input",
+      "Please provide a password or verification code.",
+    );
+  }
+
+  const sessionId = crypto.randomUUID();
+  const token = crypto.randomUUID();
+  const sessionExpiresAt = new Date(
+    Date.now() + 30 * 24 * 3600 * 1000,
+  ).toISOString();
+
+  await env.DB.batch([
+    env.DB.prepare(
+      "UPDATE user SET last_login_at = ?, last_active_at = ? WHERE id = ?",
+    ).bind(now, now, user.id),
+    env.DB.prepare(
+      `INSERT INTO session (id, expiresAt, token, createdAt, updatedAt, userId)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+    ).bind(sessionId, sessionExpiresAt, token, now, now, user.id),
+  ]);
+
+  await recordLifecycleEvent(
+    env.DB,
+    user.id,
+    "login",
+    { session_id: sessionId, method: code ? "email_otp" : "password" },
+    `session:${sessionId}`,
+  );
+
+  const cookie = await sessionCookieHeader(
+    request,
+    token,
+    env.BETTER_AUTH_SECRET,
+  );
+  return new Response(
+    JSON.stringify({
+      success: true,
+      user: { id: user.id, email: user.email, name: user.name },
+    }),
+    {
+      status: 200,
+      headers: {
+        "content-type": "application/json",
+        "set-cookie": cookie,
+      },
+    },
+  );
+}
+
+async function handleEmailResetPassword(
+  env: Env,
+  request: Request,
+): Promise<Response> {
+  const body = (await request.json().catch(() => null)) as {
+    email?: string;
+    code?: string;
+    password?: string;
+  } | null;
+
+  const email = body?.email?.toLowerCase().trim();
+  const code = body?.code?.trim();
+  const password = body?.password;
+
+  if (!email || !isValidEmail(email)) {
+    throw new HttpError(
+      400,
+      "invalid_email",
+      "Please provide a valid email address.",
+    );
+  }
+  if (!code || !/^\d{6}$/.test(code)) {
+    throw new HttpError(
+      400,
+      "invalid_code",
+      "Please provide a valid 6-digit verification code.",
+    );
+  }
+  if (!password || password.length < 8) {
+    throw new HttpError(
+      400,
+      "invalid_password",
+      "Password must be at least 8 characters long.",
+    );
+  }
+
+  const user = await env.DB.prepare(
+    "SELECT id, name, email FROM user WHERE email = ?",
+  )
+    .bind(email)
+    .first<{ id: string; name: string; email: string }>();
+  if (!user) {
+    throw new HttpError(
+      400,
+      "user_not_found",
+      "No account found with this email.",
+    );
+  }
+
+  const identifier = `email-otp:${email}`;
+  const record = await env.DB.prepare(
+    "SELECT value, expiresAt FROM verification WHERE identifier = ?",
+  )
+    .bind(identifier)
+    .first<{ value: string; expiresAt: string }>();
+
+  if (
+    !record ||
+    record.value !== code ||
+    new Date(record.expiresAt).getTime() < Date.now()
+  ) {
+    throw new HttpError(
+      400,
+      "invalid_code",
+      "Verification code is invalid or has expired.",
+    );
+  }
+
+  await env.DB.prepare("DELETE FROM verification WHERE identifier = ?")
+    .bind(identifier)
+    .run();
+
+  const hash = await hashPassword(password);
+  const now = new Date().toISOString();
+
+  const existingAccount = await env.DB.prepare(
+    "SELECT id FROM account WHERE userId = ? AND providerId = 'credential'",
+  )
+    .bind(user.id)
+    .first();
+
+  if (existingAccount) {
+    await env.DB.prepare(
+      "UPDATE account SET password = ?, updatedAt = ? WHERE userId = ? AND providerId = 'credential'",
+    )
+      .bind(hash, now, user.id)
+      .run();
+  } else {
+    await env.DB.prepare(
+      `INSERT INTO account (id, issuer, accountId, providerId, userId, password, createdAt, updatedAt)
+       VALUES (?, 'credential', ?, 'credential', ?, ?, ?, ?)`,
+    )
+      .bind(crypto.randomUUID(), user.id, user.id, hash, now, now)
+      .run();
+  }
+
+  const sessionId = crypto.randomUUID();
+  const token = crypto.randomUUID();
+  const sessionExpiresAt = new Date(
+    Date.now() + 30 * 24 * 3600 * 1000,
+  ).toISOString();
+
+  await env.DB.batch([
+    env.DB.prepare(
+      "UPDATE user SET last_login_at = ?, last_active_at = ? WHERE id = ?",
+    ).bind(now, now, user.id),
+    env.DB.prepare(
+      `INSERT INTO session (id, expiresAt, token, createdAt, updatedAt, userId)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+    ).bind(sessionId, sessionExpiresAt, token, now, now, user.id),
+  ]);
+
+  const cookie = await sessionCookieHeader(
+    request,
+    token,
+    env.BETTER_AUTH_SECRET,
+  );
+  return new Response(
+    JSON.stringify({
+      success: true,
+      user: { id: user.id, email: user.email, name: user.name },
+    }),
+    {
+      status: 200,
+      headers: {
+        "content-type": "application/json",
+        "set-cookie": cookie,
+      },
+    },
+  );
+}
+
 async function handleBusinessRequest(
   request: Request,
   env: Env,
@@ -2495,18 +3026,27 @@ async function handleBusinessRequest(
   const getSession = overrides.getSession ?? getTeacherSession;
 
   if (url.pathname.startsWith("/api/auth/")) {
-    if (
-      !env.BETTER_AUTH_SECRET ||
-      !(
-        (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) ||
-        (env.MICROSOFT_CLIENT_ID && env.MICROSOFT_CLIENT_SECRET)
-      )
-    ) {
+    if (!env.BETTER_AUTH_SECRET) {
       throw new HttpError(
         503,
         "auth_not_configured",
         "Teacher sign-in is not configured yet.",
       );
+    }
+    if (url.pathname === "/api/auth/email/send-code" && method === "POST") {
+      return handleEmailSendCode(env, request);
+    }
+    if (url.pathname === "/api/auth/email/register" && method === "POST") {
+      return handleEmailRegister(env, request);
+    }
+    if (url.pathname === "/api/auth/email/sign-in" && method === "POST") {
+      return handleEmailSignIn(env, request);
+    }
+    if (
+      url.pathname === "/api/auth/email/reset-password" &&
+      method === "POST"
+    ) {
+      return handleEmailResetPassword(env, request);
     }
     const authRequest = await restrictTeacherAuthCallback(request);
     return createAuth(env, authRequest).handler(authRequest);
@@ -2526,6 +3066,12 @@ async function handleBusinessRequest(
         env.BETTER_AUTH_SECRET &&
         env.MICROSOFT_CLIENT_ID &&
         env.MICROSOFT_CLIENT_SECRET,
+      ),
+      emailAuthConfigured: Boolean(
+        env.BETTER_AUTH_SECRET &&
+        (env.RESEND_API_KEY ||
+          !env.ENVIRONMENT ||
+          env.ENVIRONMENT === "development"),
       ),
       billingConfigured: Boolean(
         env.STRIPE_SECRET_KEY &&

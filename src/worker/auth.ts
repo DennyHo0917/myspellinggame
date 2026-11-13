@@ -1,5 +1,4 @@
 import { betterAuth } from "better-auth";
-import { sendWelcomeEmail } from "./email";
 import { startFeatureTrialIfMissing } from "./featureTrial";
 import { recordLifecycleEvent } from "./lifecycle";
 
@@ -12,6 +11,7 @@ export interface AuthEnv {
   MICROSOFT_CLIENT_ID?: string;
   MICROSOFT_CLIENT_SECRET?: string;
   RESEND_API_KEY?: string;
+  ENVIRONMENT?: string;
 }
 
 export function safeTeacherCallbackURL(value: unknown, origin: string) {
@@ -71,6 +71,10 @@ export function createAuth(env: AuthEnv, request: Request) {
     secret: env.BETTER_AUTH_SECRET,
     database: env.DB,
     trustedOrigins: [origin, baseURL],
+    emailAndPassword: {
+      enabled: true,
+      requireEmailVerification: false,
+    },
     socialProviders: {
       ...(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
         ? {
@@ -108,7 +112,7 @@ export function createAuth(env: AuthEnv, request: Request) {
     databaseHooks: {
       user: {
         create: {
-          after: async (user, context) => {
+          after: async (user) => {
             try {
               const created = new Date(user.createdAt);
               await startFeatureTrialIfMissing(
@@ -124,17 +128,6 @@ export function createAuth(env: AuthEnv, request: Request) {
             await recordLifecycleEvent(env.DB, user.id, "signup_created", {
               email_verified: Boolean(user.emailVerified),
             });
-            if (env.RESEND_API_KEY) {
-              try {
-                await sendWelcomeEmail(
-                  env.RESEND_API_KEY,
-                  user.email,
-                  context?.headers?.get("accept-language"),
-                );
-              } catch (error) {
-                console.error("Welcome email failed", error);
-              }
-            }
           },
         },
       },
@@ -171,14 +164,81 @@ export function createAuth(env: AuthEnv, request: Request) {
 }
 
 export async function getTeacherSession(env: AuthEnv, request: Request) {
-  if (
-    !env.BETTER_AUTH_SECRET ||
-    !(
-      (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) ||
-      (env.MICROSOFT_CLIENT_ID && env.MICROSOFT_CLIENT_SECRET)
-    )
-  ) {
+  if (!env.BETTER_AUTH_SECRET) {
     return null;
   }
-  return createAuth(env, request).api.getSession({ headers: request.headers });
+  try {
+    const session = await createAuth(env, request).api.getSession({
+      headers: request.headers,
+    });
+    if (session?.user?.id) {
+      return session;
+    }
+  } catch (err) {
+    console.error("createAuth.api.getSession error:", err);
+  }
+
+  try {
+    const cookieHeader = request.headers.get("cookie") || "";
+    if (!cookieHeader) return null;
+    const match = cookieHeader.match(
+      /(?:^|;\s*)(?:__Secure-)?better-auth\.session_token=([^;]+)/,
+    );
+    if (!match) return null;
+    const rawVal = decodeURIComponent(match[1]);
+    const token = rawVal.split(".")[0];
+    if (!token) return null;
+
+    const row = await env.DB.prepare(
+      `SELECT s.id AS session_id, s.expiresAt, s.token, s.createdAt AS session_createdAt, s.updatedAt AS session_updatedAt,
+              u.id AS user_id, u.name, u.email, u.emailVerified, u.image, u.createdAt AS user_createdAt, u.updatedAt AS user_updatedAt
+       FROM session s
+       JOIN user u ON u.id = s.userId
+       WHERE s.token = ? AND datetime(s.expiresAt) > datetime('now')`,
+    )
+      .bind(token)
+      .first<{
+        session_id: string;
+        expiresAt: string;
+        token: string;
+        session_createdAt: string;
+        session_updatedAt: string;
+        user_id: string;
+        name: string;
+        email: string;
+        emailVerified: number | boolean;
+        image: string | null;
+        user_createdAt: string;
+        user_updatedAt: string;
+      }>();
+
+    if (!row) return null;
+
+    return {
+      session: {
+        id: row.session_id,
+        userId: row.user_id,
+        expiresAt: new Date(row.expiresAt),
+        token: row.token,
+        createdAt: new Date(row.session_createdAt),
+        updatedAt: new Date(row.session_updatedAt),
+        ipAddress: null,
+        userAgent: null,
+      },
+      user: {
+        id: row.user_id,
+        name: row.name,
+        email: row.email,
+        emailVerified: Boolean(row.emailVerified),
+        image: row.image ?? null,
+        createdAt: new Date(row.user_createdAt),
+        updatedAt: new Date(row.user_updatedAt),
+      },
+    } as unknown as Awaited<
+      ReturnType<ReturnType<typeof createAuth>["api"]["getSession"]>
+    >;
+  } catch (err) {
+    console.error("Fallback getTeacherSession error:", err);
+    return null;
+  }
 }

@@ -147,10 +147,7 @@ test("signed-in free users preview one review card before pricing", async ({
   await expect(page).toHaveURL(/\/pricing\?plan=parent&interval=month/);
   await expect(
     page.locator('[data-plan-card="parent"] [data-plan-option="month"]'),
-  ).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  ).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator('[data-plan-choice="parent"]')).toHaveAttribute(
     "aria-pressed",
     "true",

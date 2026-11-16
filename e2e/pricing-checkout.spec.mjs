@@ -38,10 +38,7 @@ test("a prefilled plan checks out once from the pricing button and not on load",
   );
   await expect(
     page.locator('[data-plan-card="parent"] [data-plan-option="month"]'),
-  ).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  ).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator('[data-plan-choice="parent"]')).toBeEnabled();
   expect(calls).toBe(0);
   await page.locator('[data-plan-choice="parent"]').click();
@@ -91,10 +88,7 @@ test("a plan without an interval stays on the monthly Chinese Teacher checkout",
   );
   await expect(
     page.locator('[data-plan-card="teacher"] [data-plan-option="month"]'),
-  ).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  ).toHaveAttribute("aria-pressed", "true");
   await page.locator('[data-plan-choice="teacher"]').click();
   expect(bodies).toEqual([
     { plan: "teacher", interval: "month", locale: "zh" },
@@ -113,10 +107,7 @@ test("a direct pricing visit can choose a plan before checkout", async ({
   await page.goto("/pricing");
   await expect(
     page.locator('[data-plan-card="parent"] [data-plan-option="month"]'),
-  ).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  ).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator('[data-plan-choice="parent"]')).toHaveAttribute(
     "aria-pressed",
     "true",
@@ -188,10 +179,7 @@ test("cancelled and stored checkout keep the plan selected without starting Stri
   );
   await expect(
     page.locator('[data-plan-card="teacher"] [data-plan-option="year"]'),
-  ).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  ).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator('[data-plan-choice="teacher"]')).toBeEnabled();
   expect(calls).toBe(0);
 
@@ -215,10 +203,7 @@ test("cancelled and stored checkout keep the plan selected without starting Stri
   );
   await expect(
     page.locator('[data-plan-card="parent"] [data-plan-option="month"]'),
-  ).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  ).toHaveAttribute("aria-pressed", "true");
   expect(calls).toBe(0);
 });
 
@@ -248,10 +233,7 @@ test("a stored auto checkout on the pricing page does not open Stripe", async ({
   );
   await expect(
     page.locator('[data-plan-card="teacher"] [data-plan-option="year"]'),
-  ).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  ).toHaveAttribute("aria-pressed", "true");
   expect(calls).toBe(0);
 });
 

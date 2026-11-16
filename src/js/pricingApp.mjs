@@ -243,7 +243,11 @@ function animatePriceText(priceEl, fromText, toText) {
   }
   const fromValue = Number(fromMatch[1].replace(",", "."));
   const toValue = Number(toMatch[1].replace(",", "."));
-  if (!Number.isFinite(fromValue) || !Number.isFinite(toValue) || fromValue === toValue) {
+  if (
+    !Number.isFinite(fromValue) ||
+    !Number.isFinite(toValue) ||
+    fromValue === toValue
+  ) {
     priceEl.textContent = toText;
     return;
   }
@@ -257,7 +261,9 @@ function animatePriceText(priceEl, fromText, toText) {
   const step = (now) => {
     const progress = Math.min(1, (now - start) / duration);
     const eased = 1 - Math.pow(1 - progress, 3);
-    const current = (fromValue + (toValue - fromValue) * eased).toFixed(decimals);
+    const current = (fromValue + (toValue - fromValue) * eased).toFixed(
+      decimals,
+    );
     priceEl.textContent =
       prefix +
       (decimalSeparator === "," ? current.replace(".", ",") : current) +
@@ -381,7 +387,11 @@ function syncPlanControls() {
     if (current) card?.setAttribute("aria-current", "true");
     else card?.removeAttribute("aria-current");
   }
-  if (returningFromAuth && currentAccount?.user && currentAccount.plan === "free") {
+  if (
+    returningFromAuth &&
+    currentAccount?.user &&
+    currentAccount.plan === "free"
+  ) {
     authReturnNotice.textContent = productMessage(
       "pendingCheckoutReview",
       {},
@@ -609,11 +619,7 @@ for (const option of planOptions)
 for (const choice of planChoices)
   choice.addEventListener("click", () => {
     const plan = choice.dataset.planChoice;
-    if (
-      !PAID_PLANS.includes(plan) ||
-      choice.disabled ||
-      billingRequestPending
-    )
+    if (!PAID_PLANS.includes(plan) || choice.disabled || billingRequestPending)
       return;
     try {
       const url = new URL(location.href);
@@ -663,7 +669,8 @@ accountPromise
               : "month",
           }
         : selection;
-    if (!Object.values(intervalChosen).some(Boolean)) selectPlan(preferred.plan);
+    if (!Object.values(intervalChosen).some(Boolean))
+      selectPlan(preferred.plan);
     if (!intervalChosen[preferred.plan])
       selectInterval(preferred.interval, preferred.plan, { updateUrl: false });
     else syncPlanControls();

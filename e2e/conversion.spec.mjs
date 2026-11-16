@@ -718,9 +718,7 @@ test("anonymous Photo Import previews words, then a Teacher choice resumes check
   await expect(
     paywall.getByRole("link", { name: "Teacher Plan", exact: true }),
   ).toHaveCount(0);
-  await paywall
-    .getByRole("link", { name: "Unlock Photo Import" })
-    .click();
+  await paywall.getByRole("link", { name: "Unlock Photo Import" }).click();
 
   await expect(page).toHaveURL(/\/pricing\?plan=parent&interval=month$/);
   await page.locator('[data-plan-choice="teacher"]').click();
@@ -1258,9 +1256,7 @@ test("Teacher pricing schedules Parent for the renewal date", async ({
   });
 
   await page.goto("/pricing");
-  await page
-    .getByRole("button", { name: "Select Parent Plan" })
-    .click();
+  await page.getByRole("button", { name: "Select Parent Plan" }).click();
   await expect
     .poll(() => message)
     .toContain("Teacher Plan remains active through September 25, 2026");

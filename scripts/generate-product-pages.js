@@ -106,6 +106,7 @@ const copy = {
       "1 learner",
       "1 tracked result per account, once",
       "14-day progress history",
+      "23-day free trial of all paid features (+7 days card bonus = 30 days total)",
     ],
     trialCalloutTitle: "30-Day Free Trial",
     trialCalloutDesc:
@@ -185,6 +186,7 @@ const copy = {
       "1 estudiante",
       "1 resultado de prueba por cuenta, una sola vez",
       "14 días de historial de progreso",
+      "Prueba de 23 días de todas las funciones (+7 días con tarjeta = 30 días en total)",
     ],
     trialCalloutTitle: "Prueba gratuita de 30 días",
     trialCalloutDesc:
@@ -240,8 +242,7 @@ const copy = {
     note: "Las familias y los docentes inician sesión. Los estudiantes no necesitan cuenta ni contraseña. La práctica anónima no requiere cuenta, admite hasta 20 palabras por lista y no guarda el historial de seguimiento del espacio de trabajo.",
     freeNote:
       "1 resultado completo sin renovación mensual. La práctica habitual sigue siendo gratis y el alumnado no necesita cuenta.",
-    parentNote:
-      "Tus hijos practican desde el enlace sin cuenta ni contraseña.",
+    parentNote: "Tus hijos practican desde el enlace sin cuenta ni contraseña.",
     teacherNote:
       "El alumnado entra con enlace o PIN sin cuenta. Los resultados quedan aquí (no se sincronizan listas ni notas con Classroom).",
   },
@@ -264,6 +265,7 @@ const copy = {
       "1 aluno",
       "1 resultado de teste por conta, uma única vez",
       "14 dias de histórico de progresso",
+      "Teste de 23 dias de todos os recursos (+7 dias com cartão = 30 dias no total)",
     ],
     trialCalloutTitle: "Teste grátis de 30 dias",
     trialCalloutDesc:
@@ -343,6 +345,7 @@ const copy = {
       "1 élève",
       "1 résultat d’essai par compte, une seule fois",
       "14 jours d’historique de progression",
+      "Essai de 23 jours de toutes les fonctionnalités (+7 jours avec carte = 30 jours au total)",
     ],
     trialCalloutTitle: "Essai gratuit de 30 jours",
     trialCalloutDesc:
@@ -422,6 +425,7 @@ const copy = {
       "1 siswa",
       "1 hasil uji coba per akun, hanya sekali",
       "Riwayat perkembangan 14 hari",
+      "Uji coba 23 hari semua fitur berbayar (+7 hari dengan kartu = total 30 hari)",
     ],
     trialCalloutTitle: "Uji Coba Gratis 30 Hari",
     trialCalloutDesc:
@@ -477,8 +481,7 @@ const copy = {
     note: "Orang tua dan guru masuk ke akun mereka. Siswa tidak memerlukan akun atau kata sandi. Latihan anonim tidak memerlukan akun, mendukung hingga 20 kata per daftar, dan tidak menyimpan riwayat pelacakan ruang kerja.",
     freeNote:
       "1 hasil lengkap tanpa pembaruan bulanan. Latihan biasa tetap gratis dan siswa tidak memerlukan akun.",
-    parentNote:
-      "Anak berlatih lewat tautan tanpa perlu akun atau kata sandi.",
+    parentNote: "Anak berlatih lewat tautan tanpa perlu akun atau kata sandi.",
     teacherNote:
       "Siswa masuk lewat tautan atau PIN tanpa akun. Hasil tetap di sini (tanpa sinkronisasi daftar kelas atau nilai Classroom).",
   },
@@ -500,6 +503,7 @@ const copy = {
       "创建 1 个学习者档案",
       "每账号 1 次结果追踪体验，不重复发放",
       "查看 14 天学习记录",
+      "23 天免卡试用全部付费功能（绑卡再送 7 天 = 共 30 天免费）",
     ],
     trialCalloutTitle: "30 天完整免费试用",
     trialCalloutDesc:
@@ -553,10 +557,8 @@ const copy = {
     secureCheckout: "Stripe 安全结账 · 可随时取消",
     language: "语言",
     note: "家长和教师登录，学生无需账号或密码。匿名练习无需账号，每份最多 20 个词，也不会保存 Workspace 追踪历史。",
-    freeNote:
-      "1 次完整结果追踪不按月重置；普通练习始终免费，学生无需账号。",
-    parentNote:
-      "孩子通过链接即可练习，无需注册账号或密码。",
+    freeNote: "1 次完整结果追踪不按月重置；普通练习始终免费，学生无需账号。",
+    parentNote: "孩子通过链接即可练习，无需注册账号或密码。",
     teacherNote:
       "学生通过链接或 PIN 即可练习，无需账号；结果保留在本站（不同步 Classroom 名单或成绩）。",
   },

@@ -119,10 +119,7 @@ for (const locale of ["en", "es", "pt-br", "fr", "id", "zh"]) {
     );
     await expect(
       page.locator('[data-plan-card="parent"] [data-plan-option="month"]'),
-    ).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
+    ).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator('[data-plan-choice="parent"]')).toHaveAttribute(
       "aria-pressed",
       "true",
@@ -199,10 +196,7 @@ test("saved Teacher monthly selection survives the photo paywall", async ({
   );
   await expect(
     page.locator('[data-plan-card="teacher"] [data-plan-option="month"]'),
-  ).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  ).toHaveAttribute("aria-pressed", "true");
 });
 
 test("anonymous photo preview signs in, restores the words, and uses one trial", async ({
@@ -369,8 +363,5 @@ test("known teacher workspace defaults to Teacher monthly", async ({
   );
   await expect(
     page.locator('[data-plan-card="teacher"] [data-plan-option="month"]'),
-  ).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  ).toHaveAttribute("aria-pressed", "true");
 });

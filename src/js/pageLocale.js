@@ -49,6 +49,10 @@ const MESSAGES = {
     photoImportPreviewTitle: "Words from your photo",
     photoImportPreviewHelp: "Preview only. These words are not in your list yet.",
     photoImportKeepBenefit:
+      "Signing in gives full access with no card needed, plus a 7-day free trial when you add a card.",
+    photoImportKeepCta: "Sign in: free trial + 7-day card bonus",
+    featureTrialStatus:
+      "23-day free trial · {time} left · ends {date} (+7 days with card)",
     featureTrialDay: "1 day",
     featureTrialDays: "{count} days",
     featureTrialHour: "1 hour",
@@ -131,6 +135,8 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Parent and Teacher plans save this list as a review assignment.",
     smartReviewKeepBenefit:
+      "Signing in gives full access with no card needed, plus a 7-day free trial when you add a card.",
+    smartReviewKeepCta: "Sign in: free trial + 7-day card bonus",
     smartReviewPrompt: "Listen and spell the word",
     smartReviewHear: "Hear word",
     smartReviewCheck: "Check",
@@ -187,6 +193,10 @@ const MESSAGES = {
     photoImportPreviewTitle: "Palabras de tu foto",
     photoImportPreviewHelp: "Solo una vista previa: aún no están en tu lista.",
     photoImportKeepBenefit:
+      "Al entrar disfrutas de funciones avanzadas, más 7 días gratis extra al añadir tarjeta.",
+    photoImportKeepCta: "Entra: prueba con 7 días extra por tarjeta",
+    featureTrialStatus:
+      "Prueba de 23 días · quedan {time} · termina el {date} (+7 días con tarjeta)",
     featureTrialDay: "1 día",
     featureTrialDays: "{count} días",
     featureTrialHour: "1 hora",
@@ -270,6 +280,8 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Los planes Familiar y Docente guardan esta lista como una tarea de repaso.",
     smartReviewKeepBenefit:
+      "Al entrar disfrutas de funciones avanzadas, más 7 días gratis extra al añadir tarjeta.",
+    smartReviewKeepCta: "Entra: prueba con 7 días extra por tarjeta",
     smartReviewPrompt: "Escucha y escribe la palabra",
     smartReviewHear: "Escuchar",
     smartReviewCheck: "Comprobar",
@@ -327,6 +339,10 @@ const MESSAGES = {
     photoImportPreviewTitle: "Palavras da sua foto",
     photoImportPreviewHelp: "Só uma prévia: ainda não entraram na sua lista.",
     photoImportKeepBenefit:
+      "Entrar libera recursos avançados, mais 7 dias grátis extras ao adicionar cartão.",
+    photoImportKeepCta: "Entre: teste com 7 dias extras por cartão",
+    featureTrialStatus:
+      "Teste de 23 dias · faltam {time} · termina em {date} (+7 dias com cartão)",
     featureTrialDay: "1 dia",
     featureTrialDays: "{count} dias",
     featureTrialHour: "1 hora",
@@ -412,6 +428,8 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Os planos Família e Professor salvam esta lista como uma tarefa de revisão.",
     smartReviewKeepBenefit:
+      "Entrar libera recursos avançados, mais 7 dias grátis extras ao adicionar cartão.",
+    smartReviewKeepCta: "Entre: teste com 7 dias extras por cartão",
     smartReviewPrompt: "Ouça e escreva a palavra",
     smartReviewHear: "Ouvir",
     smartReviewCheck: "Conferir",
@@ -467,6 +485,10 @@ const MESSAGES = {
     photoImportPreviewTitle: "Mots de votre photo",
     photoImportPreviewHelp: "Aperçu seulement : pas encore dans votre liste.",
     photoImportKeepBenefit:
+      "La connexion débloque les fonctions avancées, plus 7 jours gratuits avec carte.",
+    photoImportKeepCta: "Connexion : essai avec 7 jours offerts par carte",
+    featureTrialStatus:
+      "Essai de 23 jours · plus que {time} · fin le {date} (+7 jours avec carte)",
     featureTrialDay: "1 jour",
     featureTrialDays: "{count} jours",
     featureTrialHour: "1 heure",
@@ -552,6 +574,8 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Les offres Famille et Enseignant enregistrent cette liste comme un devoir de révision.",
     smartReviewKeepBenefit:
+      "La connexion débloque les fonctions avancées, plus 7 jours gratuits avec carte.",
+    smartReviewKeepCta: "Connexion : essai avec 7 jours offerts par carte",
     smartReviewPrompt: "Écoutez et écrivez le mot",
     smartReviewHear: "Écouter",
     smartReviewCheck: "Vérifier",
@@ -607,6 +631,10 @@ const MESSAGES = {
     photoImportPreviewTitle: "Kata dari fotomu",
     photoImportPreviewHelp: "Baru pratinjau, belum masuk daftar latihan.",
     photoImportKeepBenefit:
+      "Masuk memberi akses fitur lengkap, ditambah bonus 7 hari gratis dengan kartu.",
+    photoImportKeepCta: "Masuk: uji coba dengan bonus 7 hari kartu",
+    featureTrialStatus:
+      "Uji coba 23 hari · sisa {time} · berakhir {date} (+7 hari dengan kartu)",
     featureTrialDay: "1 hari",
     featureTrialDays: "{count} hari",
     featureTrialHour: "1 jam",
@@ -689,6 +717,8 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Paket Orang Tua dan Guru menyimpan daftar ini sebagai tugas ulasan.",
     smartReviewKeepBenefit:
+      "Masuk memberi akses fitur lengkap, ditambah bonus 7 hari gratis dengan kartu.",
+    smartReviewKeepCta: "Masuk: uji coba dengan bonus 7 hari kartu",
     smartReviewPrompt: "Dengarkan dan eja katanya",
     smartReviewHear: "Dengarkan",
     smartReviewCheck: "Periksa",
@@ -732,6 +762,17 @@ const MESSAGES = {
     photoImportNoWords: "没有识别到单词，请换一张更清晰的照片。",
     photoImportError: "图片识别失败，请重试。",
     photoImportRetry: "重新识别",
+    photoImportChooseAnother: "换一张照片",
+    photoImportTrialStatus:
+      "23 天免费试用 · 剩余 {time} · {date} 结束（绑卡多享 7 天）",
+    photoImportFreeTrialCta: "登录享免卡试用 + 绑卡立赠 7 天",
+    photoImportPreviewTitle: "照片里的单词",
+    photoImportPreviewHelp: "这只是预览，尚未加入练习词表。",
+    photoImportKeepBenefit:
+      "登录即享高级功能试用，绑定银行卡额外再赠 7 天免费试用。",
+    photoImportKeepCta: "登录享免卡试用 + 绑卡立赠 7 天",
+    featureTrialStatus:
+      "23 天免费试用 · 剩余 {time} · {date} 结束（绑卡多享 7 天）",
     featureTrialDay: "1 天",
     featureTrialDays: "{count} 天",
     featureTrialHour: "1 小时",
@@ -808,6 +849,8 @@ const MESSAGES = {
     smartReviewPreviewTitle: "智能复习",
     smartReviewPreviewHelp: "这只是预览，这次复习不会保存。",
     smartReviewPreviewValue: "家长方案和教师方案会把这份词表保存为复习作业。",
+    smartReviewKeepBenefit: "免费账号免卡试用，绑卡额外多享 7 天免费。",
+    smartReviewKeepCta: "登录享免卡试用 + 绑卡立赠 7 天",
     smartReviewPrompt: "听写这个单词",
     smartReviewHear: "听单词",
     smartReviewCheck: "检查",

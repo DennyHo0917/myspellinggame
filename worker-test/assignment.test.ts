@@ -491,7 +491,7 @@ describe("shared 7-day photo import and smart review trial", () => {
     await bindings.DB.prepare(
       "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
     )
-      .bind(new Date(Date.now() - 8 * day).toISOString(), teacherA.id)
+      .bind(new Date(Date.now() - 24 * day).toISOString(), teacherA.id)
       .run();
     expect(
       (await submit(publicId, assignment.words, { nickname: "AfterTrial" }))
@@ -1354,6 +1354,11 @@ describe("teacher authorization and quotas", () => {
   });
 
   it("uses one account allowance across assignments and filters learner summaries and progress", async () => {
+    await bindings.DB.prepare(
+      "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
+    )
+      .bind(new Date(Date.now() - 24 * 86_400_000).toISOString(), teacherA.id)
+      .run();
     const learner = await createLearner("Learner");
     const learnerPublicId = String(learner.body.public_id);
     const first = await createAssignment();

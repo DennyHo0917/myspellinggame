@@ -62,7 +62,7 @@ test("P0-1: Take-home PDF generates valid Letter document with dictation lines a
   assert.ok(pdfStr.includes("Due: Friday, Nov 7"), "Due date formatted without {date}");
   assert.ok(!pdfStr.includes("{date}"), "No unrendered {date} in PDF");
   assert.ok(pdfStr.includes("Students practice free online"), "Contains footer note");
-  assert.ok(pdfStr.includes("$14.99/mo"), "Includes Teacher $14.99/mo CTA");
+  assert.ok(pdfStr.includes("$9.99/mo"), "Includes Teacher $9.99/mo CTA");
   assert.ok(pdfStr.includes("%%EOF"), "Valid PDF EOF trailer");
 
   const html = renderTakeHomeSheetHtml({
@@ -100,7 +100,7 @@ test("P0-2: Parent report PDF distinguishes Free sample watermark vs Paid unwate
   assert.equal(freeSample.filename, "myspellinggame-leo-parent-report.pdf");
   const freePdfStr = Buffer.from(freeSample.bytes).toString("latin1");
   assert.ok(freePdfStr.includes("SAMPLE"), "Free report contains SAMPLE watermark");
-  assert.ok(freePdfStr.includes("$14.99/mo"), "Free report mentions $14.99/mo upgrade");
+  assert.ok(freePdfStr.includes("$9.99/mo"), "Free report mentions $9.99/mo upgrade");
 
   // Paid report
   const paidReport = buildParentReportPdf({
@@ -135,7 +135,7 @@ test("P0-2: Parent report PDF distinguishes Free sample watermark vs Paid unwate
   assert.ok(freeHtml.includes("sheet-watermark"), "HTML preview renders watermark div in sample mode");
   assert.ok(freeHtml.includes("SAMPLE / PREVIEW"), "Watermark contains SAMPLE / PREVIEW");
   assert.ok(freeHtml.includes("sheet-sample-footer"), "Contains sample footer notice container");
-  assert.ok(freeHtml.includes("Sample — full parent reports on Teacher · $14.99/mo"), "Footer has exact monthly Teacher plan notice");
+  assert.ok(freeHtml.includes("Sample — full parent reports on Teacher · $9.99/mo"), "Footer has exact monthly Teacher plan notice");
   assert.ok(!freeHtml.includes("{count}"), "Contains no raw {count} template variable");
   assert.ok(!freeHtml.includes("{date}"), "Contains no raw {date} template variable");
 
@@ -167,7 +167,7 @@ test("P1-3: Classroom 1-Page Guide PDF generates 3-step cheat sheet", () => {
   assert.ok(pdfStr.includes("STEP 1: Create Your Assignment"));
   assert.ok(pdfStr.includes("STEP 2: Share to Google Classroom"));
   assert.ok(pdfStr.includes("STEP 3: Friday Results"));
-  assert.ok(pdfStr.includes("Teacher Plan - $14.99/mo"));
+  assert.ok(pdfStr.includes("Teacher Plan - $9.99/mo"));
   assert.ok(pdfStr.includes("from=print_classroom"));
 
   const html = renderClassroomGuideSheetHtml({ copy });
@@ -343,7 +343,7 @@ test("Free locked attempt row: Preview print opens watermark preview without loc
 
   assert.ok(sampleHtml.includes("Student A (Sample)"), "Free report uses generic sample student name");
   assert.ok(sampleHtml.includes("SAMPLE / PREVIEW"), "Free report shows clear watermark");
-  assert.ok(sampleHtml.includes("Sample — full parent reports on Teacher · $14.99/mo"), "Free report displays sample footer note");
+  assert.ok(sampleHtml.includes("Sample — full parent reports on Teacher · $9.99/mo"), "Free report displays sample footer note");
   assert.ok(!sampleHtml.includes("{count}"), "No {count} in free report");
   assert.ok(!sampleHtml.includes("{date}"), "No {date} in free report");
 });

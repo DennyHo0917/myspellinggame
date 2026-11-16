@@ -87,6 +87,7 @@ import {
   renderClassroomGuideSheetHtml,
 } from "./sheetRenderer.mjs";
 import { showPrintModal } from "./printPdf.mjs";
+import { isStudentEmail } from "./studentDetection.mjs";
 
 const root = document.getElementById("product-app");
 const locale = productLocale();
@@ -317,7 +318,7 @@ function featureTrialNote(me) {
     return null;
   const note = document.createElement("p");
   note.className = "feature-trial-note";
-  note.textContent = featureTrialLabel(me.featureTrial, m, locale);
+  note.textContent = `${featureTrialLabel(me.featureTrial, m, locale)} · ${copy.workspaceTrialTotalTag}`;
   return note;
 }
 
@@ -481,7 +482,8 @@ function syncFormSubmit(form) {
 function attachWordLimit(form, me, wordsSelector, { locked = false } = {}) {
   const input = form.querySelector(wordsSelector);
   if (!input) return;
-  const limit = isPlusPlan(me) ? 40 : 25;
+  const limit =
+    isPlusPlan(me) || featureTrialActive(me?.featureTrial) ? 40 : 25;
   const field = input.closest(".field");
   const count = document.createElement("small");
   count.className = "word-count";
@@ -578,13 +580,14 @@ function attachSentenceLibraryControls(
   const fill = document.createElement("button");
   fill.type = "button";
   fill.className = "button-secondary sentence-library-fill";
-  if (isPlusPlan(me)) {
+  const hasSentenceLib = isPlusPlan(me);
+  if (hasSentenceLib) {
     fill.textContent = copy.fillSentenceLibrary;
   } else {
     fill.textContent = copy.fillSentenceLibraryPlus;
   }
   fill.addEventListener("click", async () => {
-    if (!isPlusPlan(me)) {
+    if (!hasSentenceLib) {
       showLockedFeaturePlan(
         sentenceField,
         copy.sentenceLibraryRequired,
@@ -1517,6 +1520,105 @@ function focusTeacherSignIn() {
   input?.focus({ preventScroll: true });
 }
 
+function showRoleModal({ onConfirmAdult, onSelectStudent }) {
+  document.querySelector(".auth-role-dialog")?.remove();
+  const dialog = document.createElement("dialog");
+  dialog.className = "auth-role-dialog";
+
+  const header = document.createElement("div");
+  header.className = "modal-header";
+  const title = document.createElement("h2");
+  title.className = "modal-title";
+  title.textContent = copy.roleSelectTitle;
+  const close = document.createElement("button");
+  close.type = "button";
+  close.className = "modal-close";
+  close.setAttribute("aria-label", copy.cancel || "Close");
+  close.textContent = "✕";
+  close.addEventListener("click", () => dialog.close());
+  header.append(title, close);
+
+  const body = document.createElement("div");
+  body.className = "modal-body";
+
+  const options = document.createElement("div");
+  options.className = "role-dialog-options";
+
+  const adultBtn = document.createElement("button");
+  adultBtn.type = "button";
+  adultBtn.className = "role-dialog-btn role-dialog-adult";
+  adultBtn.innerHTML = `
+    <span class="role-dialog-icon">👨‍🏫</span>
+    <span class="role-dialog-text">
+      <strong>${copy.roleAdultOption}</strong>
+      <span>${copy.roleAdultDesc}</span>
+    </span>
+  `;
+
+  const studentBtn = document.createElement("button");
+  studentBtn.type = "button";
+  studentBtn.className = "role-dialog-btn role-dialog-student";
+  studentBtn.innerHTML = `
+    <span class="role-dialog-icon">🎒</span>
+    <span class="role-dialog-text">
+      <strong>${copy.roleStudentOption}</strong>
+      <span>${copy.roleStudentDesc}</span>
+    </span>
+  `;
+
+  options.append(adultBtn, studentBtn);
+
+  const studentNotice = document.createElement("div");
+  studentNotice.className = "role-dialog-student-notice";
+  studentNotice.hidden = true;
+  studentNotice.innerHTML = `
+    <div class="role-dialog-icon" style="font-size:2.5rem;margin-bottom:0.5rem">🎒</div>
+    <h3>${copy.roleStudentNoticeTitle}</h3>
+    <p>${copy.roleStudentNoticeBody}</p>
+    <div class="actions" style="margin-top:1.25rem">
+      <a href="${productPagePath("", locale)}" class="button-link button-primary">${copy.roleGoPractice}</a>
+      <button type="button" class="button-link button-secondary btn-back-roles">${copy.roleBackToSignIn}</button>
+    </div>
+  `;
+
+  body.append(options, studentNotice);
+  dialog.append(header, body);
+
+  adultBtn.addEventListener("click", () => {
+    try {
+      sessionStorage.setItem("auth_role_confirmed", "adult");
+    } catch {}
+    dialog.close();
+    dialog.remove();
+    onConfirmAdult?.();
+  });
+
+  studentBtn.addEventListener("click", () => {
+    options.hidden = true;
+    title.textContent = copy.roleStudentNoticeTitle;
+    studentNotice.hidden = false;
+    onSelectStudent?.();
+  });
+
+  studentNotice
+    .querySelector(".btn-back-roles")
+    ?.addEventListener("click", () => {
+      studentNotice.hidden = true;
+      title.textContent = copy.roleSelectTitle;
+      options.hidden = false;
+    });
+
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  dialog.addEventListener("close", () => {
+    dialog.remove();
+  });
+
+  document.body.append(dialog);
+  dialog.showModal();
+}
+
 async function renderLogin() {
   const config = await api("/api/config").catch(() => ({
     googleAuthConfigured: false,
@@ -1593,6 +1695,41 @@ async function renderLogin() {
   // Status element
   const status = statusElement(card);
 
+  // Role selector gate (Mode 1)
+  const roleGate = document.createElement("div");
+  roleGate.className = "auth-role-gate";
+  roleGate.innerHTML = `
+    <div class="role-selector" role="radiogroup" aria-label="${copy.roleSelectTitle}">
+      <button type="button" class="role-option active" data-role="adult" role="radio" aria-checked="true">
+        <span class="role-option-icon">👨‍🏫</span>
+        <span class="role-option-info">
+          <strong class="role-option-title">${copy.roleAdultOption}</strong>
+          <span class="role-option-desc">${copy.roleAdultDesc}</span>
+        </span>
+      </button>
+      <button type="button" class="role-option" data-role="student" role="radio" aria-checked="false">
+        <span class="role-option-icon">🎒</span>
+        <span class="role-option-info">
+          <strong class="role-option-title">${copy.roleStudentOption}</strong>
+          <span class="role-option-desc">${copy.roleStudentDesc}</span>
+        </span>
+      </button>
+    </div>
+  `;
+
+  const studentNotice = document.createElement("div");
+  studentNotice.className = "student-gate-notice";
+  studentNotice.hidden = true;
+  studentNotice.innerHTML = `
+    <div class="student-gate-icon">🎒</div>
+    <h2 class="student-gate-title">${copy.roleStudentNoticeTitle}</h2>
+    <p class="student-gate-body">${copy.roleStudentNoticeBody}</p>
+    <div class="student-gate-actions actions">
+      <a href="${productPagePath("", locale)}" class="button-link button-primary">${copy.roleGoPractice}</a>
+      <button type="button" class="button-link button-secondary student-back-btn">${copy.roleBackToSignIn}</button>
+    </div>
+  `;
+
   // Social sign-in buttons (Always displayed)
   const socialSection = document.createElement("div");
   socialSection.className = "social-sign-in-buttons";
@@ -1623,34 +1760,36 @@ async function renderLogin() {
         status.className = "status error";
         return;
       }
-      const entryPoint = getAssignmentEntryPoint();
-      trackEvent(
-        "teacher_auth_started",
-        entryPoint ? { entry_point: entryPoint } : {},
-      );
-      button.disabled = true;
-      status.textContent = copy.loading;
-      status.className = "status";
-      try {
-        const response = await api("/api/auth/sign-in/social", {
-          method: "POST",
-          body: JSON.stringify({
-            provider: provider.id,
-            callbackURL: teacherCallbackURL(),
-            newUserCallbackURL: teacherNewUserCallbackURL(),
-          }),
-        });
-        if (!response.url) throw new Error(copy.error);
+      ensureAdultRole(async () => {
+        const entryPoint = getAssignmentEntryPoint();
+        trackEvent(
+          "teacher_auth_started",
+          entryPoint ? { entry_point: entryPoint } : {},
+        );
+        button.disabled = true;
+        status.textContent = copy.loading;
+        status.className = "status";
         try {
-          sessionStorage.setItem(AUTH_PENDING_KEY, "1");
-          sessionStorage.setItem(AUTH_PROVIDER_KEY, provider.id);
-        } catch {}
-        location.href = response.url;
-      } catch (error) {
-        status.textContent = error.message;
-        status.className = "status error";
-        button.disabled = false;
-      }
+          const response = await api("/api/auth/sign-in/social", {
+            method: "POST",
+            body: JSON.stringify({
+              provider: provider.id,
+              callbackURL: teacherCallbackURL(),
+              newUserCallbackURL: teacherNewUserCallbackURL(),
+            }),
+          });
+          if (!response.url) throw new Error(copy.error);
+          try {
+            sessionStorage.setItem(AUTH_PENDING_KEY, "1");
+            sessionStorage.setItem(AUTH_PROVIDER_KEY, provider.id);
+          } catch {}
+          location.href = response.url;
+        } catch (error) {
+          status.textContent = error.message;
+          status.className = "status error";
+          button.disabled = false;
+        }
+      });
     });
     socialSection.append(button);
   }
@@ -1683,6 +1822,61 @@ async function renderLogin() {
   const formsWrapper = document.createElement("div");
   formsWrapper.className = "auth-forms-wrapper";
 
+  function setRole(role) {
+    const isAdult = role === "adult";
+    roleGate
+      .querySelector('[data-role="adult"]')
+      ?.classList.toggle("active", isAdult);
+    roleGate
+      .querySelector('[data-role="adult"]')
+      ?.setAttribute("aria-checked", isAdult ? "true" : "false");
+    roleGate
+      .querySelector('[data-role="student"]')
+      ?.classList.toggle("active", !isAdult);
+    roleGate
+      .querySelector('[data-role="student"]')
+      ?.setAttribute("aria-checked", !isAdult ? "true" : "false");
+    socialSection.hidden = !isAdult;
+    divider.hidden = !isAdult;
+    tabs.hidden = !isAdult;
+    formsWrapper.hidden = !isAdult;
+    studentNotice.hidden = isAdult;
+    try {
+      if (isAdult) sessionStorage.setItem("auth_role_confirmed", "adult");
+      else sessionStorage.removeItem("auth_role_confirmed");
+    } catch {}
+  }
+
+  function ensureAdultRole(callback) {
+    let roleConfirmed = false;
+    try {
+      roleConfirmed = sessionStorage.getItem("auth_role_confirmed") === "adult";
+    } catch {}
+    if (roleConfirmed) {
+      callback();
+      return;
+    }
+    showRoleModal({
+      onConfirmAdult: () => {
+        setRole("adult");
+        callback();
+      },
+      onSelectStudent: () => {
+        setRole("student");
+      },
+    });
+  }
+
+  roleGate
+    .querySelector('[data-role="adult"]')
+    .addEventListener("click", () => setRole("adult"));
+  roleGate
+    .querySelector('[data-role="student"]')
+    .addEventListener("click", () => setRole("student"));
+  studentNotice
+    .querySelector(".student-back-btn")
+    .addEventListener("click", () => setRole("adult"));
+
   // Reusable send code timer logic
   function setupSendCode(button, getEmail, getType) {
     let countdownTimer = null;
@@ -1690,6 +1884,11 @@ async function renderLogin() {
       const email = getEmail();
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         status.textContent = copy.authInvalidEmail;
+        status.className = "status error";
+        return;
+      }
+      if (getType() === "register" && isStudentEmail(email)) {
+        status.textContent = m("studentAccountDetectedBody", { email });
         status.className = "status error";
         return;
       }
@@ -1799,6 +1998,11 @@ async function renderLogin() {
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       status.textContent = copy.authInvalidEmail;
+      status.className = "status error";
+      return;
+    }
+    if (isStudentEmail(email)) {
+      status.textContent = m("studentAccountDetectedBody", { email });
       status.className = "status error";
       return;
     }
@@ -2153,8 +2357,16 @@ async function renderLogin() {
   tabRegister.addEventListener("click", switchToRegister);
   tabSignIn.addEventListener("click", switchToSignIn);
 
-  // Assemble Card: tabs on top -> status -> forms -> divider -> social buttons at bottom
-  card.append(tabs, status, formsWrapper, divider, socialSection);
+  // Assemble Card: role gate -> student notice -> tabs -> status -> forms -> divider -> social buttons
+  card.append(
+    roleGate,
+    studentNotice,
+    tabs,
+    status,
+    formsWrapper,
+    divider,
+    socialSection,
+  );
 
   // Assemble Left-Right Layout
   layout.append(marketingSide, card);
@@ -3881,6 +4093,99 @@ async function renderProgressCenter(me, data, main = shell(me, "progress")) {
   main.append(page);
 }
 
+function renderStudentWarningIfNeeded(me, main) {
+  const educatorDismissedKey = `verified_educator_${me?.user?.id}`;
+  if (
+    me?.user?.email &&
+    isStudentEmail(me.user.email) &&
+    !localStorage.getItem(educatorDismissedKey)
+  ) {
+    if (main.querySelector(".student-account-warning")) return;
+    const studentWarning = document.createElement("div");
+    studentWarning.className = "student-account-warning notice warning";
+    studentWarning.innerHTML = `
+      <div class="student-warning-content">
+        <h3>${copy.studentAccountDetectedTitle}</h3>
+        <p>${m("studentAccountDetectedBody", { email: me.user.email })}</p>
+      </div>
+      <div class="student-warning-actions actions">
+        <a href="${productPagePath("", locale)}" class="button-link button-primary">${copy.roleGoPractice}</a>
+        <button type="button" class="button-secondary btn-confirm-educator">${copy.studentAccountConfirmEducator}</button>
+      </div>
+    `;
+    studentWarning
+      .querySelector(".btn-confirm-educator")
+      ?.addEventListener("click", () => {
+        try {
+          localStorage.setItem(educatorDismissedKey, "1");
+        } catch {}
+        studentWarning.remove();
+      });
+    main.prepend(studentWarning);
+  }
+}
+
+function renderWorkspaceTrialBanner(me) {
+  if (!me || me.plan !== "free") return null;
+  const banner = document.createElement("section");
+  banner.className = "workspace-trial-banner product-card";
+  banner.setAttribute("aria-label", "Trial Status");
+
+  const isActive = featureTrialActive(me.featureTrial);
+  if (isActive) {
+    const ends = new Date(me.featureTrial.endsAt);
+    const remainingMs = ends.getTime() - Date.now();
+    const days = Math.ceil(remainingMs / 86_400_000);
+    const hours = Math.max(1, Math.ceil(remainingMs / 3_600_000));
+    const time =
+      remainingMs >= 86_400_000
+        ? days === 1
+          ? m("featureTrialDay")
+          : m("featureTrialDays", { count: days })
+        : hours === 1
+          ? m("featureTrialHour")
+          : m("featureTrialHours", { count: hours });
+
+    banner.classList.add("trial-active");
+    banner.innerHTML = `
+      <div class="trial-banner-content">
+        <div class="trial-banner-header">
+          <span class="trial-banner-badge"><span class="trial-badge-icon" aria-hidden="true">🎉</span><span class="trial-days-tag">${copy.workspaceTrialTotalTag}</span></span>
+          <strong class="trial-banner-title">${m("workspaceTrialActiveTitle", { time })}</strong>
+        </div>
+        <p class="trial-banner-desc">${copy.workspaceTrialActiveDesc}</p>
+      </div>
+      <div class="trial-banner-actions actions">
+        <button type="button" class="button-primary btn-claim-trial">${copy.workspaceTrialClaimCta}</button>
+      </div>
+    `;
+  } else {
+    banner.classList.add("trial-expired");
+    banner.innerHTML = `
+      <div class="trial-banner-content">
+        <div class="trial-banner-header">
+          <span class="trial-banner-badge"><span class="trial-badge-icon" aria-hidden="true">⏳</span><span class="trial-days-tag">${copy.workspaceTrialTotalTag}</span></span>
+          <strong class="trial-banner-title">${copy.workspaceTrialExpiredTitle}</strong>
+        </div>
+        <p class="trial-banner-desc">${copy.workspaceTrialExpiredDesc}</p>
+      </div>
+      <div class="trial-banner-actions actions">
+        <button type="button" class="button-primary btn-claim-trial">${copy.workspaceTrialStart7DayCta}</button>
+      </div>
+    `;
+  }
+  const claimBtn = banner.querySelector(".btn-claim-trial");
+  claimBtn?.addEventListener("click", async () => {
+    claimBtn.disabled = true;
+    try {
+      await startCheckout("month", "parent");
+    } catch {
+      claimBtn.disabled = false;
+    }
+  });
+  return banner;
+}
+
 async function renderDashboard(me, { force = false } = {}) {
   prepareWorkspaceDraftReturn();
   activeWorkspaceDraft = null;
@@ -3932,23 +4237,29 @@ async function renderDashboard(me, { force = false } = {}) {
   revalidateWorkspaceData(me, section);
   if (section === "savedLists") {
     main.append(renderSavedLists(me, data.savedLists || []));
+    renderStudentWarningIfNeeded(me, main);
     return;
   }
   if (section === "learners") {
     main.append(renderLearners(me, data.learners || []));
+    renderStudentWarningIfNeeded(me, main);
     return;
   }
   if (section === "progress") {
     await renderProgressCenter(me, data, main);
+    renderStudentWarningIfNeeded(me, main);
     return;
   }
   if (section === "assignments") {
     main.append(
       renderAssignmentsCard(me, data.assignments || [], { fullPage: true }),
     );
+    renderStudentWarningIfNeeded(me, main);
     return;
   }
   if (me.plan === "free") {
+    const trialBanner = renderWorkspaceTrialBanner(me);
+    if (trialBanner) main.append(trialBanner);
     const card = document.createElement("section");
     card.className = "product-card free-tracking-card";
     const heading = document.createElement("h1");
@@ -3995,6 +4306,7 @@ async function renderDashboard(me, { force = false } = {}) {
     saved.href = `/workspace/saved-lists?lang=${encodeURIComponent(locale)}`;
     saved.textContent = copy.savedLists;
     main.append(saved);
+    renderStudentWarningIfNeeded(me, main);
     return;
   }
   const needsReviewCount = (data.learners || []).reduce(
@@ -4033,6 +4345,7 @@ async function renderDashboard(me, { force = false } = {}) {
     }),
     renderProgressCard(data.learners || [], { recentOnly: true }),
   );
+  renderStudentWarningIfNeeded(me, main);
 }
 
 async function startCheckout(interval, plan = "teacher") {
@@ -4623,10 +4936,58 @@ async function renderTrackingPractice(me) {
   const incoming = takeTrackingEntry(me.user.id);
   let draft = incoming || readWorkspaceDraft(me, "tracking")?.values || {};
   const shared = draft.entryPoint === "copy_track";
+  const hasCompletedResult = Boolean(
+    draft.completedResult &&
+    (draft.completedResult.score !== undefined ||
+      Array.isArray(draft.completedResult.results)),
+  );
+  const headingText = hasCompletedResult
+    ? copy.trackingSaveResultTitle
+    : shared
+      ? copy.sharedTrackingTitle
+      : copy.trackingTitle;
+  const helpText = hasCompletedResult
+    ? copy.trackingSaveResultExplanation
+    : shared
+      ? copy.sharedTrackingHelp
+      : copy.trackingExplanation;
   card.insertAdjacentHTML(
     "afterbegin",
-    `<h1>${shared ? copy.sharedTrackingTitle : copy.trackingTitle}</h1><p>${shared ? copy.sharedTrackingHelp : copy.trackingExplanation}</p>`,
+    `<h1>${headingText}</h1><p>${helpText}</p>`,
   );
+  if (hasCompletedResult) {
+    const res = draft.completedResult;
+    const summaryCard = document.createElement("div");
+    summaryCard.className = "completed-result-summary";
+    const scoreBadge = document.createElement("div");
+    scoreBadge.className = "completed-result-badge";
+    const pct = Math.round(
+      (res.accuracy ??
+        (res.totalWords ? res.correctWords / res.totalWords : 1)) * 100,
+    );
+    const scoreText = m("completedPracticeScore", {
+      accuracy: pct,
+      correct: res.correctWords ?? 0,
+      total: res.totalWords ?? 0,
+    });
+    scoreBadge.textContent = `🎯 ${scoreText}`;
+    summaryCard.append(scoreBadge);
+    if (res.missedWords && res.missedWords.length > 0) {
+      const missedRow = document.createElement("div");
+      missedRow.className = "completed-result-missed";
+      const missedLabel = document.createElement("strong");
+      missedLabel.textContent = (copy.missedWords || "Missed words") + ": ";
+      missedRow.append(missedLabel);
+      res.missedWords.forEach((w, i) => {
+        if (i > 0) missedRow.append(document.createTextNode(", "));
+        const code = document.createElement("code");
+        code.textContent = w;
+        missedRow.append(code);
+      });
+      summaryCard.append(missedRow);
+    }
+    card.append(summaryCard);
+  }
   const persist = () =>
     writeWorkspaceDraft(me, "tracking", "new", path, { values: draft });
   persist();
@@ -4673,7 +5034,10 @@ async function renderTrackingPractice(me) {
     <div class="field"><label for="tracking-mode">${copy.mode}</label><select id="tracking-mode"><option value="dictation">${copy.dictation}</option><option value="typing">${copy.typing}</option></select></div>
     <div class="actions"><button type="submit">${copy.trackNextPractice}</button></div>`;
   const select = form.querySelector("#tracking-learner");
-  if (shared) {
+  if (hasCompletedResult) {
+    form.querySelector('button[type="submit"]').textContent =
+      copy.saveResultAndContinue;
+  } else if (shared) {
     select.closest(".field").hidden = true;
     select.required = false;
     form.querySelector("#tracking-name-field").hidden = true;
@@ -4768,6 +5132,9 @@ async function renderTrackingPractice(me) {
             tracking: true,
             trackingAudience: shared ? "shared" : "individual",
             entryPoint: draft.entryPoint || "workspace",
+            initialAttempt: hasCompletedResult
+              ? draft.completedResult
+              : undefined,
           }),
         }));
       if (!draft.createdAssignment)
@@ -4786,9 +5153,10 @@ async function renderTrackingPractice(me) {
       });
       clearWorkspaceDraft(me, "tracking");
       clearAssignmentEntryPoint();
-      location.href = shared
-        ? `/workspace/assignments/${result.id}?lang=${encodeURIComponent(locale)}`
-        : `/a/${result.publicId}?learner=${encodeURIComponent(learner.public_id)}&lang=${encodeURIComponent(locale)}`;
+      location.href =
+        hasCompletedResult || shared
+          ? `/workspace/assignments/${result.id}?lang=${encodeURIComponent(locale)}${hasCompletedResult ? "&saved=1" : ""}`
+          : `/a/${result.publicId}?learner=${encodeURIComponent(learner.public_id)}&lang=${encodeURIComponent(locale)}`;
     } catch (error) {
       status.textContent =
         error.code === "tracking_trial_used"
@@ -5312,7 +5680,16 @@ async function renderDetail(me, id, { force = false } = {}) {
     actions.append(exportLink);
   }
   actions.append(remove);
-  card.append(headingRow, linkLabel, linkPanel, actions, sharingStatus);
+  const urlParams = new URLSearchParams(location.search);
+  const elements = [headingRow];
+  if (urlParams.get("saved") === "1") {
+    const savedNotice = document.createElement("div");
+    savedNotice.className = "notice success saved-result-notice";
+    savedNotice.textContent = copy.resultSavedSuccess;
+    elements.push(savedNotice);
+  }
+  elements.push(linkLabel, linkPanel, actions, sharingStatus);
+  card.append(...elements);
   main.append(card);
   trackEvent("results_view", {
     plan: me.plan,
@@ -5539,7 +5916,7 @@ async function renderDetail(me, id, { force = false } = {}) {
           copy.statusCompleted,
           "•• / ••",
           "••%",
-          copy.unlock,
+          "••••",
           "—",
           "—",
         ]) {
@@ -5551,18 +5928,6 @@ async function renderDetail(me, id, { force = false } = {}) {
         actionCell.className = "action-cell";
         actionCell.addEventListener("click", (e) => {
           e.stopPropagation();
-        });
-        const unlockLink = document.createElement("a");
-        unlockLink.className = "button-link button-secondary";
-        unlockLink.href = `${productPagePath("pricing", locale)}?from=locked_row&plan=teacher&interval=month&lang=${encodeURIComponent(locale)}`;
-        unlockLink.textContent = copy.unlock;
-        unlockLink.addEventListener("click", (e) => {
-          e.stopPropagation();
-          trackEvent("upgrade_click", {
-            source: "locked_row",
-            plan: "teacher",
-            billing_interval: "month",
-          });
         });
         const previewReportBtn = document.createElement("button");
         previewReportBtn.type = "button";
@@ -5582,7 +5947,7 @@ async function renderDetail(me, id, { force = false } = {}) {
             openParentReportModal(data, null, me, true);
           }
         });
-        actionCell.append(previewReportBtn, unlockLink);
+        actionCell.append(previewReportBtn);
         row.append(actionCell);
 
         const openRowPreview = (event) => {
@@ -5606,6 +5971,12 @@ async function renderDetail(me, id, { force = false } = {}) {
     table.append(body);
     wrap.append(table);
     results.append(wrap);
+    if (data.lockedResultCount > 0) {
+      const tableNotice = document.createElement("p");
+      tableNotice.className = "notice locked-table-footer-notice";
+      tableNotice.textContent = copy.commonMissesFreeNotice;
+      results.append(tableNotice);
+    }
   }
   main.append(results);
   if (data.summary.attempts > 0 && !assignmentResultsViewed) {

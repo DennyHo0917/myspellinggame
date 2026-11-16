@@ -222,13 +222,13 @@ test("Pricing default interval is month and savings badges exist across all 6 lo
       html.includes('data-plan-option="year" aria-pressed="false"'),
       `${file}: year unpressed`,
     );
-    // Monthly prices rendered by default (either 7.99 or 7,99)
+    // Monthly prices rendered by default (either 4.99 or 4,99)
     assert.ok(
-      html.includes("7.99") || html.includes("7,99"),
+      html.includes("4.99") || html.includes("4,99"),
       `${file}: parent monthly price`,
     );
     assert.ok(
-      html.includes("14.99") || html.includes("14,99"),
+      html.includes("9.99") || html.includes("9,99"),
       `${file}: teacher monthly price`,
     );
     // Savings badges and subtexts exist in markup
@@ -236,12 +236,12 @@ test("Pricing default interval is month and savings badges exist across all 6 lo
     assert.ok(html.includes("17"), `${file}: 17% savings`);
     assert.ok(html.includes("data-plan-subtext"), `${file}: data-plan-subtext`);
     assert.ok(
-      html.includes("6.66") || html.includes("6,66"),
-      `${file}: 6.66 subtext`,
+      html.includes("4.16") || html.includes("4,16"),
+      `${file}: 4.16 subtext`,
     );
     assert.ok(
-      html.includes("12.49") || html.includes("12,49"),
-      `${file}: 12.49 subtext`,
+      html.includes("8.33") || html.includes("8,33"),
+      `${file}: 8.33 subtext`,
     );
   }
 });
@@ -250,28 +250,28 @@ test("CTA monthly pricing and secondary yearly copy is complete in all 6 locales
   for (const [locale] of PRODUCT_LOCALES) {
     const copy = productMessages(locale);
     assert.ok(
-      copy.classroomModalCta?.includes("14.99") ||
-        copy.classroomModalCta?.includes("14,99"),
+      copy.classroomModalCta?.includes("9.99") ||
+        copy.classroomModalCta?.includes("9,99"),
       `${locale}:classroomModalCta month`,
     );
     assert.ok(
-      copy.teacherPriceMonthly?.includes("14.99") ||
-        copy.teacherPriceMonthly?.includes("14,99"),
+      copy.teacherPriceMonthly?.includes("9.99") ||
+        copy.teacherPriceMonthly?.includes("9,99"),
       `${locale}:teacherPriceMonthly`,
     );
     assert.ok(
-      copy.parentPriceMonthly?.includes("7.99") ||
-        copy.parentPriceMonthly?.includes("7,99"),
+      copy.parentPriceMonthly?.includes("4.99") ||
+        copy.parentPriceMonthly?.includes("4,99"),
       `${locale}:parentPriceMonthly`,
     );
     assert.ok(
-      copy.orTeacherYearly?.includes("149.90") ||
-        copy.orTeacherYearly?.includes("149,90"),
+      copy.orTeacherYearly?.includes("99.90") ||
+        copy.orTeacherYearly?.includes("99,90"),
       `${locale}:orTeacherYearly`,
     );
     assert.ok(
-      copy.orParentYearly?.includes("79.90") ||
-        copy.orParentYearly?.includes("79,90"),
+      copy.orParentYearly?.includes("49.90") ||
+        copy.orParentYearly?.includes("49,90"),
       `${locale}:orParentYearly`,
     );
   }

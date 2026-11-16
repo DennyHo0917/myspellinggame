@@ -80,7 +80,7 @@ export function renderTakeHomeSheetHtml({ title, due, mode, words = [], studentU
         <div>${escapeHtml(copy?.scanOrVisit || "Scan the QR code or visit:")}</div>
         ${studentUrl ? `<div class="sheet-footer-url">${escapeHtml(studentUrl)}</div>` : ""}
         <div class="sheet-footer-notes">${escapeHtml(copy?.printFooterNote || "Students practice free online · Teachers track results in Workspace")}</div>
-        <div class="sheet-footer-cta">${escapeHtml(copy?.printFooterTeacherCta || "Teachers: Unlock class results from $14.99/mo")}</div>
+        <div class="sheet-footer-cta">${escapeHtml(copy?.printFooterTeacherCta || "Teachers: Unlock class results from $9.99/mo")}</div>
       </div>
     </div>
   `;
@@ -114,7 +114,7 @@ export function renderParentReportSheetHtml({
   });
 
   const html = `
-    ${isFreeSample ? `<div class="sheet-watermark" aria-hidden="true">${escapeHtml(copy?.sampleWatermark || "SAMPLE / PREVIEW · Teacher Plan · $14.99/mo")}</div>` : ""}
+    ${isFreeSample ? `<div class="sheet-watermark" aria-hidden="true">${escapeHtml(copy?.sampleWatermark || "SAMPLE / PREVIEW · Teacher Plan · $9.99/mo")}</div>` : ""}
 
     <div class="sheet-brand-header">
       <div class="sheet-brand-name">My Spelling Game</div>
@@ -150,7 +150,7 @@ export function renderParentReportSheetHtml({
         ${studentUrl ? `<div class="sheet-footer-url">${escapeHtml(studentUrl)}</div>` : ""}
         ${
           isFreeSample
-            ? `<div class="sheet-sample-footer">${escapeHtml(copy?.sampleFooterNotice || "Sample — full parent reports on Teacher · $14.99/mo")}</div>`
+            ? `<div class="sheet-sample-footer">${escapeHtml(copy?.sampleFooterNotice || "Sample — full parent reports on Teacher · $9.99/mo")}</div>`
             : `<div class="sheet-footer-notes">${escapeHtml(copy?.printFooterNote || "Students practice free online · Teachers track results in Workspace")}</div>`
         }
       </div>
@@ -185,7 +185,7 @@ export function renderMissedWordsSheetHtml({
   });
 
   const html = `
-    ${isFreeSample ? `<div class="sheet-watermark" aria-hidden="true">${escapeHtml(copy?.sampleMissedWordsWatermark || "SAMPLE · Teacher Plan · $14.99/mo")}</div>` : ""}
+    ${isFreeSample ? `<div class="sheet-watermark" aria-hidden="true">${escapeHtml(copy?.sampleMissedWordsWatermark || "SAMPLE · Teacher Plan · $9.99/mo")}</div>` : ""}
 
     <div class="sheet-brand-header">
       <div class="sheet-brand-name">My Spelling Game</div>
@@ -218,7 +218,7 @@ export function renderMissedWordsSheetHtml({
         ${studentUrl ? `<div class="sheet-footer-url">${escapeHtml(studentUrl)}</div>` : ""}
         ${
           isFreeSample
-            ? `<div class="sheet-sample-footer">${escapeHtml(copy?.sampleMissedWordsNotice || "Sample — Full class-wide missed word sheets available on Teacher Plan · $14.99/mo")}</div>`
+            ? `<div class="sheet-sample-footer">${escapeHtml(copy?.sampleMissedWordsNotice || "Sample — Full class-wide missed word sheets available on Teacher Plan · $9.99/mo")}</div>`
             : `<div class="sheet-footer-notes">${escapeHtml(copy?.printFooterNote || "Students practice free online · Teachers track results in Workspace")}</div>`
         }
       </div>
@@ -274,7 +274,7 @@ export function renderClassroomGuideSheetHtml({ copy }) {
     </div>
 
     <div class="sheet-step-box" style="border-color: #2f6f73; background: #fafdfd;">
-      <div class="sheet-step-header" style="background: #eef6f5;">Teacher Plan — $14.99/mo (or $149.90/yr)</div>
+      <div class="sheet-step-header" style="background: #eef6f5;">Teacher Plan — $9.99/mo (or $99.90/yr)</div>
       <div class="sheet-step-body">
         <ul style="margin: 0; padding-left: 1.2rem;">
           <li>One-click Google Classroom sharing for your entire class</li>
@@ -289,7 +289,7 @@ export function renderClassroomGuideSheetHtml({ copy }) {
     <div class="sheet-footer">
       <div class="sheet-qr-box">${qrSvg}</div>
       <div class="sheet-footer-text">
-        <div class="sheet-footer-title">Teacher Plan from $14.99/mo</div>
+        <div class="sheet-footer-title">Teacher Plan from $9.99/mo</div>
         <div>Scan to view Teacher Plan features or visit:</div>
         <div class="sheet-footer-url">https://myspellinggame.com/pricing?from=print_classroom</div>
         <div class="sheet-footer-notes">My Spelling Game · Trusted by teachers and parents worldwide</div>

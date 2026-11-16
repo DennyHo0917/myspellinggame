@@ -130,19 +130,34 @@ export function renderDictationSummary() {
     list.appendChild(chip);
   });
   element('replay-missed-btn').hidden = summary.missedWords.length === 0;
+  const duration_seconds = Math.max(0, Math.round((Date.now() - gameState.startTime) / 1000));
   track('game_completed', {
     word_count: summary.total,
     correct_count: summary.correct,
     missed_count: summary.incorrect,
     mode: 'dictation',
     accuracy: summary.accuracy,
-    duration_seconds: Math.max(0, Math.round((Date.now() - gameState.startTime) / 1000)),
+    duration_seconds,
     replay_round: gameState.replayRound,
   });
+  const answers = (session?.words || []).map((w) => ({
+    word: w,
+    correct: !summary.missedWords.includes(w),
+  }));
   renderResultWorkspaceCta({
     mode: 'dictation',
     wordCount: summary.total,
     missedCount: summary.incorrect,
+    completedResult: {
+      mode: 'dictation',
+      score: summary.correct,
+      correctCount: summary.correct,
+      incorrectCount: summary.incorrect,
+      accuracy: summary.accuracy,
+      durationSeconds: duration_seconds,
+      answers,
+      completedAt: new Date().toISOString(),
+    },
   });
 }
 

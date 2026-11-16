@@ -23,6 +23,14 @@ function testEnv(): Env {
     BETTER_AUTH_URL: "https://example.test",
     RESEND_API_KEY: "re_replace_me", // Dev mode will log OTP
     ENVIRONMENT: "development",
+    STRIPE_SECRET_KEY: "sk_test_placeholder",
+    STRIPE_WEBHOOK_SECRET: "whsec_placeholder",
+    STRIPE_PRICE_MONTHLY: "price_monthly",
+    STRIPE_PRICE_YEARLY: "price_yearly",
+    STRIPE_PARENT_PRICE_MONTHLY: "price_parent_monthly",
+    STRIPE_PARENT_PRICE_YEARLY: "price_parent_yearly",
+    STRIPE_TEACHER_PRICE_MONTHLY: "price_teacher_monthly",
+    STRIPE_TEACHER_PRICE_YEARLY: "price_teacher_yearly",
   };
 }
 

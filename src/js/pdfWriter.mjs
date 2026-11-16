@@ -213,7 +213,7 @@ export function buildTakeHomePdf({ title, due, mode, words = [], studentUrl, cop
     [0.45, 0.45, 0.45]
   );
   pdf.text(
-    copy?.printFooterTeacherCta || "Teachers: Unlock class results from $14.99/mo",
+    copy?.printFooterTeacherCta || "Teachers: Unlock class results from $9.99/mo",
     120,
     40,
     7.5,
@@ -248,7 +248,7 @@ export function buildParentReportPdf({
   pdf.line(36, 730, 576, 730, 1.2, [0.15, 0.45, 0.42]);
 
   if (isFreeSample) {
-    pdf.watermark(copy?.sampleWatermark || "SAMPLE / PREVIEW - Teacher Plan $14.99/mo");
+    pdf.watermark(copy?.sampleWatermark || "SAMPLE / PREVIEW - Teacher Plan $9.99/mo");
   }
 
   // Learner info
@@ -298,7 +298,7 @@ export function buildParentReportPdf({
 
   if (isFreeSample) {
     pdf.text(
-      copy?.sampleFooterNotice || "Sample - full parent reports on Teacher - $14.99/mo",
+      copy?.sampleFooterNotice || "Sample - full parent reports on Teacher - $9.99/mo",
       120,
       44,
       8,
@@ -327,7 +327,7 @@ export function buildMissedWordsPdf({ assignmentTitle, words = [], studentUrl, i
   const slug = isFreeSample ? "sample" : (assignmentTitle || "assignment").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
   if (isFreeSample) {
-    pdf.watermark(copy?.sampleMissedWordsWatermark || "SAMPLE - Teacher Plan - $14.99/mo");
+    pdf.watermark(copy?.sampleMissedWordsWatermark || "SAMPLE - Teacher Plan - $9.99/mo");
   }
 
   pdf.text("My Spelling Game", 36, 756, 16, "HelveticaBold", [0.15, 0.45, 0.42]);
@@ -375,7 +375,7 @@ export function buildMissedWordsPdf({ assignmentTitle, words = [], studentUrl, i
   }
   if (isFreeSample) {
     pdf.text(
-      copy?.sampleMissedWordsNotice || "Sample - Full class-wide missed word sheets available on Teacher Plan - $14.99/mo",
+      copy?.sampleMissedWordsNotice || "Sample - Full class-wide missed word sheets available on Teacher Plan - $9.99/mo",
       120,
       44,
       8,
@@ -392,7 +392,7 @@ export function buildMissedWordsPdf({ assignmentTitle, words = [], studentUrl, i
       [0.45, 0.45, 0.45]
     );
     pdf.text(
-      copy?.printFooterTeacherCta || "Teachers: Unlock class results from $14.99/mo",
+      copy?.printFooterTeacherCta || "Teachers: Unlock class results from $9.99/mo",
       120,
       40,
       7.5,
@@ -443,7 +443,7 @@ export function buildClassroomGuidePdf({ copy }) {
 
   // Upgrade banner
   pdf.rect(36, 160, 540, 160, true, true, [0.97, 0.98, 0.99]);
-  pdf.text("Upgrade to Teacher Plan - $14.99/mo (or $149.90/yr)", 52, 296, 11, "HelveticaBold", [0.15, 0.45, 0.42]);
+  pdf.text("Upgrade to Teacher Plan - $9.99/mo (or $99.90/yr)", 52, 296, 11, "HelveticaBold", [0.15, 0.45, 0.42]);
   pdf.text("* One-click Google Classroom sharing for whole class", 52, 276, 9, "Helvetica");
   pdf.text("* Per-student individual results, attempts and timestamps", 52, 260, 9, "Helvetica");
   pdf.text("* Class-wide missed words analytics and Smart Review generator", 52, 244, 9, "Helvetica");
@@ -455,7 +455,7 @@ export function buildClassroomGuidePdf({ copy }) {
   pdf.line(36, 120, 576, 120, 1, [0.8, 0.8, 0.8]);
   const qr = generateQRCodeMatrix("https://myspellinggame.com/pricing?from=print_classroom&plan=teacher&interval=month");
   pdf.drawQrCode(qr, 36, 36, 72);
-  pdf.text("Teacher Plan from $14.99/mo", 120, 90, 10, "HelveticaBold");
+  pdf.text("Teacher Plan from $9.99/mo", 120, 90, 10, "HelveticaBold");
   pdf.text("Scan to view Teacher Plan features or visit:", 120, 76, 8.5, "Helvetica", [0.35, 0.35, 0.35]);
   pdf.text("https://myspellinggame.com/pricing?from=print_classroom", 120, 62, 8.5, "HelveticaBold", [0.15, 0.35, 0.7]);
   pdf.text("My Spelling Game * Trusted by teachers & parents worldwide", 120, 44, 7.5, "Helvetica", [0.45, 0.45, 0.45]);

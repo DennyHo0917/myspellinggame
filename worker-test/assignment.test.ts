@@ -350,7 +350,7 @@ describe("shared 7-day photo import and smart review trial", () => {
     expect(
       Date.parse(me.featureTrial.endsAt) -
         Date.parse(me.featureTrial.startedAt),
-    ).toBe(7 * day);
+    ).toBe(23 * day);
     const again = (await (await call("/api/me")).json()) as {
       featureTrial: { startedAt: string };
     };
@@ -365,7 +365,7 @@ describe("shared 7-day photo import and smart review trial", () => {
   });
 
   it("does not restart an expired trial and blocks photo import", async () => {
-    const started = new Date(Date.now() - 8 * day).toISOString();
+    const started = new Date(Date.now() - 24 * day).toISOString();
     await bindings.DB.prepare(
       "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
     )
@@ -418,7 +418,7 @@ describe("shared 7-day photo import and smart review trial", () => {
     });
     expect(published.response.status).toBe(201);
 
-    const started = new Date(Date.now() - 8 * day).toISOString();
+    const started = new Date(Date.now() - 24 * day).toISOString();
     await bindings.DB.prepare(
       "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
     )
@@ -2676,7 +2676,7 @@ describe("cross-assignment mastery", () => {
       await bindings.DB.prepare(
         "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
       )
-        .bind(new Date(Date.now() - 8 * 86_400_000).toISOString(), teacherA.id)
+        .bind(new Date(Date.now() - 24 * 86_400_000).toISOString(), teacherA.id)
         .run();
       const expiredReview = await call(
         `/api/learners/${learner.body.id}/review`,
@@ -2800,7 +2800,7 @@ describe("today's review state", () => {
     await bindings.DB.prepare(
       "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
     )
-      .bind(new Date(Date.now() - 8 * 86_400_000).toISOString(), teacherA.id)
+      .bind(new Date(Date.now() - 24 * 86_400_000).toISOString(), teacherA.id)
       .run();
     const expired = (await (
       await call(`/api/learners/${learner.body.id}`)
@@ -3445,7 +3445,7 @@ describe("Stripe checkout", () => {
         },
       });
       const params = sent as unknown as Stripe.Checkout.SessionCreateParams;
-      expect(params.subscription_data?.trial_period_days).toBeUndefined();
+      expect(params.subscription_data?.trial_period_days).toBe(7);
       expect(params.metadata).not.toHaveProperty("trial_granted");
     },
   );
@@ -3482,7 +3482,7 @@ describe("Stripe checkout", () => {
         },
       });
       const params = sent as unknown as Stripe.Checkout.SessionCreateParams;
-      expect(params.subscription_data?.trial_period_days).toBeUndefined();
+      expect(params.subscription_data?.trial_period_days).toBe(7);
       expect(params.metadata).not.toHaveProperty("trial_granted");
     },
   );
@@ -3759,7 +3759,7 @@ describe("Stripe checkout", () => {
 
     const params = sent as unknown as Stripe.Checkout.SessionCreateParams;
     expect(params.payment_method_collection).toBe("always");
-    expect(params.subscription_data?.trial_period_days).toBeUndefined();
+    expect(params.subscription_data?.trial_period_days).toBe(7);
     expect(params.metadata?.trial_granted).toBeUndefined();
   });
 
@@ -5461,7 +5461,7 @@ describe("Stripe event processing", () => {
     );
 
     const params = sent as unknown as Stripe.Checkout.SessionCreateParams;
-    expect(params.subscription_data?.trial_period_days).toBeUndefined();
+    expect(params.subscription_data?.trial_period_days).toBe(7);
     expect(params.metadata?.trial_granted).toBeUndefined();
   });
 

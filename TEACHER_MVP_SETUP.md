@@ -59,9 +59,9 @@ Set `RESEND_API_KEY` as a Cloudflare secret. The first time Better Auth creates 
 
 1. Create one recurring monthly Price at USD 5.99 and one recurring yearly Price at USD 49.99.
 2. Set their IDs as `STRIPE_PRICE_MONTHLY` and `STRIPE_PRICE_YEARLY`.
-3. Parent checkout uses USD 7.99/month and USD 79.90/year.
+3. Parent checkout uses USD 4.99/month and USD 49.90/year.
 4. Configure these new Price IDs as `STRIPE_CHECKOUT_PARENT_PRICE_MONTHLY` and `STRIPE_CHECKOUT_PARENT_PRICE_YEARLY` (the live IDs are in `wrangler.json`). Keep the original Parent IDs in `STRIPE_PARENT_PRICE_MONTHLY` and `STRIPE_PARENT_PRICE_YEARLY` so existing subscriptions remain recognized.
-5. Teacher checkout uses USD 14.99/month and USD 149.90/year.
+5. Teacher checkout uses USD 9.99/month and USD 99.90/year.
 6. Configure these new Price IDs as `STRIPE_CHECKOUT_TEACHER_PRICE_MONTHLY` and `STRIPE_CHECKOUT_TEACHER_PRICE_YEARLY`. Keep the original Teacher IDs in `STRIPE_TEACHER_PRICE_MONTHLY` and `STRIPE_TEACHER_PRICE_YEARLY` for existing subscriptions. In a test environment, override all four `STRIPE_CHECKOUT_*` variables with test-mode Price IDs.
 7. Enable and configure the Stripe Customer Portal for subscription management.
 8. Create a webhook endpoint at `https://myspellinggame.com/api/stripe/webhook` for:

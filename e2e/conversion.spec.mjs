@@ -162,7 +162,7 @@ test("Parent Checkout success waits for Parent activation and records the Parent
     });
   });
   await mockAssignments(page, "parent");
-  await mockPurchase(page, "parent", 799);
+  await mockPurchase(page, "parent", 499);
 
   await page.goto(
     "/workspace?lang=en&checkout=success&plan=parent&checkout_session_id=cs_parent_new_price",
@@ -183,7 +183,7 @@ test("Parent Checkout success waits for Parent activation and records the Parent
   ).toEqual({
     plan: "parent",
     billing_interval: "month",
-    value: 7.99,
+    value: 4.99,
     currency: "USD",
     transaction_id: "in_parent_new_price",
   });
@@ -207,7 +207,7 @@ test("Teacher Checkout success waits for Teacher activation and records the Teac
     });
   });
   await mockAssignments(page, "teacher");
-  await mockPurchase(page, "teacher", 1499);
+  await mockPurchase(page, "teacher", 999);
 
   await page.goto(
     "/workspace?lang=en&checkout=success&plan=teacher&checkout_session_id=cs_teacher_new_price",
@@ -227,7 +227,7 @@ test("Teacher Checkout success waits for Teacher activation and records the Teac
   ).toEqual({
     plan: "teacher",
     billing_interval: "month",
-    value: 14.99,
+    value: 9.99,
     currency: "USD",
     transaction_id: "in_teacher_new_price",
   });
@@ -714,7 +714,7 @@ test("anonymous Photo Import previews words, then a Teacher choice resumes check
   await expect(paywall).toContainText(
     "Turn a photo of the school list into editable spelling words",
   );
-  await expect(paywall).toContainText("Parent Plan · $7.99/month");
+  await expect(paywall).toContainText("Parent Plan · $4.99/month");
   await expect(
     paywall.getByRole("link", { name: "Unlock Photo Import" }),
   ).toBeVisible();
@@ -779,7 +779,7 @@ test("unknown context offers both plans without inferring from email", async ({
   await expect(paywall).toContainText(
     "Automatically match example sentences to your spelling words",
   );
-  await expect(paywall).toContainText("Parent Plan · $79.90/year");
+  await expect(paywall).toContainText("Parent Plan · $49.90/year");
   await expect(
     paywall.getByRole("button", {
       name: "Unlock premium features",
@@ -787,7 +787,7 @@ test("unknown context offers both plans without inferring from email", async ({
   ).toBeVisible();
   await expect(
     paywall.getByRole("button", {
-      name: "Teacher Plan · $149.90/year",
+      name: "Teacher Plan · $99.90/year",
     }),
   ).toBeVisible();
 });
@@ -795,13 +795,13 @@ test("unknown context offers both plans without inferring from email", async ({
 for (const scenario of [
   {
     workspaceType: "family",
-    price: "Parent Plan · $79.90/year",
+    price: "Parent Plan · $49.90/year",
     primary: "Unlock premium features",
-    secondary: "Teacher Plan · $149.90/year",
+    secondary: "Teacher Plan · $99.90/year",
   },
   {
     workspaceType: "teacher",
-    price: "Teacher Plan · $149.90/year",
+    price: "Teacher Plan · $99.90/year",
     primary: "Unlock premium features",
     secondary: null,
   },
@@ -945,11 +945,11 @@ test("signed-out pricing switches yearly and monthly plan prices", async ({
     "aria-pressed",
     "true",
   );
-  await expect(parentPrice).toHaveText("$79.90 / year");
-  await expect(teacherPrice).toHaveText("$149.90 / year");
+  await expect(parentPrice).toHaveText("$49.90 / year");
+  await expect(teacherPrice).toHaveText("$99.90 / year");
   await monthly.click();
-  await expect(parentPrice).toHaveText("$7.99 / month");
-  await expect(teacherPrice).toHaveText("$14.99 / month");
+  await expect(parentPrice).toHaveText("$4.99 / month");
+  await expect(teacherPrice).toHaveText("$9.99 / month");
 });
 
 test("failed Pricing checkout records an attempt and shows an explicit Retry CTA", async ({
@@ -1128,7 +1128,7 @@ test("current monthly plan can switch to yearly after clear proration confirmati
     interval: "year",
     locale: "en",
   });
-  expect(confirmation).toContain("$79.90 / year");
+  expect(confirmation).toContain("$49.90 / year");
   expect(confirmation).toContain("credit unused time");
   expect(confirmation).toContain("charge any amount due immediately");
 });

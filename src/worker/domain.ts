@@ -10,7 +10,8 @@ const PAID_PLAN_LIMITS = {
 } as const;
 
 export const TRACKING_TRIAL_EPOCH = "2026-10-29T19:49:12.000Z";
-export const FEATURE_TRIAL_MS = 7 * 24 * 60 * 60 * 1000;
+export const FEATURE_TRIAL_MS = 23 * 24 * 60 * 60 * 1000;
+export const STRIPE_TRIAL_PERIOD_DAYS = 7;
 
 export type FeatureTrialState = {
   active: boolean;

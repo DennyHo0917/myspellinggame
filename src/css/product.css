@@ -781,13 +781,25 @@ th {
 }
 .pricing-checkout {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
   width: min(100%, 720px);
   margin: 0 auto;
 }
 .pricing-checkout-cta {
   width: min(100%, 420px);
   white-space: nowrap;
+}
+.pricing-checkout-trial-notice {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1e7040;
+  background: rgba(30, 112, 64, 0.08);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(30, 112, 64, 0.2);
 }
 .subscription-status {
   display: flex;
@@ -4044,4 +4056,425 @@ body.assignment-page {
   padding-inline: 0.75rem;
   white-space: nowrap;
   max-width: 100%;
+}
+
+/* ==========================================================================
+   Role Selection Gate & Student Divergence
+   ========================================================================== */
+
+.auth-role-gate {
+  margin-bottom: 1.25rem;
+  width: 100%;
+}
+
+.role-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.auth-card button.role-option {
+  all: unset;
+  box-sizing: border-box;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 0.5rem;
+  padding: 0.75rem 0.65rem !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  background: #f8fafc !important;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-width: 0 !important;
+  text-align: left;
+}
+
+.auth-card button.role-option:hover {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.auth-card button.role-option.active {
+  background: #f0fdf4 !important;
+  border-color: #16a34a !important;
+  box-shadow: 0 0 0 1px #16a34a;
+}
+
+.role-option-icon {
+  font-size: 1.25rem;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+.role-option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.role-option-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+.role-option-desc {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+/* Student Gate Divergence Notice */
+.student-gate-notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem 1rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.student-gate-icon {
+  font-size: 2.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.student-gate-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.student-gate-body {
+  margin: 0 0 1.25rem 0;
+  font-size: 0.9rem;
+  color: #1e40af;
+  line-height: 1.5;
+}
+
+.student-gate-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.student-gate-actions .button-link {
+  width: 100%;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* Role Modal Dialog */
+.auth-role-dialog {
+  width: min(480px, calc(100% - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  padding: 1.5rem;
+  border: 1px solid var(--line, #d0d7de);
+  border-radius: 16px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.2);
+  background: #ffffff;
+}
+
+.auth-role-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.role-dialog-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.role-dialog-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.role-dialog-btn:hover {
+  border-color: var(--brand, #2f6f73);
+  background: #f0fdfa;
+}
+
+.role-dialog-icon {
+  font-size: 1.75rem;
+  line-height: 1.1;
+  flex-shrink: 0;
+}
+
+.role-dialog-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.role-dialog-text strong {
+  font-size: 0.98rem;
+  color: #0f172a;
+}
+
+.role-dialog-text span {
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.role-dialog-student-notice {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.role-dialog-student-notice h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.15rem;
+  color: #1e3a8a;
+}
+
+.role-dialog-student-notice p {
+  margin: 0 0 1.25rem 0;
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+/* Student Account Detected Banner on Dashboard */
+.student-account-warning {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  border-left: 4px solid #f59e0b;
+  background: #fefce8;
+  border-radius: 8px;
+}
+
+.student-warning-content h3 {
+  margin: 0 0 0.35rem 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #92400e;
+}
+
+.student-warning-content p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #78350f;
+  line-height: 1.45;
+}
+
+.student-warning-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* ==========================================================================
+   Practice Result Inheritance Styles
+   ========================================================================== */
+
+.completed-result-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+}
+
+.completed-result-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #166534;
+}
+
+.completed-result-missed {
+  font-size: 0.85rem;
+  color: #374151;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.completed-result-missed code {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.saved-result-notice {
+  margin-bottom: 1rem;
+}
+
+.pricing-trial-callout {
+  width: min(100%, 720px);
+  margin: 0 auto 1.5rem;
+  border-radius: 8px;
+  border: 1.5px solid #86efac;
+  background: #f0fdf4;
+  color: #14532d;
+  padding: 0.85rem 1.15rem;
+}
+.pricing-trial-callout p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.pricing-trial-callout strong {
+  color: #15803d;
+}
+
+.workspace-trial-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.25rem;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #f6fbf9 100%);
+  border: 1px solid #86efac;
+  border-radius: 10px;
+  padding: 0.85rem 1.25rem;
+  margin-bottom: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(47, 148, 107, 0.06);
+}
+.workspace-trial-banner.trial-expired {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fffdfa 100%);
+  border-color: #fde68a;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.06);
+}
+.trial-banner-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
+}
+.trial-banner-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.2rem;
+}
+.trial-banner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: fit-content;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid #bbf7d0;
+  letter-spacing: 0.01em;
+}
+.workspace-trial-banner.trial-expired .trial-banner-badge {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fde68a;
+}
+.trial-banner-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #14532d;
+  line-height: 1.3;
+}
+.workspace-trial-banner.trial-expired .trial-banner-title {
+  color: #78350f;
+}
+.trial-banner-desc {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: #166534;
+  max-width: 70ch;
+}
+.workspace-trial-banner.trial-expired .trial-banner-desc {
+  color: #92400e;
+}
+.trial-banner-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.btn-claim-trial {
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.2);
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
+}
+.btn-claim-trial:hover:not(:disabled) {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+.btn-claim-trial:active:not(:disabled) {
+  transform: translateY(0);
+}
+.workspace-trial-banner.trial-expired .btn-claim-trial {
+  background: #d97706;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.2);
+}
+.workspace-trial-banner.trial-expired .btn-claim-trial:hover:not(:disabled) {
+  background: #b45309;
+}
+.locked-table-footer-notice {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: #475569;
+  text-align: center;
+}
+@media (max-width: 768px) {
+  .workspace-trial-banner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+  .trial-banner-actions {
+    width: 100%;
+  }
+  .btn-claim-trial {
+    width: 100%;
+    text-align: center;
+  }
 }

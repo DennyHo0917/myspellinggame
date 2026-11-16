@@ -227,6 +227,31 @@ const PACKS = {
       "Google or Microsoft sign-in is not configured in this environment yet.",
     reviewLearnerUnavailable:
       "A learner in this draft is no longer available. Choose who this practice is for before publishing.",
+    saveAndTrackResult: "Save result & track progress",
+    saveResultExplanation:
+      "Save this score to your account and track ongoing progress across practice sessions.",
+    trackingSaveResultTitle: "Save practice result",
+    trackingSaveResultExplanation:
+      "Choose or add a learner to save this completed practice. We'll automatically record their score and missed words.",
+    saveResultAndContinue: "Save result & view progress",
+    resultSavedSuccess:
+      "Practice result saved! View scores, accuracy, and missed words below.",
+    completedPracticeScore: "{accuracy}% ({correct}/{total} correct)",
+    roleSelectTitle: "Select your role",
+    roleAdultOption: "Parent or Teacher",
+    roleAdultDesc: "Create assignments, track progress, and manage word lists.",
+    roleStudentOption: "Student",
+    roleStudentDesc: "Practice spelling words — no account or login needed!",
+    roleStudentNoticeTitle: "Students don't need an account!",
+    roleStudentNoticeBody:
+      "All spelling tests, typing rain, and chase games are 100% free with no login required. Head over to practice right away!",
+    roleGoPractice: "Go to Free Practice",
+    roleBackToSignIn: "Wait, I am a parent or teacher",
+    studentAccountDetectedTitle: "Notice for Students",
+    studentAccountDetectedBody:
+      "It looks like you are using a student school account ({email}). Students do not need a Workspace account to practice spelling! Everything is free on the homepage.",
+    studentAccountConfirmEducator:
+      "I am an educator or parent using this email",
     trackNextPractice: "Start tracked practice",
     trackingChooseLearner: "Choose a learner",
     trackingTitle: "Track the next practice",
@@ -429,14 +454,14 @@ const PACKS = {
     unlockSavedLists: "Unlock more saved lists",
     unlockLearners: "Unlock more learner profiles",
     unlockSentences: "Unlock example sentences",
-    parentUpgradePrice: "Parent Plan · $7.99/month",
-    teacherUpgradePrice: "Teacher Plan · $14.99/month",
-    parentUpgradeYearlyPrice: "Parent Plan · $79.90/year",
-    teacherUpgradeYearlyPrice: "Teacher Plan · $149.90/year",
-    teacherPriceMonthly: "$14.99/mo",
-    parentPriceMonthly: "$7.99/mo",
-    orTeacherYearly: "or $149.90/yr",
-    orParentYearly: "or $79.90/yr",
+    parentUpgradePrice: "Parent Plan · $4.99/month",
+    teacherUpgradePrice: "Teacher Plan · $9.99/month",
+    parentUpgradeYearlyPrice: "Parent Plan · $49.90/year",
+    teacherUpgradeYearlyPrice: "Teacher Plan · $99.90/year",
+    teacherPriceMonthly: "$9.99/mo",
+    parentPriceMonthly: "$4.99/mo",
+    orTeacherYearly: "or $99.90/yr",
+    orParentYearly: "or $49.90/yr",
     printTakeHome: "Print / Download take-home",
     dueLabel: "Due",
     takeHomeTitle: "Take-Home Spelling List",
@@ -444,11 +469,11 @@ const PACKS = {
     practiceLinesHeader: "Practice Writing (Dictation Lines)",
     printFooterNote:
       "Students practice free online · Teachers track results in Workspace",
-    printFooterTeacherCta: "Teachers: Unlock class results from $14.99/mo",
+    printFooterTeacherCta: "Teachers: Unlock class results from $9.99/mo",
     printParentReport: "Parent report",
     previewPrint: "Preview print",
-    unlockFullReportsCta: "See Teacher Plan · $14.99/mo",
-    unlockMissedWordsCta: "See Teacher Plan · $14.99/mo",
+    unlockFullReportsCta: "See Teacher Plan · $9.99/mo",
+    unlockMissedWordsCta: "See Teacher Plan · $9.99/mo",
     downloadSamplePdf: "Download Sample PDF",
     printSample: "Print Sample",
     sampleStudentNickname: "Student A (Sample)",
@@ -457,13 +482,13 @@ const PACKS = {
     parentReportTitle: "Student Spelling Progress Report",
     wordsToReview: "Words to review this week",
     reviewAdvice: "Practice these words 2–3 times this week for mastery.",
-    sampleWatermark: "SAMPLE / PREVIEW · Teacher Plan · $14.99/mo",
-    sampleFooterNotice: "Sample — full parent reports on Teacher · $14.99/mo",
+    sampleWatermark: "SAMPLE / PREVIEW · Teacher Plan · $9.99/mo",
+    sampleFooterNotice: "Sample — full parent reports on Teacher · $9.99/mo",
     printMissedWords: "Print missed words",
     missedWordsSheetTitle: "Missed Words Practice Sheet",
-    sampleMissedWordsWatermark: "SAMPLE · Teacher Plan · $14.99/mo",
+    sampleMissedWordsWatermark: "SAMPLE · Teacher Plan · $9.99/mo",
     sampleMissedWordsNotice:
-      "Sample — Full class-wide missed word sheets available on Teacher Plan · $14.99/mo",
+      "Sample — Full class-wide missed word sheets available on Teacher Plan · $9.99/mo",
     lookCoverWriteCheck: "Look — Say — Cover — Write — Check",
     classroomGuideTitle: "Google Classroom Spelling in 3 Easy Steps",
     classroomGuideBtn: "Classroom 1-Page Guide (PDF)",
@@ -478,10 +503,10 @@ const PACKS = {
     practiceAttempt1: "Practice 1",
     practiceAttempt2: "Practice 2",
     practiceAttempt3: "Practice 3",
-    upgradeParentMonthly: "Upgrade to Parent · $7.99/month",
-    upgradeTeacherMonthly: "Choose Teacher · $14.99/month",
+    upgradeParentMonthly: "Upgrade to Parent · $4.99/month",
+    upgradeTeacherMonthly: "Choose Teacher · $9.99/month",
     chooseUpgradePlan: "Choose the setting that fits:",
-    wholeClassTeacherMonthly: "For a whole class? View Teacher · $14.99/month",
+    wholeClassTeacherMonthly: "For a whole class? View Teacher · $9.99/month",
     pendingUpgradeTitle: "Continue with {plan}",
     pendingUpgradeCopy:
       "Sign in to keep your selection. You decide when to open secure checkout.",
@@ -660,16 +685,26 @@ const PACKS = {
       "You’ve reached the Teacher Plan limit of 40 learner profiles. Archive an inactive profile before adding a new student.",
     smartReviewRequired:
       "Smart Review is included in Parent and Teacher Plans.",
-    featureTrialSignInCta: "Sign in: 7-day free trial",
+    featureTrialSignInCta: "Sign in: 30-day free trial",
     featureTrialSignInDetail:
-      "Free accounts include one 7-day trial of Photo Import and Smart Review.",
-    featureTrialStatus: "7-day free trial · {time} left · ends {date}",
+      "Free accounts include 23 days of full access (no card required) + 7 days free with card (30 days total)!",
+    featureTrialStatus:
+      "23-day free trial · {time} left · ends {date} (+7 days with card)",
     featureTrialDay: "1 day",
     featureTrialDays: "{count} days",
     featureTrialHour: "1 hour",
     featureTrialHours: "{count} hours",
     featureTrialExpired:
-      "Your 7-day free trial of Photo Import and Smart Review has ended.",
+      "Your 23-day free trial has ended. Bind your card to enjoy an extra 7 days free trial!",
+    workspaceTrialActiveTitle: "23-Day Free Trial Active · {time} left",
+    workspaceTrialActiveDesc:
+      "All paid features are unlocked with no card required. Bind your card now to get an EXTRA 7 DAYS FREE (30 days total free trial) — cancel anytime before day 30 at zero charge!",
+    workspaceTrialTotalTag: "23 Days + 7 Days Card Bonus = 30 Days Total",
+    workspaceTrialClaimCta: "Claim Extra 7 Days Free (Bind Card)",
+    workspaceTrialExpiredTitle: "Your 23-day free trial has ended",
+    workspaceTrialExpiredDesc:
+      "Bind your card now to start 7 days of free access on Parent or Teacher Plan. Zero charge today; cancel anytime!",
+    workspaceTrialStart7DayCta: "Start 7-Day Free Trial",
     proActive:
       "Your paid plan is active. Saved lists, long-term mastery, and Smart Review are now unlocked.",
     rateLimited: "Too many requests. Wait a moment and try again.",
@@ -755,6 +790,32 @@ const PACKS = {
       "El acceso con Google o Microsoft aún no está configurado en este entorno.",
     reviewLearnerUnavailable:
       "Un estudiante de este borrador ya no está disponible. Elige a quién asignar la práctica antes de publicarla.",
+    saveAndTrackResult: "Guardar resultado y seguir progreso",
+    saveResultExplanation:
+      "Guarda esta puntuación en tu cuenta y sigue el progreso de las prácticas.",
+    trackingSaveResultTitle: "Guardar resultado de práctica",
+    trackingSaveResultExplanation:
+      "Elige o añade un estudiante para guardar esta práctica. Registraremos automáticamente su puntuación y errores.",
+    saveResultAndContinue: "Guardar resultado y ver progreso",
+    resultSavedSuccess:
+      "¡Resultado guardado! Consulta la puntuación, precisión y errores a continuación.",
+    completedPracticeScore: "{accuracy}% ({correct}/{total} correctas)",
+    roleSelectTitle: "Selecciona tu rol",
+    roleAdultOption: "Padre o Profesor",
+    roleAdultDesc:
+      "Crea tareas, sigue el progreso y gestiona listas de palabras.",
+    roleStudentOption: "Estudiante",
+    roleStudentDesc:
+      "Practica palabras de ortografía: ¡no necesitas cuenta ni inicio de sesión!",
+    roleStudentNoticeTitle: "¡Los estudiantes no necesitan cuenta!",
+    roleStudentNoticeBody:
+      "Todas las pruebas de ortografía y juegos son 100% gratuitos sin necesidad de iniciar sesión. ¡Empieza a practicar ya!",
+    roleGoPractice: "Ir a la práctica gratuita",
+    roleBackToSignIn: "Espera, soy padre o profesor",
+    studentAccountDetectedTitle: "Aviso para estudiantes",
+    studentAccountDetectedBody:
+      "Parece que estás usando una cuenta escolar de estudiante ({email}). ¡Los estudiantes no necesitan cuenta en Workspace! Todo es gratuito en la página de inicio.",
+    studentAccountConfirmEducator: "Soy docente o padre usando este correo",
     trackNextPractice: "Practicar con seguimiento",
     trackingChooseLearner: "Elige un estudiante",
     trackingTitle: "Registra la próxima práctica",
@@ -961,14 +1022,14 @@ const PACKS = {
     unlockSavedLists: "Guardar más listas",
     unlockLearners: "Añadir más estudiantes",
     unlockSentences: "Desbloquear frases de ejemplo",
-    parentUpgradePrice: "Plan para familias · $7.99/mes",
-    teacherUpgradePrice: "Plan para docentes · $14.99/mes",
-    parentUpgradeYearlyPrice: "Plan para familias · $79.90/año",
-    teacherUpgradeYearlyPrice: "Plan para docentes · $149.90/año",
-    teacherPriceMonthly: "$14.99/mes",
-    parentPriceMonthly: "$7.99/mes",
-    orTeacherYearly: "o $149.90/año",
-    orParentYearly: "o $79.90/año",
+    parentUpgradePrice: "Plan para familias · $4.99/mes",
+    teacherUpgradePrice: "Plan para docentes · $9.99/mes",
+    parentUpgradeYearlyPrice: "Plan para familias · $49.90/año",
+    teacherUpgradeYearlyPrice: "Plan para docentes · $99.90/año",
+    teacherPriceMonthly: "$9.99/mes",
+    parentPriceMonthly: "$4.99/mes",
+    orTeacherYearly: "o $99.90/año",
+    orParentYearly: "o $49.90/año",
     printTakeHome: "Imprimir / Descargar lista para casa",
     dueLabel: "Entrega",
     takeHomeTitle: "Lista de ortografía para llevar a casa",
@@ -977,11 +1038,11 @@ const PACKS = {
     printFooterNote:
       "Los estudiantes practican gratis en línea · Los docentes siguen resultados en Workspace",
     printFooterTeacherCta:
-      "Docentes: Desbloquea resultados de clase desde $14.99/mes",
+      "Docentes: Desbloquea resultados de clase desde $9.99/mes",
     printParentReport: "Informe para familias",
     previewPrint: "Vista previa de impresión",
-    unlockFullReportsCta: "Ver Plan Docente · $14.99/mes",
-    unlockMissedWordsCta: "Ver Plan Docente · $14.99/mes",
+    unlockFullReportsCta: "Ver Plan Docente · $9.99/mes",
+    unlockMissedWordsCta: "Ver Plan Docente · $9.99/mes",
     downloadSamplePdf: "Descargar PDF de muestra",
     printSample: "Imprimir muestra",
     sampleStudentNickname: "Estudiante A (Muestra)",
@@ -991,14 +1052,14 @@ const PACKS = {
     wordsToReview: "Palabras para repasar esta semana",
     reviewAdvice:
       "Practica estas palabras 2 o 3 veces esta semana para dominarlas.",
-    sampleWatermark: "MUESTRA / VISTA PREVIA · Plan Docente · $14.99/mes",
+    sampleWatermark: "MUESTRA / VISTA PREVIA · Plan Docente · $9.99/mes",
     sampleFooterNotice:
-      "Muestra — informes completos en el Plan Docente · $14.99/mes",
+      "Muestra — informes completos en el Plan Docente · $9.99/mes",
     printMissedWords: "Imprimir palabras falladas",
     missedWordsSheetTitle: "Hoja de práctica de palabras falladas",
-    sampleMissedWordsWatermark: "MUESTRA · Plan Docente · $14.99/mes",
+    sampleMissedWordsWatermark: "MUESTRA · Plan Docente · $9.99/mes",
     sampleMissedWordsNotice:
-      "Muestra — Hojas completas de palabras falladas disponibles en el Plan Docente · $14.99/mes",
+      "Muestra — Hojas completas de palabras falladas disponibles en el Plan Docente · $9.99/mes",
     lookCoverWriteCheck: "Mirar — Decir — Tapar — Escribir — Comprobar",
     classroomGuideTitle: "Ortografía en Google Classroom en 3 sencillos pasos",
     classroomGuideBtn: "Guía de 1 página para Classroom (PDF)",
@@ -1013,11 +1074,11 @@ const PACKS = {
     practiceAttempt1: "Práctica 1",
     practiceAttempt2: "Práctica 2",
     practiceAttempt3: "Práctica 3",
-    upgradeParentMonthly: "Mejorar al plan familiar · $7.99/mes",
-    upgradeTeacherMonthly: "Elegir el plan docente · $14.99/mes",
+    upgradeParentMonthly: "Mejorar al plan familiar · $4.99/mes",
+    upgradeTeacherMonthly: "Elegir el plan docente · $9.99/mes",
     chooseUpgradePlan: "Elige el uso que corresponda:",
     wholeClassTeacherMonthly:
-      "¿Para toda una clase? Ver plan docente · $14.99/mes",
+      "¿Para toda una clase? Ver plan docente · $9.99/mes",
     pendingUpgradeTitle: "Continuar con {plan}",
     pendingUpgradeCopy:
       "Inicia sesión para conservar tu elección. Tú decides cuándo abrir el pago seguro.",
@@ -1196,16 +1257,27 @@ const PACKS = {
       "Has alcanzado el límite del plan Docente de 40 estudiantes. Archiva un perfil inactivo antes de añadir un nuevo estudiante.",
     smartReviewRequired:
       "El repaso inteligente está incluido en los planes para familias y docentes.",
-    featureTrialSignInCta: "Entra: prueba gratis 7 días",
+    featureTrialSignInCta: "Entra: prueba gratis de 30 días",
     featureTrialSignInDetail:
-      "Las cuentas gratis incluyen una prueba de 7 días para importar fotos y el repaso inteligente.",
-    featureTrialStatus: "Prueba de 7 días · quedan {time} · termina el {date}",
+      "¡Las cuentas gratis incluyen 23 días sin tarjeta + 7 días gratis con tarjeta (30 días en total)!",
+    featureTrialStatus:
+      "Prueba de 23 días · quedan {time} · termina el {date} (+7 días con tarjeta)",
     featureTrialDay: "1 día",
     featureTrialDays: "{count} días",
     featureTrialHour: "1 hora",
     featureTrialHours: "{count} horas",
     featureTrialExpired:
-      "Tu prueba gratis de 7 días para importar fotos y el repaso inteligente terminó.",
+      "Tu prueba gratuita de 23 días ha terminado. ¡Añade tu tarjeta para disfrutar de 7 días gratis extra!",
+    workspaceTrialActiveTitle:
+      "Prueba gratis de 23 días activa · quedan {time}",
+    workspaceTrialActiveDesc:
+      "Todas las funciones de pago están desbloqueadas sin tarjeta. ¡Añade tu tarjeta ahora para obtener 7 DÍAS GRATIS EXTRA (30 días en total)! Cancela cuando quieras sin coste.",
+    workspaceTrialTotalTag: "23 días + 7 días con tarjeta = 30 días en total",
+    workspaceTrialClaimCta: "Reclamar 7 días gratis extra (con tarjeta)",
+    workspaceTrialExpiredTitle: "Tu prueba gratuita de 23 días ha terminado",
+    workspaceTrialExpiredDesc:
+      "Añade tu tarjeta para disfrutar de 7 días de acceso gratuito antes del primer cobro. ¡Hoy 0 €; cancela cuando quieras!",
+    workspaceTrialStart7DayCta: "Iniciar prueba gratis de 7 días",
     proActive:
       "Tu plan de pago está activo. Ya están disponibles las listas guardadas, el historial de dominio a largo plazo y el repaso inteligente.",
     rateLimited:
@@ -1291,6 +1363,33 @@ const PACKS = {
       "O login com Google ou Microsoft ainda não foi configurado neste ambiente.",
     reviewLearnerUnavailable:
       "Um aluno deste rascunho não está mais disponível. Escolha quem fará a prática antes de publicar.",
+    saveAndTrackResult: "Salvar resultado e acompanhar progresso",
+    saveResultExplanation:
+      "Salve esta pontuação em sua conta e acompanhe o progresso contínuo nas práticas.",
+    trackingSaveResultTitle: "Salvar resultado da prática",
+    trackingSaveResultExplanation:
+      "Escolha ou adicione um aluno para salvar esta prática. Registraremos automaticamente a pontuação e os erros.",
+    saveResultAndContinue: "Salvar resultado e ver progresso",
+    resultSavedSuccess:
+      "Resultado salvo! Veja a pontuação, precisão e erros abaixo.",
+    completedPracticeScore: "{accuracy}% ({correct}/{total} corretas)",
+    roleSelectTitle: "Selecione sua função",
+    roleAdultOption: "Pai, Mãe ou Professor",
+    roleAdultDesc:
+      "Crie tarefas, acompanhe o progresso e gerencie listas de palavras.",
+    roleStudentOption: "Aluno",
+    roleStudentDesc:
+      "Pratique palavras de ortografia — não precisa de conta ou login!",
+    roleStudentNoticeTitle: "Alunos não precisam de conta!",
+    roleStudentNoticeBody:
+      "Todos os testes e jogos de ortografia são 100% gratuitos sem login. Vá praticar agora mesmo!",
+    roleGoPractice: "Ir para prática gratuita",
+    roleBackToSignIn: "Espere, sou pai, mãe ou professor",
+    studentAccountDetectedTitle: "Aviso para alunos",
+    studentAccountDetectedBody:
+      "Parece que você está usando uma conta escolar de aluno ({email}). Alunos não precisam de conta no Workspace! Tudo é gratuito na página inicial.",
+    studentAccountConfirmEducator:
+      "Sou educador ou responsável usando este e-mail",
     trackNextPractice: "Praticar com acompanhamento",
     trackingChooseLearner: "Escolha um aluno",
     trackingTitle: "Acompanhe a próxima prática",
@@ -1496,14 +1595,14 @@ const PACKS = {
     unlockSavedLists: "Salvar mais listas",
     unlockLearners: "Adicionar mais alunos",
     unlockSentences: "Liberar frases de exemplo",
-    parentUpgradePrice: "Plano para Pais · US$ 7,99/mês",
-    teacherUpgradePrice: "Plano para Professores · US$ 14,99/mês",
-    parentUpgradeYearlyPrice: "Plano para Pais · US$ 79,90/ano",
-    teacherUpgradeYearlyPrice: "Plano para Professores · US$ 149,90/ano",
-    teacherPriceMonthly: "US$ 14,99/mês",
-    parentPriceMonthly: "US$ 7,99/mês",
-    orTeacherYearly: "ou US$ 149,90/ano",
-    orParentYearly: "ou US$ 79,90/ano",
+    parentUpgradePrice: "Plano para Pais · US$ 4,99/mês",
+    teacherUpgradePrice: "Plano para Professores · US$ 9,99/mês",
+    parentUpgradeYearlyPrice: "Plano para Pais · US$ 49,90/ano",
+    teacherUpgradeYearlyPrice: "Plano para Professores · US$ 99,90/ano",
+    teacherPriceMonthly: "US$ 9,99/mês",
+    parentPriceMonthly: "US$ 4,99/mês",
+    orTeacherYearly: "ou US$ 99,90/ano",
+    orParentYearly: "ou US$ 49,90/ano",
     printTakeHome: "Imprimir / Baixar lista para casa",
     dueLabel: "Prazo",
     takeHomeTitle: "Lista de ortografia para levar para casa",
@@ -1512,11 +1611,11 @@ const PACKS = {
     printFooterNote:
       "Alunos praticam grátis online · Professores acompanham no Workspace",
     printFooterTeacherCta:
-      "Professores: Desbloqueie resultados da turma a partir de US$ 14,99/mês",
+      "Professores: Desbloqueie resultados da turma a partir de US$ 9,99/mês",
     printParentReport: "Boletim para os pais",
     previewPrint: "Prévia de impressão",
-    unlockFullReportsCta: "Ver Plano Professor · US$ 14,99/mês",
-    unlockMissedWordsCta: "Ver Plano Professor · US$ 14,99/mês",
+    unlockFullReportsCta: "Ver Plano Professor · US$ 9,99/mês",
+    unlockMissedWordsCta: "Ver Plano Professor · US$ 9,99/mês",
     downloadSamplePdf: "Baixar PDF de amostra",
     printSample: "Imprimir amostra",
     sampleStudentNickname: "Aluno A (Amostra)",
@@ -1526,14 +1625,14 @@ const PACKS = {
     wordsToReview: "Palavras para revisar esta semana",
     reviewAdvice:
       "Pratique estas palavras 2 a 3 vezes esta semana para dominar.",
-    sampleWatermark: "AMOSTRA / PRÉVIA · Plano Professor · US$ 14,99/mês",
+    sampleWatermark: "AMOSTRA / PRÉVIA · Plano Professor · US$ 9,99/mês",
     sampleFooterNotice:
-      "Amostra — relatórios completos no Plano Professor · US$ 14,99/mês",
+      "Amostra — relatórios completos no Plano Professor · US$ 9,99/mês",
     printMissedWords: "Imprimir palavras erradas",
     missedWordsSheetTitle: "Folha de treino de palavras erradas",
-    sampleMissedWordsWatermark: "AMOSTRA · Plano Professor · US$ 14,99/mês",
+    sampleMissedWordsWatermark: "AMOSTRA · Plano Professor · US$ 9,99/mês",
     sampleMissedWordsNotice:
-      "Amostra — Folhas completas de treino disponíveis no Plano Professor · US$ 14,99/mês",
+      "Amostra — Folhas completas de treino disponíveis no Plano Professor · US$ 9,99/mês",
     lookCoverWriteCheck: "Olhar — Falar — Cobrir — Escrever — Conferir",
     classroomGuideTitle: "Ortografia no Google Classroom em 3 passos fáceis",
     classroomGuideBtn: "Guia de 1 página para o Classroom (PDF)",
@@ -1548,11 +1647,11 @@ const PACKS = {
     practiceAttempt1: "Treino 1",
     practiceAttempt2: "Treino 2",
     practiceAttempt3: "Treino 3",
-    upgradeParentMonthly: "Assinar Plano para Pais · US$ 7,99/mês",
-    upgradeTeacherMonthly: "Escolher Plano para Professores · US$ 14,99/mês",
+    upgradeParentMonthly: "Assinar Plano para Pais · US$ 4,99/mês",
+    upgradeTeacherMonthly: "Escolher Plano para Professores · US$ 9,99/mês",
     chooseUpgradePlan: "Escolha como você vai usar:",
     wholeClassTeacherMonthly:
-      "Para uma turma inteira? Ver Professores · US$ 14,99/mês",
+      "Para uma turma inteira? Ver Professores · US$ 9,99/mês",
     pendingUpgradeTitle: "Continuar com {plan}",
     pendingUpgradeCopy:
       "Entre para manter sua escolha. Você decide quando abrir o checkout seguro.",
@@ -1730,16 +1829,26 @@ const PACKS = {
       "Você atingiu o limite do plano Professor de 40 alunos. Arquive um perfil inativo antes de adicionar um novo aluno.",
     smartReviewRequired:
       "A revisão inteligente está incluída nos planos para Pais e Professores.",
-    featureTrialSignInCta: "Entre: teste grátis 7 dias",
+    featureTrialSignInCta: "Entre: teste grátis de 30 dias",
     featureTrialSignInDetail:
-      "Contas grátis incluem um teste de 7 dias da importação por foto e da revisão inteligente.",
-    featureTrialStatus: "Teste de 7 dias · faltam {time} · termina em {date}",
+      "Contas grátis incluem 23 dias de acesso total sem cartão + 7 dias grátis com cartão (30 dias no total)!",
+    featureTrialStatus:
+      "Teste de 23 dias · faltam {time} · termina em {date} (+7 dias com cartão)",
     featureTrialDay: "1 dia",
     featureTrialDays: "{count} dias",
     featureTrialHour: "1 hora",
     featureTrialHours: "{count} horas",
     featureTrialExpired:
-      "Seu teste grátis de 7 dias da importação por foto e da revisão inteligente terminou.",
+      "Seu teste grátis de 23 dias terminou. Adicione seu cartão para aproveitar mais 7 dias de teste grátis!",
+    workspaceTrialActiveTitle: "Teste grátis de 23 dias ativo · faltam {time}",
+    workspaceTrialActiveDesc:
+      "Todos os recursos pagos estão liberados sem cartão. Adicione seu cartão agora para ganhar mais 7 DIAS GRÁTIS (30 dias no total)! Cancele a qualquer momento sem custo.",
+    workspaceTrialTotalTag: "23 dias + 7 dias com cartão = 30 dias no total",
+    workspaceTrialClaimCta: "Garantir mais 7 dias grátis (com cartão)",
+    workspaceTrialExpiredTitle: "Seu teste grátis de 23 dias terminou",
+    workspaceTrialExpiredDesc:
+      "Adicione seu cartão para começar 7 dias de acesso grátis antes da primeira cobrança. R$ 0 hoje; cancele quando quiser!",
+    workspaceTrialStart7DayCta: "Iniciar teste grátis de 7 dias",
     proActive:
       "Seu plano pago está ativo. Listas salvas, histórico de domínio de longo prazo e revisão inteligente já estão liberados.",
     rateLimited: "Muitas solicitações. Aguarde um momento e tente novamente.",
@@ -1825,6 +1934,33 @@ const PACKS = {
       "La connexion Google ou Microsoft n’est pas encore configurée dans cet environnement.",
     reviewLearnerUnavailable:
       "Un élève de ce brouillon n’est plus disponible. Choisissez à qui attribuer l’exercice avant de le publier.",
+    saveAndTrackResult: "Enregistrer le résultat et suivre les progrès",
+    saveResultExplanation:
+      "Enregistrez ce score sur votre compte et suivez les progrès au fil des séances d’entraînement.",
+    trackingSaveResultTitle: "Enregistrer le résultat de l’exercice",
+    trackingSaveResultExplanation:
+      "Choisissez ou ajoutez un élève pour enregistrer cet exercice. Son score et ses erreurs seront automatiquement conservés.",
+    saveResultAndContinue: "Enregistrer et voir les progrès",
+    resultSavedSuccess:
+      "Résultat enregistré ! Consultez le score, la précision et les erreurs ci-dessous.",
+    completedPracticeScore: "{accuracy} % ({correct}/{total} correctes)",
+    roleSelectTitle: "Sélectionnez votre rôle",
+    roleAdultOption: "Parent ou Enseignant",
+    roleAdultDesc:
+      "Créez des devoirs, suivez les progrès et gérez les listes de mots.",
+    roleStudentOption: "Élève",
+    roleStudentDesc:
+      "Entraînez-vous à l’orthographe — aucun compte ni connexion requis !",
+    roleStudentNoticeTitle: "Les élèves n’ont pas besoin de compte !",
+    roleStudentNoticeBody:
+      "Tous les tests et jeux d’orthographe sont 100 % gratuits sans connexion. Venez vous entraîner dès maintenant !",
+    roleGoPractice: "Aller à l’entraînement gratuit",
+    roleBackToSignIn: "Attendez, je suis parent ou enseignant",
+    studentAccountDetectedTitle: "Avis aux élèves",
+    studentAccountDetectedBody:
+      "Il semble que vous utilisiez un compte scolaire d’élève ({email}). Les élèves n’ont pas besoin de compte Workspace ! Tout est gratuit sur la page d’accueil.",
+    studentAccountConfirmEducator:
+      "Je suis enseignant ou parent utilisant cet e-mail",
     trackNextPractice: "S’entraîner avec suivi",
     trackingChooseLearner: "Choisissez un élève",
     trackingTitle: "Suivez le prochain exercice",
@@ -2033,14 +2169,14 @@ const PACKS = {
     unlockSavedLists: "Enregistrer plus de listes",
     unlockLearners: "Ajouter plus d’élèves",
     unlockSentences: "Débloquer les phrases exemples",
-    parentUpgradePrice: "Offre Parents · 7,99 $US/mois",
-    teacherUpgradePrice: "Offre Enseignants · 14,99 $US/mois",
-    parentUpgradeYearlyPrice: "Offre Parents · 79,90 $US/an",
-    teacherUpgradeYearlyPrice: "Offre Enseignants · 149,90 $US/an",
-    teacherPriceMonthly: "14,99 $US/mois",
-    parentPriceMonthly: "7,99 $US/mois",
-    orTeacherYearly: "ou 149,90 $US/an",
-    orParentYearly: "ou 79,90 $US/an",
+    parentUpgradePrice: "Offre Parents · 4,99 $US/mois",
+    teacherUpgradePrice: "Offre Enseignants · 9,99 $US/mois",
+    parentUpgradeYearlyPrice: "Offre Parents · 49,90 $US/an",
+    teacherUpgradeYearlyPrice: "Offre Enseignants · 99,90 $US/an",
+    teacherPriceMonthly: "9,99 $US/mois",
+    parentPriceMonthly: "4,99 $US/mois",
+    orTeacherYearly: "ou 99,90 $US/an",
+    orParentYearly: "ou 49,90 $US/an",
     printTakeHome: "Imprimer / Télécharger la liste à emporter",
     dueLabel: "Échéance",
     takeHomeTitle: "Liste d’orthographe à emporter",
@@ -2049,11 +2185,11 @@ const PACKS = {
     printFooterNote:
       "Pratique gratuite pour les élèves en ligne · Suivi enseignant dans Workspace",
     printFooterTeacherCta:
-      "Enseignants : Débloquez les résultats de la classe dès 14,99 $US/mois",
+      "Enseignants : Débloquez les résultats de la classe dès 9,99 $US/mois",
     printParentReport: "Bilan parents",
     previewPrint: "Aperçu avant impression",
-    unlockFullReportsCta: "Voir le forfait Enseignants · 14,99 $US/mois",
-    unlockMissedWordsCta: "Voir le forfait Enseignants · 14,99 $US/mois",
+    unlockFullReportsCta: "Voir le forfait Enseignants · 9,99 $US/mois",
+    unlockMissedWordsCta: "Voir le forfait Enseignants · 9,99 $US/mois",
     downloadSamplePdf: "Télécharger le PDF d’exemple",
     printSample: "Imprimer l’exemple",
     sampleStudentNickname: "Élève A (Exemple)",
@@ -2063,16 +2199,15 @@ const PACKS = {
     wordsToReview: "Mots à réviser cette semaine",
     reviewAdvice:
       "Révisez ces mots 2 à 3 fois cette semaine pour bien les maîtriser.",
-    sampleWatermark:
-      "ÉCHANTILLON / APERÇU · Offre Enseignants · 14,99 $US/mois",
+    sampleWatermark: "ÉCHANTILLON / APERÇU · Offre Enseignants · 9,99 $US/mois",
     sampleFooterNotice:
-      "Échantillon — bilans complets avec l'offre Enseignants · 14,99 $US/mois",
+      "Échantillon — bilans complets avec l'offre Enseignants · 9,99 $US/mois",
     printMissedWords: "Imprimer les mots manqués",
     missedWordsSheetTitle: "Fiche de révision des mots manqués",
     sampleMissedWordsWatermark:
-      "ÉCHANTILLON · Offre Enseignants · 14,99 $US/mois",
+      "ÉCHANTILLON · Offre Enseignants · 9,99 $US/mois",
     sampleMissedWordsNotice:
-      "Échantillon — Fiches complètes disponibles avec l’offre Enseignants · 14,99 $US/mois",
+      "Échantillon — Fiches complètes disponibles avec l’offre Enseignants · 9,99 $US/mois",
     lookCoverWriteCheck: "Regarder — Dire — Cacher — Écrire — Vérifier",
     classroomGuideTitle:
       "L'orthographe sur Google Classroom en 3 étapes simples",
@@ -2088,11 +2223,11 @@ const PACKS = {
     practiceAttempt1: "Essai 1",
     practiceAttempt2: "Essai 2",
     practiceAttempt3: "Essai 3",
-    upgradeParentMonthly: "Choisir l’offre Parents · 7,99 $US/mois",
-    upgradeTeacherMonthly: "Choisir l’offre Enseignants · 14,99 $US/mois",
+    upgradeParentMonthly: "Choisir l’offre Parents · 4,99 $US/mois",
+    upgradeTeacherMonthly: "Choisir l’offre Enseignants · 9,99 $US/mois",
     chooseUpgradePlan: "Choisissez l’usage qui vous correspond :",
     wholeClassTeacherMonthly:
-      "Pour toute une classe ? Voir Enseignants · 14,99 $US/mois",
+      "Pour toute une classe ? Voir Enseignants · 9,99 $US/mois",
     pendingUpgradeTitle: "Continuer avec {plan}",
     pendingUpgradeCopy:
       "Connectez-vous pour conserver votre choix. Vous décidez quand ouvrir le paiement sécurisé.",
@@ -2273,16 +2408,26 @@ const PACKS = {
       "Vous avez atteint la limite de l’offre Enseignant : 40 élèves. Archivez un profil inactif avant d’ajouter un nouvel élève.",
     smartReviewRequired:
       "La révision intelligente est incluse dans les offres Parents et Enseignants.",
-    featureTrialSignInCta: "Connexion : essai 7 jours",
+    featureTrialSignInCta: "Connexion : essai gratuit 30 jours",
     featureTrialSignInDetail:
-      "Les comptes gratuits incluent un essai de 7 jours pour l’import photo et la révision intelligente.",
-    featureTrialStatus: "Essai de 7 jours · plus que {time} · fin le {date}",
+      "Les comptes gratuits incluent 23 jours d’accès complet sans carte + 7 jours gratuits avec carte (30 jours au total) !",
+    featureTrialStatus:
+      "Essai de 23 jours · plus que {time} · fin le {date} (+7 jours avec carte)",
     featureTrialDay: "1 jour",
     featureTrialDays: "{count} jours",
     featureTrialHour: "1 heure",
     featureTrialHours: "{count} heures",
     featureTrialExpired:
-      "Votre essai gratuit de 7 jours pour l’import photo et la révision intelligente est terminé.",
+      "Votre essai gratuit de 23 jours est terminé. Ajoutez votre carte pour profiter de 7 jours d’essai gratuits supplémentaires !",
+    workspaceTrialActiveTitle: "Essai gratuit de 23 jours actif · reste {time}",
+    workspaceTrialActiveDesc:
+      "Toutes les fonctionnalités payantes sont débloquées sans carte. Ajoutez votre carte pour obtenir 7 JOURS GRATUITS DE PLUS (30 jours au total) ! Annulez à tout moment sans frais.",
+    workspaceTrialTotalTag: "23 jours + 7 jours avec carte = 30 jours au total",
+    workspaceTrialClaimCta: "Obtenir 7 jours gratuits en plus (avec carte)",
+    workspaceTrialExpiredTitle: "Votre essai gratuit de 23 jours est terminé",
+    workspaceTrialExpiredDesc:
+      "Ajoutez votre carte pour démarrer 7 jours d’accès gratuit avant la première facturation. 0 € aujourd’hui ; annulez à tout moment !",
+    workspaceTrialStart7DayCta: "Démarrer l’essai gratuit de 7 jours",
     proActive:
       "Votre offre payante est active. Les listes enregistrées, l’historique de maîtrise à long terme et la révision intelligente sont maintenant disponibles.",
     rateLimited: "Trop de demandes. Patientez un instant puis réessayez.",
@@ -2368,6 +2513,31 @@ const PACKS = {
       "Login Google atau Microsoft belum dikonfigurasi di lingkungan ini.",
     reviewLearnerUnavailable:
       "Salah satu pelajar dalam draf ini sudah tidak tersedia. Pilih penerima latihan sebelum menerbitkan.",
+    saveAndTrackResult: "Simpan hasil & lacak progres",
+    saveResultExplanation:
+      "Simpan skor ini ke akun Anda dan lacak kemajuan latihan secara berkelanjutan.",
+    trackingSaveResultTitle: "Simpan hasil latihan",
+    trackingSaveResultExplanation:
+      "Pilih atau tambah pelajar untuk menyimpan latihan ini. Skor dan kata yang salah akan otomatis tersimpan.",
+    saveResultAndContinue: "Simpan hasil & lihat progres",
+    resultSavedSuccess:
+      "Hasil latihan berhasil disimpan! Lihat skor, akurasi, dan kata yang salah di bawah.",
+    completedPracticeScore: "{accuracy}% ({correct}/{total} benar)",
+    roleSelectTitle: "Pilih peran Anda",
+    roleAdultOption: "Orang Tua atau Guru",
+    roleAdultDesc: "Buat tugas, lacak progres, dan kelola daftar kata.",
+    roleStudentOption: "Siswa",
+    roleStudentDesc: "Latihan mengeja kata — tidak perlu akun atau login!",
+    roleStudentNoticeTitle: "Siswa tidak memerlukan akun!",
+    roleStudentNoticeBody:
+      "Semua tes ejaan dan permainan 100% gratis tanpa perlu login. Langsung latihan sekarang!",
+    roleGoPractice: "Buka Latihan Gratis",
+    roleBackToSignIn: "Tunggu, saya orang tua atau guru",
+    studentAccountDetectedTitle: "Pemberitahuan untuk Siswa",
+    studentAccountDetectedBody:
+      "Sepertinya Anda menggunakan akun sekolah siswa ({email}). Siswa tidak memerlukan akun Workspace! Semuanya gratis di beranda.",
+    studentAccountConfirmEducator:
+      "Saya seorang guru atau orang tua yang menggunakan email ini",
     trackNextPractice: "Mulai latihan tercatat",
     trackingChooseLearner: "Pilih pelajar",
     trackingTitle: "Catat latihan berikutnya",
@@ -2572,14 +2742,14 @@ const PACKS = {
     unlockSavedLists: "Simpan lebih banyak daftar",
     unlockLearners: "Tambah profil pelajar",
     unlockSentences: "Buka contoh kalimat",
-    parentUpgradePrice: "Paket Orang Tua · US$7,99/bulan",
-    teacherUpgradePrice: "Paket Guru · US$14,99/bulan",
-    parentUpgradeYearlyPrice: "Paket Orang Tua · US$79,90/tahun",
-    teacherUpgradeYearlyPrice: "Paket Guru · US$149,90/tahun",
-    teacherPriceMonthly: "US$14,99/bulan",
-    parentPriceMonthly: "US$7,99/bulan",
-    orTeacherYearly: "atau US$149,90/tahun",
-    orParentYearly: "atau US$79,90/tahun",
+    parentUpgradePrice: "Paket Orang Tua · US$4,99/bulan",
+    teacherUpgradePrice: "Paket Guru · US$9,99/bulan",
+    parentUpgradeYearlyPrice: "Paket Orang Tua · US$49,90/tahun",
+    teacherUpgradeYearlyPrice: "Paket Guru · US$99,90/tahun",
+    teacherPriceMonthly: "US$9,99/bulan",
+    parentPriceMonthly: "US$4,99/bulan",
+    orTeacherYearly: "atau US$99,90/tahun",
+    orParentYearly: "atau US$49,90/tahun",
     printTakeHome: "Cetak / Unduh daftar bawa pulang",
     dueLabel: "Batas waktu",
     takeHomeTitle: "Daftar Ejaan Bawa Pulang",
@@ -2587,11 +2757,11 @@ const PACKS = {
     practiceLinesHeader: "Garis latihan (dikte)",
     printFooterNote:
       "Siswa berlatih gratis online · Guru memantau di Workspace",
-    printFooterTeacherCta: "Guru: Buka hasil kelas mulai US$14,99/bulan",
+    printFooterTeacherCta: "Guru: Buka hasil kelas mulai US$9,99/bulan",
     printParentReport: "Laporan orang tua",
     previewPrint: "Pratinjau cetak",
-    unlockFullReportsCta: "Lihat Paket Guru · US$14,99/bln",
-    unlockMissedWordsCta: "Lihat Paket Guru · US$14,99/bln",
+    unlockFullReportsCta: "Lihat Paket Guru · US$9,99/bln",
+    unlockMissedWordsCta: "Lihat Paket Guru · US$9,99/bln",
     downloadSamplePdf: "Unduh PDF contoh",
     printSample: "Cetak contoh",
     sampleStudentNickname: "Siswa A (Contoh)",
@@ -2600,14 +2770,14 @@ const PACKS = {
     parentReportTitle: "Laporan Perkembangan Ejaan Siswa",
     wordsToReview: "Kata untuk diulas minggu ini",
     reviewAdvice: "Latih kata-kata ini 2–3 kali minggu ini untuk menguasainya.",
-    sampleWatermark: "SAMPEL / PRATINJAU · Paket Guru · US$14,99/bulan",
+    sampleWatermark: "SAMPEL / PRATINJAU · Paket Guru · US$9,99/bulan",
     sampleFooterNotice:
-      "Sampel — laporan lengkap tersedia di Paket Guru · US$14,99/bulan",
+      "Sampel — laporan lengkap tersedia di Paket Guru · US$9,99/bulan",
     printMissedWords: "Cetak kata yang salah",
     missedWordsSheetTitle: "Lembar Latihan Kata yang Salah",
-    sampleMissedWordsWatermark: "SAMPEL · Paket Guru · US$14,99/bulan",
+    sampleMissedWordsWatermark: "SAMPEL · Paket Guru · US$9,99/bulan",
     sampleMissedWordsNotice:
-      "Sampel — Lembar lengkap kata yang sering salah tersedia di Paket Guru · US$14,99/bulan",
+      "Sampel — Lembar lengkap kata yang sering salah tersedia di Paket Guru · US$9,99/bulan",
     lookCoverWriteCheck: "Lihat — Ucapkan — Tutup — Tulis — Periksa",
     classroomGuideTitle: "Ejaan Google Classroom dalam 3 Langkah Mudah",
     classroomGuideBtn: "Panduan 1 Halaman Classroom (PDF)",
@@ -2622,11 +2792,11 @@ const PACKS = {
     practiceAttempt1: "Latihan 1",
     practiceAttempt2: "Latihan 2",
     practiceAttempt3: "Latihan 3",
-    upgradeParentMonthly: "Upgrade Paket Orang Tua · US$7,99/bulan",
-    upgradeTeacherMonthly: "Pilih Paket Guru · US$14,99/bulan",
+    upgradeParentMonthly: "Upgrade Paket Orang Tua · US$4,99/bulan",
+    upgradeTeacherMonthly: "Pilih Paket Guru · US$9,99/bulan",
     chooseUpgradePlan: "Pilih penggunaan yang sesuai:",
     wholeClassTeacherMonthly:
-      "Untuk seluruh kelas? Lihat Paket Guru · US$14,99/bulan",
+      "Untuk seluruh kelas? Lihat Paket Guru · US$9,99/bulan",
     pendingUpgradeTitle: "Lanjutkan dengan {plan}",
     pendingUpgradeCopy:
       "Masuk untuk menyimpan pilihan Anda. Anda menentukan kapan membuka checkout aman.",
@@ -2805,16 +2975,26 @@ const PACKS = {
       "Anda telah mencapai batas paket Guru sebanyak 40 profil pelajar. Arsipkan profil yang tidak aktif sebelum menambah pelajar baru.",
     smartReviewRequired:
       "Ulasan pintar tersedia pada Paket Orang Tua dan Guru.",
-    featureTrialSignInCta: "Masuk: uji coba 7 hari",
+    featureTrialSignInCta: "Masuk: uji coba gratis 30 hari",
     featureTrialSignInDetail:
-      "Akun gratis mendapat satu uji coba 7 hari untuk impor foto dan ulasan pintar.",
-    featureTrialStatus: "Uji coba 7 hari · sisa {time} · berakhir {date}",
+      "Akun gratis mendapat 23 hari akses penuh tanpa kartu + 7 hari gratis dengan kartu (total 30 hari)!",
+    featureTrialStatus:
+      "Uji coba 23 hari · sisa {time} · berakhir {date} (+7 hari dengan kartu)",
     featureTrialDay: "1 hari",
     featureTrialDays: "{count} hari",
     featureTrialHour: "1 jam",
     featureTrialHours: "{count} jam",
     featureTrialExpired:
-      "Uji coba gratis 7 hari untuk impor foto dan ulasan pintar sudah berakhir.",
+      "Uji coba gratis 23 hari Anda telah berakhir. Hubungkan kartu Anda untuk menikmati tambahan uji coba gratis 7 hari!",
+    workspaceTrialActiveTitle: "Uji Coba Gratis 23 Hari Aktif · sisa {time}",
+    workspaceTrialActiveDesc:
+      "Semua fitur berbayar terbuka tanpa kartu. Hubungkan kartu Anda sekarang untuk mendapatkan TAMBAHAN 7 HARI GRATIS (total uji coba 30 hari) — batalkan kapan saja tanpa biaya!",
+    workspaceTrialTotalTag: "23 hari + 7 hari dengan kartu = Total 30 hari",
+    workspaceTrialClaimCta: "Klaim Tambahan 7 Hari Gratis (Ikat Kartu)",
+    workspaceTrialExpiredTitle: "Uji coba gratis 23 hari Anda telah berakhir",
+    workspaceTrialExpiredDesc:
+      "Hubungkan kartu Anda sekarang untuk memulai akses gratis 7 hari sebelum penagihan pertama. Biaya hari ini US$0; batalkan kapan saja!",
+    workspaceTrialStart7DayCta: "Mulai Uji Coba Gratis 7 Hari",
     proActive:
       "Paket berbayar Anda aktif. Daftar tersimpan, riwayat penguasaan jangka panjang, dan ulasan pintar kini terbuka.",
     rateLimited: "Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.",
@@ -2884,6 +3064,30 @@ const PACKS = {
     authMissing: "当前环境尚未配置 Google 或 Microsoft 登录。",
     reviewLearnerUnavailable:
       "草稿中的孩子已归档或删除，请重新选择练习对象后再发布。",
+    saveAndTrackResult: "保存本次成绩并跟踪进度",
+    saveResultExplanation:
+      "将本次练习成绩保存到你的账号，持续跟踪后续各轮的进步情况。",
+    trackingSaveResultTitle: "保存本次练习成绩",
+    trackingSaveResultExplanation:
+      "选择或添加孩子或学生以保存本次练习。系统将自动记录得分、正确率与错词到学习记录中。",
+    saveResultAndContinue: "保存成绩并查看进度",
+    resultSavedSuccess:
+      "练习成绩已成功保存！可在下方查看得分、正确率与错词明细。",
+    completedPracticeScore: "{accuracy}% ({correct}/{total} 题正确)",
+    roleSelectTitle: "请选择你的身份",
+    roleAdultOption: "家长或老师",
+    roleAdultDesc: "创建作业、跟踪孩子学习进度并管理词表。",
+    roleStudentOption: "我是学生",
+    roleStudentDesc: "练习拼写单词 — 无需注册账号或密码！",
+    roleStudentNoticeTitle: "学生无需注册账号！",
+    roleStudentNoticeBody:
+      "所有拼写测验、打字下雨和追逐游戏均 100% 免费，无需登录。直接开始练习即可！",
+    roleGoPractice: "去免费练习拼写",
+    roleBackToSignIn: "等等，我是家长或老师",
+    studentAccountDetectedTitle: "学生账号提示",
+    studentAccountDetectedBody:
+      "检测到你使用的是学生学校账号（{email}）。学生练习拼写完全免费，无需登录 Workspace 账号！",
+    studentAccountConfirmEducator: "我确实是使用该邮箱的教职工或家长",
     trackNextPractice: "开始带记录练习",
     trackingChooseLearner: "选择孩子或学生",
     trackingTitle: "记录下一次练习",
@@ -3076,25 +3280,25 @@ const PACKS = {
     unlockSavedLists: "保存更多词表",
     unlockLearners: "添加更多孩子或学生",
     unlockSentences: "解锁例句功能",
-    parentUpgradePrice: "家长方案 · US$7.99/月",
-    teacherUpgradePrice: "教师方案 · US$14.99/月",
-    parentUpgradeYearlyPrice: "家长方案 · US$79.90/年",
-    teacherUpgradeYearlyPrice: "教师方案 · US$149.90/年",
-    teacherPriceMonthly: "US$14.99/月",
-    parentPriceMonthly: "US$7.99/月",
-    orTeacherYearly: "或 US$149.90/年",
-    orParentYearly: "或 US$79.90/年",
+    parentUpgradePrice: "家长方案 · US$4.99/月",
+    teacherUpgradePrice: "教师方案 · US$9.99/月",
+    parentUpgradeYearlyPrice: "家长方案 · US$49.90/年",
+    teacherUpgradeYearlyPrice: "教师方案 · US$99.90/年",
+    teacherPriceMonthly: "US$9.99/月",
+    parentPriceMonthly: "US$4.99/月",
+    orTeacherYearly: "或 US$99.90/年",
+    orParentYearly: "或 US$49.90/年",
     printTakeHome: "打印 / 下载家庭词表",
     dueLabel: "截止时间",
     takeHomeTitle: "家庭拼写词表",
     wordListHeader: "拼写单词与例句",
     practiceLinesHeader: "听写书写练习线",
     printFooterNote: "学生免登录免费在线练习 · 教师可在工作台追踪成绩",
-    printFooterTeacherCta: "教师方案：解锁班级完整成绩与错词分析 · US$14.99/月",
+    printFooterTeacherCta: "教师方案：解锁班级完整成绩与错词分析 · US$9.99/月",
     printParentReport: "家长小报",
     previewPrint: "预览打印样例",
-    unlockFullReportsCta: "查看教师方案 · US$14.99/月",
-    unlockMissedWordsCta: "查看教师方案 · US$14.99/月",
+    unlockFullReportsCta: "查看教师方案 · US$9.99/月",
+    unlockMissedWordsCta: "查看教师方案 · US$9.99/月",
     downloadSamplePdf: "下载样例 PDF",
     printSample: "打印样例",
     sampleStudentNickname: "学生 A（示例）",
@@ -3103,13 +3307,13 @@ const PACKS = {
     parentReportTitle: "学生拼写学习进度小报",
     wordsToReview: "本周重点巩固错词",
     reviewAdvice: "建议本周针对错词重新练习 2–3 遍以巩固掌握。",
-    sampleWatermark: "样例 / 预览 · 教师方案解锁完整小报 · US$14.99/月",
-    sampleFooterNotice: "样例 — 完整家长小报需升级教师方案 · US$14.99/月",
+    sampleWatermark: "样例 / 预览 · 教师方案解锁完整小报 · US$9.99/月",
+    sampleFooterNotice: "样例 — 完整家长小报需升级教师方案 · US$9.99/月",
     printMissedWords: "打印错词纸",
     missedWordsSheetTitle: "错词巩固练习纸",
-    sampleMissedWordsWatermark: "样例 · 教师方案 · US$14.99/月",
+    sampleMissedWordsWatermark: "样例 · 教师方案 · US$9.99/月",
     sampleMissedWordsNotice:
-      "样例 — 升级教师方案可打印完整错词练习单 · US$14.99/月",
+      "样例 — 升级教师方案可打印完整错词练习单 · US$9.99/月",
     lookCoverWriteCheck: "看词 — 读词 — 遮盖 — 默写 — 核对",
     classroomGuideTitle: "Google Classroom 拼写作业三步指南",
     classroomGuideBtn: "Classroom 布置一页指南 (PDF)",
@@ -3124,10 +3328,10 @@ const PACKS = {
     practiceAttempt1: "练习 1",
     practiceAttempt2: "练习 2",
     practiceAttempt3: "练习 3",
-    upgradeParentMonthly: "升级家长方案 · US$7.99/月",
-    upgradeTeacherMonthly: "选择教师方案 · US$14.99/月",
+    upgradeParentMonthly: "升级家长方案 · US$4.99/月",
+    upgradeTeacherMonthly: "选择教师方案 · US$9.99/月",
     chooseUpgradePlan: "请选择使用场景：",
-    wholeClassTeacherMonthly: "用于整个班级？查看教师方案 · US$14.99/月",
+    wholeClassTeacherMonthly: "用于整个班级？查看教师方案 · US$9.99/月",
     pendingUpgradeTitle: "继续选择{plan}",
     pendingUpgradeCopy: "登录后会保留你的选择，由你确认后再打开安全结账。",
     pendingCheckoutReview: "已保留以下选择；只有点击继续后才会打开结账页。",
@@ -3291,15 +3495,26 @@ const PACKS = {
     learnerLimitTeacher:
       "已达到教师方案最多 40 个学生档案的限制。请先归档不再使用的档案，再添加新学生。",
     smartReviewRequired: "智能错词复习包含在家长方案和教师方案中。",
-    featureTrialSignInCta: "登录开始 7 天试用",
+    featureTrialSignInCta: "登录体验 30 天超长试用",
     featureTrialSignInDetail:
-      "免费账号可试用拍照导入和智能复习 7 天，试用结束后需升级。",
-    featureTrialStatus: "7 天免费试用 · 剩余 {time} · {date} 结束",
+      "免费账号享 23 天全功能免绑卡试用 + 绑卡立领 7 天免费，共享 30 天超长试用！",
+    featureTrialStatus:
+      "23 天免费试用 · 剩余 {time} · {date} 结束（绑卡多享 7 天）",
     featureTrialDay: "1 天",
     featureTrialDays: "{count} 天",
     featureTrialHour: "1 小时",
     featureTrialHours: "{count} 小时",
-    featureTrialExpired: "拍照导入和智能复习的 7 天免费试用已结束。",
+    featureTrialExpired:
+      "你的 23 天免绑卡试用已结束。立即绑定银行卡即可额外享受 7 天免费试用！",
+    workspaceTrialActiveTitle: "23 天免卡试用进行中 · 剩余 {time}",
+    workspaceTrialActiveDesc:
+      "所有高级功能已全部开放，无需信用卡即可畅用。现在绑定银行卡即可额外免费多领 7 天（享满 30 天完整免费试用）！在到期前随时可以取消，绝不扣费。",
+    workspaceTrialTotalTag: "免卡 23 天 + 绑卡赠送 7 天 = 共 30 天免费",
+    workspaceTrialClaimCta: "绑卡立领 7 天免费（享满 30 天）",
+    workspaceTrialExpiredTitle: "你的 23 天免卡试用已结束",
+    workspaceTrialExpiredDesc:
+      "立即绑定银行卡，首期扣费前可享 7 天免费试用。今日支付 US$0，试用期内随时取消无任何扣费！",
+    workspaceTrialStart7DayCta: "立即开始 7 天免费试用",
     proActive: "你的付费方案已激活。已解锁词表保存、长期掌握度和智能错词复习。",
     rateLimited: "请求过于频繁，请稍后重试。",
     invalidSubmission: "本次提交数据无效，请重新开始作业后再试。",
@@ -3535,7 +3750,7 @@ const CLASSROOM_COPY = {
     classroomModalTitle: "Post to Classroom and see every student’s scores",
     classroomModalBody:
       "On Free you can still copy a practice link. Teacher Plan unlocks one-click Classroom sharing, per-student results, missed words, and CSV.",
-    classroomModalCta: "See Teacher Plan · $14.99/mo",
+    classroomModalCta: "See Teacher Plan · $9.99/mo",
     classroomModalCopyLink: "Copy practice link instead",
     classroomTeacherRequired:
       "Google Classroom sharing requires the Teacher Plan.",
@@ -3558,7 +3773,7 @@ const CLASSROOM_COPY = {
       "Publica en Classroom y consulta las notas de cada estudiante",
     classroomModalBody:
       "En el plan Gratis puedes copiar un enlace de práctica. El Plan Docente desbloquea compartir en Classroom con un clic, resultados individuales, palabras fallidas y CSV.",
-    classroomModalCta: "Ver Plan Docente · $14.99/mes",
+    classroomModalCta: "Ver Plan Docente · $9.99/mes",
     classroomModalCopyLink: "Copiar enlace de práctica en su lugar",
     classroomTeacherRequired:
       "Para compartir en Google Classroom necesitas el Plan para docentes.",
@@ -3582,7 +3797,7 @@ const CLASSROOM_COPY = {
     classroomModalTitle: "Publique no Classroom e veja as notas de cada aluno",
     classroomModalBody:
       "No plano Gratuito você pode copiar o link de treino. O Plano Professor libera compartilhamento no Classroom com um clique, resultados por aluno, palavras erradas e CSV.",
-    classroomModalCta: "Ver Plano Professor · US$ 14,99/mês",
+    classroomModalCta: "Ver Plano Professor · US$ 9,99/mês",
     classroomModalCopyLink: "Copiar link de treino",
     classroomTeacherRequired:
       "O compartilhamento no Google Classroom está disponível no Plano para Professores.",
@@ -3606,7 +3821,7 @@ const CLASSROOM_COPY = {
       "Publiez sur Classroom et consultez les scores de chaque élève",
     classroomModalBody:
       "Avec la formule Gratuite, vous pouvez copier un lien d’entraînement. Le forfait Enseignant débloque le partage Classroom en un clic, les résultats par élève, les mots manqués et l’export CSV.",
-    classroomModalCta: "Voir le forfait Enseignant · 14,99 $US/mois",
+    classroomModalCta: "Voir le forfait Enseignant · 9,99 $US/mois",
     classroomModalCopyLink: "Copier le lien d’entraînement",
     classroomTeacherRequired:
       "Le partage sur Google Classroom nécessite l’offre Enseignants.",
@@ -3630,7 +3845,7 @@ const CLASSROOM_COPY = {
     classroomModalTitle: "Posting ke Classroom dan lihat nilai setiap siswa",
     classroomModalBody:
       "Di paket Gratis Anda tetap bisa menyalin tautan latihan. Paket Guru membuka integrasi Classroom sekali klik, hasil per siswa, analisis kata salah, dan ekspor CSV.",
-    classroomModalCta: "Lihat Paket Guru · US$14,99/bulan",
+    classroomModalCta: "Lihat Paket Guru · US$9,99/bulan",
     classroomModalCopyLink: "Salin tautan latihan saja",
     classroomTeacherRequired:
       "Berbagi ke Google Classroom tersedia pada Paket Guru.",
@@ -3652,7 +3867,7 @@ const CLASSROOM_COPY = {
     classroomModalTitle: "发布到 Google Classroom 并查看每位学生的成绩",
     classroomModalBody:
       "免费版仍支持复制练习链接。升级教师方案可享 Classroom 一键分享、每位学生独立成绩、班级错词与 CSV 导出。",
-    classroomModalCta: "查看教师方案 · US$14.99/月",
+    classroomModalCta: "查看教师方案 · US$9.99/月",
     classroomModalCopyLink: "改用复制普通练习链接",
     classroomTeacherRequired: "Google Classroom 分享仅限教师方案。",
     classroomBody: "完成这份拼写作业。打开链接即可开始练习。",

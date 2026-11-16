@@ -1858,7 +1858,168 @@ async function createAssignment(env: Env, request: Request, userId: string) {
     },
     `assignment:${id}`,
   );
-  return { id, publicId, title, mode, maxAttempts, createdAt, expiresAt };
+
+  let initialAttemptId: string | null = null;
+  if (
+    body.initialAttempt &&
+    typeof body.initialAttempt === "object" &&
+    uniqueLearnerIds.length === 1
+  ) {
+    const init = body.initialAttempt as Record<string, unknown>;
+    const rawAnswers = Array.isArray(init.answers) ? init.answers : [];
+    const score =
+      Number.isInteger(init.score) && Number(init.score) >= 0
+        ? Number(init.score)
+        : 0;
+    const correctCount =
+      Number.isInteger(init.correctCount) && Number(init.correctCount) >= 0
+        ? Number(init.correctCount)
+        : 0;
+    const incorrectCount =
+      Number.isInteger(init.incorrectCount) && Number(init.incorrectCount) >= 0
+        ? Number(init.incorrectCount)
+        : 0;
+    const accuracy =
+      Number.isInteger(init.accuracy) &&
+      Number(init.accuracy) >= 0 &&
+      Number(init.accuracy) <= 100
+        ? Number(init.accuracy)
+        : Math.round(
+            (correctCount / Math.max(1, correctCount + incorrectCount)) * 100,
+          );
+    const durationSeconds =
+      Number.isInteger(init.durationSeconds) &&
+      Number(init.durationSeconds) >= 1 &&
+      Number(init.durationSeconds) <= 7200
+        ? Number(init.durationSeconds)
+        : 60;
+    const completedAt =
+      typeof init.completedAt === "string" &&
+      !Number.isNaN(Date.parse(init.completedAt))
+        ? init.completedAt
+        : createdAt;
+    const retentionExpiresAt = addDays(
+      completedAt,
+      PLAN_LIMITS[plan].retentionDays,
+    );
+    const monthKey = monthStart(new Date(completedAt));
+
+    const learner = await env.DB.prepare(
+      "SELECT id, name FROM learners WHERE id = ? AND owner_user_id = ?",
+    )
+      .bind(uniqueLearnerIds[0], userId)
+      .first<{ id: string; name: string }>();
+
+    if (learner) {
+      initialAttemptId = crypto.randomUUID();
+      const nickname = learner.name;
+      const nicknameKey = `learner:${learner.id}`;
+      const freeResultVisible =
+        plan !== "free" || !currentUsage.trackingTrialUsed ? 1 : 0;
+
+      const createdWords = await env.DB.prepare(
+        "SELECT id, word FROM assignment_words WHERE assignment_id = ?",
+      )
+        .bind(id)
+        .all<{ id: string; word: string }>();
+
+      const answerMap = new Map<string, boolean>();
+      for (const a of rawAnswers) {
+        if (a && typeof (a as Record<string, unknown>).word === "string") {
+          const item = a as Record<string, unknown>;
+          answerMap.set(
+            String(item.word).toLowerCase().trim(),
+            Boolean(item.correct),
+          );
+        }
+      }
+
+      const attemptStatements = [
+        env.DB.prepare(
+          `INSERT INTO attempts (
+            id, assignment_id, nickname, nickname_key, attempt_number, score,
+            correct_count, incorrect_count, accuracy, duration_seconds,
+            completed_at, retention_expires_at, status, learner_id, free_result_visible
+          ) VALUES (?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, 'completed', ?, ?)`,
+        ).bind(
+          initialAttemptId,
+          id,
+          nickname,
+          nicknameKey,
+          score,
+          correctCount,
+          incorrectCount,
+          accuracy,
+          durationSeconds,
+          completedAt,
+          retentionExpiresAt,
+          learner.id,
+          freeResultVisible,
+        ),
+        ...createdWords.results.map((w) => {
+          const isCorrect = answerMap.has(w.word.toLowerCase().trim())
+            ? answerMap.get(w.word.toLowerCase().trim())
+              ? 1
+              : 0
+            : 1;
+          return env.DB.prepare(
+            `INSERT INTO attempt_items (attempt_id, word_id, is_correct) VALUES (?, ?, ?)`,
+          ).bind(initialAttemptId, w.id, isCorrect);
+        }),
+        env.DB.prepare(
+          `INSERT INTO monthly_submission_usage (attempt_id, user_id, month_key, created_at) VALUES (?, ?, ?, ?)`,
+        ).bind(initialAttemptId, userId, monthKey, completedAt),
+      ];
+
+      await env.DB.batch(attemptStatements);
+
+      await recordLifecycleEvent(
+        env.DB,
+        userId,
+        "assignment_result_received",
+        {
+          assignment_id: id,
+          attempt_id: initialAttemptId,
+          learner_id: learner.id,
+          accuracy,
+          inherited_from_practice: true,
+        },
+        `attempt:${initialAttemptId}`,
+      );
+
+      await recordLifecycleEvent(
+        env.DB,
+        userId,
+        "first_bound_practice_started",
+        { assignment_id: id, learner_id: learner.id, inherited: true },
+        "first_bound_practice_started",
+      );
+
+      await recordLifecycleEvent(
+        env.DB,
+        userId,
+        "first_bound_practice_completed",
+        {
+          assignment_id: id,
+          learner_id: learner.id,
+          accuracy,
+          inherited: true,
+        },
+        "first_bound_practice_completed",
+      );
+    }
+  }
+
+  return {
+    id,
+    publicId,
+    title,
+    mode,
+    maxAttempts,
+    createdAt,
+    expiresAt,
+    attemptId: initialAttemptId,
+  };
 }
 
 async function updateAssignment(

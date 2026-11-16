@@ -1354,19 +1354,35 @@ export function renderSummary() {
   const stats = typingCompletionStats(gameState.spellingWordsProcessed, missed);
   document.getElementById("final-accuracy").textContent = `${stats.accuracy}%`;
   document.getElementById("final-missed").textContent = stats.missed_count;
+  const duration_seconds = Math.max(
+    0,
+    Math.round((Date.now() - gameState.startTime) / 1000),
+  );
   track("game_completed", {
     mode: "typing",
     ...stats,
-    duration_seconds: Math.max(
-      0,
-      Math.round((Date.now() - gameState.startTime) / 1000),
-    ),
+    duration_seconds,
     replay_round: gameState.replayRound,
   });
+  const words = currentWords();
+  const answers = words.map((w) => ({
+    word: w,
+    correct: !missed.includes(w),
+  }));
   renderResultWorkspaceCta({
     mode: "typing",
     wordCount: stats.word_count,
     missedCount: stats.missed_count,
+    completedResult: {
+      mode: "typing",
+      score: stats.correct_count,
+      correctCount: stats.correct_count,
+      incorrectCount: stats.missed_count,
+      accuracy: stats.accuracy,
+      durationSeconds: duration_seconds,
+      answers,
+      completedAt: new Date().toISOString(),
+    },
   });
 }
 
@@ -1510,11 +1526,24 @@ export function copyPracticeLink() {
   }
 }
 
-export function renderResultWorkspaceCta({ mode, wordCount, missedCount }) {
+let lastCompletedPracticeResult = null;
+
+export function renderResultWorkspaceCta({
+  mode,
+  wordCount,
+  missedCount,
+  completedResult = null,
+}) {
   const summary = document.getElementById("spelling-summary");
   if (!summary) return;
   summary.querySelector(".result-conversion")?.remove();
 
+  lastCompletedPracticeResult = completedResult || null;
+  const hasCompletedResult = Boolean(
+    completedResult &&
+      Array.isArray(completedResult.answers) &&
+      completedResult.answers.length > 0,
+  );
   const isShared = Boolean(readShareState(window.location).sharedLink);
   const block = document.createElement("section");
   block.className = "result-conversion";
@@ -1538,8 +1567,16 @@ export function renderResultWorkspaceCta({ mode, wordCount, missedCount }) {
       item.textContent = `✓ ${label}`;
       benefits.appendChild(item);
     });
-    button.textContent = t("workspaceSharedCtaButton");
-    footnote.textContent = t("workspaceSharedCtaFootnote");
+    button.textContent = productMessage(
+      hasCompletedResult ? "saveAndTrackResult" : "workspaceSharedCtaButton",
+      {},
+      getPageLocale(),
+    );
+    footnote.textContent = productMessage(
+      hasCompletedResult ? "saveResultExplanation" : "workspaceSharedCtaFootnote",
+      {},
+      getPageLocale(),
+    );
   } else {
     message.textContent = missedCount
       ? t("workspaceCtaMissed", { count: missedCount })
@@ -1554,19 +1591,19 @@ export function renderResultWorkspaceCta({ mode, wordCount, missedCount }) {
       benefits.appendChild(item);
     });
     button.textContent = productMessage(
-      "trackNextPractice",
+      hasCompletedResult ? "saveAndTrackResult" : "trackNextPractice",
       {},
       getPageLocale(),
     );
     footnote.textContent = productMessage(
-      "trackingExplanation",
+      hasCompletedResult ? "saveResultExplanation" : "trackingExplanation",
       {},
       getPageLocale(),
     );
   }
 
   button.addEventListener("click", () =>
-    openTeacherAssignment("practice_result"),
+    openTeacherAssignment("practice_result", completedResult),
   );
   block.append(message, benefits, button, footnote);
   summary.appendChild(block);
@@ -1597,7 +1634,11 @@ function isTeacherSignedIn() {
   return getAccount().then(Boolean);
 }
 
-export function openTeacherAssignment(entryPoint = "practice_result") {
+export function openTeacherAssignment(
+  entryPoint = "practice_result",
+  completedResult = null,
+) {
+  const resultToSave = completedResult || lastCompletedPracticeResult;
   const source = ["copy_track", "assign_homework", "practice_result"].includes(
     entryPoint,
   )
@@ -1630,9 +1671,12 @@ export function openTeacherAssignment(entryPoint = "practice_result") {
         exampleSentences: sentenceTextarea()?.value || "",
         mode: selectedMode(),
         entryPoint: source,
+        completedResult: resultToSave || null,
       },
       accountState?.user?.id,
     );
+  window.location.href = `/workspace/assignments/new?lang=${encodeURIComponent(getPageLocale())}${tracking ? "&tracking=1" : ""}`;
+}
   window.location.href = `/workspace/assignments/new?lang=${encodeURIComponent(getPageLocale())}${tracking ? "&tracking=1" : ""}`;
 }
 

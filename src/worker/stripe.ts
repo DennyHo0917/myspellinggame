@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { HttpError, resolvePlan } from "./domain";
+import { HttpError, resolvePlan, STRIPE_TRIAL_PERIOD_DAYS } from "./domain";
 import { recordLifecycleEvent } from "./lifecycle";
 
 export interface StripeEnv {
@@ -651,6 +651,7 @@ export async function createCheckout(
           billing_interval: interval,
         },
         subscription_data: {
+          trial_period_days: STRIPE_TRIAL_PERIOD_DAYS,
           metadata: {
             owner_user_id: user.id,
             plan,

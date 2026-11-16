@@ -49,7 +49,10 @@ checkoutButton.disabled = true;
 checkoutButton.textContent = productMessage("continueCheckout", {}, locale);
 const checkoutBar = document.createElement("div");
 checkoutBar.className = "pricing-checkout";
-checkoutBar.append(checkoutButton);
+const checkoutTrialNotice = document.createElement("p");
+checkoutTrialNotice.className = "pricing-checkout-trial-notice";
+checkoutTrialNotice.textContent = copy.workspaceTrialTotalTag;
+checkoutBar.append(checkoutButton, checkoutTrialNotice);
 document.querySelector(".pricing-toolbar")?.after(checkoutBar);
 let billingRequestPending = false;
 for (const choice of planChoices)
@@ -238,6 +241,9 @@ function syncPlanControls() {
   const selectedCurrent =
     currentAccount?.plan === plan &&
     currentAccount?.billingInterval === interval;
+  checkoutTrialNotice.hidden = ["parent", "teacher"].includes(
+    currentAccount?.plan,
+  );
   checkoutButton.disabled =
     billingRequestPending ||
     !["parent", "teacher"].includes(plan) ||

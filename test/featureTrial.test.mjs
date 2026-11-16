@@ -40,3 +40,21 @@ test("feature trial shows hours during the last day", () => {
   };
   assert.match(featureTrialLabel(trial, message, "en-US"), /hours left/);
 });
+
+test("workspace 30-day trial copy exists across all 6 locales", async () => {
+  const { PRODUCT_LOCALES, productMessages } = await import(
+    "../src/js/productLocale.mjs"
+  );
+  for (const [locale] of PRODUCT_LOCALES) {
+    const copy = productMessages(locale);
+    assert.ok(copy.workspaceTrialActiveTitle, `${locale}: workspaceTrialActiveTitle`);
+    assert.ok(copy.workspaceTrialActiveDesc, `${locale}: workspaceTrialActiveDesc`);
+    assert.ok(copy.workspaceTrialTotalTag, `${locale}: workspaceTrialTotalTag`);
+    assert.ok(copy.workspaceTrialClaimCta, `${locale}: workspaceTrialClaimCta`);
+    assert.ok(copy.workspaceTrialExpiredTitle, `${locale}: workspaceTrialExpiredTitle`);
+    assert.ok(copy.workspaceTrialExpiredDesc, `${locale}: workspaceTrialExpiredDesc`);
+    assert.ok(copy.workspaceTrialStart7DayCta, `${locale}: workspaceTrialStart7DayCta`);
+    assert.ok(copy.workspaceTrialTotalTag.includes("30"), `${locale}: 30 days in workspaceTrialTotalTag`);
+    assert.ok(copy.workspaceTrialTotalTag.includes("7"), `${locale}: 7 days in workspaceTrialTotalTag`);
+  }
+});

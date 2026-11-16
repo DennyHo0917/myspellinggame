@@ -2727,8 +2727,7 @@ function submissionLimitNotice(data, me = workspaceState?.me) {
   const { monthlyAttempts: used, limits } = data;
   const limit = limits.monthlyAttempts;
   if (limit === null) return null;
-  if (featureTrialActive(me?.featureTrial) && !data.lockedResultCount)
-    return null;
+  if (featureTrialActive(me?.featureTrial)) return null;
   const reached = used >= limit;
   const notice = document.createElement("div");
   notice.className = "notice submission-limit-notice";
@@ -3724,8 +3723,9 @@ function renderAssignmentsCard(
         assignment.status === "closed"
           ? copy.statusClosed
           : copy.statusPublished;
+      const inTrial = featureTrialActive(me.featureTrial);
       const isFreeLocked =
-        me.plan === "free" && assignment.locked_result_count > 0;
+        me.plan === "free" && !inTrial && assignment.locked_result_count > 0;
       const learnerCount =
         assignment.total_student_count ||
         assignment.student_count ||
@@ -3767,7 +3767,7 @@ function renderAssignmentsCard(
       }
       titleRow.append(title, state);
       body.append(titleRow, badges);
-      if (assignment.locked_result_count)
+      if (assignment.locked_result_count && !inTrial)
         body.append(
           lockedResultsNotice(assignment.locked_result_count, {
             practicedCount: learnerCount,
@@ -5727,7 +5727,9 @@ async function renderDetail(me, id, { force = false } = {}) {
     attempt_count: data.summary.attempts,
   });
 
-  const isFreeLocked = me.plan === "free" && data.lockedResultCount > 0;
+  const inTrial = featureTrialActive(me.featureTrial);
+  const isFreeLocked =
+    me.plan === "free" && !inTrial && data.lockedResultCount > 0;
   const practicedLearners =
     data.summary.practicedCount ||
     data.summary.students ||
@@ -5767,7 +5769,7 @@ async function renderDetail(me, id, { force = false } = {}) {
     statCard(copy.summarySubmissions, totalSubmissions),
   );
   summary.append(summaryTitle, grid);
-  if (data.lockedResultCount)
+  if (data.lockedResultCount && !inTrial)
     summary.append(lockedResultsNotice(data.lockedResultCount, data.summary));
   main.append(summary);
   const hasMissedWords = data.attempts.some(
@@ -5840,7 +5842,7 @@ async function renderDetail(me, id, { force = false } = {}) {
   resultTitle.textContent =
     me.plan === "free" || isParentPlan(me) ? copy.freeProgress : copy.results;
   results.append(resultTitle);
-  const hasLocked = data.lockedResultCount > 0;
+  const hasLocked = !inTrial && data.lockedResultCount > 0;
   const hasVisible = data.attempts.length > 0;
 
   if (!hasVisible && !hasLocked && practicedLearners === 0) {
@@ -6000,7 +6002,7 @@ async function renderDetail(me, id, { force = false } = {}) {
     table.append(body);
     wrap.append(table);
     results.append(wrap);
-    if (data.lockedResultCount > 0) {
+    if (data.lockedResultCount > 0 && !inTrial) {
       const tableNotice = document.createElement("p");
       tableNotice.className = "notice locked-table-footer-notice";
       tableNotice.textContent = copy.commonMissesFreeNotice;

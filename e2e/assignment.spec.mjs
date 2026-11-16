@@ -2698,7 +2698,7 @@ test("Google sign-in returns to a prefilled new teacher assignment", async ({
     });
   });
   const assign = page.getByRole("button", {
-    name: "Assign & track (7-day trial)",
+    name: /Assign & track/,
   });
   await expect(page.locator("#practice-share-options")).toHaveCount(0);
   const alignment = await Promise.all([

@@ -20,7 +20,7 @@ const MESSAGES = {
       "Turn a photo of the school list into editable spelling words in seconds.",
     exampleSentencesTitle: "Auto-fill example sentences",
     exampleSentencesKeepBenefit:
-      "Signing in starts a 7-day free trial of Photo Import, Smart Review, and Auto-fill Example Sentences.",
+      "Signing in starts a 30-day free trial of Photo Import, Smart Review, and Auto-fill Example Sentences.",
     exampleSentencesValue:
       "Fill matching example sentences instantly, then edit them before practice.",
     wordLimitValue: "Keep the whole list together with up to 40 words.",
@@ -47,7 +47,8 @@ const MESSAGES = {
       "23-day free trial · {time} left · ends {date} (+7 days with card)",
     photoImportFreeTrialCta: "Sign in: free trial + 7-day card bonus",
     photoImportPreviewTitle: "Words from your photo",
-    photoImportPreviewHelp: "Preview only. These words are not in your list yet.",
+    photoImportPreviewHelp:
+      "Preview only. These words are not in your list yet.",
     photoImportKeepBenefit:
       "Signing in gives full access with no card needed, plus a 7-day free trial when you add a card.",
     photoImportKeepCta: "Sign in: free trial + 7-day card bonus",
@@ -115,7 +116,7 @@ const MESSAGES = {
     workspaceCtaClean:
       "Great work. Save this list and track spelling progress over time.",
     workspaceCtaKeep: "Keep this spelling list",
-    workspaceCtaTrack: "7-day free trial of result tracking & Smart Review",
+    workspaceCtaTrack: "30-day free trial of result tracking & Smart Review",
     workspaceCtaCreate: "Create an assignment from these words",
     workspaceCtaButton: "Continue in Workspace",
     workspaceCtaFootnote: "Free account · No student account required",
@@ -162,7 +163,7 @@ const MESSAGES = {
       "Convierte una foto de la lista escolar en palabras editables en segundos.",
     exampleSentencesTitle: "Completar oraciones de ejemplo",
     exampleSentencesKeepBenefit:
-      "Al iniciar sesión comienza una prueba gratis de 7 días de oraciones de ejemplo automáticas, importación con foto y repaso inteligente.",
+      "Al iniciar sesión comienza una prueba gratis de 30 días de oraciones de ejemplo automáticas, importación con foto y repaso inteligente.",
     exampleSentencesValue:
       "Completa frases de ejemplo al instante y edítalas antes de practicar.",
     wordLimitValue: "Mantén la lista completa con hasta 40 palabras.",
@@ -221,7 +222,8 @@ const MESSAGES = {
     practiceOnlyTitle: "Solo practicar",
     practiceOnlyCopy: "Copia un enlace que pueden abrir y usar de inmediato.",
     recommendedTag: "Recomendado",
-    practiceOnlyMeta: "Sin iniciar sesión · No se guardan resultados ni errores",
+    practiceOnlyMeta:
+      "Sin iniciar sesión · No se guardan resultados ni errores",
     trackResultsTitle: "Seguir resultados",
     trackResultsCopy:
       "Consulta si terminaron, la puntuación y las palabras falladas.",
@@ -260,11 +262,13 @@ const MESSAGES = {
     workspaceCtaClean:
       "Buen trabajo. Guarda esta lista y sigue el progreso ortográfico con el tiempo.",
     workspaceCtaKeep: "Guarda esta lista de palabras",
-    workspaceCtaTrack: "Prueba gratis de 7 días: seguimiento y repaso inteligente",
+    workspaceCtaTrack:
+      "Prueba gratis de 30 días: seguimiento y repaso inteligente",
     workspaceCtaCreate: "Crea una tarea con estas palabras",
     workspaceCtaButton: "Continuar en el espacio de trabajo",
     workspaceCtaFootnote: "Cuenta gratis · Sin cuenta para estudiantes",
-    workspaceSharedCtaTitle: "¿Docente o familia? Da seguimiento a los resultados",
+    workspaceSharedCtaTitle:
+      "¿Docente o familia? Da seguimiento a los resultados",
     workspaceSharedCtaBenefit1:
       "Revisa la finalización y el porcentaje de aciertos",
     workspaceSharedCtaBenefit2: "Identifica qué palabras necesitan más repaso",
@@ -308,7 +312,7 @@ const MESSAGES = {
       "Transforme uma foto da lista escolar em palavras editáveis em segundos.",
     exampleSentencesTitle: "Preencher frases de exemplo",
     exampleSentencesKeepBenefit:
-      "Ao entrar, começa um teste grátis de 7 dias de frases de exemplo automáticas, importação por foto e revisão inteligente.",
+      "Ao entrar, começa um teste grátis de 30 dias de frases de exemplo automáticas, importação por foto e revisão inteligente.",
     exampleSentencesValue:
       "Preencha frases de exemplo na hora e edite antes da prática.",
     wordLimitValue: "Mantenha a lista completa com até 40 palavras.",
@@ -407,12 +411,12 @@ const MESSAGES = {
     workspaceCtaClean:
       "Muito bem. Guarde esta lista e acompanhe a evolução na ortografia.",
     workspaceCtaKeep: "Guarde esta lista de palavras",
-    workspaceCtaTrack: "Teste grátis de 7 dias: acompanhamento e revisão inteligente",
+    workspaceCtaTrack:
+      "Teste grátis de 30 dias: acompanhamento e revisão inteligente",
     workspaceCtaCreate: "Crie uma tarefa com estas palavras",
     workspaceCtaButton: "Continuar no Espaço de trabalho",
     workspaceCtaFootnote: "Conta grátis · Sem conta para os alunos",
-    workspaceSharedCtaTitle:
-      "Professores e famílias: Acompanhe os resultados",
+    workspaceSharedCtaTitle: "Professores e famílias: Acompanhe os resultados",
     workspaceSharedCtaBenefit1: "Veja quem concluiu e a taxa de acertos",
     workspaceSharedCtaBenefit2:
       "Identifique as palavras que precisam de mais treino",
@@ -455,7 +459,7 @@ const MESSAGES = {
       "Transformez la photo d’une liste scolaire en mots modifiables en quelques secondes.",
     exampleSentencesTitle: "Remplir les phrases d’exemple",
     exampleSentencesKeepBenefit:
-      "La connexion lance un essai gratuit de 7 jours des phrases d’exemple auto, de l’import photo et de la révision intelligente.",
+      "La connexion lance un essai gratuit de 30 jours des phrases d’exemple auto, de l’import photo et de la révision intelligente.",
     exampleSentencesValue:
       "Ajoutez instantanément des phrases d’exemple, puis modifiez-les avant l’exercice.",
     wordLimitValue: "Gardez toute la liste ensemble, jusqu’à 40 mots.",
@@ -553,13 +557,15 @@ const MESSAGES = {
     workspaceCtaClean:
       "Bravo. Gardez cette liste et suivez vos progrès d’orthographe.",
     workspaceCtaKeep: "Gardez cette liste de mots",
-    workspaceCtaTrack: "Essai gratuit 7 jours : suivi des résultats et révision intelligente",
+    workspaceCtaTrack:
+      "Essai gratuit 30 jours : suivi des résultats et révision intelligente",
     workspaceCtaCreate: "Créez un devoir avec ces mots",
     workspaceCtaButton: "Continuer dans l’espace de travail",
     workspaceCtaFootnote: "Compte gratuit · Sans compte élève requis",
     workspaceSharedCtaTitle:
       "Enseignants et parents : suivez les résultats de cet entraînement",
-    workspaceSharedCtaBenefit1: "Consultez la complétion et le taux de réussite",
+    workspaceSharedCtaBenefit1:
+      "Consultez la complétion et le taux de réussite",
     workspaceSharedCtaBenefit2: "Repérez les mots qui nécessitent une révision",
     workspaceSharedCtaBenefit3:
       "Créez gratuitement vos propres devoirs d'orthographe",
@@ -570,7 +576,8 @@ const MESSAGES = {
     lastMissedRetryBtn: "Réviser les erreurs",
     lastMissedSmartReviewBtn: "Révision intelligente",
     smartReviewPreviewTitle: "Révision intelligente",
-    smartReviewPreviewHelp: "Aperçu seulement. Cette série n’est pas enregistrée.",
+    smartReviewPreviewHelp:
+      "Aperçu seulement. Cette série n’est pas enregistrée.",
     smartReviewPreviewValue:
       "Les offres Famille et Enseignant enregistrent cette liste comme un devoir de révision.",
     smartReviewKeepBenefit:
@@ -600,7 +607,7 @@ const MESSAGES = {
       "Ubah foto daftar sekolah menjadi kata yang dapat diedit dalam hitungan detik.",
     exampleSentencesTitle: "Isi otomatis kalimat contoh",
     exampleSentencesKeepBenefit:
-      "Masuk untuk memulai uji coba gratis 7 hari isi otomatis kalimat contoh, impor foto, dan ulasan pintar.",
+      "Masuk untuk memulai uji coba gratis 30 hari isi otomatis kalimat contoh, impor foto, dan ulasan pintar.",
     exampleSentencesValue:
       "Isi kalimat contoh seketika, lalu edit sebelum mulai latihan.",
     wordLimitValue: "Pertahankan seluruh daftar hingga 40 kata.",
@@ -659,8 +666,7 @@ const MESSAGES = {
     practiceOnlyTitle: "Hanya latihan",
     practiceOnlyCopy: "Salin link yang bisa langsung dibuka untuk berlatih.",
     recommendedTag: "Disarankan",
-    practiceOnlyMeta:
-      "Tanpa login · Hasil dan kata yang salah tidak disimpan",
+    practiceOnlyMeta: "Tanpa login · Hasil dan kata yang salah tidak disimpan",
     trackResultsTitle: "Pantau hasil",
     trackResultsCopy: "Lihat penyelesaian, skor, dan kata yang salah.",
     trackResultsMeta: "Akun gratis · Anak tidak memerlukan akun",
@@ -698,7 +704,8 @@ const MESSAGES = {
     workspaceCtaClean:
       "Kerja bagus. Simpan daftar ini dan pantau perkembangan ejaanmu.",
     workspaceCtaKeep: "Simpan daftar kata ini",
-    workspaceCtaTrack: "Uji coba gratis 7 hari: pelacakan hasil & Ulasan Pintar",
+    workspaceCtaTrack:
+      "Uji coba gratis 30 hari: pelacakan hasil & Ulasan Pintar",
     workspaceCtaCreate: "Buat tugas dari kata-kata ini",
     workspaceCtaButton: "Lanjut ke Ruang kerja",
     workspaceCtaFootnote: "Akun gratis · Tanpa perlu akun siswa",
@@ -742,7 +749,7 @@ const MESSAGES = {
     photoImportValue: "拍下学校词表，几秒内转成可编辑的拼写单词。",
     exampleSentencesTitle: "自动填充例句",
     exampleSentencesKeepBenefit:
-      "登录后即可开始拍照导入、智能复习和自动填充例句的 7 天免费试用。",
+      "登录后即可开始拍照导入、智能复习和自动填充例句的 30 天免费试用。",
     exampleSentencesValue: "自动匹配例句，练习前仍可自由修改。",
     wordLimitValue: "整份词表一次练完，最多支持 40 个单词。",
     parentPlanMonthly: "家长方案 · US$4.99/月",
@@ -833,7 +840,7 @@ const MESSAGES = {
       "这次有 {count} 个错词。保留这份词表，持续追踪需要加强的内容。",
     workspaceCtaClean: "做得很好。保留这份词表，持续追踪练习进度。",
     workspaceCtaKeep: "保留这份单词表",
-    workspaceCtaTrack: "7 天免费试用：保存成绩追踪与错词智能复习",
+    workspaceCtaTrack: "30 天免费试用：保存成绩追踪与错词智能复习",
     workspaceCtaCreate: "用这些单词创建作业",
     workspaceCtaButton: "继续进入工作台",
     workspaceCtaFootnote: "免费账号 · 学生无需注册",

@@ -888,8 +888,8 @@ function historyCutoff(plan: Plan, now = new Date()) {
 }
 
 // Visibility is assigned once in the submission transaction, never by query order.
-function visibleResult(plan: Plan, alias = "at") {
-  return `${alias}.retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')${plan === "free" ? ` AND ${alias}.free_result_visible = 1` : ""}`;
+function visibleResult(plan: Plan, trialActive = false, alias = "at") {
+  return `${alias}.retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')${plan === "free" && !trialActive ? ` AND ${alias}.free_result_visible = 1` : ""}`;
 }
 
 async function usage(
@@ -942,7 +942,8 @@ async function usage(
     plan === "free" &&
     featureTrialFromStart(trialStartedAt, now.getTime()).active;
   return {
-    lockedResultCount: plan === "free" ? Number(locked?.count ?? 0) : 0,
+    lockedResultCount:
+      plan === "free" && !trialActive ? Number(locked?.count ?? 0) : 0,
     plan,
     limits: PLAN_LIMITS[plan],
     activeAssignments: Number(active?.count ?? 0),
@@ -972,6 +973,7 @@ async function listAssignments(
   db: D1Database,
   ownerUserId: string,
   plan: Plan,
+  trialActive = false,
 ) {
   const cutoff = historyCutoff(plan);
   const result = await db
@@ -981,7 +983,7 @@ async function listAssignments(
               (SELECT COUNT(*) FROM attempts locked WHERE locked.assignment_id = a.id
                AND locked.status = 'completed' AND locked.completed_at >= ?
                AND locked.retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
-               AND locked.free_result_visible = 0 AND ${plan === "free" ? 1 : 0}) AS locked_result_count,
+               AND locked.free_result_visible = 0 AND ${plan === "free" && !trialActive ? 1 : 0}) AS locked_result_count,
               (SELECT COUNT(DISTINCT all_at.nickname_key) FROM attempts all_at WHERE all_at.assignment_id = a.id
                AND all_at.status = 'completed' AND all_at.completed_at >= ?
                AND all_at.retention_expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) AS total_student_count,
@@ -998,7 +1000,7 @@ async function listAssignments(
                JOIN learners l ON l.id = al.learner_id
                WHERE al.assignment_id = a.id) AS assigned_learner_names
        FROM assignments a
-       LEFT JOIN attempts at ON at.assignment_id = a.id AND at.completed_at >= ? AND ${visibleResult(plan)}
+       LEFT JOIN attempts at ON at.assignment_id = a.id AND at.completed_at >= ? AND ${visibleResult(plan, trialActive)}
        WHERE a.owner_user_id = ?
        GROUP BY a.id
        ORDER BY a.created_at DESC`,
@@ -1012,6 +1014,7 @@ async function assignmentDetail(
   db: D1Database,
   assignment: AssignmentRow,
   plan: Plan,
+  trialActive = false,
 ) {
   const cutoff = historyCutoff(plan);
   const [
@@ -1066,7 +1069,7 @@ async function assignmentDetail(
          FROM attempts at
          LEFT JOIN attempt_items ai ON ai.attempt_id = at.id
          LEFT JOIN assignment_words aw ON aw.id = ai.word_id
-         WHERE at.assignment_id = ? AND at.completed_at >= ? AND ${visibleResult(plan)}
+         WHERE at.assignment_id = ? AND at.completed_at >= ? AND ${visibleResult(plan, trialActive)}
          GROUP BY at.id
          ORDER BY at.completed_at DESC`,
       )
@@ -1077,7 +1080,7 @@ async function assignmentDetail(
         `SELECT COUNT(CASE WHEN status = 'completed' THEN 1 END) AS attempts,
                 COUNT(DISTINCT nickname_key) AS students,
                 COALESCE(ROUND(AVG(CASE WHEN status = 'completed' THEN accuracy END)), 0) AS average_accuracy
-         FROM attempts at WHERE assignment_id = ? AND completed_at >= ? AND ${visibleResult(plan)}`,
+         FROM attempts at WHERE assignment_id = ? AND completed_at >= ? AND ${visibleResult(plan, trialActive)}`,
       )
       .bind(assignment.id, cutoff)
       .first<Record<string, number>>(),
@@ -1097,7 +1100,7 @@ async function assignmentDetail(
       .first(),
   ]);
   let missedWords: unknown[] | null = null;
-  if (PLAN_LIMITS[plan].missedWordStats) {
+  if (PLAN_LIMITS[plan].missedWordStats || trialActive) {
     missedWords = (
       await db
         .prepare(
@@ -1105,7 +1108,7 @@ async function assignmentDetail(
            FROM attempt_items ai
            JOIN attempts at ON at.id = ai.attempt_id
            JOIN assignment_words aw ON aw.id = ai.word_id
-           WHERE at.assignment_id = ? AND at.completed_at >= ? AND ${visibleResult(plan)}
+           WHERE at.assignment_id = ? AND at.completed_at >= ? AND ${visibleResult(plan, trialActive)}
              AND at.status = 'completed' AND ai.is_correct = 0
            GROUP BY aw.id ORDER BY misses DESC, aw.position LIMIT 10`,
         )
@@ -1115,7 +1118,8 @@ async function assignmentDetail(
   }
   return {
     ...assignment,
-    lockedResultCount: plan === "free" ? Number(locked?.count ?? 0) : 0,
+    lockedResultCount:
+      plan === "free" && !trialActive ? Number(locked?.count ?? 0) : 0,
     words: wordRows.results.map((word) => ({
       ...word,
       example_sentence: sanitizeExampleSentence(word.example_sentence),
@@ -1676,18 +1680,15 @@ async function smartReviewEnabled(env: Env, userId: string, plan: Plan) {
   return (await accountFeatureTrial(env, userId, plan))?.active === true;
 }
 
-async function featureTrialActiveForUser(
-  env: Env,
-  userId: string,
-  plan: Plan,
-) {
+async function featureTrialActiveForUser(env: Env, userId: string, plan: Plan) {
   if (plan !== "free") return false;
   const startedAt = await readFeatureTrialStart(env.DB, userId);
   return featureTrialFromStart(startedAt).active;
 }
 
 async function sentenceLibraryEnabled(env: Env, userId: string, plan: Plan) {
-  if (PLAN_LIMITS[plan].sentenceLibrary) return { allowed: true, expired: false };
+  if (PLAN_LIMITS[plan].sentenceLibrary)
+    return { allowed: true, expired: false };
   const startedAt = await readFeatureTrialStart(env.DB, userId);
   if (!startedAt) return { allowed: false, expired: false };
   const trial = featureTrialFromStart(startedAt);
@@ -1699,7 +1700,7 @@ async function assertSmartReview(env: Env, userId: string, plan: Plan) {
   throw new HttpError(
     403,
     "feature_trial_expired",
-    "The 7-day free trial of Photo Import, Smart Review, Auto-fill Example Sentences, and Tracked Results has ended.",
+    "The 30-day free trial of Photo Import, Smart Review, Auto-fill Example Sentences, and Tracked Results has ended.",
   );
 }
 
@@ -2613,14 +2614,15 @@ async function exportCsv(
   db: D1Database,
   assignment: AssignmentRow,
   plan: Plan,
+  trialActive = false,
 ) {
-  if (!PLAN_LIMITS[plan].csvExport)
+  if (!PLAN_LIMITS[plan].csvExport && !trialActive)
     throw new HttpError(
       403,
       "pro_required",
       "CSV export is included in the Teacher Plan.",
     );
-  const detail = await assignmentDetail(db, assignment, plan);
+  const detail = await assignmentDetail(db, assignment, plan, trialActive);
   const lines = [
     [
       "Nickname",
@@ -3640,7 +3642,7 @@ async function handleBusinessRequest(
       throw new HttpError(
         403,
         "feature_trial_expired",
-        "The 7-day free trial of Photo Import, Smart Review, Auto-fill Example Sentences, and Tracked Results has ended.",
+        "The 30-day free trial of Photo Import, Smart Review, Auto-fill Example Sentences, and Tracked Results has ended.",
       );
     return json({ allowed: true, featureTrial });
   }
@@ -3697,7 +3699,7 @@ async function handleBusinessRequest(
         throw new HttpError(
           403,
           "feature_trial_expired",
-          "The 7-day free trial of Photo Import, Smart Review, Auto-fill Example Sentences, and Tracked Results has ended.",
+          "The 30-day free trial of Photo Import, Smart Review, Auto-fill Example Sentences, and Tracked Results has ended.",
         );
       throw new HttpError(
         403,
@@ -3808,6 +3810,7 @@ async function handleBusinessRequest(
     const user = await requireTeacher(env, request, getSession);
     if (method === "GET") {
       const plan = await getPlan(env, user.id);
+      const trialActive = await featureTrialActiveForUser(env, user.id, plan);
       const learners = await listLearners(env.DB, user.id, plan);
       const includeProgress =
         request.headers.get("x-workspace-review-counts") === "1";
@@ -3826,7 +3829,7 @@ async function handleBusinessRequest(
           })
         : learners;
       return json({
-        assignments: await listAssignments(env.DB, user.id, plan),
+        assignments: await listAssignments(env.DB, user.id, plan, trialActive),
         savedLists: await listSavedLists(env.DB, user.id),
         learners: learnersWithProgress,
         missedWords: includeProgress
@@ -3969,10 +3972,13 @@ async function handleBusinessRequest(
       assignmentMatch[1],
       user.id,
     );
-    if (method === "GET")
+    if (method === "GET") {
+      const plan = await getPlan(env, user.id);
+      const trialActive = await featureTrialActiveForUser(env, user.id, plan);
       return json(
-        await assignmentDetail(env.DB, assignment, await getPlan(env, user.id)),
+        await assignmentDetail(env.DB, assignment, plan, trialActive),
       );
+    }
     if (method === "PATCH") {
       requireSameOrigin(request);
       return json(await updateAssignment(env, request, assignment, user.id));
@@ -4019,7 +4025,9 @@ async function handleBusinessRequest(
       exportMatch[1],
       user.id,
     );
-    return exportCsv(env.DB, assignment, await getPlan(env, user.id));
+    const plan = await getPlan(env, user.id);
+    const trialActive = await featureTrialActiveForUser(env, user.id, plan);
+    return exportCsv(env.DB, assignment, plan, trialActive);
   }
 
   if (url.pathname === "/api/billing/purchase" && method === "GET") {

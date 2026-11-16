@@ -293,7 +293,7 @@ const PACKS = {
     submissionLimitReached:
       "Your free tracking trial is used. Upgrade to view further results within 14 days. Ordinary practice stays free.",
     unlimited: "Unlimited full results",
-    unlimitedTrial: "Unlimited full results (7-day trial)",
+    unlimitedTrial: "Unlimited full results (30-day trial)",
     studentUsage: "{used} student nicknames stored",
     noAssignments: "No assignments yet. Create one to share with students.",
     recentAssignments: "Recent assignments",
@@ -645,7 +645,7 @@ const PACKS = {
       "Turn missed words across assignments into a focused review list in one click.",
     smartReviewUpgrade: "Smart Review is included in Parent and Teacher Plans.",
     smartReviewPreview:
-      "{count} words currently need review. Free accounts can save a review assignment during a 7-day trial. After that, Parent and Teacher plans keep Smart Review.",
+      "{count} words currently need review. Free accounts can save a review assignment during a 30-day trial. After that, Parent and Teacher plans keep Smart Review.",
     smartReviewSessionTitle: "Smart Review",
     smartReviewSessionHelp: "Preview only. This review is not saved.",
     smartReviewSessionValue:
@@ -864,7 +864,7 @@ const PACKS = {
     submissionLimitReached:
       "Ya usaste la prueba de seguimiento. Elige un plan de pago para ver los siguientes resultados antes de 14 días. La práctica habitual sigue gratis.",
     unlimited: "Resultados completos sin límite",
-    unlimitedTrial: "Resultados completos sin límite (prueba de 7 días)",
+    unlimitedTrial: "Resultados completos sin límite (prueba de 30 días)",
     studentUsage: "{used} apodos guardados",
     noAssignments:
       "Todavía no hay tareas. Crea una para compartirla con estudiantes.",
@@ -1223,7 +1223,7 @@ const PACKS = {
     smartReviewUpgrade:
       "El repaso inteligente está incluido en los planes para familias y docentes.",
     smartReviewPreview:
-      "Ahora mismo hay {count} palabras que necesitan repaso. Las cuentas gratis pueden guardar una tarea de repaso durante 7 días de prueba. Después, sigue en los planes Familiar y Docente.",
+      "Ahora mismo hay {count} palabras que necesitan repaso. Las cuentas gratis pueden guardar una tarea de repaso durante 30 días de prueba. Después, sigue en los planes Familiar y Docente.",
     smartReviewSessionTitle: "Repaso inteligente",
     smartReviewSessionHelp: "Solo una vista previa. Esta ronda no se guarda.",
     smartReviewSessionValue:
@@ -1441,7 +1441,7 @@ const PACKS = {
     submissionLimitReached:
       "Você já usou o teste de acompanhamento. Assine para ver os próximos resultados em até 14 dias. A prática comum continua gratuita.",
     unlimited: "Resultados completos sem limite",
-    unlimitedTrial: "Resultados completos sem limite (teste de 7 dias)",
+    unlimitedTrial: "Resultados completos sem limite (teste de 30 dias)",
     studentUsage: "{used} apelidos armazenados",
     noAssignments:
       "Ainda não há tarefas. Crie uma para compartilhar com alunos.",
@@ -1800,7 +1800,7 @@ const PACKS = {
     smartReviewUpgrade:
       "A revisão inteligente está incluída nos planos para Pais e Professores.",
     smartReviewPreview:
-      "Atualmente, {count} palavras precisam de revisão. Contas grátis podem salvar uma tarefa de revisão durante o teste de 7 dias. Depois, ela segue nos planos Família e Professor.",
+      "Atualmente, {count} palavras precisam de revisão. Contas grátis podem salvar uma tarefa de revisão durante o teste de 30 dias. Depois, ela segue nos planos Família e Professor.",
     smartReviewSessionTitle: "Revisão inteligente",
     smartReviewSessionHelp: "Só uma prévia. Esta rodada não é salva.",
     smartReviewSessionValue:
@@ -2018,7 +2018,7 @@ const PACKS = {
     submissionLimitReached:
       "Votre essai du suivi est utilisé. Abonnez-vous pour consulter les résultats suivants sous 14 jours. L’entraînement classique reste gratuit.",
     unlimited: "Résultats complets illimités",
-    unlimitedTrial: "Résultats complets illimités (essai 7 jours)",
+    unlimitedTrial: "Résultats complets illimités (essai 30 jours)",
     studentUsage: "{used} pseudonymes conservés",
     noAssignments:
       "Aucun devoir pour le moment. Créez-en un à partager avec les élèves.",
@@ -2381,7 +2381,7 @@ const PACKS = {
     smartReviewUpgrade:
       "La révision intelligente est incluse dans les offres Parents et Enseignants.",
     smartReviewPreview:
-      "{count} mots nécessitent actuellement une révision. Les comptes gratuits peuvent enregistrer un devoir pendant un essai de 7 jours. Ensuite, la révision reste dans les offres Famille et Enseignant.",
+      "{count} mots nécessitent actuellement une révision. Les comptes gratuits peuvent enregistrer un devoir pendant un essai de 30 jours. Ensuite, la révision reste dans les offres Famille et Enseignant.",
     smartReviewSessionTitle: "Révision intelligente",
     smartReviewSessionHelp:
       "Aperçu seulement. Cette série n’est pas enregistrée.",
@@ -2600,7 +2600,7 @@ const PACKS = {
     submissionLimitReached:
       "Uji coba pelacakan Anda sudah terpakai. Berlangganan untuk melihat hasil berikutnya dalam 14 hari. Latihan biasa tetap gratis.",
     unlimited: "Hasil lengkap tanpa batas",
-    unlimitedTrial: "Hasil lengkap tanpa batas (uji coba 7 hari)",
+    unlimitedTrial: "Hasil lengkap tanpa batas (uji coba 30 hari)",
     studentUsage: "{used} nama panggilan tersimpan",
     noAssignments: "Belum ada tugas. Buat tugas untuk dibagikan kepada siswa.",
     recentAssignments: "Tugas terbaru",
@@ -2955,7 +2955,7 @@ const PACKS = {
       "Ubah kata yang salah dari berbagai tugas menjadi daftar latihan terarah dalam satu klik.",
     smartReviewUpgrade: "Ulasan pintar tersedia pada Paket Orang Tua dan Guru.",
     smartReviewPreview:
-      "Saat ini ada {count} kata yang perlu diulas. Akun gratis dapat menyimpan tugas ulasan selama uji coba 7 hari. Setelah itu, ulasan pintar tetap di paket Orang Tua dan Guru.",
+      "Saat ini ada {count} kata yang perlu diulas. Akun gratis dapat menyimpan tugas ulasan selama uji coba 30 hari. Setelah itu, ulasan pintar tetap di paket Orang Tua dan Guru.",
     smartReviewSessionTitle: "Ulasan pintar",
     smartReviewSessionHelp: "Hanya pratinjau. Sesi ini tidak disimpan.",
     smartReviewSessionValue:
@@ -3151,7 +3151,7 @@ const PACKS = {
     submissionLimitReached:
       "免费追踪体验已用完。升级可查看后续结果，请在 14 天保留期内查看；普通练习始终免费。",
     unlimited: "完整结果不限量",
-    unlimitedTrial: "完整结果不限量（7 天试用内）",
+    unlimitedTrial: "完整结果不限量（30 天试用内）",
     studentUsage: "已保存 {used} 个学生昵称",
     noAssignments: "还没有作业。创建一份后即可分享给学生。",
     recentAssignments: "最近作业",
@@ -3484,7 +3484,7 @@ const PACKS = {
     smartReviewValue: "一键汇总多次作业中的错词，生成针对性的复习词表。",
     smartReviewUpgrade: "家长方案和教师方案支持创建智能错词复习作业。",
     smartReviewPreview:
-      "当前有 {count} 个单词需要复习。免费账号可在 7 天试用内保存复习作业；试用结束后，智能复习保留在家长方案和教师方案中。",
+      "当前有 {count} 个单词需要复习。免费账号可在 30 天试用内保存复习作业；试用结束后，智能复习保留在家长方案和教师方案中。",
     smartReviewSessionTitle: "智能复习",
     smartReviewSessionHelp: "这只是预览，这次复习不会保存。",
     smartReviewSessionValue: "家长方案和教师方案会把这份词表保存为复习作业。",

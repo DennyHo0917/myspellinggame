@@ -18,7 +18,7 @@ module.exports = {
     pricingDescription:
       "Compare Free, Parent, and Teacher spelling plans. Teacher Plan includes Google Classroom sharing and class PINs.",
     teacherDescription:
-      "Create spelling assignments and track results. Signed-in free accounts get a 7-day trial of Photo Import, auto-fill sentences, tracked results, and Smart Review. Teacher Plan adds Google Classroom sharing, class PINs, and CSV reports.",
+      "Create spelling assignments and track results. Signed-in free accounts get a 30-day trial of Photo Import, auto-fill sentences, tracked results, and Smart Review. Teacher Plan adds Google Classroom sharing, class PINs, and CSV reports.",
     teacherIntro:
       "Create assignments from the exact words your class is learning and follow results in Workspace. Teacher Plan also lets you share assignments to Google Classroom.",
     faqIntro: "Teacher Plan also includes sharing to Google Classroom.",
@@ -135,7 +135,7 @@ module.exports = {
     pricingDescription:
       "对比 My Spelling Game 免费、家长和教师方案。教师方案包含 Google Classroom 作业分享和全班 PIN 入口。",
     teacherDescription:
-      "创建英语拼写作业并追踪练习结果。登录后的免费账号可享 7 天试用：拍照导入、自动配例句、作业结果追踪与智能复习。教师方案提供 Google Classroom 分享、全班 PIN 入口和 CSV 报告。",
+      "创建英语拼写作业并追踪练习结果。登录后的免费账号可享 30 天试用：拍照导入、自动配例句、作业结果追踪与智能复习。教师方案提供 Google Classroom 分享、全班 PIN 入口和 CSV 报告。",
     teacherIntro:
       "用班级正在学习的单词创建作业，在工作台追踪练习结果。教师方案还可将作业分享到 Google Classroom。",
     faqIntro: "教师方案还支持分享到 Google Classroom。",

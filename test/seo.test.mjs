@@ -1015,7 +1015,9 @@ test("llms.txt publishes the current product summary and canonical sources", () 
   ])
     assert.ok(content.includes(text), text);
   assert.ok(
-    content.includes("one 7-day trial of Photo Import and Smart Review"),
+    content.includes(
+      "one 7-day trial of Photo Import, Smart Review, automatic example sentences, and tracked assignment results",
+    ),
   );
   assert.ok(content.includes("not part of the 7-day trial"));
   assert.ok(!content.includes("15 student submissions per month"));

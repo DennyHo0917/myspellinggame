@@ -466,6 +466,51 @@ describe("shared 7-day photo import and smart review trial", () => {
     expect(me.featureTrial).toBeNull();
     expect(await trialStart(teacherA.id)).toBeNull();
   });
+
+  it("allows unlimited visible tracked results during the 7-day trial and locks new ones after expiry", async () => {
+    await call("/api/me");
+    const created = await createAssignment(teacherA, {
+      tracking: true,
+      trackingAudience: "shared",
+      learnerIds: [],
+    });
+    expect(created.response.status).toBe(201);
+    const publicId = String(created.body.publicId);
+    const assignment = await publicWords(publicId);
+    for (const nickname of ["Alex", "Blake", "Casey"]) {
+      expect(
+        (await submit(publicId, assignment.words, { nickname })).status,
+      ).toBe(201);
+    }
+    const duringTrial = (await (
+      await call(`/api/assignments/${created.body.id}`)
+    ).json()) as { attempts: unknown[]; lockedResultCount: number };
+    expect(duringTrial.attempts).toHaveLength(3);
+    expect(duringTrial.lockedResultCount).toBe(0);
+
+    await bindings.DB.prepare(
+      "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
+    )
+      .bind(new Date(Date.now() - 8 * day).toISOString(), teacherA.id)
+      .run();
+    expect(
+      (await submit(publicId, assignment.words, { nickname: "AfterTrial" }))
+        .status,
+    ).toBe(201);
+    const afterTrial = (await (
+      await call(`/api/assignments/${created.body.id}`)
+    ).json()) as { attempts: unknown[]; lockedResultCount: number };
+    expect(afterTrial.attempts).toHaveLength(3);
+    expect(afterTrial.lockedResultCount).toBe(1);
+
+    const denied = await createAssignment(teacherA, {
+      tracking: true,
+      trackingAudience: "shared",
+      learnerIds: [],
+    });
+    expect(denied.response.status).toBe(403);
+    expect(denied.body.error).toBe("tracking_trial_used");
+  });
 });
 
 describe("shared tracking entry", () => {

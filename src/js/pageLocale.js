@@ -18,6 +18,9 @@ const MESSAGES = {
       "Photo import is included in Parent and Teacher Plans.",
     photoImportValue:
       "Turn a photo of the school list into editable spelling words in seconds.",
+    exampleSentencesTitle: "Auto-fill example sentences",
+    exampleSentencesKeepBenefit:
+      "Signing in starts a 7-day free trial of Photo Import, Smart Review, and Auto-fill Example Sentences.",
     exampleSentencesValue:
       "Fill matching example sentences instantly, then edit them before practice.",
     wordLimitValue: "Keep the whole list together with up to 40 words.",
@@ -39,16 +42,13 @@ const MESSAGES = {
     photoImportNoWords: "No spelling words found. Try a clearer photo.",
     photoImportError: "We couldn’t read that image. Please try again.",
     photoImportRetry: "Try again",
+    photoImportChooseAnother: "Choose another photo",
     photoImportTrialStatus:
       "23-day free trial · {time} left · ends {date} (+7 days with card)",
     photoImportFreeTrialCta: "Sign in: free trial + 7-day card bonus",
     photoImportPreviewTitle: "Words from your photo",
     photoImportPreviewHelp: "Preview only. These words are not in your list yet.",
     photoImportKeepBenefit:
-      "Signing in gives full access with no card needed, plus a 7-day free trial when you add a card.",
-    photoImportKeepCta: "Sign in: free trial + 7-day card bonus",
-    featureTrialStatus:
-      "23-day free trial · {time} left · ends {date} (+7 days with card)",
     featureTrialDay: "1 day",
     featureTrialDays: "{count} days",
     featureTrialHour: "1 hour",
@@ -107,14 +107,14 @@ const MESSAGES = {
     dictationMissed: "{count} words to practice again",
     dictationPerfect: "Perfect score. No missed words.",
     workspaceCtaMissed:
-      "You missed {count} words. Keep this list and track what needs more practice.",
+      "You missed {count} words. Save this list and track what needs more practice.",
     workspaceCtaClean:
-      "Great work. Keep this list and track progress over time.",
+      "Great work. Save this list and track spelling progress over time.",
     workspaceCtaKeep: "Keep this spelling list",
-    workspaceCtaTrack: "Track progress over time",
+    workspaceCtaTrack: "7-day free trial of result tracking & Smart Review",
     workspaceCtaCreate: "Create an assignment from these words",
     workspaceCtaButton: "Continue in Workspace",
-    workspaceCtaFootnote: "Free account · Google or Microsoft sign-in",
+    workspaceCtaFootnote: "Free account · No student account required",
     workspaceSharedCtaTitle:
       "Teachers & Parents: Want to track practice results?",
     workspaceSharedCtaBenefit1: "See completion status and accuracy",
@@ -131,8 +131,6 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Parent and Teacher plans save this list as a review assignment.",
     smartReviewKeepBenefit:
-      "Signing in gives full access with no card needed, plus a 7-day free trial when you add a card.",
-    smartReviewKeepCta: "Sign in: free trial + 7-day card bonus",
     smartReviewPrompt: "Listen and spell the word",
     smartReviewHear: "Hear word",
     smartReviewCheck: "Check",
@@ -156,6 +154,9 @@ const MESSAGES = {
       "La importación desde fotos está incluida en los planes para familias y docentes.",
     photoImportValue:
       "Convierte una foto de la lista escolar en palabras editables en segundos.",
+    exampleSentencesTitle: "Completar oraciones de ejemplo",
+    exampleSentencesKeepBenefit:
+      "Al iniciar sesión comienza una prueba gratis de 7 días de oraciones de ejemplo automáticas, importación con foto y repaso inteligente.",
     exampleSentencesValue:
       "Completa frases de ejemplo al instante y edítalas antes de practicar.",
     wordLimitValue: "Mantén la lista completa con hasta 40 palabras.",
@@ -179,16 +180,13 @@ const MESSAGES = {
       "No se encontraron palabras. Prueba con una foto más clara.",
     photoImportError: "No se pudo leer la imagen. Inténtalo de nuevo.",
     photoImportRetry: "Intentar de nuevo",
+    photoImportChooseAnother: "Elegir otra foto",
     photoImportTrialStatus:
       "Prueba de 23 días · quedan {time} · termina el {date} (+7 días con tarjeta)",
     photoImportFreeTrialCta: "Entra: prueba con 7 días extra por tarjeta",
     photoImportPreviewTitle: "Palabras de tu foto",
     photoImportPreviewHelp: "Solo una vista previa: aún no están en tu lista.",
     photoImportKeepBenefit:
-      "Al entrar disfrutas de funciones avanzadas, más 7 días gratis extra al añadir tarjeta.",
-    photoImportKeepCta: "Entra: prueba con 7 días extra por tarjeta",
-    featureTrialStatus:
-      "Prueba de 23 días · quedan {time} · termina el {date} (+7 días con tarjeta)",
     featureTrialDay: "1 día",
     featureTrialDays: "{count} días",
     featureTrialHour: "1 hora",
@@ -250,12 +248,12 @@ const MESSAGES = {
     workspaceCtaMissed:
       "Has fallado {count} palabras. Guarda esta lista y sigue lo que necesitas practicar.",
     workspaceCtaClean:
-      "Buen trabajo. Guarda esta lista y sigue tu progreso con el tiempo.",
+      "Buen trabajo. Guarda esta lista y sigue el progreso ortográfico con el tiempo.",
     workspaceCtaKeep: "Guarda esta lista de palabras",
-    workspaceCtaTrack: "Sigue tu progreso con el tiempo",
+    workspaceCtaTrack: "Prueba gratis de 7 días: seguimiento y repaso inteligente",
     workspaceCtaCreate: "Crea una tarea con estas palabras",
     workspaceCtaButton: "Continuar en el espacio de trabajo",
-    workspaceCtaFootnote: "Cuenta gratis · Acceso con Google o Microsoft",
+    workspaceCtaFootnote: "Cuenta gratis · Sin cuenta para estudiantes",
     workspaceSharedCtaTitle: "¿Docente o familia? Da seguimiento a los resultados",
     workspaceSharedCtaBenefit1:
       "Revisa la finalización y el porcentaje de aciertos",
@@ -272,8 +270,6 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Los planes Familiar y Docente guardan esta lista como una tarea de repaso.",
     smartReviewKeepBenefit:
-      "Al entrar disfrutas de funciones avanzadas, más 7 días gratis extra al añadir tarjeta.",
-    smartReviewKeepCta: "Entra: prueba con 7 días extra por tarjeta",
     smartReviewPrompt: "Escucha y escribe la palabra",
     smartReviewHear: "Escuchar",
     smartReviewCheck: "Comprobar",
@@ -298,6 +294,9 @@ const MESSAGES = {
       "A importação por foto está incluída nos planos para Pais e Professores.",
     photoImportValue:
       "Transforme uma foto da lista escolar em palavras editáveis em segundos.",
+    exampleSentencesTitle: "Preencher frases de exemplo",
+    exampleSentencesKeepBenefit:
+      "Ao entrar, começa um teste grátis de 7 dias de frases de exemplo automáticas, importação por foto e revisão inteligente.",
     exampleSentencesValue:
       "Preencha frases de exemplo na hora e edite antes da prática.",
     wordLimitValue: "Mantenha a lista completa com até 40 palavras.",
@@ -321,16 +320,13 @@ const MESSAGES = {
       "Nenhuma palavra foi encontrada. Tente uma foto mais nítida.",
     photoImportError: "Não foi possível ler a imagem. Tente novamente.",
     photoImportRetry: "Tentar novamente",
+    photoImportChooseAnother: "Escolher outra foto",
     photoImportTrialStatus:
       "Teste de 23 dias · faltam {time} · termina em {date} (+7 dias com cartão)",
     photoImportFreeTrialCta: "Entre: teste com 7 dias extras por cartão",
     photoImportPreviewTitle: "Palavras da sua foto",
     photoImportPreviewHelp: "Só uma prévia: ainda não entraram na sua lista.",
     photoImportKeepBenefit:
-      "Entrar libera recursos avançados, mais 7 dias grátis extras ao adicionar cartão.",
-    photoImportKeepCta: "Entre: teste com 7 dias extras por cartão",
-    featureTrialStatus:
-      "Teste de 23 dias · faltam {time} · termina em {date} (+7 dias com cartão)",
     featureTrialDay: "1 dia",
     featureTrialDays: "{count} dias",
     featureTrialHour: "1 hora",
@@ -393,12 +389,12 @@ const MESSAGES = {
     workspaceCtaMissed:
       "Você errou {count} palavras. Guarde esta lista e acompanhe o que precisa de mais prática.",
     workspaceCtaClean:
-      "Muito bem. Guarde esta lista e acompanhe seu progresso ao longo do tempo.",
+      "Muito bem. Guarde esta lista e acompanhe a evolução na ortografia.",
     workspaceCtaKeep: "Guarde esta lista de palavras",
-    workspaceCtaTrack: "Acompanhe seu progresso ao longo do tempo",
+    workspaceCtaTrack: "Teste grátis de 7 dias: acompanhamento e revisão inteligente",
     workspaceCtaCreate: "Crie uma tarefa com estas palavras",
     workspaceCtaButton: "Continuar no Espaço de trabalho",
-    workspaceCtaFootnote: "Conta grátis · Login com Google ou Microsoft",
+    workspaceCtaFootnote: "Conta grátis · Sem conta para os alunos",
     workspaceSharedCtaTitle:
       "Professores e famílias: Acompanhe os resultados",
     workspaceSharedCtaBenefit1: "Veja quem concluiu e a taxa de acertos",
@@ -416,8 +412,6 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Os planos Família e Professor salvam esta lista como uma tarefa de revisão.",
     smartReviewKeepBenefit:
-      "Entrar libera recursos avançados, mais 7 dias grátis extras ao adicionar cartão.",
-    smartReviewKeepCta: "Entre: teste com 7 dias extras por cartão",
     smartReviewPrompt: "Ouça e escreva a palavra",
     smartReviewHear: "Ouvir",
     smartReviewCheck: "Conferir",
@@ -441,6 +435,9 @@ const MESSAGES = {
       "L’importation par photo est incluse dans les offres Parents et Enseignants.",
     photoImportValue:
       "Transformez la photo d’une liste scolaire en mots modifiables en quelques secondes.",
+    exampleSentencesTitle: "Remplir les phrases d’exemple",
+    exampleSentencesKeepBenefit:
+      "La connexion lance un essai gratuit de 7 jours des phrases d’exemple auto, de l’import photo et de la révision intelligente.",
     exampleSentencesValue:
       "Ajoutez instantanément des phrases d’exemple, puis modifiez-les avant l’exercice.",
     wordLimitValue: "Gardez toute la liste ensemble, jusqu’à 40 mots.",
@@ -463,16 +460,13 @@ const MESSAGES = {
     photoImportNoWords: "Aucun mot trouvé. Essayez une photo plus nette.",
     photoImportError: "Impossible de lire cette image. Réessayez.",
     photoImportRetry: "Réessayer",
+    photoImportChooseAnother: "Choisir une autre photo",
     photoImportTrialStatus:
       "Essai de 23 jours · plus que {time} · fin le {date} (+7 jours avec carte)",
     photoImportFreeTrialCta: "Connexion : essai avec 7 jours offerts par carte",
     photoImportPreviewTitle: "Mots de votre photo",
     photoImportPreviewHelp: "Aperçu seulement : pas encore dans votre liste.",
     photoImportKeepBenefit:
-      "La connexion débloque les fonctions avancées, plus 7 jours gratuits avec carte.",
-    photoImportKeepCta: "Connexion : essai avec 7 jours offerts par carte",
-    featureTrialStatus:
-      "Essai de 23 jours · plus que {time} · fin le {date} (+7 jours avec carte)",
     featureTrialDay: "1 jour",
     featureTrialDays: "{count} jours",
     featureTrialHour: "1 heure",
@@ -535,12 +529,12 @@ const MESSAGES = {
     workspaceCtaMissed:
       "Vous avez manqué {count} mots. Gardez cette liste et suivez les mots à retravailler.",
     workspaceCtaClean:
-      "Bravo. Gardez cette liste et suivez vos progrès au fil du temps.",
+      "Bravo. Gardez cette liste et suivez vos progrès d’orthographe.",
     workspaceCtaKeep: "Gardez cette liste de mots",
-    workspaceCtaTrack: "Suivez vos progrès au fil du temps",
+    workspaceCtaTrack: "Essai gratuit 7 jours : suivi des résultats et révision intelligente",
     workspaceCtaCreate: "Créez un devoir avec ces mots",
     workspaceCtaButton: "Continuer dans l’espace de travail",
-    workspaceCtaFootnote: "Compte gratuit · Connexion Google ou Microsoft",
+    workspaceCtaFootnote: "Compte gratuit · Sans compte élève requis",
     workspaceSharedCtaTitle:
       "Enseignants et parents : suivez les résultats de cet entraînement",
     workspaceSharedCtaBenefit1: "Consultez la complétion et le taux de réussite",
@@ -558,8 +552,6 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Les offres Famille et Enseignant enregistrent cette liste comme un devoir de révision.",
     smartReviewKeepBenefit:
-      "La connexion débloque les fonctions avancées, plus 7 jours gratuits avec carte.",
-    smartReviewKeepCta: "Connexion : essai avec 7 jours offerts par carte",
     smartReviewPrompt: "Écoutez et écrivez le mot",
     smartReviewHear: "Écouter",
     smartReviewCheck: "Vérifier",
@@ -582,6 +574,9 @@ const MESSAGES = {
     photoImportRequired: "Impor foto tersedia dalam Paket Orang Tua dan Guru.",
     photoImportValue:
       "Ubah foto daftar sekolah menjadi kata yang dapat diedit dalam hitungan detik.",
+    exampleSentencesTitle: "Isi otomatis kalimat contoh",
+    exampleSentencesKeepBenefit:
+      "Masuk untuk memulai uji coba gratis 7 hari isi otomatis kalimat contoh, impor foto, dan ulasan pintar.",
     exampleSentencesValue:
       "Isi kalimat contoh seketika, lalu edit sebelum mulai latihan.",
     wordLimitValue: "Pertahankan seluruh daftar hingga 40 kata.",
@@ -605,16 +600,13 @@ const MESSAGES = {
       "Tidak ada kata yang ditemukan. Coba foto yang lebih jelas.",
     photoImportError: "Gambar tidak dapat dibaca. Coba lagi.",
     photoImportRetry: "Coba lagi",
+    photoImportChooseAnother: "Pilih foto lain",
     photoImportTrialStatus:
       "Uji coba 23 hari · sisa {time} · berakhir {date} (+7 hari dengan kartu)",
     photoImportFreeTrialCta: "Masuk: uji coba dengan bonus 7 hari kartu",
     photoImportPreviewTitle: "Kata dari fotomu",
     photoImportPreviewHelp: "Baru pratinjau, belum masuk daftar latihan.",
     photoImportKeepBenefit:
-      "Masuk memberi akses fitur lengkap, ditambah bonus 7 hari gratis dengan kartu.",
-    photoImportKeepCta: "Masuk: uji coba dengan bonus 7 hari kartu",
-    featureTrialStatus:
-      "Uji coba 23 hari · sisa {time} · berakhir {date} (+7 hari dengan kartu)",
     featureTrialDay: "1 hari",
     featureTrialDays: "{count} hari",
     featureTrialHour: "1 jam",
@@ -676,12 +668,12 @@ const MESSAGES = {
     workspaceCtaMissed:
       "Kamu melewatkan {count} kata. Simpan daftar ini dan pantau kata yang perlu lebih banyak latihan.",
     workspaceCtaClean:
-      "Kerja bagus. Simpan daftar ini dan pantau kemajuanmu dari waktu ke waktu.",
+      "Kerja bagus. Simpan daftar ini dan pantau perkembangan ejaanmu.",
     workspaceCtaKeep: "Simpan daftar kata ini",
-    workspaceCtaTrack: "Pantau kemajuan dari waktu ke waktu",
+    workspaceCtaTrack: "Uji coba gratis 7 hari: pelacakan hasil & Ulasan Pintar",
     workspaceCtaCreate: "Buat tugas dari kata-kata ini",
     workspaceCtaButton: "Lanjut ke Ruang kerja",
-    workspaceCtaFootnote: "Akun gratis · Masuk dengan Google atau Microsoft",
+    workspaceCtaFootnote: "Akun gratis · Tanpa perlu akun siswa",
     workspaceSharedCtaTitle: "Guru & Orang Tua: Ingin memantau hasil latihan?",
     workspaceSharedCtaBenefit1: "Lihat status penyelesaian dan nilai akurasi",
     workspaceSharedCtaBenefit2: "Ketahui kata mana yang masih sering salah",
@@ -697,8 +689,6 @@ const MESSAGES = {
     smartReviewPreviewValue:
       "Paket Orang Tua dan Guru menyimpan daftar ini sebagai tugas ulasan.",
     smartReviewKeepBenefit:
-      "Masuk memberi akses fitur lengkap, ditambah bonus 7 hari gratis dengan kartu.",
-    smartReviewKeepCta: "Masuk: uji coba dengan bonus 7 hari kartu",
     smartReviewPrompt: "Dengarkan dan eja katanya",
     smartReviewHear: "Dengarkan",
     smartReviewCheck: "Periksa",
@@ -720,6 +710,9 @@ const MESSAGES = {
     photoImport: "拍照导入",
     photoImportRequired: "拍照导入包含在家长方案和教师方案中。",
     photoImportValue: "拍下学校词表，几秒内转成可编辑的拼写单词。",
+    exampleSentencesTitle: "自动填充例句",
+    exampleSentencesKeepBenefit:
+      "登录后即可开始拍照导入、智能复习和自动填充例句的 7 天免费试用。",
     exampleSentencesValue: "自动匹配例句，练习前仍可自由修改。",
     wordLimitValue: "整份词表一次练完，最多支持 40 个单词。",
     parentPlanMonthly: "家长方案 · US$4.99/月",
@@ -739,16 +732,6 @@ const MESSAGES = {
     photoImportNoWords: "没有识别到单词，请换一张更清晰的照片。",
     photoImportError: "图片识别失败，请重试。",
     photoImportRetry: "重新识别",
-    photoImportTrialStatus:
-      "23 天免费试用 · 剩余 {time} · {date} 结束（绑卡多享 7 天）",
-    photoImportFreeTrialCta: "登录享免卡试用 + 绑卡立赠 7 天",
-    photoImportPreviewTitle: "照片里的单词",
-    photoImportPreviewHelp: "这只是预览，尚未加入练习词表。",
-    photoImportKeepBenefit:
-      "登录即享高级功能试用，绑定银行卡额外再赠 7 天免费试用。",
-    photoImportKeepCta: "登录享免卡试用 + 绑卡立赠 7 天",
-    featureTrialStatus:
-      "23 天免费试用 · 剩余 {time} · {date} 结束（绑卡多享 7 天）",
     featureTrialDay: "1 天",
     featureTrialDays: "{count} 天",
     featureTrialHour: "1 小时",
@@ -809,10 +792,10 @@ const MESSAGES = {
       "这次有 {count} 个错词。保留这份词表，持续追踪需要加强的内容。",
     workspaceCtaClean: "做得很好。保留这份词表，持续追踪练习进度。",
     workspaceCtaKeep: "保留这份单词表",
-    workspaceCtaTrack: "持续追踪练习进度",
+    workspaceCtaTrack: "7 天免费试用：保存成绩追踪与错词智能复习",
     workspaceCtaCreate: "用这些单词创建作业",
     workspaceCtaButton: "继续进入工作台",
-    workspaceCtaFootnote: "免费账号 · 使用 Google 或 Microsoft 登录",
+    workspaceCtaFootnote: "免费账号 · 学生无需注册",
     workspaceSharedCtaTitle: "老师与家长：想追踪这次练习的成绩吗？",
     workspaceSharedCtaBenefit1: "查看完成情况与拼写正确率",
     workspaceSharedCtaBenefit2: "精准定位哪些单词还需要重点重练",
@@ -825,9 +808,6 @@ const MESSAGES = {
     smartReviewPreviewTitle: "智能复习",
     smartReviewPreviewHelp: "这只是预览，这次复习不会保存。",
     smartReviewPreviewValue: "家长方案和教师方案会把这份词表保存为复习作业。",
-    smartReviewKeepBenefit:
-      "免费账号免卡试用，绑卡额外多享 7 天免费。",
-    smartReviewKeepCta: "登录享免卡试用 + 绑卡立赠 7 天",
     smartReviewPrompt: "听写这个单词",
     smartReviewHear: "听单词",
     smartReviewCheck: "检查",

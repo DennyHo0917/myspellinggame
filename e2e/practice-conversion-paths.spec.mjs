@@ -219,12 +219,13 @@ test("empty photo previews do not call accept, and an active trial can confirm m
     return route.fulfill({ json: { allowed: true, featureTrial: trial } });
   });
   await page.goto("/");
-  await expect(page.locator("#feature-trial-note")).toContainText("7-day");
+  await expect(page.locator(".feature-trial-note")).toHaveCount(0);
   await page.locator("#photo-import-input").setInputFiles({
     name: "words.png",
     mimeType: "image/png",
     buffer: Buffer.from("image"),
   });
+  await expect(page.locator("#feature-trial-note")).toContainText("7-day");
   const input = page.locator("#photo-import-review-words");
   await input.fill("");
   await page.locator(".photo-import-review-actions button").first().click();

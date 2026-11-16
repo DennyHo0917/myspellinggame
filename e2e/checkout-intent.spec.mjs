@@ -57,9 +57,8 @@ test("pricing purchase resumes after login exactly once; failure requires retry 
     });
   });
   await page.goto("/pricing");
-  await page.locator('[data-plan-option="year"]').click();
+  await page.locator('[data-plan-card="parent"] [data-plan-option="year"]').click();
   await page.locator('[data-plan-choice="parent"]').click();
-  await page.locator("[data-checkout-cta]").click();
   await expect(page).toHaveURL(/\/workspace\?lang=en#teacher-sign-in$/);
   expect(calls).toBe(0);
   await page
@@ -70,12 +69,12 @@ test("pricing purchase resumes after login exactly once; failure requires retry 
     "aria-pressed",
     "true",
   );
-  await expect(page.locator('[data-plan-option="year"]')).toHaveAttribute(
+  await expect(page.locator('[data-plan-card="parent"] [data-plan-option="year"]')).toHaveAttribute(
     "aria-pressed",
     "true",
   );
   expect(calls).toBe(0);
-  await page.locator("[data-checkout-cta]").click();
+  await page.locator('[data-plan-choice="parent"]').click();
   await expect(page.locator(".checkout-retry-notice")).toBeVisible();
   expect(calls).toBe(1);
   await expect(page.locator(".pending-checkout-notice")).toHaveCount(0);
@@ -85,7 +84,7 @@ test("pricing purchase resumes after login exactly once; failure requires retry 
     "aria-pressed",
     "true",
   );
-  await expect(page.locator('[data-plan-option="year"]')).toHaveAttribute(
+  await expect(page.locator('[data-plan-card="parent"] [data-plan-option="year"]')).toHaveAttribute(
     "aria-pressed",
     "true",
   );
@@ -205,7 +204,7 @@ test("fresh login intent returns to the selected pricing plan without opening ch
     "aria-pressed",
     "true",
   );
-  await expect(page.locator("[data-checkout-cta]")).toBeEnabled();
+  await expect(page.locator('[data-plan-choice="parent"]')).toBeEnabled();
   expect(calls).toBe(0);
   await page.goto("/workspace?lang=en");
   await expect(page.locator(".workspace-loading")).toHaveCount(0);

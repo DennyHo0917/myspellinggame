@@ -1368,7 +1368,7 @@ test("practice advises signed-in plans after 20 words and preserves hard limits"
       .getByRole("link", { name: "Continue free with 25 words" }),
   ).toHaveAttribute("href", "/workspace?lang=en#teacher-sign-in");
 
-  await page.getByRole("button", { name: "Copy practice link" }).click();
+  await page.getByRole("button", { name: "Share link" }).click();
   await page
     .locator(".practice-share-option", { hasText: "Practice only" })
     .click();
@@ -1528,7 +1528,7 @@ test("Copy practice link chooses anonymous practice before copying", async ({
   await page.locator("#custom-word-list").fill("because\nfriend");
   await page.locator('input[name="practice-mode"][value="typing"]').check();
 
-  const trigger = page.getByRole("button", { name: "Copy practice link" });
+  const trigger = page.getByRole("button", { name: "Share link" });
   await trigger.click();
   const chooser = page.locator("#practice-share-options");
   await expect(chooser).toBeVisible();
@@ -1588,7 +1588,7 @@ test("Practice only keeps the existing prompt fallback", async ({ page }) => {
     };
   });
   await page.goto("/");
-  await page.getByRole("button", { name: "Copy practice link" }).click();
+  await page.getByRole("button", { name: "Share link" }).click();
   await page
     .locator(".practice-share-option", { hasText: "Practice only" })
     .click();
@@ -1715,7 +1715,7 @@ test("Track results skips anonymous copying and opens the simplified tracking fl
     });
   });
 
-  await page.getByRole("button", { name: "Copy practice link" }).click();
+  await page.getByRole("button", { name: "Share link" }).click();
   await page
     .locator(".practice-share-option", { hasText: "Track results" })
     .click();
@@ -1827,7 +1827,7 @@ test("signed-in Track results opens tracking setup directly", async ({
     }),
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "Copy practice link" }).click();
+  await page.getByRole("button", { name: "Share link" }).click();
   await page
     .locator(".practice-share-option", { hasText: "Track results" })
     .click();
@@ -2698,7 +2698,7 @@ test("Google sign-in returns to a prefilled new teacher assignment", async ({
     });
   });
   const assign = page.getByRole("button", {
-    name: "Assign homework",
+    name: "Assign & track (7-day trial)",
   });
   await expect(page.locator("#practice-share-options")).toHaveCount(0);
   const alignment = await Promise.all([
@@ -2783,14 +2783,17 @@ test("Parent plan starts Checkout with its plan and interval", async ({
 
   await page.goto("/pricing");
   const parent = page.getByRole("button", {
-    name: "Photo Import + Smart Review",
+    name: "Select Parent Plan",
   });
   await parent.scrollIntoViewIfNeeded();
   await expect
     .poll(() => analyticsEvents(page, "upgrade_viewed"))
     .toHaveLength(1);
-  await page.getByRole("button", { name: "Yearly plan" }).click();
-  await page.locator("[data-checkout-cta]").click();
+  await page
+    .locator('[data-plan-card="parent"]')
+    .getByRole("button", { name: "Yearly" })
+    .click();
+  await parent.click();
   await expect(page).toHaveURL(/#parent-checkout$/);
   expect(checkoutBody).toEqual({
     plan: "parent",
@@ -2836,7 +2839,6 @@ test("Teacher plan starts Checkout with its plan and interval", async ({
 
   await page.goto("/pricing");
   await page.getByRole("button", { name: "Select Teacher Plan" }).click();
-  await page.locator("[data-checkout-cta]").click();
   await expect(page).toHaveURL(/#teacher-checkout$/);
   expect(checkoutBody).toEqual({
     plan: "teacher",
@@ -3043,7 +3045,6 @@ test("new assignment survives checkout retry and restores after activation", asy
   await page.locator('input[name="learnerId"]').check({ force: true });
   await page.getByRole("link", { name: "Upgrade to add more words" }).click();
   await page.locator('[data-plan-choice="teacher"]').click();
-  await page.locator("[data-checkout-cta]").click();
   await expect(
     page.getByRole("button", { name: "Try checkout again" }),
   ).toBeVisible();
@@ -3157,8 +3158,11 @@ test("saved-list edit returns after checkout cancellation without overwriting ne
     });
   await page.getByRole("link", { name: "Upgrade to add more words" }).click();
   await page.locator('[data-plan-choice="teacher"]').click();
-  await page.locator("[data-checkout-cta]").click();
   await page.waitForURL(/\/pricing\?checkout=cancelled$/);
+  await page
+    .locator(".checkout-cancelled-notice")
+    .getByRole("link", { name: "Return to workspace" })
+    .click();
   await expect(page).toHaveURL(/\/workspace\/saved-lists\?lang=en$/);
   await expect(page.getByLabel("List title")).toHaveValue("Draft list");
   await expect(page.getByLabel("Spelling words")).toHaveValue(limitWords(26));
@@ -3470,9 +3474,18 @@ test("mobile conversion pages keep their key actions usable", async ({
   ).toHaveAttribute("href", "/workspace?lang=en#teacher-sign-in");
   await expect(page.getByText("Unlimited full results").first()).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Yearly plan", exact: true }),
+    page
+      .locator('[data-plan-card="parent"]')
+      .getByRole("button", { name: "Monthly", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
-  await page.getByRole("button", { name: "Yearly plan", exact: true }).click();
+  await page
+    .locator('[data-plan-card="parent"]')
+    .getByRole("button", { name: "Yearly", exact: true })
+    .click();
+  await page
+    .locator('[data-plan-card="teacher"]')
+    .getByRole("button", { name: "Yearly", exact: true })
+    .click();
   await expect(page.getByText("$79.90 / year")).toBeVisible();
   await expect(page.getByText("$149.90 / year")).toBeVisible();
   await expectNoHorizontalOverflow();
@@ -5402,12 +5415,16 @@ test("paid workspace billing sidebar marks current interval and opens billing po
   await expect(page.locator('[data-plan-card="parent"]')).toContainText(
     "Current plan",
   );
-  await page.locator('[data-plan-option="year"]').click();
+  await page
+    .locator('[data-plan-card="parent"] [data-plan-option="year"]')
+    .click();
   await expect(page.locator('[data-plan-card="parent"]')).not.toHaveAttribute(
     "aria-current",
     "true",
   );
-  await page.locator('[data-plan-option="month"]').click();
+  await page
+    .locator('[data-plan-card="parent"] [data-plan-option="month"]')
+    .click();
   await expect(page.locator('[data-plan-card="parent"]')).toHaveAttribute(
     "aria-current",
     "true",

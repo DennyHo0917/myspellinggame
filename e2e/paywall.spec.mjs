@@ -54,6 +54,8 @@ for (const locale of ["en", "es", "pt-br", "fr", "id", "zh"]) {
     await expect(page.locator(".photo-import-notice")).toHaveCount(0);
     expect(await events(page, "photo_import_blocked")).toHaveLength(0);
     await (await chooser).setFiles(photoFile);
+    await expect(page.locator("#photo-import-review-words")).toBeVisible();
+    await page.locator(".photo-import-modal-close").click();
     await previewPhoto(page);
     const primary = page.locator(".photo-import-notice .paywall-primary");
     const unlock = page
@@ -115,7 +117,9 @@ for (const locale of ["en", "es", "pt-br", "fr", "id", "zh"]) {
       "lang",
       locale === "pt-br" ? "pt-BR" : locale === "zh" ? "zh-CN" : locale,
     );
-    await expect(page.locator('[data-plan-option="month"]')).toHaveAttribute(
+    await expect(
+      page.locator('[data-plan-card="parent"] [data-plan-option="month"]'),
+    ).toHaveAttribute(
       "aria-pressed",
       "true",
     );
@@ -193,7 +197,9 @@ test("saved Teacher monthly selection survives the photo paywall", async ({
     "aria-pressed",
     "true",
   );
-  await expect(page.locator('[data-plan-option="month"]')).toHaveAttribute(
+  await expect(
+    page.locator('[data-plan-card="teacher"] [data-plan-option="month"]'),
+  ).toHaveAttribute(
     "aria-pressed",
     "true",
   );
@@ -361,7 +367,9 @@ test("known teacher workspace defaults to Teacher monthly", async ({
     "aria-pressed",
     "true",
   );
-  await expect(page.locator('[data-plan-option="month"]')).toHaveAttribute(
+  await expect(
+    page.locator('[data-plan-card="teacher"] [data-plan-option="month"]'),
+  ).toHaveAttribute(
     "aria-pressed",
     "true",
   );

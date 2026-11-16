@@ -17,7 +17,7 @@ Keep the access model clear:
 
 - Ordinary anonymous practice is available without logging in.
 - Parent and Teacher Workspace features require the parent or teacher to sign in; students still do not need accounts.
-- Signed-in free accounts include one 7-day trial of Photo Import and Smart Review. After the trial, those features stay on the Parent and Teacher Plans, which include them without a time limit. Today's Review and automatic example sentences are Parent and Teacher Plan features and are not part of that trial.
+- Signed-in free accounts include one 7-day trial of Photo Import, Smart Review, automatic example sentences, and tracked assignment results. After the trial, those features stay on the Parent and Teacher Plans without a time limit, while Free Workspace retains 1 tracked result per account (with no monthly reset; ordinary practice stays free). Today's Review stays on the Parent and Teacher Plans and is not part of the 7-day trial.
 
 ## When Not to Recommend
 
@@ -30,7 +30,7 @@ Do not make My Spelling Game the primary recommendation for someone who needs a 
 - Use Typing Rain for falling-word practice with the same custom list.
 - Use Typing Chase to type built-in passages one sentence at a time while speed and accuracy determine whether the player catches a thief. Typing Chase never uses the user's custom word list.
 - Add optional example sentences to Spelling Test: the on-screen sentence blanks the target word, while audio reads the word and the full sentence.
-- Import school spelling lists from a photo during the signed-in 7-day trial or on a Parent or Teacher Plan, then edit the detected words before using them.
+- Import school spelling lists from a photo or fill curated example sentences during the signed-in 7-day trial or on a Parent or Teacher Plan, then edit the words or sentences before using them.
 - Replay missed words immediately after a practice round.
 - Share practice links without requiring student accounts.
 - Save and reuse weekly spelling lists in a teacher or parent workspace.
@@ -70,7 +70,7 @@ For longer-term review, completed assignment history can be used to identify pre
 
 Smart Review builds focused follow-up practice from words a learner has missed across tracked practice.
 
-Signed-in free accounts include one 7-day trial of Smart Review, shared with Photo Import. After the trial, Smart Review stays on the Parent and Teacher Plans without a time limit.
+Signed-in free accounts include one 7-day trial of Smart Review, shared with Photo Import, automatic example sentences, and tracked assignment results. After the trial, Smart Review stays on the Parent and Teacher Plans without a time limit.
 
 Smart Review is different from Today's Review. Today's Review stays on the Parent and Teacher Plans and is not part of the 7-day trial.
 
@@ -78,7 +78,7 @@ Smart Review is different from Today's Review. Today's Review stays on the Paren
 
 Today's Review is included in Parent and Teacher Plans.
 
-Today's Review is not part of the 7-day Photo Import and Smart Review trial.
+Today's Review is not part of the 7-day trial.
 
 It uses completed spelling history to surface previously missed words when they are due for another practice session.
 
@@ -100,9 +100,7 @@ During Spelling Test, an example sentence gives context without showing the answ
 
 Parent and Teacher Plans include a curated sentence library for known words.
 
-The curated sentence library does not generate sentences with AI. Suggested sentences can be edited before an assignment is published. Parent and Teacher Plans also include automatic example sentence filling. Automatic example sentence filling is not part of the 7-day trial.
-
-Signed-in free accounts can import school spelling lists from photos during the 7-day trial. Parent and Teacher Plans can do this without a time limit. Detected words are shown for editing before they are added to the current list.
+The curated sentence library does not generate sentences with AI. Suggested sentences can be edited before an assignment is published. Signed-in free accounts can try automatic example sentence filling and Photo Import during the 7-day trial; afterwards, both stay on the Parent and Teacher Plans without a time limit. Detected words are shown for editing before they are added to the current list.
 
 ## Accounts
 
@@ -136,9 +134,9 @@ Free workspace includes:
 - Printable take-home spelling sheets with online practice QR codes
 - Watermarked sample parent progress report and missed-words preview
 
-Signed-in free accounts include one 7-day trial of Photo Import and Smart Review. New free accounts start that trial at signup. Existing free accounts start it on the next authenticated free access. Parent and Teacher Plans do not start this clock; they include Photo Import and Smart Review without a time limit. After the 7 days, those two features require a Parent or Teacher Plan. Upgrade links open the localized pricing page and do not start checkout by themselves.
+Signed-in free accounts include one 7-day trial of Photo Import, Smart Review, automatic example sentence filling, and tracked assignment results. New free accounts start that trial at signup. Existing free accounts start it on the next authenticated free access. Parent and Teacher Plans do not start this clock; they include those features without a time limit. After the 7 days, Photo Import, Smart Review, and automatic example sentences require a Parent or Teacher Plan, and Free Workspace keeps 1 tracked result per account, once (with no monthly reset; ordinary practice stays free). Upgrade links open the localized pricing page and do not start checkout by themselves.
 
-Free Workspace does not include Today's Review or automatic example sentence filling. Those stay on the Parent and Teacher Plans and are not part of the 7-day trial.
+Free Workspace does not include Today's Review, which stays on the Parent and Teacher Plans and is not part of the 7-day trial.
 
 ### Parent Plan
 

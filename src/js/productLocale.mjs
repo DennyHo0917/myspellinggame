@@ -293,6 +293,7 @@ const PACKS = {
     submissionLimitReached:
       "Your free tracking trial is used. Upgrade to view further results within 14 days. Ordinary practice stays free.",
     unlimited: "Unlimited full results",
+    unlimitedTrial: "Unlimited full results (7-day trial)",
     studentUsage: "{used} student nicknames stored",
     noAssignments: "No assignments yet. Create one to share with students.",
     recentAssignments: "Recent assignments",
@@ -511,7 +512,11 @@ const PACKS = {
     pendingUpgradeCopy:
       "Sign in to keep your selection. You decide when to open secure checkout.",
     pendingCheckoutReview:
-      "Your saved choice is shown below. Checkout opens only after you continue.",
+      "Signed in. Your saved plan is ready below — click its plan button to open secure checkout.",
+    checkoutCanceledNotice:
+      "Checkout canceled. You can switch plans or billing periods below.",
+    checkoutCanceledReturnPractice: "Return to practice",
+    checkoutCanceledReturnWorkspace: "Return to workspace",
     continueCheckout: "Continue to secure checkout",
     activatingPro: "Activating your plan…",
     activatingPlan: "Activating your {plan}…",
@@ -859,6 +864,7 @@ const PACKS = {
     submissionLimitReached:
       "Ya usaste la prueba de seguimiento. Elige un plan de pago para ver los siguientes resultados antes de 14 días. La práctica habitual sigue gratis.",
     unlimited: "Resultados completos sin límite",
+    unlimitedTrial: "Resultados completos sin límite (prueba de 7 días)",
     studentUsage: "{used} apodos guardados",
     noAssignments:
       "Todavía no hay tareas. Crea una para compartirla con estudiantes.",
@@ -1083,7 +1089,11 @@ const PACKS = {
     pendingUpgradeCopy:
       "Inicia sesión para conservar tu elección. Tú decides cuándo abrir el pago seguro.",
     pendingCheckoutReview:
-      "Tu elección guardada aparece abajo. El pago solo se abrirá cuando continúes.",
+      "Sesión iniciada. Tu plan elegido está listo abajo; haz clic en el botón del plan para abrir el pago seguro.",
+    checkoutCanceledNotice:
+      "Pago cancelado. Puedes cambiar de plan o periodo de facturación abajo.",
+    checkoutCanceledReturnPractice: "Volver a la práctica",
+    checkoutCanceledReturnWorkspace: "Volver al espacio de trabajo",
     continueCheckout: "Continuar al pago seguro",
     activatingPro: "Activando tu plan…",
     activatingPlan: "Activando {plan}…",
@@ -1432,6 +1442,7 @@ const PACKS = {
     submissionLimitReached:
       "Você já usou o teste de acompanhamento. Assine para ver os próximos resultados em até 14 dias. A prática comum continua gratuita.",
     unlimited: "Resultados completos sem limite",
+    unlimitedTrial: "Resultados completos sem limite (teste de 7 dias)",
     studentUsage: "{used} apelidos armazenados",
     noAssignments:
       "Ainda não há tarefas. Crie uma para compartilhar com alunos.",
@@ -1656,7 +1667,11 @@ const PACKS = {
     pendingUpgradeCopy:
       "Entre para manter sua escolha. Você decide quando abrir o checkout seguro.",
     pendingCheckoutReview:
-      "Sua escolha salva aparece abaixo. O checkout só abrirá depois que você continuar.",
+      "Login concluído. Sua escolha está pronta abaixo; clique no botão do plano para abrir o checkout seguro.",
+    checkoutCanceledNotice:
+      "Checkout cancelado. Você pode trocar o plano ou o período de cobrança abaixo.",
+    checkoutCanceledReturnPractice: "Voltar para a prática",
+    checkoutCanceledReturnWorkspace: "Voltar ao espaço de trabalho",
     continueCheckout: "Continuar o checkout",
     activatingPro: "Ativando seu plano…",
     activatingPlan: "Ativando {plan}…",
@@ -2004,6 +2019,7 @@ const PACKS = {
     submissionLimitReached:
       "Votre essai du suivi est utilisé. Abonnez-vous pour consulter les résultats suivants sous 14 jours. L’entraînement classique reste gratuit.",
     unlimited: "Résultats complets illimités",
+    unlimitedTrial: "Résultats complets illimités (essai 7 jours)",
     studentUsage: "{used} pseudonymes conservés",
     noAssignments:
       "Aucun devoir pour le moment. Créez-en un à partager avec les élèves.",
@@ -2232,7 +2248,11 @@ const PACKS = {
     pendingUpgradeCopy:
       "Connectez-vous pour conserver votre choix. Vous décidez quand ouvrir le paiement sécurisé.",
     pendingCheckoutReview:
-      "Votre choix enregistré apparaît ci-dessous. Le paiement ne s’ouvre qu’après votre confirmation.",
+      "Connecté. Votre sélection est prête ci-dessous ; cliquez sur le bouton de l’offre pour ouvrir le paiement sécurisé.",
+    checkoutCanceledNotice:
+      "Paiement annulé. Vous pouvez changer d’offre ou de périodicité ci-dessous.",
+    checkoutCanceledReturnPractice: "Retourner à l’exercice",
+    checkoutCanceledReturnWorkspace: "Retourner à l’espace de travail",
     continueCheckout: "Continuer le paiement",
     activatingPro: "Activation de votre offre…",
     activatingPlan: "Activation de {plan}…",
@@ -2581,6 +2601,7 @@ const PACKS = {
     submissionLimitReached:
       "Uji coba pelacakan Anda sudah terpakai. Berlangganan untuk melihat hasil berikutnya dalam 14 hari. Latihan biasa tetap gratis.",
     unlimited: "Hasil lengkap tanpa batas",
+    unlimitedTrial: "Hasil lengkap tanpa batas (uji coba 7 hari)",
     studentUsage: "{used} nama panggilan tersimpan",
     noAssignments: "Belum ada tugas. Buat tugas untuk dibagikan kepada siswa.",
     recentAssignments: "Tugas terbaru",
@@ -2801,7 +2822,11 @@ const PACKS = {
     pendingUpgradeCopy:
       "Masuk untuk menyimpan pilihan Anda. Anda menentukan kapan membuka checkout aman.",
     pendingCheckoutReview:
-      "Pilihan tersimpan Anda ditampilkan di bawah. Checkout hanya dibuka setelah Anda melanjutkan.",
+      "Sudah masuk. Pilihan Anda siap di bawah — klik tombol paketnya untuk membuka checkout aman.",
+    checkoutCanceledNotice:
+      "Checkout dibatalkan. Anda dapat mengganti paket atau periode tagihan di bawah.",
+    checkoutCanceledReturnPractice: "Kembali ke latihan",
+    checkoutCanceledReturnWorkspace: "Kembali ke ruang kerja",
     continueCheckout: "Lanjut ke checkout aman",
     activatingPro: "Mengaktifkan paket Anda…",
     activatingPlan: "Mengaktifkan {plan}…",
@@ -3127,6 +3152,7 @@ const PACKS = {
     submissionLimitReached:
       "免费追踪体验已用完。升级可查看后续结果，请在 14 天保留期内查看；普通练习始终免费。",
     unlimited: "完整结果不限量",
+    unlimitedTrial: "完整结果不限量（7 天试用内）",
     studentUsage: "已保存 {used} 个学生昵称",
     noAssignments: "还没有作业。创建一份后即可分享给学生。",
     recentAssignments: "最近作业",
@@ -3334,7 +3360,12 @@ const PACKS = {
     wholeClassTeacherMonthly: "用于整个班级？查看教师方案 · US$9.99/月",
     pendingUpgradeTitle: "继续选择{plan}",
     pendingUpgradeCopy: "登录后会保留你的选择，由你确认后再打开安全结账。",
-    pendingCheckoutReview: "已保留以下选择；只有点击继续后才会打开结账页。",
+    pendingCheckoutReview:
+      "已登录。已保留你的方案选择，点击下方对应卡片按钮即可前往安全结账。",
+    checkoutCanceledNotice:
+      "已取消结账。你可以在下方重新选择方案或切换月付/年付。",
+    checkoutCanceledReturnPractice: "返回练习",
+    checkoutCanceledReturnWorkspace: "返回工作台",
     continueCheckout: "继续前往安全结账",
     activatingPro: "正在激活方案…",
     activatingPlan: "正在激活{plan}…",

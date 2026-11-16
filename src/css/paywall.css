@@ -43,14 +43,20 @@
 }
 
 .feature-trial-note {
+  display: block;
   margin: 0.35rem 0 0.65rem;
-  padding: 0.45rem 0.7rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #f2c14e;
   border-radius: 8px;
-  background: #fff6e8;
-  color: #6b4a12;
-  font-size: 0.86rem;
-  font-weight: 700;
-  line-height: 1.35;
+  background: #fff8dc;
+  color: #a16207;
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.contextual-paywall .feature-trial-note {
+  margin: 0 0 0.15rem;
 }
 
 .smart-review-preview {

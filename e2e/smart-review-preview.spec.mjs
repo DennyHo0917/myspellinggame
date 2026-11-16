@@ -82,7 +82,7 @@ test("signed-in trial users open the saved Smart Review flow", async ({
     }),
   );
   await page.goto("/");
-  await expect(page.locator("#feature-trial-note")).toContainText("7-day");
+  await expect(page.locator(".feature-trial-note")).toHaveCount(0);
   await page.locator(".last-missed-smart-btn").click();
   await expect(page).toHaveURL(/review=1/);
   await expect(page.locator(".smart-review-preview")).toHaveCount(0);
@@ -145,7 +145,9 @@ test("signed-in free users preview one review card before pricing", async ({
   expect(JSON.stringify(locked)).not.toContain("banana");
   await preview.locator(".paywall-primary").click();
   await expect(page).toHaveURL(/\/pricing\?plan=parent&interval=month/);
-  await expect(page.locator('[data-plan-option="month"]')).toHaveAttribute(
+  await expect(
+    page.locator('[data-plan-card="parent"] [data-plan-option="month"]'),
+  ).toHaveAttribute(
     "aria-pressed",
     "true",
   );
@@ -182,7 +184,12 @@ test("cancelled Smart Review checkout restores the preview and wall", async ({
   await page.locator(".last-missed-smart-btn").click();
   await expect(page.locator(".smart-review-preview")).toBeVisible();
   await page.locator(".smart-review-preview .paywall-primary").click();
-  await page.locator("[data-checkout-cta]").click();
+  await page.locator('[data-plan-choice="parent"]').click();
+  await expect(page).toHaveURL(/\/pricing\?checkout=cancelled$/);
+  await page
+    .locator(".checkout-cancelled-notice")
+    .getByRole("link", { name: "Return to practice" })
+    .click();
   await expect(page).toHaveURL(/\/$/);
   await expect(page.locator("#custom-word-list")).toHaveValue("elephant");
   await expect(page.locator(".upgrade-return-notice")).toHaveCount(0);
@@ -286,7 +293,12 @@ test("workspace Smart Review previews due words before an assignment is created"
     JSON.stringify(await events(page, "smart_review_previewed")),
   ).not.toContain("banana");
   await preview.locator(".paywall-primary").click();
-  await page.locator("[data-checkout-cta]").click();
+  await page.locator('[data-plan-choice="parent"]').click();
+  await expect(page).toHaveURL(/\/pricing\?checkout=cancelled$/);
+  await page
+    .locator(".checkout-cancelled-notice")
+    .getByRole("link", { name: "Return to workspace" })
+    .click();
   await expect(page).toHaveURL(new RegExp(`/workspace/learners/${learnerId}`));
   await expect(page.locator(".smart-review-preview")).toBeVisible();
   await expect(

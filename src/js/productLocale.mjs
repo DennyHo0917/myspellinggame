@@ -692,7 +692,7 @@ const PACKS = {
       "Smart Review is included in Parent and Teacher Plans.",
     featureTrialSignInCta: "Sign in: 30-day free trial",
     featureTrialSignInDetail:
-      "Free accounts include 23 days of full access (no card required) + 7 days free with card (30 days total)!",
+      "Includes 23 days full access (no card required) + 7 days with card (30 days total).",
     featureTrialStatus:
       "23-day free trial · {time} left · ends {date} (+7 days with card)",
     featureTrialDay: "1 day",
@@ -700,15 +700,15 @@ const PACKS = {
     featureTrialHour: "1 hour",
     featureTrialHours: "{count} hours",
     featureTrialExpired:
-      "Your 23-day free trial has ended. Bind your card to enjoy an extra 7 days free trial!",
-    workspaceTrialActiveTitle: "23-Day Free Trial Active · {time} left",
+      "Your 23-day free trial has ended. Add a payment method to start an additional 7-day free trial.",
+    workspaceTrialActiveTitle: "Full-access trial · {time} remaining",
     workspaceTrialActiveDesc:
-      "All paid features are unlocked with no card required. Bind your card now to get an EXTRA 7 DAYS FREE (30 days total free trial) — cancel anytime before day 30 at zero charge!",
-    workspaceTrialTotalTag: "23 Days + 7 Days Card Bonus = 30 Days Total",
-    workspaceTrialClaimCta: "Claim Extra 7 Days Free (Bind Card)",
-    workspaceTrialExpiredTitle: "Your 23-day free trial has ended",
+      "All premium features are unlocked with no card required. Add a payment method to get an extra 7 days free (30 days total). Cancel anytime before the trial ends.",
+    workspaceTrialTotalTag: "30-Day Trial (23 days free + 7-day card bonus)",
+    workspaceTrialClaimCta: "Add Card (+7 Days Free)",
+    workspaceTrialExpiredTitle: "Your free trial has ended",
     workspaceTrialExpiredDesc:
-      "Bind your card now to start 7 days of free access on Parent or Teacher Plan. Zero charge today; cancel anytime!",
+      "Add a payment method to start a 7-day free trial on Parent or Teacher Plan. Cancel anytime before your first billing.",
     workspaceTrialStart7DayCta: "Start 7-Day Free Trial",
     proActive:
       "Your paid plan is active. Saved lists, long-term mastery, and Smart Review are now unlocked.",
@@ -1269,7 +1269,7 @@ const PACKS = {
       "El repaso inteligente está incluido en los planes para familias y docentes.",
     featureTrialSignInCta: "Entra: prueba gratis de 30 días",
     featureTrialSignInDetail:
-      "¡Las cuentas gratis incluyen 23 días sin tarjeta + 7 días gratis con tarjeta (30 días en total)!",
+      "Cuentas gratis con 23 días sin tarjeta + 7 días adicionales al vincular tarjeta (30 días en total).",
     featureTrialStatus:
       "Prueba de 23 días · quedan {time} · termina el {date} (+7 días con tarjeta)",
     featureTrialDay: "1 día",
@@ -1277,17 +1277,16 @@ const PACKS = {
     featureTrialHour: "1 hora",
     featureTrialHours: "{count} horas",
     featureTrialExpired:
-      "Tu prueba gratuita de 23 días ha terminado. ¡Añade tu tarjeta para disfrutar de 7 días gratis extra!",
-    workspaceTrialActiveTitle:
-      "Prueba gratis de 23 días activa · quedan {time}",
+      "Tu prueba gratuita de 23 días ha finalizado. Vincula tu tarjeta para disfrutar de 7 días gratis adicionales.",
+    workspaceTrialActiveTitle: "Prueba completa activa · quedan {time}",
     workspaceTrialActiveDesc:
-      "Todas las funciones de pago están desbloqueadas sin tarjeta. ¡Añade tu tarjeta ahora para obtener 7 DÍAS GRATIS EXTRA (30 días en total)! Cancela cuando quieras sin coste.",
-    workspaceTrialTotalTag: "23 días + 7 días con tarjeta = 30 días en total",
-    workspaceTrialClaimCta: "Reclamar 7 días gratis extra (con tarjeta)",
-    workspaceTrialExpiredTitle: "Tu prueba gratuita de 23 días ha terminado",
+      "Todas las funciones prémium están activas sin tarjeta. Añade un método de pago para recibir 7 días gratis adicionales (30 días en total). Cancela en cualquier momento antes de que finalice la prueba.",
+    workspaceTrialTotalTag: "Prueba de 30 días (23 días + 7 días con tarjeta)",
+    workspaceTrialClaimCta: "Añadir tarjeta (+7 días gratis)",
+    workspaceTrialExpiredTitle: "Tu prueba gratuita ha finalizado",
     workspaceTrialExpiredDesc:
-      "Añade tu tarjeta para disfrutar de 7 días de acceso gratuito antes del primer cobro. ¡Hoy 0 €; cancela cuando quieras!",
-    workspaceTrialStart7DayCta: "Iniciar prueba gratis de 7 días",
+      "Añade un método de pago para comenzar 7 días de prueba gratis en el plan para familias o docentes. Cancela cuando quieras.",
+    workspaceTrialStart7DayCta: "Iniciar prueba de 7 días",
     proActive:
       "Tu plan de pago está activo. Ya están disponibles las listas guardadas, el historial de dominio a largo plazo y el repaso inteligente.",
     rateLimited:
@@ -1846,7 +1845,7 @@ const PACKS = {
       "A revisão inteligente está incluída nos planos para Pais e Professores.",
     featureTrialSignInCta: "Entre: teste grátis de 30 dias",
     featureTrialSignInDetail:
-      "Contas grátis incluem 23 dias de acesso total sem cartão + 7 dias grátis com cartão (30 dias no total)!",
+      "Contas grátis incluem 23 dias de acesso total sem cartão + 7 dias adicionais com cartão (30 dias no total).",
     featureTrialStatus:
       "Teste de 23 dias · faltam {time} · termina em {date} (+7 dias com cartão)",
     featureTrialDay: "1 dia",
@@ -1854,16 +1853,16 @@ const PACKS = {
     featureTrialHour: "1 hora",
     featureTrialHours: "{count} horas",
     featureTrialExpired:
-      "Seu teste grátis de 23 dias terminou. Adicione seu cartão para aproveitar mais 7 dias de teste grátis!",
-    workspaceTrialActiveTitle: "Teste grátis de 23 dias ativo · faltam {time}",
+      "Seu teste grátis de 23 dias terminou. Adicione seu cartão para aproveitar mais 7 dias de teste grátis.",
+    workspaceTrialActiveTitle: "Teste completo ativo · faltam {time}",
     workspaceTrialActiveDesc:
-      "Todos os recursos pagos estão liberados sem cartão. Adicione seu cartão agora para ganhar mais 7 DIAS GRÁTIS (30 dias no total)! Cancele a qualquer momento sem custo.",
-    workspaceTrialTotalTag: "23 dias + 7 dias com cartão = 30 dias no total",
-    workspaceTrialClaimCta: "Garantir mais 7 dias grátis (com cartão)",
-    workspaceTrialExpiredTitle: "Seu teste grátis de 23 dias terminou",
+      "Todos os recursos avançados estão liberados sem cartão. Adicione uma forma de pagamento para ganhar 7 dias grátis extras (30 dias no total). Cancele quando quiser antes do fim do teste.",
+    workspaceTrialTotalTag: "Teste de 30 dias (23 dias + 7 dias com cartão)",
+    workspaceTrialClaimCta: "Adicionar cartão (+7 dias grátis)",
+    workspaceTrialExpiredTitle: "Seu teste gratuito terminou",
     workspaceTrialExpiredDesc:
-      "Adicione seu cartão para começar 7 dias de acesso grátis antes da primeira cobrança. R$ 0 hoje; cancele quando quiser!",
-    workspaceTrialStart7DayCta: "Iniciar teste grátis de 7 dias",
+      "Adicione uma forma de pagamento para iniciar 7 dias de teste grátis no Plano para Pais ou Professores. Cancele quando quiser.",
+    workspaceTrialStart7DayCta: "Iniciar teste de 7 dias",
     proActive:
       "Seu plano pago está ativo. Listas salvas, histórico de domínio de longo prazo e revisão inteligente já estão liberados.",
     rateLimited: "Muitas solicitações. Aguarde um momento e tente novamente.",
@@ -2430,7 +2429,7 @@ const PACKS = {
       "La révision intelligente est incluse dans les offres Parents et Enseignants.",
     featureTrialSignInCta: "Connexion : essai gratuit 30 jours",
     featureTrialSignInDetail:
-      "Les comptes gratuits incluent 23 jours d’accès complet sans carte + 7 jours gratuits avec carte (30 jours au total) !",
+      "Les comptes gratuits incluent 23 jours d’accès complet sans carte + 7 jours offerts avec carte (30 jours au total).",
     featureTrialStatus:
       "Essai de 23 jours · plus que {time} · fin le {date} (+7 jours avec carte)",
     featureTrialDay: "1 jour",
@@ -2438,16 +2437,16 @@ const PACKS = {
     featureTrialHour: "1 heure",
     featureTrialHours: "{count} heures",
     featureTrialExpired:
-      "Votre essai gratuit de 23 jours est terminé. Ajoutez votre carte pour profiter de 7 jours d’essai gratuits supplémentaires !",
-    workspaceTrialActiveTitle: "Essai gratuit de 23 jours actif · reste {time}",
+      "Votre essai gratuit de 23 jours est terminé. Ajoutez votre carte pour profiter de 7 jours d’essai gratuits supplémentaires.",
+    workspaceTrialActiveTitle: "Essai complet actif · il reste {time}",
     workspaceTrialActiveDesc:
-      "Toutes les fonctionnalités payantes sont débloquées sans carte. Ajoutez votre carte pour obtenir 7 JOURS GRATUITS DE PLUS (30 jours au total) ! Annulez à tout moment sans frais.",
-    workspaceTrialTotalTag: "23 jours + 7 jours avec carte = 30 jours au total",
-    workspaceTrialClaimCta: "Obtenir 7 jours gratuits en plus (avec carte)",
-    workspaceTrialExpiredTitle: "Votre essai gratuit de 23 jours est terminé",
+      "Toutes les fonctionnalités avancées sont débloquées sans carte. Ajoutez un moyen de paiement pour bénéficier de 7 jours gratuits supplémentaires (30 jours au total). Résiliez à tout moment avant la fin de l’essai.",
+    workspaceTrialTotalTag: "Essai 30 jours (23 jours + 7 jours avec carte)",
+    workspaceTrialClaimCta: "Ajouter une carte (+7 jours offerts)",
+    workspaceTrialExpiredTitle: "Votre essai gratuit est terminé",
     workspaceTrialExpiredDesc:
-      "Ajoutez votre carte pour démarrer 7 jours d’accès gratuit avant la première facturation. 0 € aujourd’hui ; annulez à tout moment !",
-    workspaceTrialStart7DayCta: "Démarrer l’essai gratuit de 7 jours",
+      "Ajoutez un moyen de paiement pour démarrer un essai gratuit de 7 jours sur l’offre Parents ou Enseignants. Résiliez à tout moment.",
+    workspaceTrialStart7DayCta: "Commencer l’essai de 7 jours",
     proActive:
       "Votre offre payante est active. Les listes enregistrées, l’historique de maîtrise à long terme et la révision intelligente sont maintenant disponibles.",
     rateLimited: "Trop de demandes. Patientez un instant puis réessayez.",
@@ -3002,7 +3001,7 @@ const PACKS = {
       "Ulasan pintar tersedia pada Paket Orang Tua dan Guru.",
     featureTrialSignInCta: "Masuk: uji coba gratis 30 hari",
     featureTrialSignInDetail:
-      "Akun gratis mendapat 23 hari akses penuh tanpa kartu + 7 hari gratis dengan kartu (total 30 hari)!",
+      "Akun gratis mendapat 23 hari akses penuh tanpa kartu + 7 hari dengan kartu (total 30 hari).",
     featureTrialStatus:
       "Uji coba 23 hari · sisa {time} · berakhir {date} (+7 hari dengan kartu)",
     featureTrialDay: "1 hari",
@@ -3010,16 +3009,16 @@ const PACKS = {
     featureTrialHour: "1 jam",
     featureTrialHours: "{count} jam",
     featureTrialExpired:
-      "Uji coba gratis 23 hari Anda telah berakhir. Hubungkan kartu Anda untuk menikmati tambahan uji coba gratis 7 hari!",
-    workspaceTrialActiveTitle: "Uji Coba Gratis 23 Hari Aktif · sisa {time}",
+      "Uji coba gratis 23 hari Anda telah berakhir. Hubungkan kartu Anda untuk menikmati tambahan 7 hari uji coba gratis.",
+    workspaceTrialActiveTitle: "Uji coba lengkap aktif · sisa {time}",
     workspaceTrialActiveDesc:
-      "Semua fitur berbayar terbuka tanpa kartu. Hubungkan kartu Anda sekarang untuk mendapatkan TAMBAHAN 7 HARI GRATIS (total uji coba 30 hari) — batalkan kapan saja tanpa biaya!",
-    workspaceTrialTotalTag: "23 hari + 7 hari dengan kartu = Total 30 hari",
-    workspaceTrialClaimCta: "Klaim Tambahan 7 Hari Gratis (Ikat Kartu)",
-    workspaceTrialExpiredTitle: "Uji coba gratis 23 hari Anda telah berakhir",
+      "Semua fitur premium terbuka tanpa kartu. Hubungkan metode pembayaran untuk mendapatkan bonus 7 hari gratis (total 30 hari). Batalkan kapan saja sebelum masa uji coba berakhir.",
+    workspaceTrialTotalTag: "Uji coba 30 hari (23 hari + 7 hari dengan kartu)",
+    workspaceTrialClaimCta: "Hubungkan kartu (+7 hari gratis)",
+    workspaceTrialExpiredTitle: "Uji coba gratis Anda telah berakhir",
     workspaceTrialExpiredDesc:
-      "Hubungkan kartu Anda sekarang untuk memulai akses gratis 7 hari sebelum penagihan pertama. Biaya hari ini US$0; batalkan kapan saja!",
-    workspaceTrialStart7DayCta: "Mulai Uji Coba Gratis 7 Hari",
+      "Hubungkan metode pembayaran untuk memulai uji coba gratis 7 hari paket Orang Tua atau Guru. Batalkan kapan saja.",
+    workspaceTrialStart7DayCta: "Mulai uji coba 7 hari",
     proActive:
       "Paket berbayar Anda aktif. Daftar tersimpan, riwayat penguasaan jangka panjang, dan ulasan pintar kini terbuka.",
     rateLimited: "Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.",
@@ -3526,26 +3525,26 @@ const PACKS = {
     learnerLimitTeacher:
       "已达到教师方案最多 40 个学生档案的限制。请先归档不再使用的档案，再添加新学生。",
     smartReviewRequired: "智能错词复习包含在家长方案和教师方案中。",
-    featureTrialSignInCta: "登录体验 30 天超长试用",
+    featureTrialSignInCta: "登录开启 30 天试用",
     featureTrialSignInDetail:
-      "免费账号享 23 天全功能免绑卡试用 + 绑卡立领 7 天免费，共享 30 天超长试用！",
+      "包含 23 天全功能免卡试用，绑定支付方式可再获赠 7 天（享满 30 天完整试用）。",
     featureTrialStatus:
-      "23 天免费试用 · 剩余 {time} · {date} 结束（绑卡多享 7 天）",
+      "23 天免费试用 · 剩余 {time} · {date} 结束（绑卡可赠 7 天）",
     featureTrialDay: "1 天",
     featureTrialDays: "{count} 天",
     featureTrialHour: "1 小时",
     featureTrialHours: "{count} 小时",
     featureTrialExpired:
-      "你的 23 天免绑卡试用已结束。立即绑定银行卡即可额外享受 7 天免费试用！",
-    workspaceTrialActiveTitle: "23 天免卡试用进行中 · 剩余 {time}",
+      "你的 23 天免卡试用已结束。绑定支付方式可开启额外 7 天免费试用。",
+    workspaceTrialActiveTitle: "全功能试用进行中 · 剩余 {time}",
     workspaceTrialActiveDesc:
-      "所有高级功能已全部开放，无需信用卡即可畅用。现在绑定银行卡即可额外免费多领 7 天（享满 30 天完整免费试用）！在到期前随时可以取消，绝不扣费。",
-    workspaceTrialTotalTag: "免卡 23 天 + 绑卡赠送 7 天 = 共 30 天免费",
-    workspaceTrialClaimCta: "绑卡立领 7 天免费（享满 30 天）",
-    workspaceTrialExpiredTitle: "你的 23 天免卡试用已结束",
+      "当前已开放全部高级功能，无需信用卡。绑定支付方式可再获赠 7 天免费试用（享满 30 天），试用期结束前可随时取消。",
+    workspaceTrialTotalTag: "30 天完整试用（免卡 23 天 + 绑卡赠 7 天）",
+    workspaceTrialClaimCta: "绑定银行卡（多享 7 天）",
+    workspaceTrialExpiredTitle: "免卡试用已结束",
     workspaceTrialExpiredDesc:
-      "立即绑定银行卡，首期扣费前可享 7 天免费试用。今日支付 US$0，试用期内随时取消无任何扣费！",
-    workspaceTrialStart7DayCta: "立即开始 7 天免费试用",
+      "绑定支付方式即可开启 7 天免费试用，首期扣费前可随时取消。",
+    workspaceTrialStart7DayCta: "开启 7 天免费试用",
     proActive: "你的付费方案已激活。已解锁词表保存、长期掌握度和智能错词复习。",
     rateLimited: "请求过于频繁，请稍后重试。",
     invalidSubmission: "本次提交数据无效，请重新开始作业后再试。",

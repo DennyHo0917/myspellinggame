@@ -1552,7 +1552,7 @@ function showRoleModal({ onConfirmAdult, onSelectStudent }) {
   adultBtn.type = "button";
   adultBtn.className = "role-dialog-btn role-dialog-adult";
   adultBtn.innerHTML = `
-    <span class="role-dialog-icon">👨‍🏫</span>
+    <span class="role-dialog-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg></span>
     <span class="role-dialog-text">
       <strong>${copy.roleAdultOption}</strong>
       <span>${copy.roleAdultDesc}</span>
@@ -1563,7 +1563,7 @@ function showRoleModal({ onConfirmAdult, onSelectStudent }) {
   studentBtn.type = "button";
   studentBtn.className = "role-dialog-btn role-dialog-student";
   studentBtn.innerHTML = `
-    <span class="role-dialog-icon">🎒</span>
+    <span class="role-dialog-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
     <span class="role-dialog-text">
       <strong>${copy.roleStudentOption}</strong>
       <span>${copy.roleStudentDesc}</span>
@@ -1576,7 +1576,7 @@ function showRoleModal({ onConfirmAdult, onSelectStudent }) {
   studentNotice.className = "role-dialog-student-notice";
   studentNotice.hidden = true;
   studentNotice.innerHTML = `
-    <div class="role-dialog-icon" style="font-size:2.5rem;margin-bottom:0.5rem">🎒</div>
+    <div class="role-dialog-icon" style="margin-bottom:0.75rem"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
     <h3>${copy.roleStudentNoticeTitle}</h3>
     <p>${copy.roleStudentNoticeBody}</p>
     <div class="actions" style="margin-top:1.25rem">
@@ -1657,7 +1657,7 @@ async function renderLogin() {
 
   const badge = document.createElement("div");
   badge.className = "auth-trial-badge";
-  badge.innerHTML = `<span class="badge-icon">🎁</span><span>${copy.featureTrialSignInDetail}</span>`;
+  badge.innerHTML = `<span class="badge-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z"/></svg></span><span>${copy.featureTrialSignInDetail}</span>`;
 
   const heroTitle = document.createElement("h1");
   heroTitle.className = "auth-hero-title";
@@ -1705,14 +1705,14 @@ async function renderLogin() {
   roleGate.innerHTML = `
     <div class="role-selector" role="radiogroup" aria-label="${copy.roleSelectTitle}">
       <button type="button" class="role-option active" data-role="adult" role="radio" aria-checked="true">
-        <span class="role-option-icon">👨‍🏫</span>
+        <span class="role-option-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg></span>
         <span class="role-option-info">
           <strong class="role-option-title">${copy.roleAdultOption}</strong>
           <span class="role-option-desc">${copy.roleAdultDesc}</span>
         </span>
       </button>
       <button type="button" class="role-option" data-role="student" role="radio" aria-checked="false">
-        <span class="role-option-icon">🎒</span>
+        <span class="role-option-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
         <span class="role-option-info">
           <strong class="role-option-title">${copy.roleStudentOption}</strong>
           <span class="role-option-desc">${copy.roleStudentDesc}</span>
@@ -1725,7 +1725,7 @@ async function renderLogin() {
   studentNotice.className = "student-gate-notice";
   studentNotice.hidden = true;
   studentNotice.innerHTML = `
-    <div class="student-gate-icon">🎒</div>
+    <div class="student-gate-icon"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
     <h2 class="student-gate-title">${copy.roleStudentNoticeTitle}</h2>
     <p class="student-gate-body">${copy.roleStudentNoticeBody}</p>
     <div class="student-gate-actions actions">
@@ -4158,7 +4158,7 @@ function renderWorkspaceTrialBanner(me) {
     banner.innerHTML = `
       <div class="trial-banner-content">
         <div class="trial-banner-header">
-          <span class="trial-banner-badge"><span class="trial-badge-icon" aria-hidden="true">🎉</span><span class="trial-days-tag">${copy.workspaceTrialTotalTag}</span></span>
+          <span class="trial-banner-badge"><span class="trial-status-dot" aria-hidden="true"></span><span class="trial-days-tag">${copy.workspaceTrialTotalTag}</span></span>
           <strong class="trial-banner-title">${m("workspaceTrialActiveTitle", { time })}</strong>
         </div>
         <p class="trial-banner-desc">${copy.workspaceTrialActiveDesc}</p>
@@ -4172,7 +4172,7 @@ function renderWorkspaceTrialBanner(me) {
     banner.innerHTML = `
       <div class="trial-banner-content">
         <div class="trial-banner-header">
-          <span class="trial-banner-badge"><span class="trial-badge-icon" aria-hidden="true">⏳</span><span class="trial-days-tag">${copy.workspaceTrialTotalTag}</span></span>
+          <span class="trial-banner-badge"><span class="trial-status-dot expired" aria-hidden="true"></span><span class="trial-days-tag">${copy.workspaceTrialTotalTag}</span></span>
           <strong class="trial-banner-title">${copy.workspaceTrialExpiredTitle}</strong>
         </div>
         <p class="trial-banner-desc">${copy.workspaceTrialExpiredDesc}</p>
@@ -4271,12 +4271,18 @@ async function renderDashboard(me, { force = false } = {}) {
     const card = document.createElement("section");
     card.className = "product-card free-tracking-card";
     const heading = document.createElement("h1");
-    heading.textContent = copy.freeTrackingTitle;
+    heading.textContent = copy.dashboardTitle;
+    const plan = document.createElement("span");
+    plan.className = "badge teacher-plan-badge";
+    plan.textContent = copy.freePlan;
+    const headerRow = document.createElement("div");
+    headerRow.className = "workspace-heading-row";
+    headerRow.append(heading, plan);
     const inTrial = featureTrialActive(me.featureTrial);
-    const trialNote = inTrial ? featureTrialNote(me) : null;
+    const trialNote = inTrial && !trialBanner ? featureTrialNote(me) : null;
     const intro = document.createElement("p");
     intro.textContent = copy.resultViewLimit;
-    card.append(heading, ...(trialNote ? [trialNote] : []), intro);
+    card.append(headerRow, ...(trialNote ? [trialNote] : []), intro);
     const used =
       !inTrial &&
       (data.usage.trackingTrialUsed ?? data.usage.monthlyAttempts >= 1);
@@ -4289,6 +4295,7 @@ async function renderDashboard(me, { force = false } = {}) {
       const learner = (data.learners || []).find((item) => !item.archived);
       const start = document.createElement("button");
       start.type = "button";
+      start.className = "button-primary";
       start.textContent = copy.trackNextPractice;
       start.addEventListener("click", () => {
         saveTrackingEntry(
@@ -4298,9 +4305,11 @@ async function renderDashboard(me, { force = false } = {}) {
         location.href = `/workspace/assignments/new?lang=${encodeURIComponent(locale)}&tracking=1`;
       });
       actions.append(start);
-      const explorePlans = upgradeLink("free_overview");
-      explorePlans.className = "button-link button-secondary";
-      actions.append(explorePlans);
+      if (!inTrial) {
+        const explorePlans = upgradeLink("free_overview");
+        explorePlans.className = "button-link button-secondary";
+        actions.append(explorePlans);
+      }
     }
     const practice = document.createElement("a");
     practice.className = "button-link button-secondary";
@@ -4984,7 +4993,7 @@ async function renderTrackingPractice(me) {
       correct: res.correctWords ?? 0,
       total: res.totalWords ?? 0,
     });
-    scoreBadge.textContent = `🎯 ${scoreText}`;
+    scoreBadge.textContent = scoreText;
     summaryCard.append(scoreBadge);
     if (res.missedWords && res.missedWords.length > 0) {
       const missedRow = document.createElement("div");

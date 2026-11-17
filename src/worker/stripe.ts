@@ -1,5 +1,11 @@
 import Stripe from "stripe";
-import { HttpError, resolvePlan, STRIPE_TRIAL_PERIOD_DAYS } from "./domain";
+import {
+  calculateStripeTrialPeriodDays,
+  HttpError,
+  resolvePlan,
+  TOTAL_TRIAL_MS,
+} from "./domain";
+import { readFeatureTrialStart } from "./featureTrial";
 import { recordLifecycleEvent } from "./lifecycle";
 
 export interface StripeEnv {
@@ -29,6 +35,7 @@ type CheckoutOptions = {
   now?: Date;
   locale?: string;
   plan?: "parent" | "teacher";
+  trialPeriodDays?: number;
   createSession?: (
     params: Stripe.Checkout.SessionCreateParams,
     options: Stripe.RequestOptions,
@@ -76,6 +83,13 @@ type ChangePlanOptions = {
 
 type StripeEventOptions = {
   retrieveSubscription?: (id: string) => Promise<Stripe.Subscription>;
+};
+
+export type ExtendTrialOptions = {
+  updateSubscription?: (
+    id: string,
+    params: Stripe.SubscriptionUpdateParams,
+  ) => Promise<Stripe.Subscription>;
 };
 
 const STRIPE_LOCALE_PATHS = {
@@ -528,6 +542,10 @@ export async function createCheckout(
       "This teacher already has an active subscription.",
     );
   }
+  const trialStartedAt = await readFeatureTrialStart(db, user.id);
+  const trialPeriodDays =
+    options.trialPeriodDays ??
+    calculateStripeTrialPeriodDays(trialStartedAt, now);
   const nowIso = now.toISOString();
   let stripeClient: Stripe | null = null;
   const checkoutSessions = () => {
@@ -651,7 +669,7 @@ export async function createCheckout(
           billing_interval: interval,
         },
         subscription_data: {
-          trial_period_days: STRIPE_TRIAL_PERIOD_DAYS,
+          trial_period_days: trialPeriodDays,
           metadata: {
             owner_user_id: user.id,
             plan,
@@ -1357,4 +1375,82 @@ export async function verifyAndProcessWebhook(
     throw new HttpError(400, "invalid_signature", "Invalid Stripe signature.");
   }
   return processStripeEvent(db, event, env);
+}
+
+export async function extendEarlyTrialingSubscriptions(
+  env: StripeEnv,
+  db: D1Database,
+  now = new Date(),
+  options: ExtendTrialOptions = {},
+) {
+  const rows = await db
+    .prepare(
+      `SELECT s.user_id, s.stripe_subscription_id, s.current_period_end, u.feature_trial_started_at
+       FROM subscriptions s
+       JOIN user u ON u.id = s.user_id
+       WHERE s.status = 'trialing'
+         AND s.stripe_subscription_id IS NOT NULL
+         AND u.feature_trial_started_at IS NOT NULL`,
+    )
+    .all<{
+      user_id: string;
+      stripe_subscription_id: string;
+      current_period_end: string | null;
+      feature_trial_started_at: string;
+    }>();
+
+  const updateSubscription =
+    options.updateSubscription ??
+    ((id, params) => stripe(env).subscriptions.update(id, params));
+
+  const repaired: Array<{
+    userId: string;
+    subscriptionId: string;
+    oldEnd: string | null;
+    newEnd: string;
+  }> = [];
+
+  for (const row of rows.results ?? []) {
+    const startMs = Date.parse(row.feature_trial_started_at);
+    if (!Number.isFinite(startMs)) continue;
+    const targetEndMs = startMs + TOTAL_TRIAL_MS;
+    const currentEndMs = row.current_period_end
+      ? Date.parse(row.current_period_end)
+      : 0;
+
+    if (targetEndMs > currentEndMs + 24 * 60 * 60 * 1000) {
+      const targetEndSeconds = Math.floor(targetEndMs / 1000);
+      const targetEndIso = new Date(targetEndMs).toISOString();
+
+      try {
+        await updateSubscription(row.stripe_subscription_id, {
+          trial_end: targetEndSeconds,
+          proration_behavior: "none",
+        });
+
+        await db
+          .prepare(
+            `UPDATE subscriptions
+             SET current_period_end = ?, updated_at = ?
+             WHERE stripe_subscription_id = ?`,
+          )
+          .bind(targetEndIso, now.toISOString(), row.stripe_subscription_id)
+          .run();
+
+        repaired.push({
+          userId: row.user_id,
+          subscriptionId: row.stripe_subscription_id,
+          oldEnd: row.current_period_end,
+          newEnd: targetEndIso,
+        });
+      } catch (error) {
+        console.error(
+          `[Stripe Repair] Failed to extend trial for subscription ${row.stripe_subscription_id}:`,
+          error,
+        );
+      }
+    }
+  }
+
+  return repaired;
 }

@@ -689,4 +689,21 @@ describe("admin dashboard", () => {
     expect(canceled.orders.map((order) => order.id)).toEqual(["cs_canceled"]);
     expect((await call("/api/admin/orders?status=invalid")).status).toBe(400);
   });
+
+  it("enforces admin authentication and allows repairing trials", async () => {
+    expect(
+      (await call("/api/admin/repair-trials", null, testEnv(), "POST")).status,
+    ).toBe(401);
+    expect(
+      (await call("/api/admin/repair-trials", member, testEnv(), "POST")).status,
+    ).toBe(403);
+    expect(
+      (await call("/api/admin/repair-trials", admin, testEnv(), "GET")).status,
+    ).toBe(405);
+    const res = await call("/api/admin/repair-trials", admin, testEnv(), "POST");
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { ok: boolean; repaired: unknown[] };
+    expect(body.ok).toBe(true);
+    expect(Array.isArray(body.repaired)).toBe(true);
+  });
 });

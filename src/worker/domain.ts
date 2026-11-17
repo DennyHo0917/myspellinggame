@@ -12,6 +12,25 @@ const PAID_PLAN_LIMITS = {
 export const TRACKING_TRIAL_EPOCH = "2026-10-29T19:49:12.000Z";
 export const FEATURE_TRIAL_MS = 23 * 24 * 60 * 60 * 1000;
 export const STRIPE_TRIAL_PERIOD_DAYS = 7;
+export const TOTAL_TRIAL_DAYS = 30;
+export const TOTAL_TRIAL_MS = TOTAL_TRIAL_DAYS * 24 * 60 * 60 * 1000;
+
+export function calculateStripeTrialPeriodDays(
+  startedAt: string | null | undefined,
+  now: Date | number = Date.now(),
+): number {
+  if (!startedAt) return STRIPE_TRIAL_PERIOD_DAYS;
+  const startMs = Date.parse(startedAt);
+  if (!Number.isFinite(startMs)) return STRIPE_TRIAL_PERIOD_DAYS;
+  const nowMs = typeof now === "number" ? now : now.getTime();
+  const fullEnds = startMs + TOTAL_TRIAL_MS;
+  const remainingMs = fullEnds - nowMs;
+  const remainingDays = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
+  return Math.min(
+    TOTAL_TRIAL_DAYS,
+    Math.max(STRIPE_TRIAL_PERIOD_DAYS, remainingDays),
+  );
+}
 
 export type FeatureTrialState = {
   active: boolean;

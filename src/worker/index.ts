@@ -45,6 +45,7 @@ import {
   changeSubscriptionPlan,
   createCheckout,
   createPortal,
+  extendEarlyTrialingSubscriptions,
   hasActiveSubscription,
   subscriptionPriceIds,
   verifyAndProcessWebhook,
@@ -3311,6 +3312,11 @@ async function handleBusinessRequest(
       return json(await adminUsers(env, url, true));
     if (url.pathname === "/api/admin/orders" && method === "GET")
       return json(await adminOrders(env, url));
+    if (url.pathname === "/api/admin/repair-trials" && method === "POST")
+      return json({
+        ok: true,
+        repaired: await extendEarlyTrialingSubscriptions(env, env.DB),
+      });
     const planMatch = url.pathname.match(
       /^\/api\/admin\/users\/([^/]+)\/plan$/,
     );
@@ -3336,6 +3342,7 @@ async function handleBusinessRequest(
         "/api/admin/users",
         "/api/admin/subscriptions",
         "/api/admin/orders",
+        "/api/admin/repair-trials",
         "/api/admin/diagnostics",
       ].includes(url.pathname)
     )
@@ -4308,10 +4315,28 @@ export async function scheduled(_controller: ScheduledController, env: Env) {
       "DELETE FROM stripe_events WHERE processed_at IS NOT NULL AND processed_at < ?",
     ).bind(staleAssignments),
   ]);
+  if (env.STRIPE_SECRET_KEY) {
+    try {
+      await extendEarlyTrialingSubscriptions(env, env.DB, now);
+    } catch (error) {
+      console.error("Scheduled early trial extension error:", error);
+    }
+  }
 }
+
+let earlyTrialExtensionAttempted = false;
 
 export default {
   async fetch(request: Request, env: Env, execution: ExecutionContext) {
+    if (!earlyTrialExtensionAttempted && env.STRIPE_SECRET_KEY) {
+      earlyTrialExtensionAttempted = true;
+      execution.waitUntil(
+        extendEarlyTrialingSubscriptions(env, env.DB).catch((error) => {
+          console.error("Early trial extension error:", error);
+          earlyTrialExtensionAttempted = false;
+        }),
+      );
+    }
     try {
       return await handleRequest(request, env, {}, execution);
     } catch (error) {

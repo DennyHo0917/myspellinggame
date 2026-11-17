@@ -5,6 +5,7 @@ import type Stripe from "stripe";
 
 import {
   calculateReviewState,
+  calculateStripeTrialPeriodDays,
   HttpError,
   masteryStatus,
   monthStart,
@@ -24,6 +25,7 @@ import {
   changeSubscriptionPlan,
   createCheckout,
   createPortal,
+  extendEarlyTrialingSubscriptions,
   processStripeEvent,
 } from "../src/worker/stripe";
 import { CHASE_PASSAGES } from "../src/worker/chase";
@@ -3536,6 +3538,200 @@ describe("Stripe checkout", () => {
       expect(params.metadata).not.toHaveProperty("trial_granted");
     },
   );
+
+  describe("calculateStripeTrialPeriodDays", () => {
+    const baseNow = Date.parse("2026-11-17T12:00:00.000Z");
+
+    it("gives full 30 days if bound immediately on day 0", () => {
+      const startedAt = new Date(baseNow - 5 * 60 * 1000).toISOString();
+      expect(calculateStripeTrialPeriodDays(startedAt, baseNow)).toBe(30);
+    });
+
+    it("gives 20 days if bound on day 10", () => {
+      const startedAt = new Date(baseNow - 10 * 86_400_000).toISOString();
+      expect(calculateStripeTrialPeriodDays(startedAt, baseNow)).toBe(20);
+    });
+
+    it("gives 8 days if bound on day 22", () => {
+      const startedAt = new Date(baseNow - 22 * 86_400_000).toISOString();
+      expect(calculateStripeTrialPeriodDays(startedAt, baseNow)).toBe(8);
+    });
+
+    it("gives 7 days if bound on day 23", () => {
+      const startedAt = new Date(baseNow - 23 * 86_400_000).toISOString();
+      expect(calculateStripeTrialPeriodDays(startedAt, baseNow)).toBe(7);
+    });
+
+    it("guarantees at least 7 days even if bound after day 23", () => {
+      const startedAt = new Date(baseNow - 28 * 86_400_000).toISOString();
+      expect(calculateStripeTrialPeriodDays(startedAt, baseNow)).toBe(7);
+    });
+
+    it("guarantees at least 7 days if bound long after trial expiry", () => {
+      const startedAt = new Date(baseNow - 60 * 86_400_000).toISOString();
+      expect(calculateStripeTrialPeriodDays(startedAt, baseNow)).toBe(7);
+    });
+
+    it("defaults to 7 days if feature_trial_started_at is null or invalid", () => {
+      expect(calculateStripeTrialPeriodDays(null, baseNow)).toBe(7);
+      expect(calculateStripeTrialPeriodDays(undefined, baseNow)).toBe(7);
+      expect(calculateStripeTrialPeriodDays("invalid-date", baseNow)).toBe(7);
+    });
+  });
+
+  it("calculates trial_period_days dynamically based on feature_trial_started_at", async () => {
+    const started = new Date(now.getTime() - 2 * 86_400_000).toISOString();
+    await bindings.DB.prepare(
+      "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
+    )
+      .bind(started, teacherA.id)
+      .run();
+
+    let sent: Stripe.Checkout.SessionCreateParams | null = null;
+    await createCheckout(
+      testEnv(),
+      bindings.DB,
+      teacherA,
+      "month",
+      "https://example.test",
+      {
+        now,
+        createSession: async (params) => {
+          sent = params;
+          return createSession(params);
+        },
+      },
+    );
+
+    const params = sent as unknown as Stripe.Checkout.SessionCreateParams;
+    // 30 - 2 = 28 days
+    expect(params.subscription_data?.trial_period_days).toBe(28);
+
+    // Reset back to null for subsequent tests on teacherA
+    await bindings.DB.prepare(
+      "UPDATE user SET feature_trial_started_at = NULL WHERE id = ?",
+    )
+      .bind(teacherA.id)
+      .run();
+  });
+
+  describe("extendEarlyTrialingSubscriptions", () => {
+    it("extends early trialing subscriptions to the full 30 days and updates D1", async () => {
+      const signupTime = "2026-11-17T03:48:15.853Z";
+      const signupMs = Date.parse(signupTime);
+      const earlySubEnd = "2026-11-24T03:51:59.000Z";
+      const targetEndIso = new Date(signupMs + 30 * 86_400_000).toISOString();
+
+      await bindings.DB.prepare(
+        "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
+      )
+        .bind(signupTime, teacherA.id)
+        .run();
+
+      await bindings.DB.prepare(
+        `INSERT INTO subscriptions (
+           user_id, plan, status, billing_interval, stripe_customer_id,
+           stripe_subscription_id, stripe_price_id, current_period_end, updated_at
+         ) VALUES (?, 'teacher', 'trialing', 'month', 'cus_test', 'sub_early_1', 'price_monthly', ?, ?)`,
+      )
+        .bind(teacherA.id, earlySubEnd, signupTime)
+        .run();
+
+      const updatedParams: Array<{ id: string; params: Stripe.SubscriptionUpdateParams }> = [];
+      const repaired = await extendEarlyTrialingSubscriptions(
+        testEnv(),
+        bindings.DB,
+        new Date(signupMs + 60_000),
+        {
+          updateSubscription: async (id, params) => {
+            updatedParams.push({ id, params });
+            return { id, ...params } as unknown as Stripe.Subscription;
+          },
+        },
+      );
+
+      expect(repaired).toHaveLength(1);
+      expect(repaired[0]).toMatchObject({
+        userId: teacherA.id,
+        subscriptionId: "sub_early_1",
+        oldEnd: earlySubEnd,
+        newEnd: targetEndIso,
+      });
+
+      expect(updatedParams).toHaveLength(1);
+      expect(updatedParams[0].id).toBe("sub_early_1");
+      expect(updatedParams[0].params.trial_end).toBe(Math.floor((signupMs + 30 * 86_400_000) / 1000));
+      expect(updatedParams[0].params.proration_behavior).toBe("none");
+
+      const subRow = await bindings.DB.prepare(
+        "SELECT current_period_end FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .first<{ current_period_end: string }>();
+      expect(subRow?.current_period_end).toBe(targetEndIso);
+
+      // Clean up for subsequent tests
+      await bindings.DB.prepare(
+        "DELETE FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .run();
+      await bindings.DB.prepare(
+        "UPDATE user SET feature_trial_started_at = NULL WHERE id = ?",
+      )
+        .bind(teacherA.id)
+        .run();
+    });
+
+    it("skips subscriptions that already have trial_end at or beyond 30 days", async () => {
+      const signupTime = "2026-11-17T03:48:15.853Z";
+      const signupMs = Date.parse(signupTime);
+      const targetEndIso = new Date(signupMs + 30 * 86_400_000).toISOString();
+
+      await bindings.DB.prepare(
+        "UPDATE user SET feature_trial_started_at = ? WHERE id = ?",
+      )
+        .bind(signupTime, teacherA.id)
+        .run();
+
+      await bindings.DB.prepare(
+        `INSERT INTO subscriptions (
+           user_id, plan, status, billing_interval, stripe_customer_id,
+           stripe_subscription_id, stripe_price_id, current_period_end, updated_at
+         ) VALUES (?, 'teacher', 'trialing', 'month', 'cus_test', 'sub_full_1', 'price_monthly', ?, ?)`,
+      )
+        .bind(teacherA.id, targetEndIso, signupTime)
+        .run();
+
+      let calls = 0;
+      const repaired = await extendEarlyTrialingSubscriptions(
+        testEnv(),
+        bindings.DB,
+        new Date(signupMs + 60_000),
+        {
+          updateSubscription: async () => {
+            calls += 1;
+            return {} as Stripe.Subscription;
+          },
+        },
+      );
+
+      expect(repaired).toHaveLength(0);
+      expect(calls).toBe(0);
+
+      // Clean up
+      await bindings.DB.prepare(
+        "DELETE FROM subscriptions WHERE user_id = ?",
+      )
+        .bind(teacherA.id)
+        .run();
+      await bindings.DB.prepare(
+        "UPDATE user SET feature_trial_started_at = NULL WHERE id = ?",
+      )
+        .bind(teacherA.id)
+        .run();
+    });
+  });
 
   it("reuses duplicate Parent Checkout and safely replaces it when the interval changes", async () => {
     const prices: string[] = [];

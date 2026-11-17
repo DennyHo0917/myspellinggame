@@ -93,7 +93,7 @@ const PRACTICE_ENTRY_COPY = {
     sharedTrackingCreate: "Create practice link",
     reviewEntryTitle: "Build a weekly review habit",
     reviewEntryHelp:
-      "Smart Review uses tracked practice across weeks to choose words that need more work. Free accounts include a 7-day trial of Photo Import and Smart Review; after that, both stay on Parent and Teacher plans.",
+      "Smart Review uses tracked practice across weeks to choose words that need more work. Signed-in free accounts get a 30-day trial of Photo Import and Smart Review; after that, both stay on Parent and Teacher plans.",
     reviewEntryLocalNote:
       "Anonymous missed words stay in this browser. Signing in does not import past results. Your saved missed words can be used in the next tracked practice.",
   },
@@ -104,7 +104,7 @@ const PRACTICE_ENTRY_COPY = {
     sharedTrackingCreate: "Crear enlace de práctica",
     reviewEntryTitle: "Repasa cada semana",
     reviewEntryHelp:
-      "El repaso inteligente usa las prácticas registradas de varias semanas para elegir qué palabras reforzar. Las cuentas gratis incluyen 7 días de prueba para importar fotos y el repaso inteligente; después, siguen en los planes Familiar y Docente.",
+      "El repaso inteligente usa las prácticas registradas de varias semanas para elegir qué palabras reforzar. Las cuentas gratis con sesión iniciada incluyen 30 días de prueba para importar fotos y el repaso inteligente; después, siguen en los planes Familiar y Docente.",
     reviewEntryLocalNote:
       "Las palabras falladas sin cuenta se guardan en este navegador. Iniciar sesión no importa resultados anteriores. Puedes usarlas en la próxima práctica con seguimiento.",
   },
@@ -115,7 +115,7 @@ const PRACTICE_ENTRY_COPY = {
     sharedTrackingCreate: "Criar link de prática",
     reviewEntryTitle: "Crie uma rotina de revisão semanal",
     reviewEntryHelp:
-      "A Revisão Inteligente usa práticas registradas ao longo das semanas para escolher as palavras que precisam de reforço. Contas grátis incluem 7 dias de teste da importação por foto e da revisão inteligente; depois, elas seguem nos planos Família e Professor.",
+      "A Revisão Inteligente usa práticas registradas ao longo das semanas para escolher as palavras que precisam de reforço. Contas grátis conectadas incluem 30 dias de teste da importação por foto e da revisão inteligente; depois, elas seguem nos planos Família e Professor.",
     reviewEntryLocalNote:
       "Os erros da prática sem conta ficam neste navegador. Entrar não importa resultados anteriores. Você pode usar essas palavras na próxima prática com acompanhamento.",
   },
@@ -126,7 +126,7 @@ const PRACTICE_ENTRY_COPY = {
     sharedTrackingCreate: "Créer le lien d’exercice",
     reviewEntryTitle: "Réviser au fil des semaines",
     reviewEntryHelp:
-      "La révision intelligente s’appuie sur les exercices suivis au fil des semaines pour choisir les mots à revoir. Les comptes gratuits incluent un essai de 7 jours pour l’import photo et la révision intelligente ; ensuite, les deux restent dans les offres Famille et Enseignant.",
+      "La révision intelligente s’appuie sur les exercices suivis au fil des semaines pour choisir les mots à revoir. Les comptes gratuits connectés incluent un essai de 30 jours pour l’import photo et la révision intelligente ; ensuite, les deux restent dans les offres Famille et Enseignant.",
     reviewEntryLocalNote:
       "Les erreurs des exercices sans compte restent dans ce navigateur. La connexion n’importe pas les anciens résultats. Vous pouvez réutiliser ces mots dans le prochain exercice avec suivi.",
   },
@@ -137,7 +137,7 @@ const PRACTICE_ENTRY_COPY = {
     sharedTrackingCreate: "Buat tautan latihan",
     reviewEntryTitle: "Bangun kebiasaan mengulang tiap minggu",
     reviewEntryHelp:
-      "Ulasan pintar memilih kata yang perlu dilatih dari hasil latihan tercatat selama beberapa minggu. Akun gratis mendapat uji coba 7 hari untuk impor foto dan ulasan pintar; setelah itu, keduanya tetap di paket Orang Tua dan Guru.",
+      "Ulasan pintar memilih kata yang perlu dilatih dari hasil latihan tercatat selama beberapa minggu. Akun gratis yang masuk mendapat uji coba 30 hari untuk impor foto dan ulasan pintar; setelah itu, keduanya tetap di paket Orang Tua dan Guru.",
     reviewEntryLocalNote:
       "Kata yang salah saat berlatih tanpa akun tersimpan di browser ini. Masuk tidak mengimpor hasil lama. Kata tersebut dapat dipakai dalam latihan tercatat berikutnya.",
   },
@@ -148,7 +148,7 @@ const PRACTICE_ENTRY_COPY = {
     sharedTrackingCreate: "创建练习链接",
     reviewEntryTitle: "让错词进入每周复习",
     reviewEntryHelp:
-      "智能复习会根据多周带记录练习的结果，挑选需要巩固的单词。免费账号可试用拍照导入和智能复习 7 天；试用结束后，这两项保留在家长方案和教师方案中。",
+      "智能复习会根据多周带记录练习的结果，挑选需要巩固的单词。登录后的免费账号可享 30 天试用：拍照导入、智能复习与作业结果追踪；试用结束后，这些功能保留在家长方案和教师方案中。",
     reviewEntryLocalNote:
       "匿名练习的错词只保存在当前浏览器，登录不会导入过去的成绩。这些错词可以用于下一次带记录练习。",
   },
@@ -261,7 +261,7 @@ const PACKS = {
     trackingLearnerName: "Learner name",
     trackingAssignmentTitle: "Practice for {name}",
     trackingTrialUsed:
-      "Your free tracking trial is used. Upgrade to keep tracking, or continue ordinary practice for free.",
+      "Free tracking trial has ended. Upgrade to keep tracking, or continue ordinary practice for free.",
     freeTrackingTitle: "Free tracking trial",
     upgradeReturnReady:
       "Your plan is active. Continue with the feature you selected; your words are restored.",
@@ -708,8 +708,8 @@ const PACKS = {
     workspaceTrialClaimCta: "Add Card (+7 Days Free)",
     workspaceTrialExpiredTitle: "Your free trial has ended",
     workspaceTrialExpiredDesc:
-      "Add a payment method to start a 7-day free trial on Parent or Teacher Plan. Cancel anytime before your first billing.",
-    workspaceTrialStart7DayCta: "Start 7-Day Free Trial",
+      "Your 23-day free trial has ended. Add a payment method to get an extra 7 days free (30 days total). Cancel anytime before your first billing.",
+    workspaceTrialStart7DayCta: "Add Card (+7 Days Free)",
     proActive:
       "Your paid plan is active. Saved lists, long-term mastery, and Smart Review are now unlocked.",
     rateLimited: "Too many requests. Wait a moment and try again.",
@@ -830,7 +830,7 @@ const PACKS = {
     trackingLearnerName: "Nombre del estudiante",
     trackingAssignmentTitle: "Práctica de {name}",
     trackingTrialUsed:
-      "Ya usaste la prueba de seguimiento. Elige un plan de pago para continuar o sigue practicando gratis sin guardar resultados.",
+      "La prueba de seguimiento ha finalizado. Elige un plan de pago para continuar o sigue practicando gratis sin guardar resultados.",
     freeTrackingTitle: "Prueba de seguimiento",
     upgradeReturnReady:
       "Tu plan está activo. Continúa con la función que elegiste; hemos recuperado tus palabras.",
@@ -1285,8 +1285,8 @@ const PACKS = {
     workspaceTrialClaimCta: "Añadir tarjeta (+7 días gratis)",
     workspaceTrialExpiredTitle: "Tu prueba gratuita ha finalizado",
     workspaceTrialExpiredDesc:
-      "Añade un método de pago para comenzar 7 días de prueba gratis en el plan para familias o docentes. Cancela cuando quieras.",
-    workspaceTrialStart7DayCta: "Iniciar prueba de 7 días",
+      "Tu prueba de 23 días sin tarjeta ha finalizado. Añade un método de pago para conseguir 7 días gratis extra (30 días en total). Cancela cuando quieras antes del primer cobro.",
+    workspaceTrialStart7DayCta: "Añadir tarjeta (+7 días gratis)",
     proActive:
       "Tu plan de pago está activo. Ya están disponibles las listas guardadas, el historial de dominio a largo plazo y el repaso inteligente.",
     rateLimited:
@@ -1408,7 +1408,7 @@ const PACKS = {
     trackingLearnerName: "Nome do aluno",
     trackingAssignmentTitle: "Prática de {name}",
     trackingTrialUsed:
-      "Você já usou o teste de acompanhamento. Assine para continuar acompanhando ou pratique grátis sem salvar resultados.",
+      "O teste de acompanhamento terminou. Assine para continuar acompanhando ou pratique grátis sem salvar resultados.",
     freeTrackingTitle: "Teste de acompanhamento",
     upgradeReturnReady:
       "Seu plano está ativo. Continue com o recurso escolhido; suas palavras foram restauradas.",
@@ -1861,8 +1861,8 @@ const PACKS = {
     workspaceTrialClaimCta: "Adicionar cartão (+7 dias grátis)",
     workspaceTrialExpiredTitle: "Seu teste gratuito terminou",
     workspaceTrialExpiredDesc:
-      "Adicione uma forma de pagamento para iniciar 7 dias de teste grátis no Plano para Pais ou Professores. Cancele quando quiser.",
-    workspaceTrialStart7DayCta: "Iniciar teste de 7 dias",
+      "Seu teste de 23 dias sem cartão terminou. Adicione uma forma de pagamento para ganhar 7 dias grátis extras (30 dias no total). Cancele quando quiser antes da primeira cobrança.",
+    workspaceTrialStart7DayCta: "Adicionar cartão (+7 dias grátis)",
     proActive:
       "Seu plano pago está ativo. Listas salvas, histórico de domínio de longo prazo e revisão inteligente já estão liberados.",
     rateLimited: "Muitas solicitações. Aguarde um momento e tente novamente.",
@@ -1984,7 +1984,7 @@ const PACKS = {
     trackingLearnerName: "Nom de l’élève",
     trackingAssignmentTitle: "Exercice de {name}",
     trackingTrialUsed:
-      "Votre essai du suivi est utilisé. Abonnez-vous pour poursuivre le suivi ou continuez à vous entraîner gratuitement sans enregistrer les résultats.",
+      "Votre essai du suivi est terminé. Abonnez-vous pour poursuivre le suivi ou continuez à vous entraîner gratuitement sans enregistrer les résultats.",
     freeTrackingTitle: "Essai du suivi",
     upgradeReturnReady:
       "Votre abonnement est actif. Reprenez la fonction choisie ; vos mots ont été restaurés.",
@@ -2445,8 +2445,8 @@ const PACKS = {
     workspaceTrialClaimCta: "Ajouter une carte (+7 jours offerts)",
     workspaceTrialExpiredTitle: "Votre essai gratuit est terminé",
     workspaceTrialExpiredDesc:
-      "Ajoutez un moyen de paiement pour démarrer un essai gratuit de 7 jours sur l’offre Parents ou Enseignants. Résiliez à tout moment.",
-    workspaceTrialStart7DayCta: "Commencer l’essai de 7 jours",
+      "Votre essai de 23 jours sans carte est terminé. Ajoutez un moyen de paiement pour obtenir 7 jours gratuits supplémentaires (30 jours au total). Résiliez à tout moment avant la première facturation.",
+    workspaceTrialStart7DayCta: "Ajouter une carte (+7 jours offerts)",
     proActive:
       "Votre offre payante est active. Les listes enregistrées, l’historique de maîtrise à long terme et la révision intelligente sont maintenant disponibles.",
     rateLimited: "Trop de demandes. Patientez un instant puis réessayez.",
@@ -2566,7 +2566,7 @@ const PACKS = {
     trackingLearnerName: "Nama pelajar",
     trackingAssignmentTitle: "Latihan {name}",
     trackingTrialUsed:
-      "Uji coba pelacakan sudah terpakai. Berlangganan untuk melanjutkan pelacakan atau tetap berlatih gratis tanpa menyimpan hasil.",
+      "Uji coba pelacakan telah berakhir. Berlangganan untuk melanjutkan pelacakan atau tetap berlatih gratis tanpa menyimpan hasil.",
     freeTrackingTitle: "Coba pelacakan gratis",
     upgradeReturnReady:
       "Paket Anda sudah aktif. Lanjutkan fitur yang dipilih; daftar kata Anda sudah dipulihkan.",
@@ -3017,8 +3017,8 @@ const PACKS = {
     workspaceTrialClaimCta: "Hubungkan kartu (+7 hari gratis)",
     workspaceTrialExpiredTitle: "Uji coba gratis Anda telah berakhir",
     workspaceTrialExpiredDesc:
-      "Hubungkan metode pembayaran untuk memulai uji coba gratis 7 hari paket Orang Tua atau Guru. Batalkan kapan saja.",
-    workspaceTrialStart7DayCta: "Mulai uji coba 7 hari",
+      "Uji coba 23 hari tanpa kartu Anda telah berakhir. Hubungkan metode pembayaran untuk mendapatkan bonus 7 hari gratis (total 30 hari). Batalkan kapan saja sebelum penagihan pertama.",
+    workspaceTrialStart7DayCta: "Hubungkan kartu (+7 hari gratis)",
     proActive:
       "Paket berbayar Anda aktif. Daftar tersimpan, riwayat penguasaan jangka panjang, dan ulasan pintar kini terbuka.",
     rateLimited: "Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.",
@@ -3121,8 +3121,8 @@ const PACKS = {
     trackingLearnerName: "孩子或学生的名字",
     trackingAssignmentTitle: "{name}的练习",
     trackingTrialUsed:
-      "免费追踪体验已用完。升级后可继续追踪，也可以免费进行不保存记录的普通练习。",
-    freeTrackingTitle: "免费追踪体验",
+      "免费追踪试用已结束。升级后可继续追踪，也可以免费进行不保存记录的普通练习。",
+    freeTrackingTitle: "免费追踪试用",
     upgradeReturnReady: "已解锁，可以继续使用刚才的功能；你的词表已恢复。",
     dashboardTitle: "工作台",
     greeting: "{name}，你好",
@@ -3145,7 +3145,7 @@ const PACKS = {
     unlock: "解锁",
     resultViewLimit:
       "30 天免费试用期内可畅享完整结果追踪与错词分析。试用结束后结果保留 14 天，升级方案可持续追踪；普通练习始终免费。",
-    submissionUsage: "追踪体验已用 {used}/{limit} 次",
+    submissionUsage: "试用追踪已用 {used}/{limit} 次",
     submissionLimitWarning: "升级后可持续追踪完整结果；普通练习始终免费。",
     submissionLimitReached:
       "免费追踪试用已结束。升级可查看后续结果，请在 14 天保留期内查看；普通练习始终免费。",
@@ -3542,8 +3542,8 @@ const PACKS = {
     workspaceTrialClaimCta: "绑定银行卡（多享 7 天）",
     workspaceTrialExpiredTitle: "免卡试用已结束",
     workspaceTrialExpiredDesc:
-      "绑定支付方式即可开启 7 天免费试用，首期扣费前可随时取消。",
-    workspaceTrialStart7DayCta: "开启 7 天免费试用",
+      "你的 23 天免卡试用已结束。绑定支付方式即可额外多领 7 天免费试用（享满 30 天完整试用），首期扣费前可随时取消。",
+    workspaceTrialStart7DayCta: "绑定银行卡（多享 7 天）",
     proActive: "你的付费方案已激活。已解锁词表保存、长期掌握度和智能错词复习。",
     rateLimited: "请求过于频繁，请稍后重试。",
     invalidSubmission: "本次提交数据无效，请重新开始作业后再试。",

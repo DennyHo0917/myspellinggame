@@ -443,6 +443,19 @@ async function adminUsers(env: Env, url: URL, subscribedOnly = false) {
   const query = (url.searchParams.get("q") ?? "").trim().slice(0, 200);
   const plan = url.searchParams.get("plan") ?? "";
   const provider = url.searchParams.get("provider") ?? "";
+  const sort = url.searchParams.get("sort") ?? "";
+  const rawOrder = (url.searchParams.get("order") ?? "desc").toLowerCase();
+  if (rawOrder !== "asc" && rawOrder !== "desc")
+    throw new HttpError(400, "invalid_sort_order", "请选择有效的排序方向。");
+  if (
+    sort &&
+    sort !== "last_active_at" &&
+    sort !== "lastActiveAt" &&
+    sort !== "createdAt" &&
+    sort !== "created_at"
+  )
+    throw new HttpError(400, "invalid_sort_field", "请选择有效的排序字段。");
+  const order = rawOrder === "asc" ? "ASC" : "DESC";
   if (plan && !["free", "parent", "teacher"].includes(plan))
     throw new HttpError(
       400,
@@ -518,10 +531,18 @@ async function adminUsers(env: Env, url: URL, subscribedOnly = false) {
   )
     .bind(...planBindings, ...filters)
     .first<{ count: number }>();
+  let orderBy: string;
+  if (sort === "last_active_at" || sort === "lastActiveAt") {
+    orderBy = `CASE WHEN last_active_at IS NULL THEN 1 ELSE 0 END, last_active_at ${order}, id ${order}`;
+  } else if (subscribedOnly) {
+    orderBy = `COALESCE(started_at, createdAt) ${order}, id ${order}`;
+  } else {
+    orderBy = `createdAt ${order}, id ${order}`;
+  }
   const rows = await env.DB.prepare(
     `${userQuery}
      SELECT * FROM admin_users ${where}
-     ORDER BY ${subscribedOnly ? "COALESCE(started_at, createdAt)" : "createdAt"} DESC, id LIMIT ? OFFSET ?`,
+     ORDER BY ${orderBy} LIMIT ? OFFSET ?`,
   )
     .bind(...planBindings, ...filters, pageSize, (page - 1) * pageSize)
     .all<{

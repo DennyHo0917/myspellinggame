@@ -320,6 +320,61 @@ describe("admin dashboard", () => {
     expect((await call("/api/admin/users?provider=invalid")).status).toBe(400);
   });
 
+  it("sorts users by last_active_at in ascending and descending order, handling nulls gracefully", async () => {
+    await bindings.DB.prepare("DELETE FROM user").run();
+    const userA = { id: "user-a", name: "User A", email: "a@example.test" };
+    const userB = { id: "user-b", name: "User B", email: "b@example.test" };
+    const userC = { id: "user-c", name: "User C", email: "c@example.test" };
+    await insertUser(admin);
+    await insertUser(userA);
+    await insertUser(userB);
+    await insertUser(userC);
+
+    const time1 = "2026-10-01T10:00:00.000Z";
+    const time2 = "2026-11-01T10:00:00.000Z";
+
+    await bindings.DB.prepare(
+      "UPDATE user SET last_active_at = ? WHERE id = ?",
+    )
+      .bind(time1, userA.id)
+      .run();
+    await bindings.DB.prepare(
+      "UPDATE user SET last_active_at = ? WHERE id = ?",
+    )
+      .bind(time2, userB.id)
+      .run();
+    await bindings.DB.prepare(
+      "UPDATE user SET last_active_at = NULL WHERE id = ?",
+    )
+      .bind(userC.id)
+      .run();
+
+    const desc = (await (
+      await call("/api/admin/users?sort=last_active_at&order=desc")
+    ).json()) as {
+      users: Array<{ id: string }>;
+    };
+    // admin was just updated to now() by the authenticated call, so admin > userB > userA > userC (null)
+    expect(desc.users[0].id).toBe(admin.id);
+    expect(desc.users[1].id).toBe(userB.id);
+    expect(desc.users[2].id).toBe(userA.id);
+    expect(desc.users.at(-1)?.id).toBe(userC.id);
+
+    const asc = (await (
+      await call("/api/admin/users?sort=last_active_at&order=asc")
+    ).json()) as {
+      users: Array<{ id: string }>;
+    };
+    // userA (oldest) -> userB -> admin (newest) -> userC (null at end)
+    expect(asc.users[0].id).toBe(userA.id);
+    expect(asc.users[1].id).toBe(userB.id);
+    expect(asc.users[2].id).toBe(admin.id);
+    expect(asc.users.at(-1)?.id).toBe(userC.id);
+
+    expect((await call("/api/admin/users?sort=invalid")).status).toBe(400);
+    expect((await call("/api/admin/users?order=invalid")).status).toBe(400);
+  });
+
   it.each(["price_parent_monthly", "price_parent_new_monthly"])(
     "recognizes %s in the admin plan filter after repricing",
     async (priceId) => {

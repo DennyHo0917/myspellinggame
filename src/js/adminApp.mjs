@@ -32,6 +32,8 @@ let page = 1;
 let query = "";
 let plan = "";
 let provider = "";
+let sort = "";
+let order = "desc";
 let ordersPage = 1;
 let orderQuery = "";
 let orderStatus = "";
@@ -40,8 +42,12 @@ let subscriptionsPage = 1;
 let subscriptionQuery = "";
 let subscriptionPlan = "";
 let subscriptionProvider = "";
+let subscriptionSort = "";
+let subscriptionOrder = "desc";
 let subscriptionsLoaded = false;
 let selectedUser = null;
+const sortLastActiveButton = $("admin-sort-last-active");
+const subSortLastActiveButton = $("admin-subscriptions-sort-last-active");
 
 async function api(path, options = {}) {
   const response = await fetch(path, {
@@ -286,6 +292,23 @@ function renderUserRow(user, subscription = false) {
   return row;
 }
 
+function updateSortButton(button, activeSort, currentSort, currentOrder) {
+  if (!button) return;
+  if (currentSort === activeSort) {
+    button.setAttribute(
+      "aria-sort",
+      currentOrder === "asc" ? "ascending" : "descending",
+    );
+    button.title =
+      currentOrder === "asc"
+        ? "当前按最后使用时间升序，点击切换为降序"
+        : "当前按最后使用时间降序，点击切换为升序";
+  } else {
+    button.removeAttribute("aria-sort");
+    button.title = "点击按最后使用时间排序";
+  }
+}
+
 async function loadUsers() {
   usersStatus.textContent = "正在加载用户……";
   const params = new URLSearchParams({
@@ -293,6 +316,7 @@ async function loadUsers() {
     q: query,
     plan,
     provider,
+    ...(sort ? { sort, order } : {}),
   });
   const data = await api(`/api/admin/users?${params}`);
   usersBody.replaceChildren(...data.users.map((user) => renderUserRow(user)));
@@ -310,6 +334,9 @@ async function loadSubscriptions() {
     q: subscriptionQuery,
     plan: subscriptionPlan,
     provider: subscriptionProvider,
+    ...(subscriptionSort
+      ? { sort: subscriptionSort, order: subscriptionOrder }
+      : {}),
   });
   const data = await api(`/api/admin/subscriptions?${params}`);
   subscriptionsLoaded = true;
@@ -512,6 +539,43 @@ next.addEventListener("click", async () => {
   page += 1;
   await loadUsers().catch((error) => (usersStatus.textContent = error.message));
 });
+
+if (sortLastActiveButton) {
+  sortLastActiveButton.addEventListener("click", async () => {
+    if (sort === "last_active_at") {
+      order = order === "desc" ? "asc" : "desc";
+    } else {
+      sort = "last_active_at";
+      order = "desc";
+    }
+    page = 1;
+    updateSortButton(sortLastActiveButton, "last_active_at", sort, order);
+    await loadUsers().catch(
+      (error) => (usersStatus.textContent = error.message),
+    );
+  });
+}
+
+if (subSortLastActiveButton) {
+  subSortLastActiveButton.addEventListener("click", async () => {
+    if (subscriptionSort === "last_active_at") {
+      subscriptionOrder = subscriptionOrder === "desc" ? "asc" : "desc";
+    } else {
+      subscriptionSort = "last_active_at";
+      subscriptionOrder = "desc";
+    }
+    subscriptionsPage = 1;
+    updateSortButton(
+      subSortLastActiveButton,
+      "last_active_at",
+      subscriptionSort,
+      subscriptionOrder,
+    );
+    await loadSubscriptions().catch(
+      (error) => (subscriptionsStatus.textContent = error.message),
+    );
+  });
+}
 
 $("admin-order-search").addEventListener("submit", async (event) => {
   event.preventDefault();

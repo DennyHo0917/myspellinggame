@@ -7,7 +7,7 @@
     <meta name="referrer" content="strict-origin" />
     <title>MySpellingGame 管理后台</title>
     <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="stylesheet" href="/src/css/product.css?v=admin4" />
+    <link rel="stylesheet" href="/src/css/product.css?v=admin5" />
   </head>
   <body class="product-page">
     <div class="product-shell">
@@ -185,7 +185,34 @@
                       <th>邮箱</th>
                       <th>登录方式</th>
                       <th>当前方案</th>
-                      <th>最后使用时间</th>
+                      <th>
+                        <button
+                          type="button"
+                          class="admin-sort-button"
+                          id="admin-sort-last-active"
+                          aria-label="按最后使用时间排序"
+                          title="点击按最后使用时间排序"
+                        >
+                          最后使用时间
+                          <svg
+                            class="admin-sort-icon"
+                            viewBox="0 0 10 6"
+                            width="10"
+                            height="6"
+                            aria-hidden="true"
+                            focusable="false"
+                          >
+                            <path
+                              d="M1 1L5 5L9 1"
+                              stroke="currentColor"
+                              stroke-width="1.6"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              fill="none"
+                            />
+                          </svg>
+                        </button>
+                      </th>
                       <th>注册时间</th>
                       <th>操作</th>
                     </tr>
@@ -338,7 +365,34 @@
                       <th>邮箱</th>
                       <th>登录方式</th>
                       <th>当前方案</th>
-                      <th>最后使用时间</th>
+                      <th>
+                        <button
+                          type="button"
+                          class="admin-sort-button"
+                          id="admin-subscriptions-sort-last-active"
+                          aria-label="按最后使用时间排序"
+                          title="点击按最后使用时间排序"
+                        >
+                          最后使用时间
+                          <svg
+                            class="admin-sort-icon"
+                            viewBox="0 0 10 6"
+                            width="10"
+                            height="6"
+                            aria-hidden="true"
+                            focusable="false"
+                          >
+                            <path
+                              d="M1 1L5 5L9 1"
+                              stroke="currentColor"
+                              stroke-width="1.6"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              fill="none"
+                            />
+                          </svg>
+                        </button>
+                      </th>
                       <th>注册时间</th>
                       <th>订阅时间</th>
                       <th>到期时间</th>
@@ -503,6 +557,6 @@
         </p>
       </footer>
     </div>
-    <script type="module" src="/src/js/adminApp.mjs?v=admin5"></script>
+    <script type="module" src="/src/js/adminApp.mjs?v=admin6"></script>
   </body>
 </html>

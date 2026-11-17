@@ -269,7 +269,11 @@ function appendSmartReviewPaywall(notice, account, words) {
   notice.append(benefit, price, actions);
 }
 
-function showSmartReviewPreview(rawWords, account, { trackPreview = true } = {}) {
+function showSmartReviewPreview(
+  rawWords,
+  account,
+  { trackPreview = true } = {},
+) {
   const host = document.querySelector(".spelling-builder");
   if (!host || readShareState(window.location).sharedLink) return;
   const words = uniquePreviewWords(rawWords, 20);
@@ -785,7 +789,8 @@ function showPhotoImportRetry(file) {
   if (!actions) return;
   const retry = document.createElement("button");
   retry.type = "button";
-  retry.className = "auto-sentence-btn photo-import-btn-primary photo-import-retry";
+  retry.className =
+    "auto-sentence-btn photo-import-btn-primary photo-import-retry";
   retry.textContent = t("photoImportRetry");
   retry.addEventListener("click", () => void importWordsFromPhoto(file));
   actions.prepend(retry);
@@ -1926,8 +1931,8 @@ export function renderResultWorkspaceCta({
   lastCompletedPracticeResult = completedResult || null;
   const hasCompletedResult = Boolean(
     completedResult &&
-      Array.isArray(completedResult.answers) &&
-      completedResult.answers.length > 0,
+    Array.isArray(completedResult.answers) &&
+    completedResult.answers.length > 0,
   );
   const isShared = Boolean(readShareState(window.location).sharedLink);
   const block = document.createElement("section");
@@ -1958,7 +1963,9 @@ export function renderResultWorkspaceCta({
       getPageLocale(),
     );
     footnote.textContent = productMessage(
-      hasCompletedResult ? "saveResultExplanation" : "workspaceSharedCtaFootnote",
+      hasCompletedResult
+        ? "saveResultExplanation"
+        : "workspaceSharedCtaFootnote",
       {},
       getPageLocale(),
     );
@@ -2060,8 +2067,6 @@ export function openTeacherAssignment(
       },
       accountState?.user?.id,
     );
-  window.location.href = `/workspace/assignments/new?lang=${encodeURIComponent(getPageLocale())}${tracking ? "&tracking=1" : ""}`;
-}
   window.location.href = `/workspace/assignments/new?lang=${encodeURIComponent(getPageLocale())}${tracking ? "&tracking=1" : ""}`;
 }
 

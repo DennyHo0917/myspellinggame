@@ -286,12 +286,12 @@ const PACKS = {
     lockedRowLearner: "Learner {n} (Locked)",
     unlock: "Unlock",
     resultViewLimit:
-      "Try one completed result per account, with no monthly reset. Further results require a paid plan and are kept for 14 days. Ordinary practice stays free.",
+      "Enjoy full result tracking and missed-word analysis during your 30-day free trial. Results are kept for 14 days after the trial; upgrade to continue tracking, or practice free anytime.",
     submissionUsage: "{used}/{limit} trial result used",
     submissionLimitWarning:
-      "Try one tracked result for free. Upgrade for ongoing tracking; ordinary practice stays free.",
+      "Upgrade for ongoing result tracking; ordinary practice stays free.",
     submissionLimitReached:
-      "Your free tracking trial is used. Upgrade to view further results within 14 days. Ordinary practice stays free.",
+      "Free tracking trial has ended. Upgrade to view further results within 14 days; ordinary practice stays free.",
     unlimited: "Unlimited full results",
     unlimitedTrial: "Unlimited full results (30-day trial)",
     studentUsage: "{used} student nicknames stored",
@@ -857,12 +857,12 @@ const PACKS = {
     lockedRowLearner: "Estudiante {n} (Bloqueado)",
     unlock: "Desbloquear",
     resultViewLimit:
-      "Prueba un resultado completo por cuenta, sin renovación mensual. Los siguientes requieren un plan de pago y se guardan 14 días. La práctica habitual sigue siendo gratis.",
+      "Disfruta del seguimiento de resultados completos durante la prueba de 30 días. Los resultados se guardan 14 días tras la prueba; mejora tu plan para continuar, o practica gratis.",
     submissionUsage: "{used}/{limit} resultado de prueba usado",
     submissionLimitWarning:
-      "Prueba gratis el seguimiento de un resultado. Para seguir registrando el progreso, elige un plan de pago. La práctica habitual sigue gratis.",
+      "Elige un plan para continuar el seguimiento de resultados; la práctica habitual sigue gratis.",
     submissionLimitReached:
-      "Ya usaste la prueba de seguimiento. Elige un plan de pago para ver los siguientes resultados antes de 14 días. La práctica habitual sigue gratis.",
+      "La prueba gratuita de seguimiento ha finalizado. Elige un plan de pago para ver los siguientes resultados antes de 14 días. La práctica habitual sigue gratis.",
     unlimited: "Resultados completos sin límite",
     unlimitedTrial: "Resultados completos sin límite (prueba de 30 días)",
     studentUsage: "{used} apodos guardados",
@@ -3144,12 +3144,11 @@ const PACKS = {
     lockedRowLearner: "学习者 {n}（未解锁）",
     unlock: "解锁",
     resultViewLimit:
-      "每个账号可免费体验 1 次完整结果追踪，不按月重置。后续结果需付费查看，保留 14 天；普通练习始终免费。",
+      "30 天免费试用期内可畅享完整结果追踪与错词分析。试用结束后结果保留 14 天，升级方案可持续追踪；普通练习始终免费。",
     submissionUsage: "追踪体验已用 {used}/{limit} 次",
-    submissionLimitWarning:
-      "可免费体验 1 次结果追踪，升级后可持续追踪；普通练习始终免费。",
+    submissionLimitWarning: "升级后可持续追踪完整结果；普通练习始终免费。",
     submissionLimitReached:
-      "免费追踪体验已用完。升级可查看后续结果，请在 14 天保留期内查看；普通练习始终免费。",
+      "免费追踪试用已结束。升级可查看后续结果，请在 14 天保留期内查看；普通练习始终免费。",
     unlimited: "完整结果不限量",
     unlimitedTrial: "完整结果不限量（30 天试用内）",
     studentUsage: "已保存 {used} 个学生昵称",

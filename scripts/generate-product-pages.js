@@ -97,14 +97,11 @@ const copy = {
     free: "Free Plan",
     freePrice: "$0",
     freeBilling: "Free forever",
-    resultViewNote:
-      "Try one completed result per account, with no monthly reset. Further results require a paid plan and are kept for 14 days. Ordinary practice stays free.",
     freeItems: [
       "Up to 25 words per assignment",
       "1 active assignment",
       "1 saved list",
       "1 learner",
-      "1 tracked result per account, once",
       "14-day progress history",
       "23-day free trial of all paid features (+7 days card bonus = 30 days total)",
     ],
@@ -160,8 +157,7 @@ const copy = {
     secureCheckout: "Secure checkout by Stripe · Cancel anytime",
     language: "Language",
     note: "Parents and teachers sign in. Students need no account or password. Anonymous practice needs no account, supports up to 20 words per list, and does not save Workspace tracking history.",
-    freeNote:
-      "1 tracked result with no monthly reset. Ordinary practice stays free; students need no account.",
+    freeNote: "Ordinary practice stays free; students need no account.",
     parentNote:
       "Children practice by link with no account or password required.",
     teacherNote:
@@ -177,14 +173,11 @@ const copy = {
     free: "Plan Gratis",
     freePrice: "$0",
     freeBilling: "Gratis para siempre",
-    resultViewNote:
-      "Prueba un resultado completo por cuenta, sin renovación mensual. Los siguientes requieren un plan de pago y se guardan 14 días. La práctica habitual sigue siendo gratis.",
     freeItems: [
       "Hasta 25 palabras por tarea",
       "1 tarea activa",
       "1 lista guardada",
       "1 estudiante",
-      "1 resultado de prueba por cuenta, una sola vez",
       "14 días de historial de progreso",
       "Prueba de 23 días de todas las funciones (+7 días con tarjeta = 30 días en total)",
     ],
@@ -241,7 +234,7 @@ const copy = {
     language: "Idioma",
     note: "Las familias y los docentes inician sesión. Los estudiantes no necesitan cuenta ni contraseña. La práctica anónima no requiere cuenta, admite hasta 20 palabras por lista y no guarda el historial de seguimiento del espacio de trabajo.",
     freeNote:
-      "1 resultado completo sin renovación mensual. La práctica habitual sigue siendo gratis y el alumnado no necesita cuenta.",
+      "La práctica habitual sigue siendo gratis y el alumnado no necesita cuenta.",
     parentNote: "Tus hijos practican desde el enlace sin cuenta ni contraseña.",
     teacherNote:
       "El alumnado entra con enlace o PIN sin cuenta. Los resultados quedan aquí (no se sincronizan listas ni notas con Classroom).",
@@ -256,14 +249,11 @@ const copy = {
     free: "Plano Grátis",
     freePrice: "$0",
     freeBilling: "Grátis para sempre",
-    resultViewNote:
-      "Experimente um resultado completo por conta, sem renovação mensal. Os próximos exigem um plano pago e ficam salvos por 14 dias. A prática comum continua gratuita.",
     freeItems: [
       "Até 25 palavras por tarefa",
       "1 tarefa ativa",
       "1 lista salva",
       "1 aluno",
-      "1 resultado de teste por conta, uma única vez",
       "14 dias de histórico de progresso",
       "Teste de 23 dias de todos os recursos (+7 dias com cartão = 30 dias no total)",
     ],
@@ -320,7 +310,7 @@ const copy = {
     language: "Idioma",
     note: "Responsáveis e professores entram com sua conta. Os alunos não precisam de conta nem senha. A prática anônima não exige conta, aceita até 20 palavras por lista e não salva o histórico de acompanhamento do espaço de trabalho.",
     freeNote:
-      "1 resultado completo sem renovação mensal. A prática comum continua grátis e os alunos não precisam de conta.",
+      "A prática comum continua grátis e os alunos não precisam de conta.",
     parentNote:
       "Seus filhos praticam pelo link sem precisar de conta nem senha.",
     teacherNote:
@@ -336,14 +326,11 @@ const copy = {
     free: "Offre gratuite",
     freePrice: "0 $",
     freeBilling: "Gratuit pour toujours",
-    resultViewNote:
-      "Essayez un résultat complet par compte, sans renouvellement mensuel. Les suivants nécessitent un abonnement et sont conservés 14 jours. L’entraînement classique reste gratuit.",
     freeItems: [
       "Jusqu’à 25 mots par devoir",
       "1 devoir actif",
       "1 liste enregistrée",
       "1 élève",
-      "1 résultat d’essai par compte, une seule fois",
       "14 jours d’historique de progression",
       "Essai de 23 jours de toutes les fonctionnalités (+7 jours avec carte = 30 jours au total)",
     ],
@@ -400,7 +387,7 @@ const copy = {
     language: "Langue",
     note: "Les parents et les enseignants se connectent. Les élèves n’ont besoin ni de compte ni de mot de passe. La pratique anonyme ne demande aucun compte, accepte jusqu’à 20 mots par liste et n’enregistre pas l’historique de suivi de l’espace de travail.",
     freeNote:
-      "1 résultat complet sans renouvellement mensuel. L’entraînement classique reste gratuit et les élèves n’ont besoin d’aucun compte.",
+      "L’entraînement classique reste gratuit et les élèves n’ont besoin d’aucun compte.",
     parentNote:
       "Vos enfants s’entraînent via le lien sans compte ni mot de passe.",
     teacherNote:
@@ -416,14 +403,11 @@ const copy = {
     free: "Paket Gratis",
     freePrice: "$0",
     freeBilling: "Gratis selamanya",
-    resultViewNote:
-      "Coba satu hasil lengkap per akun, tanpa pembaruan bulanan. Hasil berikutnya memerlukan paket berbayar dan disimpan selama 14 hari. Latihan biasa tetap gratis.",
     freeItems: [
       "Hingga 25 kata per tugas",
       "1 tugas aktif",
       "1 daftar tersimpan",
       "1 siswa",
-      "1 hasil uji coba per akun, hanya sekali",
       "Riwayat perkembangan 14 hari",
       "Uji coba 23 hari semua fitur berbayar (+7 hari dengan kartu = total 30 hari)",
     ],
@@ -479,8 +463,7 @@ const copy = {
     secureCheckout: "Checkout aman oleh Stripe · Batalkan kapan saja",
     language: "Bahasa",
     note: "Orang tua dan guru masuk ke akun mereka. Siswa tidak memerlukan akun atau kata sandi. Latihan anonim tidak memerlukan akun, mendukung hingga 20 kata per daftar, dan tidak menyimpan riwayat pelacakan ruang kerja.",
-    freeNote:
-      "1 hasil lengkap tanpa pembaruan bulanan. Latihan biasa tetap gratis dan siswa tidak memerlukan akun.",
+    freeNote: "Latihan biasa tetap gratis dan siswa tidak memerlukan akun.",
     parentNote: "Anak berlatih lewat tautan tanpa perlu akun atau kata sandi.",
     teacherNote:
       "Siswa masuk lewat tautan atau PIN tanpa akun. Hasil tetap di sini (tanpa sinkronisasi daftar kelas atau nilai Classroom).",
@@ -494,14 +477,11 @@ const copy = {
     free: "免费方案",
     freePrice: "$0",
     freeBilling: "永久免费",
-    resultViewNote:
-      "每个账号可免费体验 1 次完整结果追踪，不按月重置。后续结果需付费查看，保留 14 天；普通练习始终免费。",
     freeItems: [
       "每份作业最多 25 个单词",
       "最多 1 个活跃作业",
       "保存 1 个词表",
       "创建 1 个学习者档案",
-      "每账号 1 次结果追踪体验，不重复发放",
       "查看 14 天学习记录",
       "23 天免卡试用全部付费功能（绑卡再送 7 天 = 共 30 天免费）",
     ],
@@ -557,7 +537,7 @@ const copy = {
     secureCheckout: "Stripe 安全结账 · 可随时取消",
     language: "语言",
     note: "家长和教师登录，学生无需账号或密码。匿名练习无需账号，每份最多 20 个词，也不会保存 Workspace 追踪历史。",
-    freeNote: "1 次完整结果追踪不按月重置；普通练习始终免费，学生无需账号。",
+    freeNote: "普通练习始终免费，学生无需账号。",
     parentNote: "孩子通过链接即可练习，无需注册账号或密码。",
     teacherNote:
       "学生通过链接或 PIN 即可练习，无需账号；结果保留在本站（不同步 Classroom 名单或成绩）。",
